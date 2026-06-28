@@ -45,16 +45,18 @@ function AppShell() {
   }, []);
 
   return (
-    <AuthProvider>
-      <TooltipProvider>
-        <Toaster />
-        <Sonner />
-        {showIntro && <LoadingIntro onDone={() => setShowIntro(false)} />}
-        <Navbar />
-        <Outlet />
-        <MobileBottomNav />
-      </TooltipProvider>
-    </AuthProvider>
+    <ThemeProvider>
+      <AuthProvider>
+        <TooltipProvider>
+          <Toaster />
+          <Sonner />
+          {showIntro && <LoadingIntro onDone={() => setShowIntro(false)} />}
+          <Navbar />
+          <Outlet />
+          <MobileBottomNav />
+        </TooltipProvider>
+      </AuthProvider>
+    </ThemeProvider>
   );
 }
 
