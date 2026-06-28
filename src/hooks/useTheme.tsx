@@ -10,18 +10,18 @@ interface ThemeContextType {
 const ThemeContext = createContext<ThemeContextType | undefined>(undefined);
 
 export const ThemeProvider = ({ children }: { children: ReactNode }) => {
-  const [theme, setTheme] = useState<Theme>(() => {
-    const stored = localStorage.getItem("theme") as Theme | null;
-    return stored ?? "light";
-  });
+  const [theme, setTheme] = useState<Theme>("light");
 
   useEffect(() => {
+    const stored = typeof window !== "undefined" ? (localStorage.getItem("theme") as Theme | null) : null;
+    if (stored) setTheme(stored);
+  }, []);
+
+  useEffect(() => {
+    if (typeof document === "undefined") return;
     const root = document.documentElement;
-    if (theme === "dark") {
-      root.classList.add("dark");
-    } else {
-      root.classList.remove("dark");
-    }
+    if (theme === "dark") root.classList.add("dark");
+    else root.classList.remove("dark");
     localStorage.setItem("theme", theme);
   }, [theme]);
 
@@ -36,6 +36,6 @@ export const ThemeProvider = ({ children }: { children: ReactNode }) => {
 
 export const useTheme = () => {
   const ctx = useContext(ThemeContext);
-  if (!ctx) throw new Error("useTheme must be used within ThemeProvider");
+  if (!ctx) return { theme: "light" as Theme, toggleTheme: () => {} };
   return ctx;
 };
