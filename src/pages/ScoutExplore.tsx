@@ -6,7 +6,7 @@ import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { useAuth } from "@/hooks/useAuth";
 import { supabase } from "@/integrations/supabase/client";
-import { useNavigate } from "react-router-dom";
+import { useNavigate } from "@tanstack/react-router";
 import ScoutSelectPlayer from "@/components/ScoutSelectPlayer";
 
 interface PlayerCard {
@@ -30,7 +30,7 @@ const ScoutExplore = () => {
   const [selectedPlayer, setSelectedPlayer] = useState<PlayerCard | null>(null);
 
   useEffect(() => {
-    if (!authLoading && !user) navigate("/auth?role=scout");
+    if (!authLoading && !user) navigate({ to: "/auth?role=scout" as any });
   }, [user, authLoading]);
 
   useEffect(() => {
@@ -176,7 +176,7 @@ const ScoutExplore = () => {
                   {selectedPlayer.position_tags.map((t) => <Badge key={t} variant="outline" className="text-xs border-primary/30 text-primary rounded-full">{t}</Badge>)}
                   {selectedPlayer.trait_tags.map((t) => <Badge key={t} variant="outline" className="text-xs border-border text-muted-foreground rounded-full">{t}</Badge>)}
                 </div>
-                <Button variant="outline" size="sm" onClick={() => { setSelectedPlayer(null); navigate(`/resume/${selectedPlayer.user_id}`); }}
+                <Button variant="outline" size="sm" onClick={() => { setSelectedPlayer(null); navigate({ to: `/resume/${selectedPlayer.user_id}` as any }); }}
                   className="text-primary border-primary/30 rounded-full text-xs">
                   View Full Profile →
                 </Button>

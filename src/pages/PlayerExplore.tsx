@@ -1,7 +1,7 @@
 import { motion } from "framer-motion";
 import { Loader2 } from "lucide-react";
 import { useAuth } from "@/hooks/useAuth";
-import { useNavigate } from "react-router-dom";
+import { useNavigate } from "@tanstack/react-router";
 import { useEffect } from "react";
 import PlayerVideosTab from "@/components/PlayerVideosTab";
 
@@ -10,7 +10,7 @@ const PlayerExplore = () => {
   const navigate = useNavigate();
 
   useEffect(() => {
-    if (!authLoading && !user) navigate("/auth");
+    if (!authLoading && !user) navigate({ to: "/auth" as any });
   }, [user, authLoading]);
 
   if (authLoading) return <div className="min-h-screen flex items-center justify-center"><Loader2 className="h-8 w-8 animate-spin text-primary" /></div>;

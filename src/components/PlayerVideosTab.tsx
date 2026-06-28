@@ -4,7 +4,7 @@ import { Badge } from "@/components/ui/badge";
 import { Input } from "@/components/ui/input";
 import { useAuth } from "@/hooks/useAuth";
 import { supabase } from "@/integrations/supabase/client";
-import { useNavigate } from "react-router-dom";
+import { useNavigate } from "@tanstack/react-router";
 import { motion, AnimatePresence } from "framer-motion";
 import ScoutSelectPlayer from "@/components/ScoutSelectPlayer";
 
@@ -96,7 +96,7 @@ const ReelItem = ({
       <div className="absolute bottom-20 right-3 flex flex-col items-center gap-4 pointer-events-auto">
         {/* View profile */}
         <button
-          onClick={() => navigate(`/resume/${video.user_id}`)}
+          onClick={() => navigate({ to: `/resume/${video.user_id}` as any })}
           className="flex flex-col items-center gap-1"
         >
           <div className="w-10 h-10 rounded-full bg-white/20 backdrop-blur-sm border border-white/30 flex items-center justify-center">
@@ -364,7 +364,7 @@ const PlayerVideosTab = () => {
 
               <div className="p-4 space-y-3 overflow-y-auto">
                 <button
-                  onClick={() => navigate(`/resume/${selectedVideo.user_id}`)}
+                  onClick={() => navigate({ to: `/resume/${selectedVideo.user_id}` as any })}
                   className="text-sm text-primary font-medium hover:underline"
                 >
                   View Full Profile →

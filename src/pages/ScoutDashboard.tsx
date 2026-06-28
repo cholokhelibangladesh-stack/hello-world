@@ -8,7 +8,7 @@ import { Button } from "@/components/ui/button";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { useAuth } from "@/hooks/useAuth";
 import { supabase } from "@/integrations/supabase/client";
-import { useNavigate } from "react-router-dom";
+import { useNavigate } from "@tanstack/react-router";
 import ProfileTab from "@/components/ProfileTab";
 import ScoutSelectPlayer from "@/components/ScoutSelectPlayer";
 
@@ -47,7 +47,7 @@ const ScoutDashboard = () => {
 
   useEffect(() => {
     if (authLoading) return;
-    if (!user) { navigate("/auth?role=scout"); return; }
+    if (!user) { navigate({ to: "/auth?role=scout" as any }); return; }
 
     const fetchData = async () => {
       const [videosRes, requestsRes] = await Promise.all([
@@ -239,7 +239,7 @@ const ScoutDashboard = () => {
                               {selectedPlayer.position_tags.map((t) => <Badge key={t} variant="outline" className="text-xs border-primary/30 text-primary rounded-full">{t}</Badge>)}
                               {selectedPlayer.trait_tags.map((t) => <Badge key={t} variant="outline" className="text-xs border-border text-muted-foreground rounded-full">{t}</Badge>)}
                             </div>
-                            <Button variant="outline" size="sm" onClick={() => { setSelectedPlayer(null); navigate(`/resume/${selectedPlayer.user_id}`); }}
+                            <Button variant="outline" size="sm" onClick={() => { setSelectedPlayer(null); navigate({ to: `/resume/${selectedPlayer.user_id}` as any }); }}
                               className="text-primary border-primary/30 rounded-full text-xs">
                               View Full Profile →
                             </Button>
@@ -309,7 +309,7 @@ const ScoutDashboard = () => {
                             {r.player_details.bio && (
                               <p className="text-sm text-muted-foreground italic">"{r.player_details.bio}"</p>
                             )}
-                            <Button size="sm" variant="outline" onClick={() => navigate(`/resume/${r.player_id}`)}
+                            <Button size="sm" variant="outline" onClick={() => navigate({ to: `/resume/${r.player_id}` as any })}
                               className="text-primary border-primary/30 rounded-full text-xs">
                               View Full Profile →
                             </Button>

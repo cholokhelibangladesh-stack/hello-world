@@ -1,4 +1,4 @@
-import { Link, useLocation, useNavigate } from "react-router-dom";
+import { Link, useLocation, useNavigate } from "@tanstack/react-router";
 import { useState, useEffect, useRef } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { Menu, X, Zap, LogOut, Sun, Moon } from "lucide-react";
@@ -40,7 +40,7 @@ const Navbar = () => {
 
   const handleSignOut = async () => {
     await signOut();
-    navigate("/");
+    navigate({ to: "/" as any });
   };
 
   return (

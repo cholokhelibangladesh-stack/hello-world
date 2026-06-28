@@ -2,7 +2,7 @@ import { motion } from "framer-motion";
 import { Loader2, Trash2, AlertTriangle, Video } from "lucide-react";
 import { useState, useEffect } from "react";
 import { useAuth } from "@/hooks/useAuth";
-import { useNavigate } from "react-router-dom";
+import { useNavigate } from "@tanstack/react-router";
 import { supabase } from "@/integrations/supabase/client";
 import { useToast } from "@/hooks/use-toast";
 import { Badge } from "@/components/ui/badge";
@@ -24,7 +24,7 @@ const PlayerProfile = () => {
   const [videosLoading, setVideosLoading] = useState(true);
 
   useEffect(() => {
-    if (!authLoading && !user) { navigate("/auth"); return; }
+    if (!authLoading && !user) { navigate({ to: "/auth" as any }); return; }
     if (user) {
       supabase.from("videos").select("*").eq("user_id", user.id).order("created_at", { ascending: false })
         .then(({ data }) => { setAllVideos((data || []) as VideoRecord[]); setVideosLoading(false); });

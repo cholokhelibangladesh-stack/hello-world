@@ -1,6 +1,6 @@
 import { useState, useEffect } from "react";
 import { motion } from "framer-motion";
-import { useSearchParams, Link, useNavigate } from "react-router-dom";
+import { useSearchParams, Link, useNavigate } from "@tanstack/react-router";
 import { Zap, Eye, EyeOff, Loader2, CheckCircle2 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -74,7 +74,7 @@ const Auth = () => {
       } else {
         dest = isMobile ? "/player/profile" : "/player";
       }
-      navigate(dest, { replace: true });
+      navigate({ to: dest as any, replace: true });
     }
   }, [user, userRole, navigate]);
 

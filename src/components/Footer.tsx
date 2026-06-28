@@ -1,5 +1,5 @@
 import { Zap } from "lucide-react";
-import { Link } from "react-router-dom";
+import { Link } from "@tanstack/react-router";
 
 const Footer = () => (
   <footer className="border-t border-border bg-card">

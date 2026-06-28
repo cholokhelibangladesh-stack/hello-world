@@ -12,7 +12,7 @@ import { useState, useEffect, useRef } from "react";
 import { useToast } from "@/hooks/use-toast";
 import { useAuth } from "@/hooks/useAuth";
 import { supabase } from "@/integrations/supabase/client";
-import { useNavigate } from "react-router-dom";
+import { useNavigate } from "@tanstack/react-router";
 
 const footballTags = ["Striker", "Defender", "Goalkeeper", "Midfielder", "Winger"];
 const cricketTags = ["Bowler (Fast)", "Bowler (Spin)", "Batsman", "Wicketkeeper", "All-rounder"];
@@ -83,7 +83,7 @@ const PlayerUpload = () => {
   };
 
   useEffect(() => {
-    if (!authLoading && !user) { navigate("/auth"); return; }
+    if (!authLoading && !user) { navigate({ to: "/auth" as any }); return; }
     if (user) loadUserData(user.id);
   }, [user, authLoading]);
 

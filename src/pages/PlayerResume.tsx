@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import { useParams } from "react-router-dom";
+import { useParams } from "@tanstack/react-router";
 import { motion } from "framer-motion";
 import { User, Trophy, Tag, Phone, Loader2 } from "lucide-react";
 import { Badge } from "@/components/ui/badge";

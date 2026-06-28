@@ -14,7 +14,7 @@ import { useState, useEffect, useRef } from "react";
 import { useToast } from "@/hooks/use-toast";
 import { useAuth } from "@/hooks/useAuth";
 import { supabase } from "@/integrations/supabase/client";
-import { useNavigate } from "react-router-dom";
+import { useNavigate } from "@tanstack/react-router";
 import ProfileTab from "@/components/ProfileTab";
 import PlayerVideosTab from "@/components/PlayerVideosTab";
 
@@ -130,7 +130,7 @@ const PlayerDashboard = () => {
   };
 
   useEffect(() => {
-    if (!authLoading && !user) { navigate("/auth"); return; }
+    if (!authLoading && !user) { navigate({ to: "/auth" as any }); return; }
     if (user) loadUserData(user.id);
   }, [user, authLoading]);
 

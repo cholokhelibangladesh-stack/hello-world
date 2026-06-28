@@ -8,7 +8,7 @@ import { Input } from "@/components/ui/input";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { useAuth } from "@/hooks/useAuth";
 import { supabase } from "@/integrations/supabase/client";
-import { useNavigate } from "react-router-dom";
+import { useNavigate } from "@tanstack/react-router";
 import { useToast } from "@/hooks/use-toast";
 import ProfileTab from "@/components/ProfileTab";
 import AdminNoticeForm from "@/components/AdminNoticeForm";
@@ -46,7 +46,7 @@ const AdminDashboard = () => {
 
   useEffect(() => {
     if (authLoading) return;
-    if (!user || role !== "admin") { navigate("/"); return; }
+    if (!user || role !== "admin") { navigate({ to: "/" as any }); return; }
     fetchAll();
   }, [user, role, authLoading]);
 
@@ -385,7 +385,7 @@ const AdminDashboard = () => {
                     <Badge className={`rounded-full shrink-0 ${v.status === "live" ? "bg-primary/20 text-primary border-primary/30" : v.status === "rejected" ? "bg-destructive/20 text-destructive border-destructive/30" : "bg-muted text-muted-foreground border-border"}`}>{v.status}</Badge>
                   </div>
                   <div className="flex gap-2 flex-wrap">
-                    {v.video_url && <Button size="sm" variant="outline" onClick={() => navigate(`/resume/${v.user_id}`)} className="rounded-full text-xs border-border text-muted-foreground"><Eye className="h-3.5 w-3.5 mr-1" />View</Button>}
+                    {v.video_url && <Button size="sm" variant="outline" onClick={() => navigate({ to: `/resume/${v.user_id}` as any })} className="rounded-full text-xs border-border text-muted-foreground"><Eye className="h-3.5 w-3.5 mr-1" />View</Button>}
                     {(v.status === "pending_payment" || v.status === "draft") && (
                       <>
                         <Button size="sm" onClick={() => updateVideoStatus(v.id, "live")} className="flex-1 bg-primary text-primary-foreground hover:bg-primary/90 rounded-full text-xs">Approve</Button>

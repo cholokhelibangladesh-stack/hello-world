@@ -5,7 +5,7 @@ import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { useAuth } from "@/hooks/useAuth";
 import { supabase } from "@/integrations/supabase/client";
-import { useNavigate } from "react-router-dom";
+import { useNavigate } from "@tanstack/react-router";
 
 interface ScoutRequest {
   id: string;
@@ -26,7 +26,7 @@ const ScoutSelections = () => {
   const [expandedRequest, setExpandedRequest] = useState<string | null>(null);
 
   useEffect(() => {
-    if (!authLoading && !user) navigate("/auth?role=scout");
+    if (!authLoading && !user) navigate({ to: "/auth?role=scout" as any });
   }, [user, authLoading]);
 
   useEffect(() => {
@@ -130,7 +130,7 @@ const ScoutSelections = () => {
                           {r.player_details.bio && (
                             <p className="text-sm text-muted-foreground italic">"{r.player_details.bio}"</p>
                           )}
-                          <Button size="sm" variant="outline" onClick={() => navigate(`/resume/${r.player_id}`)}
+                          <Button size="sm" variant="outline" onClick={() => navigate({ to: `/resume/${r.player_id}` as any })}
                             className="text-primary border-primary/30 rounded-full text-xs">
                             View Full Profile →
                           </Button>

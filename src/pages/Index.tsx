@@ -1,6 +1,6 @@
 import { useState, useEffect, useRef } from "react";
 import { motion, useScroll, useTransform, useInView } from "framer-motion";
-import { Link } from "react-router-dom";
+import { Link } from "@tanstack/react-router";
 import {
   ArrowRight, Users, Shield, Trophy, Twitter, Facebook,
   Instagram, Youtube, ChevronDown, Zap

@@ -6,7 +6,7 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { useToast } from "@/hooks/use-toast";
 import { supabase } from "@/integrations/supabase/client";
-import { useNavigate, Link } from "react-router-dom";
+import { useNavigate, Link } from "@tanstack/react-router";
 
 const ResetPassword = () => {
   const [password, setPassword] = useState("");
@@ -46,7 +46,7 @@ const ResetPassword = () => {
       if (error) throw error;
       setDone(true);
       toast({ title: "Password updated!", description: "You can now sign in with your new password." });
-      setTimeout(() => navigate("/auth"), 2500);
+      setTimeout(() => navigate({ to: "/auth" as any }), 2500);
     } catch (err: any) {
       toast({ title: "Error", description: err.message, variant: "destructive" });
     } finally {

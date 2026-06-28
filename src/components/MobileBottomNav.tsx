@@ -1,4 +1,4 @@
-import { Link, useLocation } from "react-router-dom";
+import { Link, useLocation } from "@tanstack/react-router";
 import { Home, Upload, Eye, User, ClipboardList } from "lucide-react";
 import { useAuth } from "@/hooks/useAuth";
 
