@@ -216,7 +216,7 @@ const Index = () => {
               className="flex flex-col xs:flex-row gap-3"
             >
               {user && role ? (
-                <Link to={role === "admin" ? "/admin" : role === "scout" ? "/scout" : "/player"}>
+                <Link to={(role === "admin" ? "/admin" : role === "scout" ? "/scout" : "/player") as any}>
                   <Button size="lg" className="font-bold text-lg px-10 animate-pulse-glow"
                     style={{ background: "hsl(var(--green))", color: "#fff" }}>
                     Go to Dashboard <ArrowRight className="ml-2 h-5 w-5" />
@@ -230,7 +230,7 @@ const Index = () => {
                       Join as Player <ArrowRight className="ml-2 h-5 w-5" />
                     </Button>
                   </Link>
-                  <Link to="/auth?role=scout">
+                  <Link to="/auth" search={{ role: "scout" }}>
                     <Button size="lg" className="font-semibold text-base sm:text-lg px-8 sm:px-10"
                       style={{ background: "rgba(255,255,255,0.15)", border: "1px solid rgba(255,255,255,0.3)", color: "rgba(255,255,255,0.9)", backdropFilter: "blur(8px)" }}>
                       I'm a Scout
