@@ -132,7 +132,6 @@
     --shadow-glow: 0 0 30px hsl(142 76% 46% / 0.25);
     --shadow-glow-strong: 0 0 60px hsl(142 76% 46% / 0.35);
   }
-}
 
 
   * {
@@ -153,7 +152,6 @@
   input, select, textarea {
     max-width: 100%;
   }
-}
 
 
   .text-gradient {
