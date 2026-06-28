@@ -31,7 +31,7 @@ interface Achievement {
 }
 
 const PlayerResume = () => {
-  const { userId } = useParams<{ userId: string }>();
+  const { userId } = useParams({ strict: false }) as { userId: string };
   const [profile, setProfile] = useState<Profile | null>(null);
   const [video, setVideo] = useState<VideoData | null>(null);
   const [achievements, setAchievements] = useState<Achievement[]>([]);

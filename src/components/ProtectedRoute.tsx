@@ -23,7 +23,7 @@ const ProtectedRoute = ({ children, allowedRoles }: ProtectedRouteProps) => {
   if (!role) return <Navigate to="/auth" replace />;
   if (!allowedRoles.includes(role)) {
     const redirect = role === "admin" ? "/admin" : role === "scout" ? "/scout" : "/player";
-    return <Navigate to={redirect} replace />;
+    return <Navigate to={redirect as any} replace />;
   }
 
   return <>{children}</>;
