@@ -1,5 +1,5 @@
 import { Outlet, createRootRouteWithContext, HeadContent, Scripts } from "@tanstack/react-router";
-import { TanStackRouterDevtools } from "@tanstack/react-router-devtools";
+
 import type { QueryClient } from "@tanstack/react-query";
 import { useEffect, useState } from "react";
 import { TooltipProvider } from "@/components/ui/tooltip";
@@ -48,11 +48,10 @@ function AppShell() {
       <TooltipProvider>
         <Toaster />
         <Sonner />
-        {showIntro && <LoadingIntro onComplete={() => setShowIntro(false)} />}
+        {showIntro && <LoadingIntro onDone={() => setShowIntro(false)} />}
         <Navbar />
         <Outlet />
         <MobileBottomNav />
-        {import.meta.env.DEV && <TanStackRouterDevtools position="bottom-right" />}
       </TooltipProvider>
     </AuthProvider>
   );
