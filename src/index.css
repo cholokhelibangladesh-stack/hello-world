@@ -34,7 +34,7 @@
   --font-sans: 'Inter', sans-serif;
 }
 
-@layer base {
+
   :root {
     /* ── LIGHT MODE (default) ── */
     --background: 0 0% 98%;
@@ -134,7 +134,7 @@
   }
 }
 
-@layer base {
+
   * {
     @apply border-border box-border;
   }
@@ -155,7 +155,7 @@
   }
 }
 
-@layer utilities {
+
   .text-gradient {
     @apply bg-clip-text text-transparent;
     background-image: var(--gradient-primary);
