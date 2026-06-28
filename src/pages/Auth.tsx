@@ -1,6 +1,6 @@
 import { useState, useEffect } from "react";
 import { motion } from "framer-motion";
-import { useSearchParams, Link, useNavigate } from "@tanstack/react-router";
+import { Link, useNavigate } from "@tanstack/react-router";
 import { Zap, Eye, EyeOff, Loader2, CheckCircle2 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -46,12 +46,12 @@ const ForgotPasswordInline = ({ email, toast }: { email: string; toast: any }) =
 };
 
 const Auth = () => {
-  const [searchParams] = useSearchParams();
   const navigate = useNavigate();
   const { user, role: userRole, signIn } = useAuth();
   const { toast } = useToast();
   const [isLogin, setIsLogin] = useState(false);
-  const [selectedRole, setSelectedRole] = useState<Role>(searchParams.get("role") === "scout" ? "scout" : "player");
+  const initialRole: Role = typeof window !== "undefined" && new URLSearchParams(window.location.search).get("role") === "scout" ? "scout" : "player";
+  const [selectedRole, setSelectedRole] = useState<Role>(initialRole);
   const [sport, setSport] = useState<Sport>("football");
   const [showPass, setShowPass] = useState(false);
   const [loading, setLoading] = useState(false);
