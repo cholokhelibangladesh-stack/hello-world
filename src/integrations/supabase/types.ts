@@ -14,24 +14,276 @@ export type Database = {
   }
   public: {
     Tables: {
-      scout_profiles: {
+      achievements: {
+        Row: {
+          created_at: string
+          description: string | null
+          id: string
+          title: string
+          user_id: string
+          year: number | null
+        }
+        Insert: {
+          created_at?: string
+          description?: string | null
+          id?: string
+          title: string
+          user_id: string
+          year?: number | null
+        }
+        Update: {
+          created_at?: string
+          description?: string | null
+          id?: string
+          title?: string
+          user_id?: string
+          year?: number | null
+        }
+        Relationships: []
+      }
+      app_settings: {
+        Row: {
+          key: string
+          updated_at: string
+          updated_by: string | null
+          value: Json | null
+        }
+        Insert: {
+          key: string
+          updated_at?: string
+          updated_by?: string | null
+          value?: Json | null
+        }
+        Update: {
+          key?: string
+          updated_at?: string
+          updated_by?: string | null
+          value?: Json | null
+        }
+        Relationships: []
+      }
+      documents: {
         Row: {
           created_at: string
           id: string
+          name: string | null
+          type: string | null
+          url: string | null
+          user_id: string
+        }
+        Insert: {
+          created_at?: string
+          id?: string
+          name?: string | null
+          type?: string | null
+          url?: string | null
+          user_id: string
+        }
+        Update: {
+          created_at?: string
+          id?: string
+          name?: string | null
+          type?: string | null
+          url?: string | null
+          user_id?: string
+        }
+        Relationships: []
+      }
+      messages: {
+        Row: {
+          content: string | null
+          created_at: string
+          flag_reason: string | null
+          flagged: boolean
+          id: string
+          read: boolean
+          recipient_id: string | null
+          sender_id: string
+        }
+        Insert: {
+          content?: string | null
+          created_at?: string
+          flag_reason?: string | null
+          flagged?: boolean
+          id?: string
+          read?: boolean
+          recipient_id?: string | null
+          sender_id: string
+        }
+        Update: {
+          content?: string | null
+          created_at?: string
+          flag_reason?: string | null
+          flagged?: boolean
+          id?: string
+          read?: boolean
+          recipient_id?: string | null
+          sender_id?: string
+        }
+        Relationships: []
+      }
+      notifications: {
+        Row: {
+          created_at: string
+          id: string
+          message: string | null
+          metadata: Json | null
+          read: boolean
+          title: string
+          type: string | null
+          user_id: string
+        }
+        Insert: {
+          created_at?: string
+          id?: string
+          message?: string | null
+          metadata?: Json | null
+          read?: boolean
+          title: string
+          type?: string | null
+          user_id: string
+        }
+        Update: {
+          created_at?: string
+          id?: string
+          message?: string | null
+          metadata?: Json | null
+          read?: boolean
+          title?: string
+          type?: string | null
+          user_id?: string
+        }
+        Relationships: []
+      }
+      payments: {
+        Row: {
+          amount: number
+          created_at: string
+          id: string
+          status: string
+          transaction_id: string | null
+          user_id: string
+        }
+        Insert: {
+          amount?: number
+          created_at?: string
+          id?: string
+          status?: string
+          transaction_id?: string | null
+          user_id: string
+        }
+        Update: {
+          amount?: number
+          created_at?: string
+          id?: string
+          status?: string
+          transaction_id?: string | null
+          user_id?: string
+        }
+        Relationships: []
+      }
+      profiles: {
+        Row: {
+          avatar_url: string | null
+          bio: string | null
+          created_at: string
+          date_of_birth: string | null
+          full_name: string | null
+          gender: string | null
+          guardian_contact: string | null
+          id: string
+          is_banned: boolean
+          phone: string | null
+          sport: string | null
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          avatar_url?: string | null
+          bio?: string | null
+          created_at?: string
+          date_of_birth?: string | null
+          full_name?: string | null
+          gender?: string | null
+          guardian_contact?: string | null
+          id?: string
+          is_banned?: boolean
+          phone?: string | null
+          sport?: string | null
+          updated_at?: string
+          user_id: string
+        }
+        Update: {
+          avatar_url?: string | null
+          bio?: string | null
+          created_at?: string
+          date_of_birth?: string | null
+          full_name?: string | null
+          gender?: string | null
+          guardian_contact?: string | null
+          id?: string
+          is_banned?: boolean
+          phone?: string | null
+          sport?: string | null
+          updated_at?: string
+          user_id?: string
+        }
+        Relationships: []
+      }
+      scout_profiles: {
+        Row: {
+          created_at: string
+          full_name: string | null
+          id: string
+          is_banned: boolean
+          organization: string | null
           user_id: string
           verification_status: string
         }
         Insert: {
           created_at?: string
+          full_name?: string | null
           id?: string
+          is_banned?: boolean
+          organization?: string | null
           user_id: string
           verification_status?: string
         }
         Update: {
           created_at?: string
+          full_name?: string | null
           id?: string
+          is_banned?: boolean
+          organization?: string | null
           user_id?: string
           verification_status?: string
+        }
+        Relationships: []
+      }
+      scout_requests: {
+        Row: {
+          admin_response: string | null
+          created_at: string
+          id: string
+          player_id: string
+          scout_id: string
+          status: string
+        }
+        Insert: {
+          admin_response?: string | null
+          created_at?: string
+          id?: string
+          player_id: string
+          scout_id: string
+          status?: string
+        }
+        Update: {
+          admin_response?: string | null
+          created_at?: string
+          id?: string
+          player_id?: string
+          scout_id?: string
+          status?: string
         }
         Relationships: []
       }
@@ -53,6 +305,45 @@ export type Database = {
           id?: string
           role?: Database["public"]["Enums"]["app_role"]
           user_id?: string
+        }
+        Relationships: []
+      }
+      videos: {
+        Row: {
+          created_at: string
+          description: string | null
+          flag_reason: string | null
+          flagged: boolean
+          id: string
+          position_tags: string[] | null
+          status: string
+          trait_tags: string[] | null
+          user_id: string
+          video_url: string | null
+        }
+        Insert: {
+          created_at?: string
+          description?: string | null
+          flag_reason?: string | null
+          flagged?: boolean
+          id?: string
+          position_tags?: string[] | null
+          status?: string
+          trait_tags?: string[] | null
+          user_id: string
+          video_url?: string | null
+        }
+        Update: {
+          created_at?: string
+          description?: string | null
+          flag_reason?: string | null
+          flagged?: boolean
+          id?: string
+          position_tags?: string[] | null
+          status?: string
+          trait_tags?: string[] | null
+          user_id?: string
+          video_url?: string | null
         }
         Relationships: []
       }
