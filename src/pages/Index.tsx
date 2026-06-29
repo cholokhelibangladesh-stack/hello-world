@@ -561,53 +561,92 @@ const Index = () => {
       {/* ══════════════════════════════════════════
           VERIFIED SCOUTS
       ══════════════════════════════════════════ */}
-      <section className="py-16 sm:py-24 border-t border-border surface-card wash">
-        <div className="container">
+      <section className="py-20 sm:py-28 border-t border-border relative overflow-hidden" style={{ background: "hsl(var(--ink))" }}>
+        <div className="absolute inset-0 pointer-events-none opacity-[0.04]"
+          style={{ backgroundImage: "linear-gradient(hsl(var(--green)) 1px, transparent 1px), linear-gradient(90deg, hsl(var(--green)) 1px, transparent 1px)", backgroundSize: "80px 80px" }} />
+        <div className="container relative z-10">
           <Reveal className="text-center mb-12">
             <span className="inline-block text-xs font-bold tracking-[0.2em] uppercase mb-4 px-4 py-1.5 rounded-full"
-              style={{ background: "hsl(var(--green) / 0.12)", color: "hsl(var(--green))" }}>Our Network</span>
-            <h2 className="font-display text-3xl sm:text-5xl text-foreground">
+              style={{ background: "hsl(var(--green) / 0.15)", color: "hsl(var(--green))" }}>Our Network</span>
+            <h2 className="font-display text-3xl sm:text-5xl text-white">
               VERIFIED <span style={{ color: "hsl(var(--green))" }}>SCOUTS</span>
             </h2>
-            <p className="text-sm sm:text-base text-muted-foreground max-w-lg mx-auto mt-2">
-              These professionals are actively discovering talent across Bangladesh
+            <p className="text-sm sm:text-base text-white/60 max-w-lg mx-auto mt-2">
+              Hear directly from the professionals discovering talent across Bangladesh
             </p>
           </Reveal>
 
-          {verifiedScouts.length > 0 ? (
-            <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-4 sm:gap-5">
-              {verifiedScouts.map((scout, i) => (
-                <Reveal key={scout.user_id} delay={i * 0.07}>
-                  <motion.div whileHover={{ y: -5, scale: 1.02 }} transition={{ type: "spring", stiffness: 300 }}
-                    className="group rounded-2xl border p-5 flex flex-col items-center text-center gap-3 card-hover"
-                    style={{ background: "hsl(var(--card))", borderColor: "hsl(var(--border))" }}>
-                    <div className="w-16 h-16 rounded-full border-2 flex items-center justify-center overflow-hidden"
-                      style={{ borderColor: "hsl(var(--green) / 0.2)", background: "hsl(var(--green) / 0.06)" }}>
+          {verifiedScouts.length > 0 && (() => {
+            const scout = verifiedScouts[scoutIndex % verifiedScouts.length];
+            const prev = () => setScoutIndex((i) => (i - 1 + verifiedScouts.length) % verifiedScouts.length);
+            const next = () => setScoutIndex((i) => (i + 1) % verifiedScouts.length);
+            const defaultBio = `${scout.full_name} is a verified scout${scout.organization ? ` with ${scout.organization}` : ""}, actively discovering grassroots talent across Bangladesh through Cholo Kheli.`;
+            return (
+              <div className="grid grid-cols-1 lg:grid-cols-[1fr_220px] gap-6 lg:gap-10 items-stretch max-w-6xl mx-auto">
+                <motion.div
+                  key={scout.user_id}
+                  initial={{ opacity: 0, y: 20 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  transition={{ duration: 0.55, ease: [0.22, 1, 0.36, 1] }}
+                  className="relative rounded-3xl border overflow-hidden p-8 sm:p-12 min-h-[360px] sm:min-h-[420px] flex flex-col justify-between"
+                  style={{
+                    borderColor: "hsl(var(--green) / 0.18)",
+                    background: "radial-gradient(120% 90% at 30% 20%, hsl(var(--green) / 0.22) 0%, hsl(var(--ink) / 0.6) 55%, hsl(var(--ink)) 100%)",
+                  }}
+                >
+                  <div className="absolute inset-0 pointer-events-none opacity-30"
+                    style={{ background: "radial-gradient(60% 50% at 25% 30%, hsl(var(--green) / 0.35), transparent 70%)" }} />
+
+                  <div className="relative flex items-center gap-3">
+                    <div className="w-14 h-14 rounded-full overflow-hidden border-2 flex items-center justify-center"
+                      style={{ borderColor: "hsl(var(--green) / 0.4)", background: "hsl(var(--green) / 0.15)" }}>
                       {scout.avatar_url ? (
                         <img src={scout.avatar_url} alt={scout.full_name} className="w-full h-full object-cover" />
                       ) : (
-                        <span className="font-display text-2xl" style={{ color: "hsl(var(--green))" }}>
-                          {scout.full_name.charAt(0).toUpperCase()}
-                        </span>
+                        <span className="font-display text-xl text-white">{scout.full_name.charAt(0).toUpperCase()}</span>
                       )}
                     </div>
-                    <div>
-                      <p className="text-sm font-semibold text-foreground leading-tight">{scout.full_name}</p>
-                      {scout.organization && <p className="text-xs text-muted-foreground mt-0.5">{scout.organization}</p>}
+                    <div className="w-9 h-9 rounded-full flex items-center justify-center -ml-4 border-2"
+                      style={{ borderColor: "hsl(var(--ink))", background: "hsl(var(--green))" }}>
+                      <Shield className="h-4 w-4 text-white" />
                     </div>
-                    <div className="flex items-center gap-1.5 rounded-full px-3 py-1 border text-xs font-medium"
-                      style={{ borderColor: "hsl(var(--green) / 0.2)", color: "hsl(var(--green))", background: "hsl(var(--green) / 0.07)" }}>
-                      <Shield className="h-3 w-3" /> Verified
-                    </div>
-                  </motion.div>
-                </Reveal>
-              ))}
-            </div>
-          ) : (
-            <p className="text-center text-muted-foreground text-sm py-12">No verified scouts listed yet.</p>
-          )}
+                  </div>
+
+                  <p className="relative text-xl sm:text-2xl lg:text-[26px] leading-relaxed text-white/95 font-light tracking-tight my-8">
+                    "{scout.bio ?? defaultBio}"
+                  </p>
+
+                  <div className="relative">
+                    <p className="text-base font-semibold text-white">{scout.full_name}</p>
+                    {scout.organization && <p className="text-sm text-white/55 mt-0.5">{scout.organization}</p>}
+                  </div>
+                </motion.div>
+
+                <div className="flex lg:flex-col justify-between gap-4 lg:py-2">
+                  <div className="text-xs font-mono tracking-[0.2em] text-white/50 self-start">
+                    {String(scoutIndex + 1).padStart(2, "0")} OF {String(verifiedScouts.length).padStart(2, "0")} //
+                  </div>
+                  <div className="flex lg:flex-col gap-3 lg:gap-2 lg:mt-auto w-full">
+                    <button onClick={prev}
+                      className="group flex-1 flex items-center justify-between gap-3 px-4 py-4 rounded-xl border transition-colors hover:bg-white/5"
+                      style={{ borderColor: "hsl(var(--green) / 0.2)" }}>
+                      <ArrowLeft className="h-4 w-4 text-white/70 group-hover:text-white transition-colors" />
+                      <span className="text-sm font-medium text-white/80 group-hover:text-white">Previous</span>
+                    </button>
+                    <button onClick={next}
+                      className="group flex-1 flex items-center justify-between gap-3 px-4 py-4 rounded-xl border transition-colors hover:bg-white/5"
+                      style={{ borderColor: "hsl(var(--green) / 0.2)" }}>
+                      <span className="text-sm font-medium text-white/80 group-hover:text-white">Next</span>
+                      <ArrowRight className="h-4 w-4 text-white/70 group-hover:text-white transition-colors" />
+                    </button>
+                  </div>
+                </div>
+              </div>
+            );
+          })()}
         </div>
       </section>
+
 
       {/* ══════════════════════════════════════════
           MAP SECTION
