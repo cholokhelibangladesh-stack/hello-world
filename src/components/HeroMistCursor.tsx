@@ -11,7 +11,23 @@ type Puff = {
   alpha: number;
 };
 
-export default function HeroMistCursor() {
+type Props = {
+  /** Higher = more puffs per second. Default subtle. */
+  density?: number;
+  /** Base puff radius in px. */
+  puffSize?: number;
+  /** Lifespan multiplier — higher = lingers longer. */
+  fadeSpeed?: number;
+  /** Peak alpha of each puff (0–1). */
+  intensity?: number;
+};
+
+export default function HeroMistCursor({
+  density = 0.35,
+  puffSize = 22,
+  fadeSpeed = 1,
+  intensity = 0.06,
+}: Props) {
   const canvasRef = useRef<HTMLCanvasElement>(null);
   const puffs = useRef<Puff[]>([]);
   const mouse = useRef<{ x: number; y: number; active: boolean }>({ x: 0, y: 0, active: false });
