@@ -175,11 +175,11 @@ const Index = () => {
                 {word.split("").map((char, i) => (
                   <motion.span
                     key={`${word}-${i}`}
-                    initial={false}
+                    initial={{ opacity: 0, y: 24, filter: "blur(8px)" }}
                     animate={{ opacity: 1, y: 0, filter: "blur(0px)" }}
                     transition={{
                       delay: 0.55 + wi * 0.18 + i * 0.04,
-                      duration: 0.55,
+                      duration: 0.65,
                       ease: [0.22, 1, 0.36, 1],
                     }}
                     className={`font-display text-5xl sm:text-7xl lg:text-8xl leading-none tracking-[0.04em] drop-shadow-[0_4px_24px_rgba(0,0,0,0.7)] ${
@@ -195,9 +195,9 @@ const Index = () => {
 
           {/* Tagline */}
           <motion.p
-            initial={false}
+            initial={{ opacity: 0, y: 16 }}
             animate={{ opacity: 1, y: 0 }}
-            transition={{ delay: 1.3, duration: 0.7 }}
+            transition={{ delay: 1.3, duration: 0.8, ease: [0.22, 1, 0.36, 1] }}
             className="mt-8 text-base sm:text-lg text-white/85 max-w-xl leading-relaxed drop-shadow-[0_2px_8px_rgba(0,0,0,0.6)]"
           >
             A quiet place where Bangladesh's grassroots talent meets verified scouts.
@@ -206,9 +206,9 @@ const Index = () => {
 
           {/* CTAs */}
           <motion.div
-            initial={false}
+            initial={{ opacity: 0, y: 16 }}
             animate={{ opacity: 1, y: 0 }}
-            transition={{ delay: 1.5, duration: 0.7 }}
+            transition={{ delay: 1.55, duration: 0.8, ease: [0.22, 1, 0.36, 1] }}
             className="mt-10 flex flex-col sm:flex-row gap-3"
           >
             {user && role ? (
