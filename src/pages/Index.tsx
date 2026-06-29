@@ -619,7 +619,7 @@ const Index = () => {
                   viewport={{ once: true, amount: 0.25 }}
                   transition={{ duration: 1.1, delay: 0.2, ease: [0.16, 1, 0.3, 1] }}
                   style={{ transformStyle: "preserve-3d" }}
-                  className="relative w-[44%] sm:w-[36%] max-w-[260px] aspect-[9/19.5] rounded-[2.4rem] sm:rounded-[3rem] p-[3px] bg-gradient-to-bl from-neutral-300 via-neutral-600 to-neutral-900 shadow-[0_50px_100px_-20px_rgba(0,0,0,0.75),0_25px_50px_-15px_rgba(0,0,0,0.55)] mt-24 sm:mt-36"
+                  className="relative z-10 w-[48%] sm:w-[40%] max-w-[280px] aspect-[9/19.5] rounded-[2.4rem] sm:rounded-[3rem] p-[3px] bg-gradient-to-bl from-neutral-300 via-neutral-600 to-neutral-900 shadow-[0_50px_100px_-20px_rgba(0,0,0,0.75),0_25px_50px_-15px_rgba(0,0,0,0.55)] mt-32 sm:mt-48"
                 >
                   <div className="relative w-full h-full rounded-[2.2rem] sm:rounded-[2.8rem] p-[6px] bg-black overflow-hidden">
                     <div className="relative w-full h-full rounded-[1.9rem] sm:rounded-[2.4rem] overflow-hidden bg-white">
