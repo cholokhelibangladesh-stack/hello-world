@@ -275,14 +275,11 @@ const Index = () => {
       <section className="py-20 sm:py-28 surface-paper border-t border-border">
         <div className="container">
           <Reveal className="text-center mb-12 sm:mb-16">
-            <span className="inline-block text-xs font-bold tracking-[0.2em] uppercase mb-4 px-4 py-1.5 rounded-full"
-              style={{ background: "hsl(var(--teal-deep) / 0.12)", color: "hsl(var(--teal-deep))" }}>
-              The Sports
-            </span>
             <h2 className="font-display text-4xl sm:text-6xl" style={{ color: "hsl(var(--teal-deep))" }}>
               EVERY GAME, <span style={{ color: "hsl(var(--teal))" }}>EVERY PLAYER</span>
             </h2>
           </Reveal>
+
 
           <div className="grid grid-cols-1 sm:grid-cols-3 gap-5 sm:gap-6">
             {[
@@ -309,7 +306,7 @@ const Index = () => {
                 <motion.div
                   whileHover={{ y: -10, scale: 1.03 }}
                   transition={{ type: "spring", stiffness: 260, damping: 20 }}
-                  className="group relative aspect-[4/5] rounded-3xl overflow-hidden cursor-pointer shadow-lg hover:shadow-2xl"
+                  className="group relative aspect-[3/5] rounded-3xl overflow-hidden cursor-pointer shadow-lg hover:shadow-2xl"
                 >
                   <img
                     src={sport.img}
@@ -325,8 +322,9 @@ const Index = () => {
                     style={{ background: "linear-gradient(to top, hsl(var(--teal-deep) / 0.92) 0%, hsl(var(--teal-deep) / 0.55) 60%, hsl(var(--teal-deep) / 0.2) 100%)" }} />
 
                   {/* Always-visible label */}
-                  <div className="absolute inset-x-0 bottom-0 p-6 sm:p-7 text-white">
-                    <h3 className="font-display text-3xl sm:text-4xl tracking-wide drop-shadow-lg">
+                  <div className="absolute inset-x-0 bottom-0 p-5 sm:p-6 text-white">
+                    <h3 className="font-display text-2xl sm:text-3xl tracking-wide drop-shadow-lg whitespace-nowrap">
+
                       {sport.name.toUpperCase()}
                     </h3>
                     <p className="mt-1 text-sm text-white/80 transition-opacity duration-300 group-hover:opacity-0">
