@@ -69,21 +69,20 @@ export default function HeroMistCursor({
 
     const spawn = (now: number) => {
       if (!mouse.current.active) return;
-      if (now - lastSpawn.current < 28) return;
+      const interval = 90 / Math.max(0.05, density);
+      if (now - lastSpawn.current < interval) return;
       lastSpawn.current = now;
-      const count = 2;
-      for (let i = 0; i < count; i++) {
-        const angle = Math.random() * Math.PI * 2;
-        const spread = Math.random() * 12;
-        puffs.current.push({
-          x: mouse.current.x + Math.cos(angle) * spread,
-          y: mouse.current.y + Math.sin(angle) * spread,
-          r: 30 + Math.random() * 40,
-          life: 0,
-          maxLife: 1400 + Math.random() * 900,
-          vx: (Math.random() - 0.5) * 0.25,
-          vy: -0.15 - Math.random() * 0.35,
-          alpha: 0.18 + Math.random() * 0.12,
+      const angle = Math.random() * Math.PI * 2;
+      const spread = Math.random() * 8;
+      puffs.current.push({
+        x: mouse.current.x + Math.cos(angle) * spread,
+        y: mouse.current.y + Math.sin(angle) * spread,
+        r: puffSize + Math.random() * puffSize * 0.8,
+        life: 0,
+        maxLife: (1600 + Math.random() * 800) * fadeSpeed,
+        vx: (Math.random() - 0.5) * 0.18,
+        vy: -0.08 - Math.random() * 0.22,
+        alpha: intensity * (0.7 + Math.random() * 0.6),
         });
       }
       if (puffs.current.length > 120) puffs.current.splice(0, puffs.current.length - 120);
