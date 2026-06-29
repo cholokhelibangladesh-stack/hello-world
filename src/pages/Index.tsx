@@ -284,9 +284,9 @@ const Index = () => {
           className="relative z-10 flex flex-col items-center text-center px-6 max-w-3xl"
         >
           <motion.div
-            initial={{ opacity: 0, y: 18, scale: 0.92 }}
+            initial={{ opacity: 0, y: 12, scale: 0.96 }}
             animate={{ opacity: 1, y: 0, scale: 1 }}
-            transition={{ duration: 1.1, delay: 0.2, ease: [0.22, 1, 0.36, 1] }}
+            transition={{ duration: 0.5, delay: 0.05, ease: [0.22, 1, 0.36, 1] }}
           >
             <CholoKheliMark
               className="h-28 w-36 sm:h-36 sm:w-48 text-white drop-shadow-[0_4px_20px_rgba(0,0,0,0.6)]"
@@ -301,11 +301,11 @@ const Index = () => {
                 {word.split("").map((char, i) => (
                   <motion.span
                     key={`${word}-${i}`}
-                    initial={{ opacity: 0, y: 24, filter: "blur(8px)" }}
+                    initial={{ opacity: 0, y: 16, filter: "blur(6px)" }}
                     animate={{ opacity: 1, y: 0, filter: "blur(0px)" }}
                     transition={{
-                      delay: 0.55 + wi * 0.18 + i * 0.04,
-                      duration: 0.65,
+                      delay: 0.15 + wi * 0.08 + i * 0.025,
+                      duration: 0.4,
                       ease: [0.22, 1, 0.36, 1],
                     }}
                     className={`font-display text-5xl sm:text-7xl lg:text-8xl leading-none tracking-[0.04em] drop-shadow-[0_4px_24px_rgba(0,0,0,0.7)] ${
@@ -321,9 +321,9 @@ const Index = () => {
 
           {/* Tagline */}
           <motion.p
-            initial={{ opacity: 0, y: 16 }}
+            initial={{ opacity: 0, y: 12 }}
             animate={{ opacity: 1, y: 0 }}
-            transition={{ delay: 1.3, duration: 0.8, ease: [0.22, 1, 0.36, 1] }}
+            transition={{ delay: 0.5, duration: 0.5, ease: [0.22, 1, 0.36, 1] }}
             className="mt-8 text-base sm:text-lg text-white/85 max-w-xl leading-relaxed drop-shadow-[0_2px_8px_rgba(0,0,0,0.6)]"
           >
             A quiet place where Bangladesh's grassroots talent meets verified scouts.
@@ -332,9 +332,9 @@ const Index = () => {
 
           {/* CTAs */}
           <motion.div
-            initial={{ opacity: 0, y: 16 }}
+            initial={{ opacity: 0, y: 12 }}
             animate={{ opacity: 1, y: 0 }}
-            transition={{ delay: 1.55, duration: 0.8, ease: [0.22, 1, 0.36, 1] }}
+            transition={{ delay: 0.65, duration: 0.5, ease: [0.22, 1, 0.36, 1] }}
             className="mt-10 flex flex-col sm:flex-row gap-3"
           >
             {user && role ? (
@@ -378,7 +378,7 @@ const Index = () => {
         <motion.div
           initial={{ opacity: 0 }}
           animate={{ opacity: 1 }}
-          transition={{ delay: 2.2 }}
+          transition={{ delay: 1, duration: 0.5 }}
           className="absolute bottom-8 left-1/2 -translate-x-1/2 z-10 flex flex-col items-center gap-1.5"
         >
           <span className="text-[9px] tracking-[0.35em] uppercase text-white/70">Scroll</span>
@@ -386,6 +386,7 @@ const Index = () => {
             <ChevronDown className="h-4 w-4 text-white/70" />
           </motion.div>
         </motion.div>
+
 
         {/* Seamless fade into next band */}
         <div
