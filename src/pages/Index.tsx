@@ -268,11 +268,6 @@ const Index = () => {
       </section>
 
       {/* ══════════════════════════════════════════
-          MARQUEE
-      ══════════════════════════════════════════ */}
-      <MarqueeTicker />
-
-      {/* ══════════════════════════════════════════
           LIVE STATS BAR
       ══════════════════════════════════════════ */}
       <section className="py-16 border-t border-border relative overflow-hidden surface-card">
