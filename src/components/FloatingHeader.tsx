@@ -4,13 +4,14 @@ import { Home, Menu, Sun, Moon, X } from "lucide-react";
 import { useTheme } from "@/hooks/useTheme";
 import { useAuth } from "@/hooks/useAuth";
 
-// iOS-style glass circle: strong backdrop blur, subtle hairline ring, soft shadow
+// Bare iOS-style icon: no background, no ring — just the glyph with a soft shadow for legibility
 const iconBtn =
   "h-10 w-10 rounded-full flex items-center justify-center text-foreground " +
-  "bg-white/40 dark:bg-white/10 backdrop-blur-2xl backdrop-saturate-150 " +
-  "ring-1 ring-foreground/10 shadow-[0_2px_10px_rgba(0,0,0,0.08)] " +
-  "transition-all duration-200 hover:bg-white/60 dark:hover:bg-white/20 active:scale-95";
-const iconProps = { strokeWidth: 1.75, className: "h-[18px] w-[18px]" } as const;
+  "transition-all duration-200 hover:opacity-70 active:scale-95";
+const iconProps = {
+  strokeWidth: 1.75,
+  className: "h-[20px] w-[20px] drop-shadow-[0_1px_2px_rgba(0,0,0,0.35)]",
+} as const;
 
 const FloatingHeader = () => {
   const { theme, toggleTheme } = useTheme();
