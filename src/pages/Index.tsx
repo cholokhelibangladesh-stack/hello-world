@@ -81,22 +81,28 @@ const Index = () => {
   const videoScale  = useTransform(scrollYProgress, [0, 0.7], [1, 1.06]);
 
   useEffect(() => {
+    setHeroReady(true);
+    const isPlaceholder = !import.meta.env.VITE_SUPABASE_URL;
+    if (isPlaceholder) return;
     const fetchScouts = async () => {
-      const { data: scoutData } = await supabase.from("scout_profiles").select("user_id, organization").eq("verification_status", "active").limit(12);
-      if (!scoutData?.length) return;
-      const userIds = scoutData.map((s) => s.user_id);
-      const { data: profileData } = await supabase.from("profiles").select("user_id, full_name, avatar_url").in("user_id", userIds);
-      const map = Object.fromEntries((profileData ?? []).map((p) => [p.user_id, p]));
-      setVerifiedScouts(scoutData.map((s) => ({
-        user_id: s.user_id, organization: s.organization,
-        full_name: map[s.user_id]?.full_name ?? "Scout",
-        avatar_url: map[s.user_id]?.avatar_url ?? null,
-      })));
+      try {
+        const { data: scoutData } = await supabase.from("scout_profiles").select("user_id, organization").eq("verification_status", "active").limit(12);
+        if (!scoutData?.length) return;
+        const userIds = scoutData.map((s) => s.user_id);
+        const { data: profileData } = await supabase.from("profiles").select("user_id, full_name, avatar_url").in("user_id", userIds);
+        const map = Object.fromEntries((profileData ?? []).map((p) => [p.user_id, p]));
+        setVerifiedScouts(scoutData.map((s) => ({
+          user_id: s.user_id, organization: s.organization,
+          full_name: map[s.user_id]?.full_name ?? "Scout",
+          avatar_url: map[s.user_id]?.avatar_url ?? null,
+        })));
+      } catch (e) {
+        console.warn("scouts fetch failed", e);
+      }
     };
     fetchScouts();
-    const t = setTimeout(() => setHeroReady(true), 200);
-    return () => clearTimeout(t);
   }, []);
+
 
   return (
     <div className="min-h-screen overflow-x-hidden bg-background">
