@@ -15,6 +15,9 @@ import heroImg from "@/assets/hero-cricket.jpg.asset.json";
 import statsImg from "@/assets/stats-football.jpg.asset.json";
 import stadiumImg from "@/assets/stadium-dusk.jpg.asset.json";
 import footballerImg from "@/assets/footballer-motion.jpg.asset.json";
+import sportFootball from "@/assets/sport-football.jpg.asset.json";
+import sportCricket from "@/assets/sport-cricket.jpg.asset.json";
+import sportBasketball from "@/assets/sport-basketball.jpg.asset.json";
 
 const socialLinks = [
   { Icon: Facebook,  label: "Facebook",    href: "https://facebook.com/cholokheli",  color: "hover:text-[hsl(var(--teal))]" },
@@ -264,6 +267,86 @@ const Index = () => {
               "linear-gradient(to bottom, transparent, hsl(var(--paper-deep)))",
           }}
         />
+      </section>
+
+      {/* ══════════════════════════════════════════
+          SPORTS GRID — Hover to reveal
+      ══════════════════════════════════════════ */}
+      <section className="py-20 sm:py-28 surface-paper border-t border-border">
+        <div className="container">
+          <Reveal className="text-center mb-12 sm:mb-16">
+            <span className="inline-block text-xs font-bold tracking-[0.2em] uppercase mb-4 px-4 py-1.5 rounded-full"
+              style={{ background: "hsl(var(--teal-deep) / 0.12)", color: "hsl(var(--teal-deep))" }}>
+              The Sports
+            </span>
+            <h2 className="font-display text-4xl sm:text-6xl" style={{ color: "hsl(var(--teal-deep))" }}>
+              EVERY GAME, <span style={{ color: "hsl(var(--teal))" }}>EVERY PLAYER</span>
+            </h2>
+          </Reveal>
+
+          <div className="grid grid-cols-1 sm:grid-cols-3 gap-5 sm:gap-6">
+            {[
+              {
+                img: sportFootball.url,
+                name: "Football",
+                tagline: "From para to pitch",
+                blurb: "Bangladesh's most-loved game. We connect strikers, keepers, and midfielders from every district to scouts who're watching.",
+              },
+              {
+                img: sportCricket.url,
+                name: "Cricket",
+                tagline: "Bat. Ball. Belief.",
+                blurb: "From maktab grounds to national selection — batters, bowlers, and all-rounders get a verified pathway to be seen.",
+              },
+              {
+                img: sportBasketball.url,
+                name: "Basketball",
+                tagline: "Rising on the hardwood",
+                blurb: "A growing scene in Dhaka and Chattogram. Guards, forwards, and centres — your jump shot deserves an audience.",
+              },
+            ].map((sport, i) => (
+              <Reveal key={sport.name} delay={i * 0.12}>
+                <motion.div
+                  whileHover={{ y: -10, scale: 1.03 }}
+                  transition={{ type: "spring", stiffness: 260, damping: 20 }}
+                  className="group relative aspect-[4/5] rounded-3xl overflow-hidden cursor-pointer shadow-lg hover:shadow-2xl"
+                >
+                  <img
+                    src={sport.img}
+                    alt={sport.name}
+                    loading="lazy"
+                    className="absolute inset-0 w-full h-full object-cover transition-transform duration-700 group-hover:scale-110"
+                  />
+                  {/* Base gradient — always visible */}
+                  <div className="absolute inset-0"
+                    style={{ background: "linear-gradient(to top, hsl(200 40% 4% / 0.85) 0%, hsl(200 40% 4% / 0.2) 55%, transparent 100%)" }} />
+                  {/* Hover overlay — deeper */}
+                  <div className="absolute inset-0 opacity-0 group-hover:opacity-100 transition-opacity duration-500"
+                    style={{ background: "linear-gradient(to top, hsl(var(--teal-deep) / 0.92) 0%, hsl(var(--teal-deep) / 0.55) 60%, hsl(var(--teal-deep) / 0.2) 100%)" }} />
+
+                  {/* Always-visible label */}
+                  <div className="absolute inset-x-0 bottom-0 p-6 sm:p-7 text-white">
+                    <h3 className="font-display text-3xl sm:text-4xl tracking-wide drop-shadow-lg">
+                      {sport.name.toUpperCase()}
+                    </h3>
+                    <p className="mt-1 text-sm text-white/80 transition-opacity duration-300 group-hover:opacity-0">
+                      {sport.tagline}
+                    </p>
+                    {/* Revealed blurb */}
+                    <div className="overflow-hidden max-h-0 group-hover:max-h-48 transition-all duration-500 ease-out">
+                      <p className="mt-3 text-sm leading-relaxed text-white/95 translate-y-2 group-hover:translate-y-0 transition-transform duration-500">
+                        {sport.blurb}
+                      </p>
+                      <div className="mt-4 inline-flex items-center gap-2 text-xs font-semibold uppercase tracking-[0.18em] text-[hsl(188_60%_82%)]">
+                        Explore <ArrowRight className="h-3.5 w-3.5" />
+                      </div>
+                    </div>
+                  </div>
+                </motion.div>
+              </Reveal>
+            ))}
+          </div>
+        </div>
       </section>
 
       {/* ══════════════════════════════════════════
