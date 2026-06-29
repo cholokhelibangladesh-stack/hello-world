@@ -1,11 +1,12 @@
 import { Link, useLocation, useNavigate } from "@tanstack/react-router";
 import { useState, useEffect, useRef } from "react";
 import { motion, AnimatePresence } from "framer-motion";
-import { Menu, X, Zap, LogOut, Sun, Moon } from "lucide-react";
+import { Menu, X, LogOut, Sun, Moon } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { useAuth } from "@/hooks/useAuth";
 import { useTheme } from "@/hooks/useTheme";
 import NotificationBell from "@/components/NotificationBell";
+import CholoKheliMark from "@/components/CholoKheliMark";
 
 const navLinks = [
   { label: "Home", path: "/" },
@@ -50,10 +51,10 @@ const Navbar = () => {
       transition={{ duration: 0.35, ease: [0.22, 1, 0.36, 1] }}
     >
       <div className="container flex items-center justify-between h-16 gap-4">
-        <Link to="/" className="flex items-center gap-2 shrink-0">
-          <Zap className="h-6 w-6 text-primary" />
-          <span className="font-display text-xl sm:text-2xl tracking-wider text-foreground">
-            SCOUT <span className="text-primary">BD</span>
+        <Link to="/" className="flex items-center gap-2.5 shrink-0">
+          <CholoKheliMark className="h-7 w-9 text-foreground" accent="hsl(var(--teal-deep))" />
+          <span className="font-display text-base sm:text-lg tracking-[0.04em] text-foreground font-semibold">
+            CHOLO <span className="text-[hsl(var(--teal-deep))] font-bold">KHELI</span>
           </span>
         </Link>
 
