@@ -11,13 +11,13 @@ import { supabase } from "@/integrations/supabase/client";
 import BangladeshMapTestimonials from "@/components/BangladeshMapTestimonials";
 import MarqueeTicker from "@/components/MarqueeTicker";
 import VideoHighlights from "@/components/VideoHighlights";
-const heroVideo = "";
+import CholoKheliMark from "@/components/CholoKheliMark";
 
 const socialLinks = [
-  { Icon: Facebook,  label: "Facebook",    href: "https://facebook.com/scoutbd",  color: "hover:text-blue-500" },
-  { Icon: Twitter,   label: "Twitter / X", href: "https://twitter.com/scoutbd",   color: "hover:text-sky-500" },
-  { Icon: Instagram, label: "Instagram",   href: "https://instagram.com/scoutbd", color: "hover:text-pink-500" },
-  { Icon: Youtube,   label: "YouTube",     href: "https://youtube.com/@scoutbd",  color: "hover:text-red-500" },
+  { Icon: Facebook,  label: "Facebook",    href: "https://facebook.com/cholokheli",  color: "hover:text-[hsl(var(--teal))]" },
+  { Icon: Twitter,   label: "Twitter / X", href: "https://twitter.com/cholokheli",   color: "hover:text-[hsl(var(--teal))]" },
+  { Icon: Instagram, label: "Instagram",   href: "https://instagram.com/cholokheli", color: "hover:text-[hsl(var(--teal))]" },
+  { Icon: Youtube,   label: "YouTube",     href: "https://youtube.com/@cholokheli",  color: "hover:text-[hsl(var(--teal))]" },
 ];
 
 type ScoutProfile = {
@@ -98,168 +98,168 @@ const Index = () => {
     <div className="min-h-screen overflow-x-hidden bg-background">
 
       {/* ══════════════════════════════════════════
-          HERO — full-bleed video, liquid glass card
+          HERO — Centered Mark, paper minimalism
       ══════════════════════════════════════════ */}
-      <section ref={heroRef} className="relative min-h-screen flex items-center justify-start overflow-hidden">
-
-        {/* ── FULL-BLEED VIDEO — fills entire hero ── */}
-        <motion.div className="absolute inset-0 z-0" style={{ y: videoY, scale: videoScale }}>
-          <video
-            autoPlay loop muted playsInline preload="auto"
-            className="absolute inset-0 w-full h-full object-cover"
-          >
-            <source src={heroVideo} type="video/mp4" />
-          </video>
-          {/* Very subtle vignette only at extreme edges — keeps video visible */}
-          <div className="absolute inset-0 pointer-events-none" style={{
-            background: "radial-gradient(ellipse 120% 100% at 50% 50%, transparent 55%, rgba(0,0,0,0.45) 100%)"
-          }} />
+      <section
+        ref={heroRef}
+        className="relative min-h-[100svh] flex items-center justify-center overflow-hidden surface-paper"
+      >
+        {/* Ambient teal washes that bleed in from the corners */}
+        <motion.div
+          className="absolute inset-0 pointer-events-none"
+          style={{ opacity: heroOpacity }}
+        >
+          <div
+            className="absolute -top-32 -left-24 w-[60rem] h-[60rem] rounded-full"
+            style={{
+              background:
+                "radial-gradient(closest-side, hsl(var(--teal) / 0.22), transparent 70%)",
+              filter: "blur(20px)",
+            }}
+          />
+          <div
+            className="absolute -bottom-40 -right-32 w-[55rem] h-[55rem] rounded-full"
+            style={{
+              background:
+                "radial-gradient(closest-side, hsl(var(--teal-soft) / 0.20), transparent 70%)",
+              filter: "blur(20px)",
+            }}
+          />
         </motion.div>
 
-        {/* ── Bottom fade into page ── */}
-        <div className="absolute bottom-0 left-0 right-0 z-[3] pointer-events-none" style={{
-          height: "28%",
-          background: "linear-gradient(to top, hsl(var(--background)) 0%, transparent 100%)"
-        }} />
+        {/* Subtle vertical grid lines for editorial feel */}
+        <div
+          className="absolute inset-0 pointer-events-none opacity-[0.05]"
+          style={{
+            backgroundImage:
+              "linear-gradient(to right, hsl(var(--foreground)) 1px, transparent 1px)",
+            backgroundSize: "12.5% 100%",
+          }}
+        />
 
-        {/* ── LIQUID GLASS CARD — floats over video, iOS-style ── */}
+        {/* Top eyebrow */}
+        <motion.div
+          initial={{ opacity: 0, y: -8 }}
+          animate={heroReady ? { opacity: 1, y: 0 } : {}}
+          transition={{ duration: 0.7, delay: 0.1 }}
+          className="absolute top-24 sm:top-28 left-1/2 -translate-x-1/2 flex items-center gap-3 text-[10px] sm:text-xs tracking-[0.35em] uppercase text-muted-foreground"
+        >
+          <span className="h-px w-8 bg-muted-foreground/40" />
+          <span>Est. 2026 · Dhaka, Bangladesh</span>
+          <span className="h-px w-8 bg-muted-foreground/40" />
+        </motion.div>
+
+        {/* Centered mark + wordmark */}
         <motion.div
           style={{ opacity: heroOpacity }}
-          className="relative z-10 container pt-28 pb-24 flex items-center"
+          className="relative z-10 flex flex-col items-center text-center px-6 max-w-3xl"
         >
           <motion.div
-            initial={{ opacity: 0, y: 30, scale: 0.97 }}
+            initial={{ opacity: 0, y: 18, scale: 0.92 }}
             animate={heroReady ? { opacity: 1, y: 0, scale: 1 } : {}}
-            transition={{ duration: 0.9, delay: 0.1, ease: [0.22, 1, 0.36, 1] }}
-            className="relative max-w-xl w-full rounded-3xl overflow-hidden p-8 sm:p-12"
-            style={{
-              /* iOS liquid glass: near-transparent with heavy blur */
-              background: "rgba(255,255,255,0.12)",
-              backdropFilter: "blur(48px) saturate(200%) brightness(1.08)",
-              WebkitBackdropFilter: "blur(48px) saturate(200%) brightness(1.08)",
-              /* Specular rim — very faint white border that fades on bottom-right */
-              boxShadow: "inset 0 1px 0 rgba(255,255,255,0.45), inset 1px 0 0 rgba(255,255,255,0.2), 0 24px 80px rgba(0,0,0,0.28), 0 4px 16px rgba(0,0,0,0.12)",
-              border: "1px solid rgba(255,255,255,0.22)",
-              /* Soft bottom/right edge dissolve via gradient border trick */
-              WebkitMaskImage: "radial-gradient(ellipse 110% 105% at 30% 40%, black 60%, rgba(0,0,0,0.92) 75%, rgba(0,0,0,0.6) 88%, transparent 100%)",
-              maskImage: "radial-gradient(ellipse 110% 105% at 30% 40%, black 60%, rgba(0,0,0,0.92) 75%, rgba(0,0,0,0.6) 88%, transparent 100%)",
-            }}
+            transition={{ duration: 1.1, delay: 0.2, ease: [0.22, 1, 0.36, 1] }}
           >
-            {/* Specular highlight streak across top-left (depth effect) */}
-            <div className="absolute top-0 left-0 right-0 h-px pointer-events-none" style={{
-              background: "linear-gradient(90deg, transparent 0%, rgba(255,255,255,0.7) 30%, rgba(255,255,255,0.3) 60%, transparent 100%)"
-            }} />
-            <div className="absolute top-0 left-0 bottom-0 w-px pointer-events-none" style={{
-              background: "linear-gradient(180deg, rgba(255,255,255,0.5) 0%, rgba(255,255,255,0.15) 50%, transparent 100%)"
-            }} />
+            <CholoKheliMark
+              className="h-28 w-36 sm:h-36 sm:w-48 text-foreground"
+              accent="hsl(var(--teal-deep))"
+            />
+          </motion.div>
 
-            {/* Live badge */}
-            <motion.div
-              initial={{ opacity: 0, x: -20 }}
-              animate={heroReady ? { opacity: 1, x: 0 } : {}}
-              transition={{ duration: 0.6, delay: 0.3 }}
-              className="inline-flex items-center gap-2.5 rounded-full px-4 py-2 mb-7"
-              style={{
-                background: "rgba(255,255,255,0.15)",
-                border: "1px solid rgba(255,255,255,0.3)",
-                backdropFilter: "blur(8px)",
-              }}
-            >
-              <motion.span
-                animate={{ opacity: [1, 0.3, 1] }}
-                transition={{ duration: 1.4, repeat: Infinity }}
-                className="w-2 h-2 rounded-full"
-                style={{ background: "hsl(var(--green))" }}
-              />
-              <span className="text-xs font-bold tracking-[0.18em] uppercase" style={{ color: "hsl(var(--green))" }}>
-                Bangladesh Sports Revolution
-              </span>
-            </motion.div>
+          {/* Wordmark — letter cascade */}
+          <div className="mt-6 sm:mt-8 flex items-baseline justify-center gap-3 sm:gap-4">
+            {["CHOLO", "KHELI"].map((word, wi) => (
+              <div key={word} className="flex">
+                {word.split("").map((char, i) => (
+                  <motion.span
+                    key={`${word}-${i}`}
+                    initial={{ opacity: 0, y: 22, filter: "blur(6px)" }}
+                    animate={heroReady ? { opacity: 1, y: 0, filter: "blur(0px)" } : {}}
+                    transition={{
+                      delay: 0.55 + wi * 0.18 + i * 0.04,
+                      duration: 0.55,
+                      ease: [0.22, 1, 0.36, 1],
+                    }}
+                    className={`font-display text-5xl sm:text-7xl lg:text-8xl leading-none tracking-[0.04em] ${
+                      wi === 1 ? "font-bold text-[hsl(var(--teal-deep))]" : "font-medium text-foreground"
+                    }`}
+                  >
+                    {char}
+                  </motion.span>
+                ))}
+              </div>
+            ))}
+          </div>
 
-            {/* Main headline */}
-            <motion.h1
-              initial={{ opacity: 0, y: 30 }}
-              animate={heroReady ? { opacity: 1, y: 0 } : {}}
-              transition={{ duration: 0.9, delay: 0.35, ease: [0.22, 1, 0.36, 1] }}
-              className="font-display leading-[0.88] mb-6"
-              style={{ fontSize: "clamp(3rem, 8vw, 6.5rem)", color: "rgba(255,255,255,0.96)" }}
-            >
-              YOUR TALENT
-              <br />
-              <span style={{
-                backgroundImage: "linear-gradient(135deg, hsl(var(--green)), hsl(142 90% 65%))",
-                WebkitBackgroundClip: "text",
-                WebkitTextFillColor: "transparent",
-                backgroundClip: "text",
-              }}>
-                DESERVES
-              </span>
-              <br />
-              A STAGE
-            </motion.h1>
+          {/* Tagline */}
+          <motion.p
+            initial={{ opacity: 0, y: 12 }}
+            animate={heroReady ? { opacity: 1, y: 0 } : {}}
+            transition={{ delay: 1.3, duration: 0.7 }}
+            className="mt-8 text-base sm:text-lg text-muted-foreground max-w-xl leading-relaxed"
+          >
+            A quiet place where Bangladesh's grassroots talent meets verified scouts.
+            Safe. Transparent. Built for the love of the game.
+          </motion.p>
 
-            <motion.p
-              initial={{ opacity: 0, y: 16 }}
-              animate={heroReady ? { opacity: 1, y: 0 } : {}}
-              transition={{ duration: 0.7, delay: 0.5 }}
-              className="text-base sm:text-lg mb-10 leading-relaxed"
-              style={{ color: "rgba(255,255,255,0.72)" }}
-            >
-              The first platform connecting Bangladesh's grassroots football &amp; cricket talent
-              with verified scouts. Safe. Transparent. Built for you.
-            </motion.p>
-
-            <motion.div
-              initial={{ opacity: 0, y: 16 }}
-              animate={heroReady ? { opacity: 1, y: 0 } : {}}
-              transition={{ duration: 0.7, delay: 0.62 }}
-              className="flex flex-col xs:flex-row gap-3"
-            >
-              {user && role ? (
-                <Link to={(role === "admin" ? "/admin" : role === "scout" ? "/scout" : "/player") as any}>
-                  <Button size="lg" className="font-bold text-lg px-10 animate-pulse-glow"
-                    style={{ background: "hsl(var(--green))", color: "#fff" }}>
-                    Go to Dashboard <ArrowRight className="ml-2 h-5 w-5" />
+          {/* CTAs */}
+          <motion.div
+            initial={{ opacity: 0, y: 12 }}
+            animate={heroReady ? { opacity: 1, y: 0 } : {}}
+            transition={{ delay: 1.5, duration: 0.7 }}
+            className="mt-10 flex flex-col sm:flex-row gap-3"
+          >
+            {user && role ? (
+              <Link to={(role === "admin" ? "/admin" : role === "scout" ? "/scout" : "/player") as any}>
+                <Button
+                  size="lg"
+                  className="font-medium text-base px-9 py-6 rounded-full"
+                  style={{ background: "hsl(var(--teal-deep))", color: "hsl(var(--primary-foreground))" }}
+                >
+                  Open Dashboard <ArrowRight className="ml-2 h-4 w-4" />
+                </Button>
+              </Link>
+            ) : (
+              <>
+                <Link to="/auth">
+                  <Button
+                    size="lg"
+                    className="font-medium text-base px-9 py-6 rounded-full"
+                    style={{ background: "hsl(var(--teal-deep))", color: "hsl(var(--primary-foreground))" }}
+                  >
+                    Join as Player <ArrowRight className="ml-2 h-4 w-4" />
                   </Button>
                 </Link>
-              ) : (
-                <>
-                  <Link to="/auth">
-                    <Button size="lg" className="font-bold text-base sm:text-lg px-8 sm:px-10 animate-pulse-glow"
-                      style={{ background: "hsl(var(--green))", color: "#fff" }}>
-                      Join as Player <ArrowRight className="ml-2 h-5 w-5" />
-                    </Button>
-                  </Link>
-                  <Link to="/auth" search={{ role: "scout" }}>
-                    <Button size="lg" className="font-semibold text-base sm:text-lg px-8 sm:px-10"
-                      style={{ background: "rgba(255,255,255,0.15)", border: "1px solid rgba(255,255,255,0.3)", color: "rgba(255,255,255,0.9)", backdropFilter: "blur(8px)" }}>
-                      I'm a Scout
-                    </Button>
-                  </Link>
-                </>
-              )}
-            </motion.div>
+                <Link to="/auth" search={{ role: "scout" }}>
+                  <Button
+                    size="lg"
+                    variant="outline"
+                    className="font-medium text-base px-9 py-6 rounded-full bg-transparent"
+                    style={{ borderColor: "hsl(var(--foreground) / 0.25)", color: "hsl(var(--foreground))" }}
+                  >
+                    I'm a Scout
+                  </Button>
+                </Link>
+              </>
+            )}
+          </motion.div>
 
-            {/* Stat pills */}
-            <motion.div
-              initial={{ opacity: 0 }}
-              animate={heroReady ? { opacity: 1 } : {}}
-              transition={{ delay: 0.9 }}
-              className="flex flex-wrap gap-3 mt-8"
-            >
-              {[
-                { v: "2,500+", l: "Players" },
-                { v: "120+",   l: "Scouts" },
-                { v: "৳100",   l: "Registration" },
-                { v: "8",      l: "Divisions" },
-              ].map((s) => (
-                <div key={s.l} className="flex items-center gap-2 rounded-full px-3 py-1.5"
-                  style={{ background: "rgba(255,255,255,0.1)", border: "1px solid rgba(255,255,255,0.2)" }}>
-                  <span className="text-sm font-bold" style={{ color: "hsl(var(--green))" }}>{s.v}</span>
-                  <span className="text-xs" style={{ color: "rgba(255,255,255,0.6)" }}>{s.l}</span>
-                </div>
-              ))}
-            </motion.div>
+          {/* Quiet stat row */}
+          <motion.div
+            initial={{ opacity: 0 }}
+            animate={heroReady ? { opacity: 1 } : {}}
+            transition={{ delay: 1.8, duration: 0.8 }}
+            className="mt-14 grid grid-cols-3 gap-8 sm:gap-14 border-t border-foreground/10 pt-6"
+          >
+            {[
+              { v: "2,500+", l: "Players" },
+              { v: "120+",   l: "Scouts"  },
+              { v: "৳100",   l: "To start" },
+            ].map((s) => (
+              <div key={s.l} className="text-center">
+                <div className="font-display text-2xl sm:text-3xl text-foreground font-semibold">{s.v}</div>
+                <div className="text-[10px] sm:text-xs tracking-[0.2em] uppercase text-muted-foreground mt-1">{s.l}</div>
+              </div>
+            ))}
           </motion.div>
         </motion.div>
 
@@ -267,14 +267,23 @@ const Index = () => {
         <motion.div
           initial={{ opacity: 0 }}
           animate={{ opacity: 1 }}
-          transition={{ delay: 2 }}
-          className="absolute bottom-10 left-1/2 -translate-x-1/2 z-10 flex flex-col items-center gap-1.5"
+          transition={{ delay: 2.2 }}
+          className="absolute bottom-8 left-1/2 -translate-x-1/2 z-10 flex flex-col items-center gap-1.5"
         >
-          <span className="text-[10px] tracking-[0.25em] uppercase" style={{ color: "rgba(255,255,255,0.35)" }}>Scroll</span>
-          <motion.div animate={{ y: [0, 8, 0] }} transition={{ duration: 1.4, repeat: Infinity }}>
-            <ChevronDown className="h-5 w-5" style={{ color: "rgba(255,255,255,0.3)" }} />
+          <span className="text-[9px] tracking-[0.35em] uppercase text-muted-foreground/70">Scroll</span>
+          <motion.div animate={{ y: [0, 6, 0] }} transition={{ duration: 1.6, repeat: Infinity }}>
+            <ChevronDown className="h-4 w-4 text-muted-foreground/70" />
           </motion.div>
         </motion.div>
+
+        {/* Seamless fade into next band */}
+        <div
+          className="absolute bottom-0 left-0 right-0 h-32 pointer-events-none z-[2]"
+          style={{
+            background:
+              "linear-gradient(to bottom, transparent, hsl(var(--paper-deep)))",
+          }}
+        />
       </section>
 
       {/* ══════════════════════════════════════════
@@ -285,7 +294,7 @@ const Index = () => {
       {/* ══════════════════════════════════════════
           LIVE STATS BAR
       ══════════════════════════════════════════ */}
-      <section className="py-16 border-t border-border relative overflow-hidden">
+      <section className="py-16 border-t border-border relative overflow-hidden surface-card wash">
         {/* Green ambient glow */}
         <div className="absolute inset-0 pointer-events-none" style={{
           background: "radial-gradient(ellipse 60% 80% at 50% 50%, hsl(var(--green) / 0.08) 0%, transparent 70%)"
@@ -323,7 +332,7 @@ const Index = () => {
       {/* ══════════════════════════════════════════
           HOW IT WORKS — 3 STEPS
       ══════════════════════════════════════════ */}
-      <section className="py-20 sm:py-32 border-t border-border overflow-hidden relative">
+      <section className="py-20 sm:py-32 border-t border-border overflow-hidden relative surface-paper wash">
         {/* Vertical timeline */}
         <div className="hidden sm:block absolute left-1/2 top-0 bottom-0 w-px -translate-x-1/2 pointer-events-none"
           style={{ background: "linear-gradient(to bottom, transparent, hsl(var(--green) / 0.2) 20%, hsl(var(--green) / 0.2) 80%, transparent)" }} />
@@ -490,7 +499,7 @@ const Index = () => {
       {/* ══════════════════════════════════════════
           VERIFIED SCOUTS
       ══════════════════════════════════════════ */}
-      <section className="py-16 sm:py-24 border-t border-border">
+      <section className="py-16 sm:py-24 border-t border-border surface-card wash">
         <div className="container">
           <Reveal className="text-center mb-12">
             <span className="inline-block text-xs font-bold tracking-[0.2em] uppercase mb-4 px-4 py-1.5 rounded-full"
@@ -541,7 +550,7 @@ const Index = () => {
       {/* ══════════════════════════════════════════
           CINEMATIC CTA
       ══════════════════════════════════════════ */}
-      <section className="py-24 sm:py-36 border-t border-border relative overflow-hidden">
+      <section className="py-24 sm:py-36 border-t border-border relative overflow-hidden surface-ink wash wash-ink">
         {/* Background */}
         <div className="absolute inset-0 pointer-events-none" style={{
           background: "radial-gradient(ellipse 80% 60% at 50% 50%, hsl(var(--green) / 0.07) 0%, transparent 70%)"
@@ -569,7 +578,7 @@ const Index = () => {
               <Link to="/auth">
                 <Button size="lg" className="font-bold text-lg px-12 py-6 animate-pulse-glow"
                   style={{ background: "hsl(var(--green))", color: "hsl(var(--primary-foreground))" }}>
-                  Join Scout BD Free <ArrowRight className="ml-2 h-5 w-5" />
+                  Join Cholo Kheli Free <ArrowRight className="ml-2 h-5 w-5" />
                 </Button>
               </Link>
               <Link to="/mission">
@@ -586,7 +595,7 @@ const Index = () => {
       {/* ══════════════════════════════════════════
           FOOTER SOCIAL
       ══════════════════════════════════════════ */}
-      <section className="py-16 border-t border-border">
+      <section className="py-16 border-t border-border surface-paper">
         <div className="container text-center">
           <Reveal>
             <p className="text-xs tracking-[0.2em] uppercase text-muted-foreground mb-6">Follow the Journey</p>
@@ -600,7 +609,7 @@ const Index = () => {
                 </motion.a>
               ))}
             </div>
-            <p className="text-xs text-muted-foreground/40 mt-8">© 2025 Scout BD. All rights reserved.</p>
+            <p className="text-xs text-muted-foreground/40 mt-8">© 2026 Cholo Kheli — Let&apos;s Play</p>
           </Reveal>
         </div>
       </section>
