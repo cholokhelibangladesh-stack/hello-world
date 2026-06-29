@@ -110,7 +110,84 @@ function Reveal({ children, delay = 0, className = "", direction = "up" }: {
   );
 }
 
-/* ════════════════════════════════════════════
+/* ── Scout carousel card with parallax shine + smooth fade ── */
+function ScoutCarouselCard({ scout, defaultBio }: { scout: ScoutProfile; defaultBio: string }) {
+  const ref = useRef<HTMLDivElement>(null);
+  const mx = useMotionValue(50);
+  const my = useMotionValue(25);
+  const sx = useSpring(mx, { stiffness: 120, damping: 20, mass: 0.4 });
+  const sy = useSpring(my, { stiffness: 120, damping: 20, mass: 0.4 });
+  const shine = useMotionTemplate`radial-gradient(120% 80% at ${sx}% ${sy}%, rgba(180,215,245,0.45) 0%, rgba(90,140,190,0.22) 28%, rgba(20,40,70,0.05) 58%, rgba(0,0,0,0) 78%)`;
+  const accent = useMotionTemplate`radial-gradient(60% 50% at ${sx}% ${sy}%, hsl(var(--green) / 0.35), transparent 70%)`;
+
+  const onMove = (e: React.MouseEvent<HTMLDivElement>) => {
+    const r = ref.current?.getBoundingClientRect();
+    if (!r) return;
+    mx.set(((e.clientX - r.left) / r.width) * 100);
+    my.set(((e.clientY - r.top) / r.height) * 100);
+  };
+  const onLeave = () => { mx.set(50); my.set(25); };
+
+  return (
+    <motion.div
+      ref={ref}
+      onMouseMove={onMove}
+      onMouseLeave={onLeave}
+      initial={{ opacity: 0, y: 24, filter: "blur(8px)" }}
+      animate={{ opacity: 1, y: 0, filter: "blur(0px)" }}
+      exit={{ opacity: 0, y: -16, filter: "blur(6px)" }}
+      transition={{ duration: 0.6, ease: [0.22, 1, 0.36, 1] }}
+      whileHover={{ scale: 1.005 }}
+      className="absolute inset-0 rounded-3xl border overflow-hidden p-8 sm:p-12 flex flex-col justify-between shadow-2xl"
+      style={{ borderColor: "hsl(var(--green) / 0.22)", background: "#0a1520" }}
+    >
+      {/* Mouse-tracked shine */}
+      <motion.div className="absolute inset-0 pointer-events-none" style={{ background: shine }} />
+      {/* Static cool highlight bottom-right */}
+      <div className="absolute inset-0 pointer-events-none"
+        style={{ background: "radial-gradient(90% 70% at 95% 100%, rgba(120,170,220,0.22) 0%, rgba(120,170,220,0.05) 35%, transparent 65%)" }} />
+      {/* Mouse-tracked brand tint */}
+      <motion.div className="absolute inset-0 pointer-events-none opacity-40" style={{ background: accent }} />
+      {/* Sweeping diagonal sheen on enter */}
+      <motion.div
+        className="absolute inset-y-0 -inset-x-1/4 pointer-events-none"
+        initial={{ x: "-60%", opacity: 0 }}
+        animate={{ x: "120%", opacity: [0, 0.6, 0] }}
+        transition={{ duration: 1.1, ease: [0.22, 1, 0.36, 1], delay: 0.05 }}
+        style={{ background: "linear-gradient(115deg, transparent 35%, rgba(255,255,255,0.18) 50%, transparent 65%)" }}
+      />
+      {/* Top edge gloss */}
+      <div className="absolute inset-x-0 top-0 h-px pointer-events-none"
+        style={{ background: "linear-gradient(90deg, transparent, rgba(255,255,255,0.4), transparent)" }} />
+
+      <div className="relative flex items-center gap-3">
+        <div className="w-14 h-14 rounded-full overflow-hidden border-2 flex items-center justify-center"
+          style={{ borderColor: "hsl(var(--green) / 0.4)", background: "hsl(var(--green) / 0.15)" }}>
+          {scout.avatar_url ? (
+            <img src={scout.avatar_url} alt={scout.full_name} className="w-full h-full object-cover" />
+          ) : (
+            <span className="font-display text-xl text-white">{scout.full_name.charAt(0).toUpperCase()}</span>
+          )}
+        </div>
+        <div className="w-9 h-9 rounded-full flex items-center justify-center -ml-4 border-2"
+          style={{ borderColor: "hsl(var(--ink))", background: "hsl(var(--green))" }}>
+          <Shield className="h-4 w-4 text-white" />
+        </div>
+      </div>
+
+      <p className="relative text-xl sm:text-2xl lg:text-[26px] leading-relaxed text-white/95 font-light tracking-tight my-8">
+        "{scout.bio ?? defaultBio}"
+      </p>
+
+      <div className="relative">
+        <p className="text-base font-semibold text-white">{scout.full_name}</p>
+        {scout.organization && <p className="text-sm text-white/55 mt-0.5">{scout.organization}</p>}
+      </div>
+    </motion.div>
+  );
+}
+
+
    PAGE
 ════════════════════════════════════════════ */
 const Index = () => {
