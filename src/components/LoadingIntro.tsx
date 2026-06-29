@@ -21,17 +21,6 @@ const LoadingIntro = ({ onDone }: LoadingIntroProps) => {
       exit={{ opacity: 0 }}
       transition={{ duration: 0.6, ease: [0.22, 1, 0.36, 1] }}
     >
-      {/* soft teal wash */}
-      <motion.div
-        className="absolute inset-0 pointer-events-none"
-        initial={{ opacity: 0 }}
-        animate={{ opacity: 1 }}
-        transition={{ duration: 1.2 }}
-        style={{
-          background:
-            "radial-gradient(ellipse 60% 50% at 50% 55%, hsl(var(--teal) / 0.15), transparent 70%)",
-        }}
-      />
 
       <div className="flex flex-col items-center gap-6 relative z-10">
         <motion.div

@@ -12,6 +12,10 @@ import BangladeshMapTestimonials from "@/components/BangladeshMapTestimonials";
 import MarqueeTicker from "@/components/MarqueeTicker";
 import VideoHighlights from "@/components/VideoHighlights";
 import CholoKheliMark from "@/components/CholoKheliMark";
+import heroImg from "@/assets/hero-cricket.jpg.asset.json";
+import statsImg from "@/assets/stats-football.jpg.asset.json";
+import stadiumImg from "@/assets/stadium-dusk.jpg.asset.json";
+import footballerImg from "@/assets/footballer-motion.jpg.asset.json";
 
 const socialLinks = [
   { Icon: Facebook,  label: "Facebook",    href: "https://facebook.com/cholokheli",  color: "hover:text-[hsl(var(--teal))]" },
@@ -104,25 +108,23 @@ const Index = () => {
         ref={heroRef}
         className="relative min-h-[100svh] flex items-center justify-center overflow-hidden surface-paper"
       >
-        {/* Ambient teal washes that bleed in from the corners */}
+        {/* Cinematic backdrop */}
         <motion.div
-          className="absolute inset-0 pointer-events-none"
-          style={{ opacity: heroOpacity }}
+          className="absolute inset-0 pointer-events-none overflow-hidden"
+          style={{ opacity: heroOpacity, y: videoY, scale: videoScale }}
         >
-          <div
-            className="absolute -top-32 -left-24 w-[60rem] h-[60rem] rounded-full"
-            style={{
-              background:
-                "radial-gradient(closest-side, hsl(var(--teal) / 0.22), transparent 70%)",
-              filter: "blur(20px)",
-            }}
+          <img
+            src={heroImg.url}
+            alt=""
+            aria-hidden
+            className="w-full h-full object-cover"
           />
+          {/* Paper tint to keep type legible */}
           <div
-            className="absolute -bottom-40 -right-32 w-[55rem] h-[55rem] rounded-full"
+            className="absolute inset-0"
             style={{
               background:
-                "radial-gradient(closest-side, hsl(var(--teal-soft) / 0.20), transparent 70%)",
-              filter: "blur(20px)",
+                "linear-gradient(to bottom, hsl(var(--paper) / 0.78) 0%, hsl(var(--paper) / 0.55) 45%, hsl(var(--paper-deep) / 0.92) 100%)",
             }}
           />
         </motion.div>
@@ -294,11 +296,12 @@ const Index = () => {
       {/* ══════════════════════════════════════════
           LIVE STATS BAR
       ══════════════════════════════════════════ */}
-      <section className="py-16 border-t border-border relative overflow-hidden surface-card wash">
-        {/* Green ambient glow */}
-        <div className="absolute inset-0 pointer-events-none" style={{
-          background: "radial-gradient(ellipse 60% 80% at 50% 50%, hsl(var(--green) / 0.08) 0%, transparent 70%)"
-        }} />
+      <section className="py-16 border-t border-border relative overflow-hidden surface-card">
+        {/* Cinematic backdrop */}
+        <img src={statsImg.url} alt="" aria-hidden
+          className="absolute inset-0 w-full h-full object-cover opacity-25" />
+        <div className="absolute inset-0 pointer-events-none"
+          style={{ background: "linear-gradient(to bottom, hsl(var(--background) / 0.92), hsl(var(--background) / 0.96))" }} />
         <div className="container">
           <div className="grid grid-cols-3 gap-4 sm:gap-8">
             {[
@@ -332,7 +335,12 @@ const Index = () => {
       {/* ══════════════════════════════════════════
           HOW IT WORKS — 3 STEPS
       ══════════════════════════════════════════ */}
-      <section className="py-20 sm:py-32 border-t border-border overflow-hidden relative surface-paper wash">
+      <section className="py-20 sm:py-32 border-t border-border overflow-hidden relative surface-paper">
+        {/* Subtle cinematic backdrop */}
+        <img src={stadiumImg.url} alt="" aria-hidden
+          className="absolute inset-0 w-full h-full object-cover opacity-15" />
+        <div className="absolute inset-0 pointer-events-none"
+          style={{ background: "linear-gradient(to bottom, hsl(var(--paper-deep) / 0.85), hsl(var(--paper) / 0.92))" }} />
         {/* Vertical timeline */}
         <div className="hidden sm:block absolute left-1/2 top-0 bottom-0 w-px -translate-x-1/2 pointer-events-none"
           style={{ background: "linear-gradient(to bottom, transparent, hsl(var(--green) / 0.2) 20%, hsl(var(--green) / 0.2) 80%, transparent)" }} />
@@ -550,11 +558,12 @@ const Index = () => {
       {/* ══════════════════════════════════════════
           CINEMATIC CTA
       ══════════════════════════════════════════ */}
-      <section className="py-24 sm:py-36 border-t border-border relative overflow-hidden surface-ink wash wash-ink">
-        {/* Background */}
-        <div className="absolute inset-0 pointer-events-none" style={{
-          background: "radial-gradient(ellipse 80% 60% at 50% 50%, hsl(var(--green) / 0.07) 0%, transparent 70%)"
-        }} />
+      <section className="py-24 sm:py-36 border-t border-border relative overflow-hidden surface-ink">
+        {/* Cinematic backdrop */}
+        <img src={footballerImg.url} alt="" aria-hidden
+          className="absolute inset-0 w-full h-full object-cover opacity-40" />
+        <div className="absolute inset-0 pointer-events-none"
+          style={{ background: "linear-gradient(to bottom, hsl(var(--ink) / 0.85), hsl(var(--ink) / 0.95))" }} />
         <div className="absolute inset-x-0 top-0 h-px accent-line" />
         <div className="absolute inset-x-0 bottom-0 h-px accent-line" />
         {/* Animated grid */}
