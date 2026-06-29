@@ -91,33 +91,33 @@ export type Database = {
       }
       messages: {
         Row: {
-          content: string | null
+          content: string
           created_at: string
           flag_reason: string | null
           flagged: boolean
           id: string
           read: boolean
-          recipient_id: string | null
+          receiver_id: string
           sender_id: string
         }
         Insert: {
-          content?: string | null
+          content?: string
           created_at?: string
           flag_reason?: string | null
           flagged?: boolean
           id?: string
           read?: boolean
-          recipient_id?: string | null
+          receiver_id: string
           sender_id: string
         }
         Update: {
-          content?: string | null
+          content?: string
           created_at?: string
           flag_reason?: string | null
           flagged?: boolean
           id?: string
           read?: boolean
-          recipient_id?: string | null
+          receiver_id?: string
           sender_id?: string
         }
         Relationships: []
@@ -188,7 +188,7 @@ export type Database = {
           bio: string | null
           created_at: string
           date_of_birth: string | null
-          full_name: string | null
+          full_name: string
           gender: string | null
           guardian_contact: string | null
           id: string
@@ -203,7 +203,7 @@ export type Database = {
           bio?: string | null
           created_at?: string
           date_of_birth?: string | null
-          full_name?: string | null
+          full_name?: string
           gender?: string | null
           guardian_contact?: string | null
           id?: string
@@ -218,7 +218,7 @@ export type Database = {
           bio?: string | null
           created_at?: string
           date_of_birth?: string | null
-          full_name?: string | null
+          full_name?: string
           gender?: string | null
           guardian_contact?: string | null
           id?: string
@@ -233,7 +233,7 @@ export type Database = {
       scout_profiles: {
         Row: {
           created_at: string
-          full_name: string | null
+          full_name: string
           id: string
           is_banned: boolean
           organization: string | null
@@ -242,7 +242,7 @@ export type Database = {
         }
         Insert: {
           created_at?: string
-          full_name?: string | null
+          full_name?: string
           id?: string
           is_banned?: boolean
           organization?: string | null
@@ -251,7 +251,7 @@ export type Database = {
         }
         Update: {
           created_at?: string
-          full_name?: string | null
+          full_name?: string
           id?: string
           is_banned?: boolean
           organization?: string | null
@@ -265,6 +265,7 @@ export type Database = {
           admin_response: string | null
           created_at: string
           id: string
+          notes: string
           player_id: string
           scout_id: string
           status: string
@@ -273,6 +274,7 @@ export type Database = {
           admin_response?: string | null
           created_at?: string
           id?: string
+          notes?: string
           player_id: string
           scout_id: string
           status?: string
@@ -281,6 +283,7 @@ export type Database = {
           admin_response?: string | null
           created_at?: string
           id?: string
+          notes?: string
           player_id?: string
           scout_id?: string
           status?: string
@@ -311,39 +314,42 @@ export type Database = {
       videos: {
         Row: {
           created_at: string
-          description: string | null
+          description: string
           flag_reason: string | null
           flagged: boolean
           id: string
-          position_tags: string[] | null
+          position_tags: string[]
           status: string
-          trait_tags: string[] | null
+          title: string
+          trait_tags: string[]
           user_id: string
-          video_url: string | null
+          video_url: string
         }
         Insert: {
           created_at?: string
-          description?: string | null
+          description?: string
           flag_reason?: string | null
           flagged?: boolean
           id?: string
-          position_tags?: string[] | null
+          position_tags?: string[]
           status?: string
-          trait_tags?: string[] | null
+          title?: string
+          trait_tags?: string[]
           user_id: string
-          video_url?: string | null
+          video_url?: string
         }
         Update: {
           created_at?: string
-          description?: string | null
+          description?: string
           flag_reason?: string | null
           flagged?: boolean
           id?: string
-          position_tags?: string[] | null
+          position_tags?: string[]
           status?: string
-          trait_tags?: string[] | null
+          title?: string
+          trait_tags?: string[]
           user_id?: string
-          video_url?: string | null
+          video_url?: string
         }
         Relationships: []
       }
