@@ -8,7 +8,6 @@ import { Toaster as Sonner } from "@/components/ui/sonner";
 import { AuthProvider } from "@/hooks/useAuth";
 import { ThemeProvider } from "@/hooks/useTheme";
 import FloatingHeader from "@/components/FloatingHeader";
-import LoadingIntro from "@/components/LoadingIntro";
 import appCss from "@/index.css?url";
 
 export const Route = createRootRouteWithContext<{ queryClient: QueryClient }>()({
