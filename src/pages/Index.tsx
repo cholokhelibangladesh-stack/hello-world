@@ -516,11 +516,6 @@ const Index = () => {
       </section>
 
       {/* ══════════════════════════════════════════
-          MAP SECTION
-      ══════════════════════════════════════════ */}
-      <BangladeshMapTestimonials />
-
-      {/* ══════════════════════════════════════════
           VERIFIED SCOUTS
       ══════════════════════════════════════════ */}
       <section className="py-16 sm:py-24 border-t border-border surface-card wash">
@@ -570,6 +565,12 @@ const Index = () => {
           )}
         </div>
       </section>
+
+      {/* ══════════════════════════════════════════
+          MAP SECTION
+      ══════════════════════════════════════════ */}
+      <BangladeshMapTestimonials />
+
 
       {/* ══════════════════════════════════════════
           CINEMATIC CTA
