@@ -583,61 +583,12 @@ const Index = () => {
             const defaultBio = `${scout.full_name} is a verified scout${scout.organization ? ` with ${scout.organization}` : ""}, actively discovering grassroots talent across Bangladesh through Cholo Kheli.`;
             return (
               <div className="grid grid-cols-1 lg:grid-cols-[1fr_220px] gap-6 lg:gap-10 items-stretch max-w-6xl mx-auto">
-                <motion.div
-                  key={scout.user_id}
-                  initial={{ opacity: 0, y: 20 }}
-                  animate={{ opacity: 1, y: 0 }}
-                  transition={{ duration: 0.55, ease: [0.22, 1, 0.36, 1] }}
-                  className="relative rounded-3xl border overflow-hidden p-8 sm:p-12 min-h-[360px] sm:min-h-[420px] flex flex-col justify-between shadow-2xl"
-                  style={{
-                    borderColor: "hsl(var(--green) / 0.22)",
-                    background: "#0a1520",
-                  }}
-                >
-                  {/* Shiny blue radial sheen — like brushed steel under a spotlight */}
-                  <div className="absolute inset-0 pointer-events-none"
-                    style={{
-                      background:
-                        "radial-gradient(120% 80% at 20% 25%, rgba(160,200,240,0.35) 0%, rgba(80,130,180,0.18) 28%, rgba(20,40,70,0.05) 55%, rgba(0,0,0,0) 75%)",
-                    }} />
-                  {/* Secondary cool highlight bottom-right */}
-                  <div className="absolute inset-0 pointer-events-none"
-                    style={{
-                      background:
-                        "radial-gradient(90% 70% at 95% 100%, rgba(120,170,220,0.22) 0%, rgba(120,170,220,0.05) 35%, transparent 65%)",
-                    }} />
-                  {/* Soft brand tint */}
-                  <div className="absolute inset-0 pointer-events-none opacity-25"
-                    style={{ background: "radial-gradient(50% 40% at 80% 15%, hsl(var(--green) / 0.4), transparent 70%)" }} />
-                  {/* Subtle top edge gloss */}
-                  <div className="absolute inset-x-0 top-0 h-px pointer-events-none"
-                    style={{ background: "linear-gradient(90deg, transparent, rgba(255,255,255,0.35), transparent)" }} />
+                <div className="relative min-h-[360px] sm:min-h-[420px]">
+                  <AnimatePresence mode="wait">
+                    <ScoutCarouselCard key={scout.user_id} scout={scout} defaultBio={defaultBio} />
+                  </AnimatePresence>
+                </div>
 
-
-                  <div className="relative flex items-center gap-3">
-                    <div className="w-14 h-14 rounded-full overflow-hidden border-2 flex items-center justify-center"
-                      style={{ borderColor: "hsl(var(--green) / 0.4)", background: "hsl(var(--green) / 0.15)" }}>
-                      {scout.avatar_url ? (
-                        <img src={scout.avatar_url} alt={scout.full_name} className="w-full h-full object-cover" />
-                      ) : (
-                        <span className="font-display text-xl text-white">{scout.full_name.charAt(0).toUpperCase()}</span>
-                      )}
-                    </div>
-                    <div className="w-9 h-9 rounded-full flex items-center justify-center -ml-4 border-2"
-                      style={{ borderColor: "hsl(var(--ink))", background: "hsl(var(--green))" }}>
-                      <Shield className="h-4 w-4 text-white" />
-                    </div>
-                  </div>
-
-                  <p className="relative text-xl sm:text-2xl lg:text-[26px] leading-relaxed text-white/95 font-light tracking-tight my-8">
-                    "{scout.bio ?? defaultBio}"
-                  </p>
-
-                  <div className="relative">
-                    <p className="text-base font-semibold text-white">{scout.full_name}</p>
-                    {scout.organization && <p className="text-sm text-white/55 mt-0.5">{scout.organization}</p>}
-                  </div>
-                </motion.div>
 
                 <div className="flex lg:flex-col justify-between gap-4 lg:py-2">
                   <div className="text-xs font-mono tracking-[0.2em] text-white/50 self-start">
