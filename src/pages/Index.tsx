@@ -15,6 +15,7 @@ import heroImg from "@/assets/hero-cricket.jpg.asset.json";
 import statsImg from "@/assets/stats-football.jpg.asset.json";
 import stadiumImg from "@/assets/stadium-dusk.jpg.asset.json";
 import footballerImg from "@/assets/footballer-motion.jpg.asset.json";
+import playerAppShowcase from "@/assets/player-app-showcase.jpg.asset.json";
 import sportFootball from "@/assets/sport-football.jpg.asset.json";
 import sportCricket from "@/assets/sport-cricket.jpg.asset.json";
 import sportBasketball from "@/assets/sport-basketball.jpg.asset.json";
@@ -620,32 +621,54 @@ const Index = () => {
         <div className="absolute inset-0 pointer-events-none opacity-[0.035]"
           style={{ backgroundImage: "linear-gradient(hsl(var(--green)) 1px, transparent 1px), linear-gradient(90deg, hsl(var(--green)) 1px, transparent 1px)", backgroundSize: "60px 60px" }} />
 
-        <div className="container relative z-10 text-center">
+        <div className="container relative z-10">
           <Reveal>
-            <motion.div animate={{ scale: [1, 1.03, 1] }} transition={{ duration: 3, repeat: Infinity }}>
-              <span className="inline-block text-xs font-bold tracking-[0.2em] uppercase mb-6 px-4 py-1.5 rounded-full"
-                style={{ background: "hsl(var(--green) / 0.12)", color: "hsl(var(--green))" }}>Ready to Shine</span>
-            </motion.div>
-            <h2 className="font-display text-5xl sm:text-7xl lg:text-9xl text-foreground mb-6 leading-none">
-              YOUR MOMENT<br />
-              <span style={{ color: "hsl(var(--green))" }}>STARTS NOW</span>
-            </h2>
-            <p className="text-muted-foreground max-w-xl mx-auto mb-10 text-base sm:text-lg">
-              Join thousands of players who have already uploaded their highlights. Scouts are watching.
-            </p>
-            <div className="flex flex-col sm:flex-row gap-4 justify-center">
-              <Link to="/auth">
-                <Button size="lg" className="font-bold text-lg px-12 py-6 animate-pulse-glow"
-                  style={{ background: "hsl(var(--green))", color: "hsl(var(--primary-foreground))" }}>
-                  Join Cholo Kheli Free <ArrowRight className="ml-2 h-5 w-5" />
-                </Button>
-              </Link>
-              <Link to="/mission">
-                <Button size="lg" variant="outline" className="font-semibold text-lg px-10 py-6"
-                  style={{ borderColor: "hsl(var(--green) / 0.3)", color: "hsl(var(--green))" }}>
-                  Our Mission
-                </Button>
-              </Link>
+            <div className="grid lg:grid-cols-2 gap-12 lg:gap-16 items-center">
+              {/* Phone showcase */}
+              <motion.div
+                initial={{ opacity: 0, y: 40 }}
+                whileInView={{ opacity: 1, y: 0 }}
+                viewport={{ once: true, amount: 0.3 }}
+                transition={{ duration: 0.9, ease: [0.16, 1, 0.3, 1] }}
+                className="relative order-2 lg:order-1"
+              >
+                <img
+                  src={playerAppShowcase.url}
+                  alt="Cholo Kheli player dashboard shown on two iPhones"
+                  loading="lazy"
+                  className="w-full h-auto select-none drop-shadow-[0_30px_60px_rgba(0,0,0,0.6)]"
+                  draggable={false}
+                />
+              </motion.div>
+
+              {/* Copy + CTAs */}
+              <div className="order-1 lg:order-2 text-center lg:text-left">
+                <motion.div animate={{ scale: [1, 1.03, 1] }} transition={{ duration: 3, repeat: Infinity }}>
+                  <span className="inline-block text-xs font-bold tracking-[0.2em] uppercase mb-6 px-4 py-1.5 rounded-full"
+                    style={{ background: "hsl(var(--green) / 0.12)", color: "hsl(var(--green))" }}>The Player App</span>
+                </motion.div>
+                <h2 className="font-display text-4xl sm:text-5xl lg:text-6xl text-foreground mb-6 leading-[1.05]">
+                  Your dashboard.<br />
+                  <span style={{ color: "hsl(var(--green))" }}>Your highlights. Your shot.</span>
+                </h2>
+                <p className="text-muted-foreground max-w-xl mx-auto lg:mx-0 mb-10 text-base sm:text-lg">
+                  Track training, upload highlights, and put your game in front of verified scouts — all from one beautifully simple player dashboard.
+                </p>
+                <div className="flex flex-col sm:flex-row gap-4 justify-center lg:justify-start">
+                  <Link to="/auth">
+                    <Button size="lg" className="font-bold text-lg px-12 py-6 animate-pulse-glow"
+                      style={{ background: "hsl(var(--green))", color: "hsl(var(--primary-foreground))" }}>
+                      Join Cholo Kheli Free <ArrowRight className="ml-2 h-5 w-5" />
+                    </Button>
+                  </Link>
+                  <Link to="/mission">
+                    <Button size="lg" variant="outline" className="font-semibold text-lg px-10 py-6"
+                      style={{ borderColor: "hsl(var(--green) / 0.3)", color: "hsl(var(--green))" }}>
+                      Our Mission
+                    </Button>
+                  </Link>
+                </div>
+              </div>
             </div>
           </Reveal>
         </div>
