@@ -588,14 +588,31 @@ const Index = () => {
                   initial={{ opacity: 0, y: 20 }}
                   animate={{ opacity: 1, y: 0 }}
                   transition={{ duration: 0.55, ease: [0.22, 1, 0.36, 1] }}
-                  className="relative rounded-3xl border overflow-hidden p-8 sm:p-12 min-h-[360px] sm:min-h-[420px] flex flex-col justify-between"
+                  className="relative rounded-3xl border overflow-hidden p-8 sm:p-12 min-h-[360px] sm:min-h-[420px] flex flex-col justify-between shadow-2xl"
                   style={{
-                    borderColor: "hsl(var(--green) / 0.18)",
-                    background: "radial-gradient(120% 90% at 30% 20%, hsl(var(--green) / 0.22) 0%, hsl(var(--ink) / 0.6) 55%, hsl(var(--ink)) 100%)",
+                    borderColor: "hsl(var(--green) / 0.22)",
+                    background: "#0a1520",
                   }}
                 >
-                  <div className="absolute inset-0 pointer-events-none opacity-30"
-                    style={{ background: "radial-gradient(60% 50% at 25% 30%, hsl(var(--green) / 0.35), transparent 70%)" }} />
+                  {/* Shiny blue radial sheen — like brushed steel under a spotlight */}
+                  <div className="absolute inset-0 pointer-events-none"
+                    style={{
+                      background:
+                        "radial-gradient(120% 80% at 20% 25%, rgba(160,200,240,0.35) 0%, rgba(80,130,180,0.18) 28%, rgba(20,40,70,0.05) 55%, rgba(0,0,0,0) 75%)",
+                    }} />
+                  {/* Secondary cool highlight bottom-right */}
+                  <div className="absolute inset-0 pointer-events-none"
+                    style={{
+                      background:
+                        "radial-gradient(90% 70% at 95% 100%, rgba(120,170,220,0.22) 0%, rgba(120,170,220,0.05) 35%, transparent 65%)",
+                    }} />
+                  {/* Soft brand tint */}
+                  <div className="absolute inset-0 pointer-events-none opacity-25"
+                    style={{ background: "radial-gradient(50% 40% at 80% 15%, hsl(var(--green) / 0.4), transparent 70%)" }} />
+                  {/* Subtle top edge gloss */}
+                  <div className="absolute inset-x-0 top-0 h-px pointer-events-none"
+                    style={{ background: "linear-gradient(90deg, transparent, rgba(255,255,255,0.35), transparent)" }} />
+
 
                   <div className="relative flex items-center gap-3">
                     <div className="w-14 h-14 rounded-full overflow-hidden border-2 flex items-center justify-center"
