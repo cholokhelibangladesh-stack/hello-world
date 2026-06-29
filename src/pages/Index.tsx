@@ -591,7 +591,7 @@ const Index = () => {
           <Reveal>
             <div className="max-w-5xl mx-auto">
               {/* Two vertical phones, tilted in 3D, slide in from sides */}
-              <div className="relative mx-auto flex justify-center items-start -space-x-12 sm:-space-x-20 lg:-space-x-28 pb-16 [perspective:1800px]">
+              <div className="relative mx-auto flex justify-center items-start gap-6 sm:gap-10 lg:gap-16 pb-16 [perspective:1800px]">
                 {/* Left phone — slides in from left */}
                 <motion.div
                   initial={{ opacity: 0, x: -180, y: -20, rotateY: -25, rotate: 0 }}
