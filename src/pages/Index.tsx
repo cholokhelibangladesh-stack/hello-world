@@ -15,7 +15,8 @@ import heroImg from "@/assets/hero-cricket.jpg.asset.json";
 import statsImg from "@/assets/stats-football.jpg.asset.json";
 import stadiumImg from "@/assets/stadium-dusk.jpg.asset.json";
 import footballerImg from "@/assets/footballer-motion.jpg.asset.json";
-import playerAppShowcase from "@/assets/player-app-showcase.jpg.asset.json";
+import phoneDashboard from "@/assets/phone-dashboard.jpg.asset.json";
+import phonePlaystore from "@/assets/phone-playstore.jpg.asset.json";
 import sportFootball from "@/assets/sport-football.jpg.asset.json";
 import sportCricket from "@/assets/sport-cricket.jpg.asset.json";
 import sportBasketball from "@/assets/sport-basketball.jpg.asset.json";
@@ -623,51 +624,50 @@ const Index = () => {
 
         <div className="container relative z-10">
           <Reveal>
-            <div className="grid lg:grid-cols-2 gap-12 lg:gap-16 items-center">
-              {/* Phone showcase */}
-              <motion.div
-                initial={{ opacity: 0, y: 40 }}
-                whileInView={{ opacity: 1, y: 0 }}
-                viewport={{ once: true, amount: 0.3 }}
-                transition={{ duration: 0.9, ease: [0.16, 1, 0.3, 1] }}
-                className="relative order-2 lg:order-1"
-              >
-                <img
-                  src={playerAppShowcase.url}
-                  alt="Cholo Kheli player dashboard shown on two iPhones"
-                  loading="lazy"
-                  className="w-full h-auto select-none drop-shadow-[0_30px_60px_rgba(0,0,0,0.6)]"
-                  draggable={false}
-                />
-              </motion.div>
-
-              {/* Copy + CTAs */}
-              <div className="order-1 lg:order-2 text-center lg:text-left">
-                <motion.div animate={{ scale: [1, 1.03, 1] }} transition={{ duration: 3, repeat: Infinity }}>
-                  <span className="inline-block text-xs font-bold tracking-[0.2em] uppercase mb-6 px-4 py-1.5 rounded-full"
-                    style={{ background: "hsl(var(--green) / 0.12)", color: "hsl(var(--green))" }}>The Player App</span>
+            <div className="max-w-5xl mx-auto">
+              {/* Two vertical phones, right one offset down */}
+              <div className="relative mx-auto flex justify-center items-start gap-6 sm:gap-10 lg:gap-14 pb-12">
+                {/* Left phone */}
+                <motion.div
+                  initial={{ opacity: 0, y: 40 }}
+                  whileInView={{ opacity: 1, y: 0 }}
+                  viewport={{ once: true, amount: 0.3 }}
+                  transition={{ duration: 0.9, ease: [0.16, 1, 0.3, 1] }}
+                  className="relative w-[44%] sm:w-[38%] max-w-[280px] aspect-[9/19.5] rounded-[2.2rem] sm:rounded-[2.8rem] border-[10px] sm:border-[12px] border-black bg-black shadow-[0_30px_60px_rgba(0,0,0,0.6)] overflow-hidden"
+                >
+                  <div className="absolute top-0 left-1/2 -translate-x-1/2 w-1/3 h-4 sm:h-5 bg-black rounded-b-2xl z-10" />
+                  <img src={phoneDashboard.url} alt="Cholo Kheli player dashboard" loading="lazy"
+                    className="w-full h-full object-cover select-none" draggable={false} />
                 </motion.div>
-                <h2 className="font-display text-4xl sm:text-5xl lg:text-6xl text-foreground mb-6 leading-[1.05]">
-                  Your dashboard.<br />
-                  <span style={{ color: "hsl(var(--green))" }}>Your highlights. Your shot.</span>
-                </h2>
-                <p className="text-muted-foreground max-w-xl mx-auto lg:mx-0 mb-10 text-base sm:text-lg">
-                  Track training, upload highlights, and put your game in front of verified scouts — all from one beautifully simple player dashboard.
-                </p>
-                <div className="flex flex-col sm:flex-row gap-4 justify-center lg:justify-start">
-                  <Link to="/auth">
-                    <Button size="lg" className="font-bold text-lg px-12 py-6 animate-pulse-glow"
-                      style={{ background: "hsl(var(--green))", color: "hsl(var(--primary-foreground))" }}>
-                      Join Cholo Kheli Free <ArrowRight className="ml-2 h-5 w-5" />
-                    </Button>
-                  </Link>
-                  <Link to="/mission">
-                    <Button size="lg" variant="outline" className="font-semibold text-lg px-10 py-6"
-                      style={{ borderColor: "hsl(var(--green) / 0.3)", color: "hsl(var(--green))" }}>
-                      Our Mission
-                    </Button>
-                  </Link>
-                </div>
+
+                {/* Right phone — offset down */}
+                <motion.div
+                  initial={{ opacity: 0, y: 60 }}
+                  whileInView={{ opacity: 1, y: 0 }}
+                  viewport={{ once: true, amount: 0.3 }}
+                  transition={{ duration: 0.9, delay: 0.15, ease: [0.16, 1, 0.3, 1] }}
+                  className="relative w-[44%] sm:w-[38%] max-w-[280px] aspect-[9/19.5] rounded-[2.2rem] sm:rounded-[2.8rem] border-[10px] sm:border-[12px] border-black bg-black shadow-[0_30px_60px_rgba(0,0,0,0.6)] overflow-hidden mt-12 sm:mt-20"
+                >
+                  <div className="absolute top-0 left-1/2 -translate-x-1/2 w-1/3 h-4 sm:h-5 bg-black rounded-b-2xl z-10" />
+                  <img src={phonePlaystore.url} alt="Cholo Kheli on Google Play" loading="lazy"
+                    className="w-full h-full object-cover select-none" draggable={false} />
+                </motion.div>
+              </div>
+
+              {/* CTAs below the phones */}
+              <div className="flex flex-col sm:flex-row gap-4 justify-center items-center">
+                <Link to="/auth">
+                  <Button size="lg" className="font-bold text-lg px-12 py-6 animate-pulse-glow"
+                    style={{ background: "hsl(var(--green))", color: "hsl(var(--primary-foreground))" }}>
+                    Join Cholo Kheli Free <ArrowRight className="ml-2 h-5 w-5" />
+                  </Button>
+                </Link>
+                <Link to="/mission">
+                  <Button size="lg" variant="outline" className="font-semibold text-lg px-10 py-6"
+                    style={{ borderColor: "hsl(var(--green) / 0.3)", color: "hsl(var(--green))" }}>
+                    Our Mission
+                  </Button>
+                </Link>
               </div>
             </div>
           </Reveal>
