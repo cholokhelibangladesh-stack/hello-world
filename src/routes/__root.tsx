@@ -57,9 +57,7 @@ function AppShell() {
           <Toaster />
           <Sonner />
           {showIntro && <LoadingIntro onDone={() => setShowIntro(false)} />}
-          <Navbar />
           <Outlet />
-          <MobileBottomNav />
         </TooltipProvider>
       </AuthProvider>
     </ThemeProvider>

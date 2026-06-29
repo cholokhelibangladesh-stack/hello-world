@@ -139,17 +139,6 @@ const Index = () => {
           }}
         />
 
-        {/* Top eyebrow */}
-        <motion.div
-          initial={{ opacity: 0, y: -8 }}
-          animate={heroReady ? { opacity: 1, y: 0 } : {}}
-          transition={{ duration: 0.7, delay: 0.1 }}
-          className="absolute top-24 sm:top-28 left-1/2 -translate-x-1/2 flex items-center gap-3 text-[10px] sm:text-xs tracking-[0.35em] uppercase text-muted-foreground"
-        >
-          <span className="h-px w-8 bg-muted-foreground/40" />
-          <span>Est. 2026 · Dhaka, Bangladesh</span>
-          <span className="h-px w-8 bg-muted-foreground/40" />
-        </motion.div>
 
         {/* Centered mark + wordmark */}
         <motion.div
