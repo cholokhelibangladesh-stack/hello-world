@@ -121,6 +121,9 @@ const Index = () => {
             src={heroImg.url}
             alt=""
             aria-hidden
+            loading="eager"
+            decoding="async"
+            {...({ fetchpriority: "high" } as any)}
             className="w-full h-full object-cover"
           />
           {/* Paper tint to keep type legible */}
