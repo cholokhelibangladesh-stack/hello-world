@@ -126,14 +126,15 @@ const Index = () => {
             {...({ fetchpriority: "high" } as any)}
             className="w-full h-full object-cover"
           />
-          {/* Paper tint to keep type legible */}
+          {/* Dark tint for text legibility over foggy night image */}
           <div
             className="absolute inset-0"
             style={{
               background:
-                "linear-gradient(to bottom, hsl(var(--paper) / 0) 0%, hsl(var(--paper) / 0.35) 55%, hsl(var(--paper-deep) / 0.92) 100%)",
+                "linear-gradient(to bottom, hsl(200 40% 4% / 0.45) 0%, hsl(200 40% 6% / 0.55) 55%, hsl(var(--paper-deep) / 0.95) 100%)",
             }}
           />
+
         </motion.div>
 
         {/* Subtle vertical grid lines for editorial feel */}
@@ -158,8 +159,8 @@ const Index = () => {
             transition={{ duration: 1.1, delay: 0.2, ease: [0.22, 1, 0.36, 1] }}
           >
             <CholoKheliMark
-              className="h-28 w-36 sm:h-36 sm:w-48 text-foreground"
-              accent="hsl(var(--teal-deep))"
+              className="h-28 w-36 sm:h-36 sm:w-48 text-white drop-shadow-[0_4px_20px_rgba(0,0,0,0.6)]"
+              accent="hsl(188 60% 70%)"
             />
           </motion.div>
 
@@ -177,8 +178,8 @@ const Index = () => {
                       duration: 0.55,
                       ease: [0.22, 1, 0.36, 1],
                     }}
-                    className={`font-display text-5xl sm:text-7xl lg:text-8xl leading-none tracking-[0.04em] ${
-                      wi === 1 ? "font-bold text-[hsl(var(--teal-deep))]" : "font-medium text-foreground"
+                    className={`font-display text-5xl sm:text-7xl lg:text-8xl leading-none tracking-[0.04em] drop-shadow-[0_4px_24px_rgba(0,0,0,0.7)] ${
+                      wi === 1 ? "font-bold text-[hsl(188_60%_72%)]" : "font-medium text-white"
                     }`}
                   >
                     {char}
@@ -193,7 +194,7 @@ const Index = () => {
             initial={false}
             animate={{ opacity: 1, y: 0 }}
             transition={{ delay: 1.3, duration: 0.7 }}
-            className="mt-8 text-base sm:text-lg text-muted-foreground max-w-xl leading-relaxed"
+            className="mt-8 text-base sm:text-lg text-white/85 max-w-xl leading-relaxed drop-shadow-[0_2px_8px_rgba(0,0,0,0.6)]"
           >
             A quiet place where Bangladesh's grassroots talent meets verified scouts.
             Safe. Transparent. Built for the love of the game.
@@ -231,8 +232,8 @@ const Index = () => {
                   <Button
                     size="lg"
                     variant="outline"
-                    className="font-medium text-base px-9 py-6 rounded-full bg-transparent"
-                    style={{ borderColor: "hsl(var(--foreground) / 0.25)", color: "hsl(var(--foreground))" }}
+                    className="font-medium text-base px-9 py-6 rounded-full bg-white/5 backdrop-blur-sm hover:bg-white/15"
+                    style={{ borderColor: "rgba(255,255,255,0.4)", color: "#ffffff" }}
                   >
                     I'm a Scout
                   </Button>
@@ -246,7 +247,7 @@ const Index = () => {
             initial={false}
             animate={{ opacity: 1 }}
             transition={{ duration: 0.4 }}
-            className="mt-14 grid grid-cols-3 gap-8 sm:gap-14 border-t border-foreground/10 pt-6"
+            className="mt-14 grid grid-cols-3 gap-8 sm:gap-14 border-t border-white/20 pt-6"
           >
             {[
               { v: "2,500+", l: "Players" },
@@ -254,8 +255,8 @@ const Index = () => {
               { v: "৳100",   l: "To start" },
             ].map((s) => (
               <div key={s.l} className="text-center">
-                <div className="font-display text-2xl sm:text-3xl text-foreground font-semibold">{s.v}</div>
-                <div className="text-[10px] sm:text-xs tracking-[0.2em] uppercase text-muted-foreground mt-1">{s.l}</div>
+                <div className="font-display text-2xl sm:text-3xl text-white font-semibold drop-shadow-[0_2px_8px_rgba(0,0,0,0.6)]">{s.v}</div>
+                <div className="text-[10px] sm:text-xs tracking-[0.2em] uppercase text-white/70 mt-1">{s.l}</div>
               </div>
             ))}
           </motion.div>
@@ -268,9 +269,9 @@ const Index = () => {
           transition={{ delay: 2.2 }}
           className="absolute bottom-8 left-1/2 -translate-x-1/2 z-10 flex flex-col items-center gap-1.5"
         >
-          <span className="text-[9px] tracking-[0.35em] uppercase text-muted-foreground/70">Scroll</span>
+          <span className="text-[9px] tracking-[0.35em] uppercase text-white/70">Scroll</span>
           <motion.div animate={{ y: [0, 6, 0] }} transition={{ duration: 1.6, repeat: Infinity }}>
-            <ChevronDown className="h-4 w-4 text-muted-foreground/70" />
+            <ChevronDown className="h-4 w-4 text-white/70" />
           </motion.div>
         </motion.div>
 
