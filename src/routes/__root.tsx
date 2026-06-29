@@ -1,14 +1,12 @@
 import { Outlet, createRootRouteWithContext, HeadContent, Scripts } from "@tanstack/react-router";
 
 import type { QueryClient } from "@tanstack/react-query";
-import { useEffect, useState } from "react";
 import { TooltipProvider } from "@/components/ui/tooltip";
 import { Toaster } from "@/components/ui/toaster";
 import { Toaster as Sonner } from "@/components/ui/sonner";
 import { AuthProvider } from "@/hooks/useAuth";
 import { ThemeProvider } from "@/hooks/useTheme";
 import FloatingHeader from "@/components/FloatingHeader";
-import LoadingIntro from "@/components/LoadingIntro";
 import appCss from "@/index.css?url";
 
 export const Route = createRootRouteWithContext<{ queryClient: QueryClient }>()({
@@ -38,24 +36,12 @@ function RootComponent() {
 }
 
 function AppShell() {
-  const [showIntro, setShowIntro] = useState(false);
-
-  useEffect(() => {
-    if (typeof window === "undefined") return;
-    const seen = sessionStorage.getItem("scoutbd-intro-seen");
-    if (!seen) {
-      setShowIntro(true);
-      sessionStorage.setItem("scoutbd-intro-seen", "1");
-    }
-  }, []);
-
   return (
     <ThemeProvider>
       <AuthProvider>
         <TooltipProvider>
           <Toaster />
           <Sonner />
-          {showIntro && <LoadingIntro onDone={() => setShowIntro(false)} />}
           <FloatingHeader />
           <Outlet />
         </TooltipProvider>
