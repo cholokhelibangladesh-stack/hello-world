@@ -83,9 +83,8 @@ export default function HeroMistCursor({
         vx: (Math.random() - 0.5) * 0.18,
         vy: -0.08 - Math.random() * 0.22,
         alpha: intensity * (0.7 + Math.random() * 0.6),
-        });
-      }
-      if (puffs.current.length > 120) puffs.current.splice(0, puffs.current.length - 120);
+      });
+      if (puffs.current.length > 60) puffs.current.splice(0, puffs.current.length - 60);
     };
 
     let lastT = performance.now();
