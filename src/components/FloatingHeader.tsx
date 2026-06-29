@@ -18,7 +18,7 @@ const navLinks = [
 const DARK_TOP_ROUTES = new Set<string>(["/"]);
 
 const FloatingHeader = () => {
-  const { user, role, signOut } = useAuth();
+  const { user, role, loading, signOut } = useAuth();
   const { theme, toggleTheme } = useTheme();
   const navigate = useNavigate();
   const [busy, setBusy] = useState(false);
