@@ -9,7 +9,6 @@ import { Button } from "@/components/ui/button";
 import { useAuth } from "@/hooks/useAuth";
 import { supabase } from "@/integrations/supabase/client";
 import BangladeshMapTestimonials from "@/components/BangladeshMapTestimonials";
-import MarqueeTicker from "@/components/MarqueeTicker";
 import VideoHighlights from "@/components/VideoHighlights";
 import CholoKheliMark from "@/components/CholoKheliMark";
 import heroImg from "@/assets/hero-cricket.jpg.asset.json";
@@ -468,11 +467,6 @@ const Index = () => {
           </div>
         </div>
       </section>
-
-      {/* ══════════════════════════════════════════
-          MARQUEE #2
-      ══════════════════════════════════════════ */}
-      <MarqueeTicker />
 
       {/* ══════════════════════════════════════════
           MAP SECTION
