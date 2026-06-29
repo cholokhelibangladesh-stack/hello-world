@@ -6,11 +6,11 @@ import { useAuth } from "@/hooks/useAuth";
 
 // Bare iOS-style icon: no background, no ring — just the glyph with a soft shadow for legibility
 const iconBtn =
-  "h-10 w-10 rounded-full flex items-center justify-center text-foreground " +
+  "h-10 w-10 rounded-full flex items-center justify-center text-white " +
   "transition-all duration-200 hover:opacity-70 active:scale-95";
 const iconProps = {
   strokeWidth: 1.75,
-  className: "h-[20px] w-[20px] drop-shadow-[0_1px_2px_rgba(0,0,0,0.35)]",
+  className: "h-[20px] w-[20px] text-white drop-shadow-[0_1px_2px_rgba(0,0,0,0.5)]",
 } as const;
 
 const FloatingHeader = () => {
