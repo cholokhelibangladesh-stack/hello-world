@@ -10,7 +10,7 @@ export type Database = {
   // Allows to automatically instantiate createClient with right options
   // instead of createClient<Database, { PostgrestVersion: 'XX' }>(URL, KEY)
   __InternalSupabase: {
-    PostgrestVersion: "14.1"
+    PostgrestVersion: "14.5"
   }
   public: {
     Tables: {
@@ -43,69 +43,51 @@ export type Database = {
       }
       app_settings: {
         Row: {
-          id: string
           key: string
           updated_at: string
           updated_by: string | null
-          value: string
+          value: Json | null
         }
         Insert: {
-          id?: string
           key: string
           updated_at?: string
           updated_by?: string | null
-          value?: string
+          value?: Json | null
         }
         Update: {
-          id?: string
           key?: string
           updated_at?: string
           updated_by?: string | null
-          value?: string
+          value?: Json | null
         }
         Relationships: []
       }
-      certificates: {
+      documents: {
         Row: {
-          certificate_url: string | null
           created_at: string
           id: string
-          payment_id: string | null
+          name: string | null
+          type: string | null
+          url: string | null
           user_id: string
-          video_id: string | null
         }
         Insert: {
-          certificate_url?: string | null
           created_at?: string
           id?: string
-          payment_id?: string | null
+          name?: string | null
+          type?: string | null
+          url?: string | null
           user_id: string
-          video_id?: string | null
         }
         Update: {
-          certificate_url?: string | null
           created_at?: string
           id?: string
-          payment_id?: string | null
+          name?: string | null
+          type?: string | null
+          url?: string | null
           user_id?: string
-          video_id?: string | null
         }
-        Relationships: [
-          {
-            foreignKeyName: "certificates_payment_id_fkey"
-            columns: ["payment_id"]
-            isOneToOne: false
-            referencedRelation: "payments"
-            referencedColumns: ["id"]
-          },
-          {
-            foreignKeyName: "certificates_video_id_fkey"
-            columns: ["video_id"]
-            isOneToOne: false
-            referencedRelation: "videos"
-            referencedColumns: ["id"]
-          },
-        ]
+        Relationships: []
       }
       messages: {
         Row: {
@@ -114,15 +96,17 @@ export type Database = {
           flag_reason: string | null
           flagged: boolean
           id: string
+          read: boolean
           receiver_id: string
           sender_id: string
         }
         Insert: {
-          content: string
+          content?: string
           created_at?: string
           flag_reason?: string | null
           flagged?: boolean
           id?: string
+          read?: boolean
           receiver_id: string
           sender_id: string
         }
@@ -132,6 +116,7 @@ export type Database = {
           flag_reason?: string | null
           flagged?: boolean
           id?: string
+          read?: boolean
           receiver_id?: string
           sender_id?: string
         }
@@ -141,31 +126,31 @@ export type Database = {
         Row: {
           created_at: string
           id: string
-          message: string
+          message: string | null
           metadata: Json | null
           read: boolean
           title: string
-          type: string
+          type: string | null
           user_id: string
         }
         Insert: {
           created_at?: string
           id?: string
-          message: string
+          message?: string | null
           metadata?: Json | null
           read?: boolean
           title: string
-          type?: string
+          type?: string | null
           user_id: string
         }
         Update: {
           created_at?: string
           id?: string
-          message?: string
+          message?: string | null
           metadata?: Json | null
           read?: boolean
           title?: string
-          type?: string
+          type?: string | null
           user_id?: string
         }
         Relationships: []
@@ -175,41 +160,27 @@ export type Database = {
           amount: number
           created_at: string
           id: string
-          method: string
-          status: Database["public"]["Enums"]["payment_status"]
+          status: string
           transaction_id: string | null
           user_id: string
-          video_id: string | null
         }
         Insert: {
           amount?: number
           created_at?: string
           id?: string
-          method?: string
-          status?: Database["public"]["Enums"]["payment_status"]
+          status?: string
           transaction_id?: string | null
           user_id: string
-          video_id?: string | null
         }
         Update: {
           amount?: number
           created_at?: string
           id?: string
-          method?: string
-          status?: Database["public"]["Enums"]["payment_status"]
+          status?: string
           transaction_id?: string | null
           user_id?: string
-          video_id?: string | null
         }
-        Relationships: [
-          {
-            foreignKeyName: "payments_video_id_fkey"
-            columns: ["video_id"]
-            isOneToOne: false
-            referencedRelation: "videos"
-            referencedColumns: ["id"]
-          },
-        ]
+        Relationships: []
       }
       profiles: {
         Row: {
@@ -226,14 +197,13 @@ export type Database = {
           sport: string | null
           updated_at: string
           user_id: string
-          username: string | null
         }
         Insert: {
           avatar_url?: string | null
           bio?: string | null
           created_at?: string
           date_of_birth?: string | null
-          full_name: string
+          full_name?: string
           gender?: string | null
           guardian_contact?: string | null
           id?: string
@@ -242,7 +212,6 @@ export type Database = {
           sport?: string | null
           updated_at?: string
           user_id: string
-          username?: string | null
         }
         Update: {
           avatar_url?: string | null
@@ -258,37 +227,36 @@ export type Database = {
           sport?: string | null
           updated_at?: string
           user_id?: string
-          username?: string | null
         }
         Relationships: []
       }
       scout_profiles: {
         Row: {
           created_at: string
+          full_name: string
           id: string
           is_banned: boolean
           organization: string | null
-          updated_at: string
           user_id: string
-          verification_status: Database["public"]["Enums"]["scout_status"]
+          verification_status: string
         }
         Insert: {
           created_at?: string
+          full_name?: string
           id?: string
           is_banned?: boolean
           organization?: string | null
-          updated_at?: string
           user_id: string
-          verification_status?: Database["public"]["Enums"]["scout_status"]
+          verification_status?: string
         }
         Update: {
           created_at?: string
+          full_name?: string
           id?: string
           is_banned?: boolean
           organization?: string | null
-          updated_at?: string
           user_id?: string
-          verification_status?: Database["public"]["Enums"]["scout_status"]
+          verification_status?: string
         }
         Relationships: []
       }
@@ -297,46 +265,46 @@ export type Database = {
           admin_response: string | null
           created_at: string
           id: string
-          notes: string | null
+          notes: string
           player_id: string
           scout_id: string
           status: string
-          updated_at: string
         }
         Insert: {
           admin_response?: string | null
           created_at?: string
           id?: string
-          notes?: string | null
+          notes?: string
           player_id: string
           scout_id: string
           status?: string
-          updated_at?: string
         }
         Update: {
           admin_response?: string | null
           created_at?: string
           id?: string
-          notes?: string | null
+          notes?: string
           player_id?: string
           scout_id?: string
           status?: string
-          updated_at?: string
         }
         Relationships: []
       }
       user_roles: {
         Row: {
+          created_at: string
           id: string
           role: Database["public"]["Enums"]["app_role"]
           user_id: string
         }
         Insert: {
+          created_at?: string
           id?: string
           role: Database["public"]["Enums"]["app_role"]
           user_id: string
         }
         Update: {
+          created_at?: string
           id?: string
           role?: Database["public"]["Enums"]["app_role"]
           user_id?: string
@@ -346,39 +314,42 @@ export type Database = {
       videos: {
         Row: {
           created_at: string
-          description: string | null
+          description: string
+          flag_reason: string | null
+          flagged: boolean
           id: string
-          position_tags: string[] | null
-          status: Database["public"]["Enums"]["video_status"]
-          title: string | null
-          trait_tags: string[] | null
-          updated_at: string
+          position_tags: string[]
+          status: string
+          title: string
+          trait_tags: string[]
           user_id: string
-          video_url: string | null
+          video_url: string
         }
         Insert: {
           created_at?: string
-          description?: string | null
+          description?: string
+          flag_reason?: string | null
+          flagged?: boolean
           id?: string
-          position_tags?: string[] | null
-          status?: Database["public"]["Enums"]["video_status"]
-          title?: string | null
-          trait_tags?: string[] | null
-          updated_at?: string
+          position_tags?: string[]
+          status?: string
+          title?: string
+          trait_tags?: string[]
           user_id: string
-          video_url?: string | null
+          video_url?: string
         }
         Update: {
           created_at?: string
-          description?: string | null
+          description?: string
+          flag_reason?: string | null
+          flagged?: boolean
           id?: string
-          position_tags?: string[] | null
-          status?: Database["public"]["Enums"]["video_status"]
-          title?: string | null
-          trait_tags?: string[] | null
-          updated_at?: string
+          position_tags?: string[]
+          status?: string
+          title?: string
+          trait_tags?: string[]
           user_id?: string
-          video_url?: string | null
+          video_url?: string
         }
         Relationships: []
       }
@@ -397,9 +368,6 @@ export type Database = {
     }
     Enums: {
       app_role: "player" | "scout" | "admin"
-      payment_status: "pending" | "success" | "failed"
-      scout_status: "pending" | "active" | "rejected"
-      video_status: "draft" | "pending_payment" | "live" | "rejected"
     }
     CompositeTypes: {
       [_ in never]: never
@@ -528,9 +496,6 @@ export const Constants = {
   public: {
     Enums: {
       app_role: ["player", "scout", "admin"],
-      payment_status: ["pending", "success", "failed"],
-      scout_status: ["pending", "active", "rejected"],
-      video_status: ["draft", "pending_payment", "live", "rejected"],
     },
   },
 } as const

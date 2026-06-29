@@ -161,7 +161,7 @@ const PlayerDashboard = () => {
       const { data: video, error: dbError } = await supabase.from("videos").insert({
         user_id: user.id,
         description,
-        video_url: null,
+        video_url: "",
         status: "pending_payment" as any,
         position_tags: selectedPositions,
         trait_tags: selectedTraits,

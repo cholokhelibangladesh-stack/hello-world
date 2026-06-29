@@ -103,7 +103,7 @@ const PlayerUpload = () => {
     setUploading(true);
     try {
       const { data: video, error: dbError } = await supabase.from("videos").insert({
-        user_id: user.id, description, video_url: null, status: "pending_payment" as any,
+        user_id: user.id, description, video_url: "", status: "pending_payment" as any,
         position_tags: selectedPositions, trait_tags: selectedTraits,
       }).select().single();
       if (dbError) throw dbError;
