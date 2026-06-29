@@ -614,8 +614,8 @@ const Index = () => {
 
                 {/* Right phone — slides in from right, offset further down */}
                 <motion.div
-                  initial={{ opacity: 0, x: 180, y: 60, rotateY: 35, rotate: 14 }}
-                  whileInView={{ opacity: 1, x: 0, y: 0, rotateY: 18, rotate: 10 }}
+                  initial={{ opacity: 0, x: 180, y: 60, rotateY: 25, rotate: 0 }}
+                  whileInView={{ opacity: 1, x: 0, y: 0, rotateY: 12, rotate: 0 }}
                   viewport={{ once: true, amount: 0.25 }}
                   transition={{ duration: 1.1, delay: 0.2, ease: [0.16, 1, 0.3, 1] }}
                   style={{ transformStyle: "preserve-3d" }}
