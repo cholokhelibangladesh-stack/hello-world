@@ -679,7 +679,7 @@ const Index = () => {
                       <stat.Icon className="h-5 w-5" style={{ color: "hsl(var(--green))" }} />
                     </div>
                   </div>
-                  <div className="font-display text-4xl sm:text-6xl mb-1" style={{ color: "hsl(var(--green))" }}>
+                  <div className="font-display text-3xl sm:text-4xl lg:text-5xl mb-1 leading-tight tracking-tight whitespace-nowrap" style={{ color: "hsl(var(--green))" }}>
                     <Counter target={stat.target} suffix={stat.suffix} />
                   </div>
                   <div className="text-xs sm:text-sm text-muted-foreground">{stat.label}</div>
