@@ -26,13 +26,13 @@ const Footer = () => (
         </div>
         <div>
           <h4 className="font-display text-lg text-foreground mb-3">CONTACT</h4>
-          <p className="text-sm text-muted-foreground">support@scoutbd.com</p>
-          <p className="text-sm text-muted-foreground">Legal: legal@scoutbd.com</p>
+          <p className="text-sm text-muted-foreground">hello@cholokheli.com</p>
+          <p className="text-sm text-muted-foreground">Legal: legal@cholokheli.com</p>
           <p className="text-sm text-muted-foreground mt-2">Dhaka, Bangladesh</p>
         </div>
       </div>
-      <div className="mt-8 pt-6 border-t border-border text-center text-xs text-muted-foreground">
-        © 2026 Scout BD. All rights reserved.
+      <div className="mt-10 pt-6 border-t border-border text-center text-xs tracking-[0.25em] uppercase text-muted-foreground">
+        © 2026 Cholo Kheli — Let's Play
       </div>
     </div>
   </footer>
