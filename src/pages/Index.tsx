@@ -11,6 +11,7 @@ import { supabase } from "@/integrations/supabase/client";
 import BangladeshMapTestimonials from "@/components/BangladeshMapTestimonials";
 import VideoHighlights from "@/components/VideoHighlights";
 import CholoKheliMark from "@/components/CholoKheliMark";
+import HeroMistCursor from "@/components/HeroMistCursor";
 import heroImg from "@/assets/hero-cricket.jpg.asset.json";
 import statsImg from "@/assets/stats-football.jpg.asset.json";
 import stadiumImg from "@/assets/stadium-dusk.jpg.asset.json";
@@ -260,6 +261,11 @@ const Index = () => {
           />
 
         </motion.div>
+
+        {/* Cursor-following foggy mist */}
+        <HeroMistCursor />
+
+
 
         {/* Subtle vertical grid lines for editorial feel */}
         <div
