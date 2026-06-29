@@ -6,10 +6,19 @@ interface LoadingIntroProps {
   onDone: () => void;
 }
 
-const TOTAL_MS = 2600;
+const TOTAL_MS = 1400;
 
 const LoadingIntro = ({ onDone }: LoadingIntroProps) => {
   useEffect(() => {
+    if (typeof window !== "undefined") {
+      const reduced = window.matchMedia?.("(prefers-reduced-motion: reduce)").matches;
+      const conn = (navigator as any).connection;
+      const slow = conn && (conn.saveData || /(^|-)2g$/.test(conn.effectiveType ?? ""));
+      if (reduced || slow) {
+        onDone();
+        return;
+      }
+    }
     const t = setTimeout(onDone, TOTAL_MS);
     return () => clearTimeout(t);
   }, [onDone]);
