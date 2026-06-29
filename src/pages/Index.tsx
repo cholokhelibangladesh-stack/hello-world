@@ -242,24 +242,6 @@ const Index = () => {
             )}
           </motion.div>
 
-          {/* Quiet stat row */}
-          <motion.div
-            initial={false}
-            animate={{ opacity: 1 }}
-            transition={{ duration: 0.4 }}
-            className="mt-14 grid grid-cols-3 gap-8 sm:gap-14 border-t border-white/20 pt-6"
-          >
-            {[
-              { v: "2,500+", l: "Players" },
-              { v: "120+",   l: "Scouts"  },
-              { v: "৳100",   l: "To start" },
-            ].map((s) => (
-              <div key={s.l} className="text-center">
-                <div className="font-display text-2xl sm:text-3xl text-white font-semibold drop-shadow-[0_2px_8px_rgba(0,0,0,0.6)]">{s.v}</div>
-                <div className="text-[10px] sm:text-xs tracking-[0.2em] uppercase text-white/70 mt-1">{s.l}</div>
-              </div>
-            ))}
-          </motion.div>
         </motion.div>
 
         {/* Scroll nudge */}
