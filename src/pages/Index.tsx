@@ -126,14 +126,15 @@ const Index = () => {
             {...({ fetchpriority: "high" } as any)}
             className="w-full h-full object-cover"
           />
-          {/* Paper tint to keep type legible */}
+          {/* Dark tint for text legibility over foggy night image */}
           <div
             className="absolute inset-0"
             style={{
               background:
-                "linear-gradient(to bottom, hsl(var(--paper) / 0) 0%, hsl(var(--paper) / 0.35) 55%, hsl(var(--paper-deep) / 0.92) 100%)",
+                "linear-gradient(to bottom, hsl(200 40% 4% / 0.45) 0%, hsl(200 40% 6% / 0.55) 55%, hsl(var(--paper-deep) / 0.95) 100%)",
             }}
           />
+
         </motion.div>
 
         {/* Subtle vertical grid lines for editorial feel */}
@@ -158,8 +159,8 @@ const Index = () => {
             transition={{ duration: 1.1, delay: 0.2, ease: [0.22, 1, 0.36, 1] }}
           >
             <CholoKheliMark
-              className="h-28 w-36 sm:h-36 sm:w-48 text-foreground"
-              accent="hsl(var(--teal-deep))"
+              className="h-28 w-36 sm:h-36 sm:w-48 text-white drop-shadow-[0_4px_20px_rgba(0,0,0,0.6)]"
+              accent="hsl(188 60% 70%)"
             />
           </motion.div>
 
@@ -177,8 +178,8 @@ const Index = () => {
                       duration: 0.55,
                       ease: [0.22, 1, 0.36, 1],
                     }}
-                    className={`font-display text-5xl sm:text-7xl lg:text-8xl leading-none tracking-[0.04em] ${
-                      wi === 1 ? "font-bold text-[hsl(var(--teal-deep))]" : "font-medium text-foreground"
+                    className={`font-display text-5xl sm:text-7xl lg:text-8xl leading-none tracking-[0.04em] drop-shadow-[0_4px_24px_rgba(0,0,0,0.7)] ${
+                      wi === 1 ? "font-bold text-[hsl(188_60%_72%)]" : "font-medium text-white"
                     }`}
                   >
                     {char}
@@ -193,7 +194,7 @@ const Index = () => {
             initial={false}
             animate={{ opacity: 1, y: 0 }}
             transition={{ delay: 1.3, duration: 0.7 }}
-            className="mt-8 text-base sm:text-lg text-muted-foreground max-w-xl leading-relaxed"
+            className="mt-8 text-base sm:text-lg text-white/85 max-w-xl leading-relaxed drop-shadow-[0_2px_8px_rgba(0,0,0,0.6)]"
           >
             A quiet place where Bangladesh's grassroots talent meets verified scouts.
             Safe. Transparent. Built for the love of the game.
@@ -231,8 +232,8 @@ const Index = () => {
                   <Button
                     size="lg"
                     variant="outline"
-                    className="font-medium text-base px-9 py-6 rounded-full bg-transparent"
-                    style={{ borderColor: "hsl(var(--foreground) / 0.25)", color: "hsl(var(--foreground))" }}
+                    className="font-medium text-base px-9 py-6 rounded-full bg-white/5 backdrop-blur-sm hover:bg-white/15"
+                    style={{ borderColor: "rgba(255,255,255,0.4)", color: "#ffffff" }}
                   >
                     I'm a Scout
                   </Button>
@@ -246,7 +247,7 @@ const Index = () => {
             initial={false}
             animate={{ opacity: 1 }}
             transition={{ duration: 0.4 }}
-            className="mt-14 grid grid-cols-3 gap-8 sm:gap-14 border-t border-foreground/10 pt-6"
+            className="mt-14 grid grid-cols-3 gap-8 sm:gap-14 border-t border-white/20 pt-6"
           >
             {[
               { v: "2,500+", l: "Players" },
@@ -254,8 +255,8 @@ const Index = () => {
               { v: "৳100",   l: "To start" },
             ].map((s) => (
               <div key={s.l} className="text-center">
-                <div className="font-display text-2xl sm:text-3xl text-foreground font-semibold">{s.v}</div>
-                <div className="text-[10px] sm:text-xs tracking-[0.2em] uppercase text-muted-foreground mt-1">{s.l}</div>
+                <div className="font-display text-2xl sm:text-3xl text-white font-semibold drop-shadow-[0_2px_8px_rgba(0,0,0,0.6)]">{s.v}</div>
+                <div className="text-[10px] sm:text-xs tracking-[0.2em] uppercase text-white/70 mt-1">{s.l}</div>
               </div>
             ))}
           </motion.div>
@@ -268,9 +269,9 @@ const Index = () => {
           transition={{ delay: 2.2 }}
           className="absolute bottom-8 left-1/2 -translate-x-1/2 z-10 flex flex-col items-center gap-1.5"
         >
-          <span className="text-[9px] tracking-[0.35em] uppercase text-muted-foreground/70">Scroll</span>
+          <span className="text-[9px] tracking-[0.35em] uppercase text-white/70">Scroll</span>
           <motion.div animate={{ y: [0, 6, 0] }} transition={{ duration: 1.6, repeat: Infinity }}>
-            <ChevronDown className="h-4 w-4 text-muted-foreground/70" />
+            <ChevronDown className="h-4 w-4 text-white/70" />
           </motion.div>
         </motion.div>
 
@@ -334,22 +335,23 @@ const Index = () => {
       <section className="py-20 sm:py-32 border-t border-border overflow-hidden relative surface-paper">
         {/* Subtle cinematic backdrop */}
         <img src={stadiumImg.url} alt="" aria-hidden
-          className="absolute inset-0 w-full h-full object-cover opacity-15" />
+          className="absolute inset-0 w-full h-full object-cover opacity-[0.07]" />
         <div className="absolute inset-0 pointer-events-none"
-          style={{ background: "linear-gradient(to bottom, hsl(var(--paper-deep) / 0.85), hsl(var(--paper) / 0.92))" }} />
+          style={{ background: "linear-gradient(to bottom, hsl(var(--paper-deep) / 0.96), hsl(var(--paper) / 0.98))" }} />
         {/* Vertical timeline */}
         <div className="hidden sm:block absolute left-1/2 top-0 bottom-0 w-px -translate-x-1/2 pointer-events-none"
-          style={{ background: "linear-gradient(to bottom, transparent, hsl(var(--green) / 0.2) 20%, hsl(var(--green) / 0.2) 80%, transparent)" }} />
+          style={{ background: "linear-gradient(to bottom, transparent, hsl(var(--teal-deep) / 0.35) 20%, hsl(var(--teal-deep) / 0.35) 80%, transparent)" }} />
 
-        <div className="container">
+        <div className="container relative z-10">
           <Reveal className="text-center mb-16 sm:mb-24">
             <span className="inline-block text-xs font-bold tracking-[0.2em] uppercase mb-4 px-4 py-1.5 rounded-full"
-              style={{ background: "hsl(var(--green) / 0.12)", color: "hsl(var(--green))" }}>
+              style={{ background: "hsl(var(--teal-deep) / 0.12)", color: "hsl(var(--teal-deep))" }}>
               The Platform
             </span>
-            <h2 className="font-display text-4xl sm:text-6xl text-foreground">HOW IT <span style={{ color: "hsl(var(--green))" }}>WORKS</span></h2>
-            <p className="text-muted-foreground mt-3 max-w-md mx-auto">Three simple steps from unknown talent to scouted athlete</p>
+            <h2 className="font-display text-4xl sm:text-6xl" style={{ color: "hsl(var(--teal-deep))" }}>HOW IT <span style={{ color: "hsl(var(--teal))" }}>WORKS</span></h2>
+            <p className="mt-3 max-w-md mx-auto" style={{ color: "hsl(var(--teal-deep) / 0.75)" }}>Three simple steps from unknown talent to scouted athlete</p>
           </Reveal>
+
 
           <div className="space-y-24 sm:space-y-36">
 
@@ -362,8 +364,8 @@ const Index = () => {
                   <span className="text-xs font-bold tracking-[0.2em] uppercase px-3 py-1 rounded-full"
                     style={{ background: "hsl(var(--green) / 0.12)", color: "hsl(var(--green))" }}>Create Profile</span>
                 </div>
-                <h3 className="font-display text-4xl sm:text-5xl text-foreground mb-4">YOUR STORY<br />STARTS HERE</h3>
-                <p className="text-muted-foreground leading-relaxed">Sign up as a Player, add your details, select your sport — Football or Cricket. Your profile becomes your digital identity, visible to scouts across Bangladesh.</p>
+                <h3 className="font-display text-4xl sm:text-5xl mb-4" style={{ color: "hsl(var(--teal-deep))" }}>YOUR STORY<br />STARTS HERE</h3>
+                <p className="leading-relaxed" style={{ color: "hsl(var(--teal-deep) / 0.8)" }}>Sign up as a Player, add your details, select your sport — Football or Cricket. Your profile becomes your digital identity, visible to scouts across Bangladesh.</p>
                 <div className="mt-6 flex gap-3">
                   {["Football", "Cricket", "Athletics"].map((s) => (
                     <span key={s} className="text-xs px-3 py-1 rounded-full border font-medium"
@@ -421,8 +423,8 @@ const Index = () => {
                   <span className="text-xs font-bold tracking-[0.2em] uppercase px-3 py-1 rounded-full"
                     style={{ background: "hsl(var(--green) / 0.12)", color: "hsl(var(--green))" }}>Upload Highlights</span>
                 </div>
-                <h3 className="font-display text-4xl sm:text-5xl text-foreground mb-4">LET YOUR GAME<br />SPEAK</h3>
-                <p className="text-muted-foreground leading-relaxed">Record a 3-minute highlight video. Tag your position and traits. Pay ৳100 via bKash. Your reel goes live to hundreds of verified scouts instantly.</p>
+                <h3 className="font-display text-4xl sm:text-5xl mb-4" style={{ color: "hsl(var(--teal-deep))" }}>LET YOUR GAME<br />SPEAK</h3>
+                <p className="leading-relaxed" style={{ color: "hsl(var(--teal-deep) / 0.8)" }}>Record a 3-minute highlight video. Tag your position and traits. Pay ৳100 via bKash. Your reel goes live to hundreds of verified scouts instantly.</p>
                 <div className="mt-6 p-4 rounded-xl border flex items-center gap-4"
                   style={{ borderColor: "hsl(var(--green) / 0.15)", background: "hsl(var(--green) / 0.05)" }}>
                   <Zap className="h-8 w-8 flex-shrink-0" style={{ color: "hsl(var(--green))" }} />
@@ -446,8 +448,8 @@ const Index = () => {
                   <span className="text-xs font-bold tracking-[0.2em] uppercase px-3 py-1 rounded-full"
                     style={{ background: "hsl(var(--green) / 0.12)", color: "hsl(var(--green))" }}>Get Discovered</span>
                 </div>
-                <h3 className="font-display text-4xl sm:text-5xl text-foreground mb-4">SCOUTS<br />FIND YOU</h3>
-                <p className="text-muted-foreground leading-relaxed">Verified scouts browse your profile, shortlist you, and reach out through our safe admin-mediated channel. No direct contact. No corruption. Pure merit.</p>
+                <h3 className="font-display text-4xl sm:text-5xl mb-4" style={{ color: "hsl(var(--teal-deep))" }}>SCOUTS<br />FIND YOU</h3>
+                <p className="leading-relaxed" style={{ color: "hsl(var(--teal-deep) / 0.8)" }}>Verified scouts browse your profile, shortlist you, and reach out through our safe admin-mediated channel. No direct contact. No corruption. Pure merit.</p>
               </Reveal>
 
               {/* Scout dashboard mockup */}
