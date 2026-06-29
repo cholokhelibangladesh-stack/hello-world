@@ -590,38 +590,36 @@ const Index = () => {
         <div className="container relative z-10">
           <Reveal>
             <div className="max-w-5xl mx-auto">
-              {/* Two vertical phones, tilted in 3D, right one offset down */}
+              {/* Two vertical phones, tilted in 3D, slide in from sides */}
               <div className="relative mx-auto flex justify-center items-start gap-4 sm:gap-8 lg:gap-12 pb-16 [perspective:1800px]">
-                {/* Left phone — tilted left */}
+                {/* Left phone — slides in from left */}
                 <motion.div
-                  initial={{ opacity: 0, y: 40, rotateY: -25 }}
-                  whileInView={{ opacity: 1, y: 0, rotateY: -14 }}
-                  viewport={{ once: true, amount: 0.3 }}
-                  transition={{ duration: 1, ease: [0.16, 1, 0.3, 1] }}
-                  style={{ transformStyle: "preserve-3d", rotate: "-6deg" }}
-                  className="relative w-[44%] sm:w-[36%] max-w-[260px] aspect-[9/19.5] rounded-[2.4rem] sm:rounded-[3rem] p-[3px] bg-gradient-to-br from-neutral-400 via-neutral-700 to-neutral-900 shadow-[0_40px_80px_-20px_rgba(0,0,0,0.7),0_20px_40px_-10px_rgba(0,0,0,0.5)]"
+                  initial={{ opacity: 0, x: -180, y: -20, rotateY: -35, rotate: -14 }}
+                  whileInView={{ opacity: 1, x: 0, y: 0, rotateY: -16, rotate: -8 }}
+                  viewport={{ once: true, amount: 0.25 }}
+                  transition={{ duration: 1.1, ease: [0.16, 1, 0.3, 1] }}
+                  style={{ transformStyle: "preserve-3d" }}
+                  className="relative w-[44%] sm:w-[36%] max-w-[260px] aspect-[9/19.5] rounded-[2.4rem] sm:rounded-[3rem] p-[3px] bg-gradient-to-br from-neutral-300 via-neutral-600 to-neutral-900 shadow-[0_50px_100px_-20px_rgba(0,0,0,0.75),0_25px_50px_-15px_rgba(0,0,0,0.55)]"
                 >
                   <div className="relative w-full h-full rounded-[2.2rem] sm:rounded-[2.8rem] p-[6px] bg-black overflow-hidden">
                     <div className="relative w-full h-full rounded-[1.9rem] sm:rounded-[2.4rem] overflow-hidden bg-black">
-                      <img src={phoneDashboard.url} alt="Cholo Kheli player dashboard" loading="lazy"
+                      <img src={phoneDashboard.url} alt="Cholo Kheli player profile" loading="lazy"
                         className="w-full h-full object-cover select-none" draggable={false} />
-                      {/* Dynamic island */}
                       <div className="absolute top-1.5 sm:top-2 left-1/2 -translate-x-1/2 w-[28%] h-[18px] sm:h-[22px] bg-black rounded-full z-10" />
-                      {/* Glare */}
                       <div className="absolute inset-0 pointer-events-none rounded-[1.9rem] sm:rounded-[2.4rem]"
                         style={{ background: "linear-gradient(115deg, rgba(255,255,255,0.18) 0%, rgba(255,255,255,0) 35%, rgba(255,255,255,0) 65%, rgba(255,255,255,0.08) 100%)" }} />
                     </div>
                   </div>
                 </motion.div>
 
-                {/* Right phone — tilted right, offset down */}
+                {/* Right phone — slides in from right, offset further down */}
                 <motion.div
-                  initial={{ opacity: 0, y: 60, rotateY: 25 }}
-                  whileInView={{ opacity: 1, y: 0, rotateY: 14 }}
-                  viewport={{ once: true, amount: 0.3 }}
-                  transition={{ duration: 1, delay: 0.15, ease: [0.16, 1, 0.3, 1] }}
-                  style={{ transformStyle: "preserve-3d", rotate: "6deg" }}
-                  className="relative w-[44%] sm:w-[36%] max-w-[260px] aspect-[9/19.5] rounded-[2.4rem] sm:rounded-[3rem] p-[3px] bg-gradient-to-bl from-neutral-400 via-neutral-700 to-neutral-900 shadow-[0_40px_80px_-20px_rgba(0,0,0,0.7),0_20px_40px_-10px_rgba(0,0,0,0.5)] mt-16 sm:mt-24"
+                  initial={{ opacity: 0, x: 180, y: 60, rotateY: 35, rotate: 14 }}
+                  whileInView={{ opacity: 1, x: 0, y: 0, rotateY: 18, rotate: 10 }}
+                  viewport={{ once: true, amount: 0.25 }}
+                  transition={{ duration: 1.1, delay: 0.2, ease: [0.16, 1, 0.3, 1] }}
+                  style={{ transformStyle: "preserve-3d" }}
+                  className="relative w-[44%] sm:w-[36%] max-w-[260px] aspect-[9/19.5] rounded-[2.4rem] sm:rounded-[3rem] p-[3px] bg-gradient-to-bl from-neutral-300 via-neutral-600 to-neutral-900 shadow-[0_50px_100px_-20px_rgba(0,0,0,0.75),0_25px_50px_-15px_rgba(0,0,0,0.55)] mt-24 sm:mt-36"
                 >
                   <div className="relative w-full h-full rounded-[2.2rem] sm:rounded-[2.8rem] p-[6px] bg-black overflow-hidden">
                     <div className="relative w-full h-full rounded-[1.9rem] sm:rounded-[2.4rem] overflow-hidden bg-white">
@@ -637,12 +635,14 @@ const Index = () => {
 
               {/* CTAs below the phones */}
               <div className="flex flex-col sm:flex-row gap-4 justify-center items-center">
-                <Link to="/auth">
-                  <Button size="lg" className="font-bold text-lg px-12 py-6 animate-pulse-glow"
-                    style={{ background: "hsl(var(--green))", color: "hsl(var(--primary-foreground))" }}>
-                    Join Cholo Kheli Free <ArrowRight className="ml-2 h-5 w-5" />
-                  </Button>
-                </Link>
+                {!user && (
+                  <Link to="/auth">
+                    <Button size="lg" className="font-bold text-lg px-12 py-6 animate-pulse-glow"
+                      style={{ background: "hsl(var(--green))", color: "hsl(var(--primary-foreground))" }}>
+                      Join Cholo Kheli Free <ArrowRight className="ml-2 h-5 w-5" />
+                    </Button>
+                  </Link>
+                )}
                 <Link to="/mission">
                   <Button size="lg" variant="outline" className="font-semibold text-lg px-10 py-6"
                     style={{ borderColor: "hsl(var(--green) / 0.3)", color: "hsl(var(--green))" }}>
@@ -654,6 +654,44 @@ const Index = () => {
           </Reveal>
         </div>
       </section>
+
+      {/* ══════════════════════════════════════════
+          LIVE STATS BAR — moved below CTA phones
+      ══════════════════════════════════════════ */}
+      <section className="py-16 border-t border-border relative overflow-hidden surface-card">
+        <img src={statsImg.url} alt="" aria-hidden
+          className="absolute inset-0 w-full h-full object-cover opacity-25" />
+        <div className="absolute inset-0 pointer-events-none"
+          style={{ background: "linear-gradient(to bottom, hsl(var(--background) / 0.92), hsl(var(--background) / 0.96))" }} />
+        <div className="container">
+          <div className="grid grid-cols-3 gap-4 sm:gap-8">
+            {[
+              { label: "Players Registered", target: 2500, suffix: "+", Icon: Users },
+              { label: "Verified Scouts",    target: 120,  suffix: "+", Icon: Shield },
+              { label: "Talent Discovered",  target: 340,  suffix: "+", Icon: Trophy },
+            ].map((stat, i) => (
+              <Reveal key={stat.label} delay={i * 0.12} className="text-center group">
+                <div className="relative p-6 rounded-2xl border transition-all duration-300 card-hover"
+                  style={{ background: "hsl(var(--card))", borderColor: "hsl(var(--border))" }}>
+                  <div className="flex justify-center mb-3">
+                    <div className="w-12 h-12 rounded-xl flex items-center justify-center transition-all duration-300 group-hover:scale-110"
+                      style={{ background: "hsl(var(--green) / 0.12)" }}>
+                      <stat.Icon className="h-5 w-5" style={{ color: "hsl(var(--green))" }} />
+                    </div>
+                  </div>
+                  <div className="font-display text-4xl sm:text-6xl mb-1" style={{ color: "hsl(var(--green))" }}>
+                    <Counter target={stat.target} suffix={stat.suffix} />
+                  </div>
+                  <div className="text-xs sm:text-sm text-muted-foreground">{stat.label}</div>
+                  <div className="absolute bottom-0 left-1/2 -translate-x-1/2 w-0 h-0.5 group-hover:w-full transition-all duration-500 rounded-full"
+                    style={{ background: "hsl(var(--green))" }} />
+                </div>
+              </Reveal>
+            ))}
+          </div>
+        </div>
+      </section>
+
 
       {/* ══════════════════════════════════════════
           FOOTER SOCIAL
