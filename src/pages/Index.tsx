@@ -294,7 +294,7 @@ const Index = () => {
       {/* ══════════════════════════════════════════
           LIVE STATS BAR
       ══════════════════════════════════════════ */}
-      <section className="py-16 border-t border-border relative overflow-hidden">
+      <section className="py-16 border-t border-border relative overflow-hidden surface-card wash">
         {/* Green ambient glow */}
         <div className="absolute inset-0 pointer-events-none" style={{
           background: "radial-gradient(ellipse 60% 80% at 50% 50%, hsl(var(--green) / 0.08) 0%, transparent 70%)"
@@ -332,7 +332,7 @@ const Index = () => {
       {/* ══════════════════════════════════════════
           HOW IT WORKS — 3 STEPS
       ══════════════════════════════════════════ */}
-      <section className="py-20 sm:py-32 border-t border-border overflow-hidden relative">
+      <section className="py-20 sm:py-32 border-t border-border overflow-hidden relative surface-paper wash">
         {/* Vertical timeline */}
         <div className="hidden sm:block absolute left-1/2 top-0 bottom-0 w-px -translate-x-1/2 pointer-events-none"
           style={{ background: "linear-gradient(to bottom, transparent, hsl(var(--green) / 0.2) 20%, hsl(var(--green) / 0.2) 80%, transparent)" }} />
@@ -499,7 +499,7 @@ const Index = () => {
       {/* ══════════════════════════════════════════
           VERIFIED SCOUTS
       ══════════════════════════════════════════ */}
-      <section className="py-16 sm:py-24 border-t border-border">
+      <section className="py-16 sm:py-24 border-t border-border surface-card wash">
         <div className="container">
           <Reveal className="text-center mb-12">
             <span className="inline-block text-xs font-bold tracking-[0.2em] uppercase mb-4 px-4 py-1.5 rounded-full"
@@ -550,7 +550,7 @@ const Index = () => {
       {/* ══════════════════════════════════════════
           CINEMATIC CTA
       ══════════════════════════════════════════ */}
-      <section className="py-24 sm:py-36 border-t border-border relative overflow-hidden">
+      <section className="py-24 sm:py-36 border-t border-border relative overflow-hidden surface-ink wash wash-ink">
         {/* Background */}
         <div className="absolute inset-0 pointer-events-none" style={{
           background: "radial-gradient(ellipse 80% 60% at 50% 50%, hsl(var(--green) / 0.07) 0%, transparent 70%)"
@@ -578,7 +578,7 @@ const Index = () => {
               <Link to="/auth">
                 <Button size="lg" className="font-bold text-lg px-12 py-6 animate-pulse-glow"
                   style={{ background: "hsl(var(--green))", color: "hsl(var(--primary-foreground))" }}>
-                  Join Scout BD Free <ArrowRight className="ml-2 h-5 w-5" />
+                  Join Cholo Kheli Free <ArrowRight className="ml-2 h-5 w-5" />
                 </Button>
               </Link>
               <Link to="/mission">
@@ -595,7 +595,7 @@ const Index = () => {
       {/* ══════════════════════════════════════════
           FOOTER SOCIAL
       ══════════════════════════════════════════ */}
-      <section className="py-16 border-t border-border">
+      <section className="py-16 border-t border-border surface-paper">
         <div className="container text-center">
           <Reveal>
             <p className="text-xs tracking-[0.2em] uppercase text-muted-foreground mb-6">Follow the Journey</p>
@@ -609,7 +609,7 @@ const Index = () => {
                 </motion.a>
               ))}
             </div>
-            <p className="text-xs text-muted-foreground/40 mt-8">© 2025 Scout BD. All rights reserved.</p>
+            <p className="text-xs text-muted-foreground/40 mt-8">© 2026 Cholo Kheli — Let&apos;s Play</p>
           </Reveal>
         </div>
       </section>
