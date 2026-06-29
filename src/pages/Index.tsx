@@ -349,44 +349,8 @@ const Index = () => {
         </div>
       </section>
 
-      {/* ══════════════════════════════════════════
-          LIVE STATS BAR
-      ══════════════════════════════════════════ */}
-      <section className="py-16 border-t border-border relative overflow-hidden surface-card">
-        {/* Cinematic backdrop */}
-        <img src={statsImg.url} alt="" aria-hidden
-          className="absolute inset-0 w-full h-full object-cover opacity-25" />
-        <div className="absolute inset-0 pointer-events-none"
-          style={{ background: "linear-gradient(to bottom, hsl(var(--background) / 0.92), hsl(var(--background) / 0.96))" }} />
-        <div className="container">
-          <div className="grid grid-cols-3 gap-4 sm:gap-8">
-            {[
-              { label: "Players Registered", target: 2500, suffix: "+", Icon: Users },
-              { label: "Verified Scouts",    target: 120,  suffix: "+", Icon: Shield },
-              { label: "Talent Discovered",  target: 340,  suffix: "+", Icon: Trophy },
-            ].map((stat, i) => (
-              <Reveal key={stat.label} delay={i * 0.12} className="text-center group">
-                <div className="relative p-6 rounded-2xl border transition-all duration-300 card-hover"
-                  style={{ background: "hsl(var(--card))", borderColor: "hsl(var(--border))" }}>
-                  <div className="flex justify-center mb-3">
-                    <div className="w-12 h-12 rounded-xl flex items-center justify-center transition-all duration-300 group-hover:scale-110"
-                      style={{ background: "hsl(var(--green) / 0.12)" }}>
-                      <stat.Icon className="h-5 w-5" style={{ color: "hsl(var(--green))" }} />
-                    </div>
-                  </div>
-                  <div className="font-display text-4xl sm:text-6xl mb-1" style={{ color: "hsl(var(--green))" }}>
-                    <Counter target={stat.target} suffix={stat.suffix} />
-                  </div>
-                  <div className="text-xs sm:text-sm text-muted-foreground">{stat.label}</div>
-                  {/* Bottom accent line */}
-                  <div className="absolute bottom-0 left-1/2 -translate-x-1/2 w-0 h-0.5 group-hover:w-full transition-all duration-500 rounded-full"
-                    style={{ background: "hsl(var(--green))" }} />
-                </div>
-              </Reveal>
-            ))}
-          </div>
-        </div>
-      </section>
+      {/* Stats moved below CTA phones section */}
+
 
       {/* ══════════════════════════════════════════
           HOW IT WORKS — 3 STEPS
