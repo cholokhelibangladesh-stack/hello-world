@@ -15,7 +15,7 @@ import heroImg from "@/assets/hero-cricket.jpg.asset.json";
 import statsImg from "@/assets/stats-football.jpg.asset.json";
 import stadiumImg from "@/assets/stadium-dusk.jpg.asset.json";
 import footballerImg from "@/assets/footballer-motion.jpg.asset.json";
-import phoneDashboard from "@/assets/phone-dashboard.png.asset.json";
+import phoneDashboard from "@/assets/phone-dashboard-v2.png.asset.json";
 import phonePlaystore from "@/assets/phone-playstore.png.asset.json";
 import sportFootball from "@/assets/sport-football.jpg.asset.json";
 import sportCricket from "@/assets/sport-cricket.jpg.asset.json";
