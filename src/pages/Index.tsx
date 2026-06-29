@@ -364,8 +364,8 @@ const Index = () => {
                   <span className="text-xs font-bold tracking-[0.2em] uppercase px-3 py-1 rounded-full"
                     style={{ background: "hsl(var(--green) / 0.12)", color: "hsl(var(--green))" }}>Create Profile</span>
                 </div>
-                <h3 className="font-display text-4xl sm:text-5xl text-foreground mb-4">YOUR STORY<br />STARTS HERE</h3>
-                <p className="text-muted-foreground leading-relaxed">Sign up as a Player, add your details, select your sport — Football or Cricket. Your profile becomes your digital identity, visible to scouts across Bangladesh.</p>
+                <h3 className="font-display text-4xl sm:text-5xl mb-4" style={{ color: "hsl(var(--teal-deep))" }}>YOUR STORY<br />STARTS HERE</h3>
+                <p className="leading-relaxed" style={{ color: "hsl(var(--teal-deep) / 0.8)" }}>Sign up as a Player, add your details, select your sport — Football or Cricket. Your profile becomes your digital identity, visible to scouts across Bangladesh.</p>
                 <div className="mt-6 flex gap-3">
                   {["Football", "Cricket", "Athletics"].map((s) => (
                     <span key={s} className="text-xs px-3 py-1 rounded-full border font-medium"
@@ -423,8 +423,8 @@ const Index = () => {
                   <span className="text-xs font-bold tracking-[0.2em] uppercase px-3 py-1 rounded-full"
                     style={{ background: "hsl(var(--green) / 0.12)", color: "hsl(var(--green))" }}>Upload Highlights</span>
                 </div>
-                <h3 className="font-display text-4xl sm:text-5xl text-foreground mb-4">LET YOUR GAME<br />SPEAK</h3>
-                <p className="text-muted-foreground leading-relaxed">Record a 3-minute highlight video. Tag your position and traits. Pay ৳100 via bKash. Your reel goes live to hundreds of verified scouts instantly.</p>
+                <h3 className="font-display text-4xl sm:text-5xl mb-4" style={{ color: "hsl(var(--teal-deep))" }}>LET YOUR GAME<br />SPEAK</h3>
+                <p className="leading-relaxed" style={{ color: "hsl(var(--teal-deep) / 0.8)" }}>Record a 3-minute highlight video. Tag your position and traits. Pay ৳100 via bKash. Your reel goes live to hundreds of verified scouts instantly.</p>
                 <div className="mt-6 p-4 rounded-xl border flex items-center gap-4"
                   style={{ borderColor: "hsl(var(--green) / 0.15)", background: "hsl(var(--green) / 0.05)" }}>
                   <Zap className="h-8 w-8 flex-shrink-0" style={{ color: "hsl(var(--green))" }} />
@@ -448,8 +448,8 @@ const Index = () => {
                   <span className="text-xs font-bold tracking-[0.2em] uppercase px-3 py-1 rounded-full"
                     style={{ background: "hsl(var(--green) / 0.12)", color: "hsl(var(--green))" }}>Get Discovered</span>
                 </div>
-                <h3 className="font-display text-4xl sm:text-5xl text-foreground mb-4">SCOUTS<br />FIND YOU</h3>
-                <p className="text-muted-foreground leading-relaxed">Verified scouts browse your profile, shortlist you, and reach out through our safe admin-mediated channel. No direct contact. No corruption. Pure merit.</p>
+                <h3 className="font-display text-4xl sm:text-5xl mb-4" style={{ color: "hsl(var(--teal-deep))" }}>SCOUTS<br />FIND YOU</h3>
+                <p className="leading-relaxed" style={{ color: "hsl(var(--teal-deep) / 0.8)" }}>Verified scouts browse your profile, shortlist you, and reach out through our safe admin-mediated channel. No direct contact. No corruption. Pure merit.</p>
               </Reveal>
 
               {/* Scout dashboard mockup */}
