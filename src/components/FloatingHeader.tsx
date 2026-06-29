@@ -22,21 +22,21 @@ const FloatingHeader = () => {
 
   return (
     <>
-      {/* Left: Home */}
+      {/* Left: Home — bare icon, no wrapper */}
       <Link
         to="/"
         aria-label="Home"
-        className={`fixed top-4 left-4 sm:top-6 sm:left-6 z-50 ${iconBtn}`}
+        className={`fixed top-4 left-4 sm:top-6 sm:left-6 z-50 bg-transparent ${iconBtn}`}
       >
         <Home {...iconProps} />
       </Link>
 
-      {/* Right cluster: theme + menu */}
-      <div className="fixed top-4 right-4 sm:top-6 sm:right-6 z-50 flex items-center gap-2">
+      {/* Right cluster: transparent container, only icons are clickable */}
+      <div className="fixed top-4 right-4 sm:top-6 sm:right-6 z-50 flex items-center gap-2 bg-transparent pointer-events-none">
         <button
           onClick={toggleTheme}
           aria-label="Toggle theme"
-          className={iconBtn}
+          className={`bg-transparent pointer-events-auto ${iconBtn}`}
         >
           {theme === "dark" ? <Sun {...iconProps} /> : <Moon {...iconProps} />}
         </button>
@@ -44,16 +44,16 @@ const FloatingHeader = () => {
           onClick={() => setOpen((o) => !o)}
           aria-label="Open menu"
           aria-expanded={open}
-          className={iconBtn}
+          className={`bg-transparent pointer-events-auto ${iconBtn}`}
         >
           {open ? <X {...iconProps} /> : <Menu {...iconProps} />}
         </button>
       </div>
 
-      {/* Dropdown menu */}
+      {/* Dropdown menu — transparent click-catcher, only panel is visible */}
       {open && (
         <div
-          className="fixed inset-0 z-40"
+          className="fixed inset-0 z-40 bg-transparent"
           onClick={() => setOpen(false)}
         >
           <div
