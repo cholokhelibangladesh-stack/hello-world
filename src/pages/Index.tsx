@@ -594,10 +594,10 @@ const Index = () => {
               <div className="relative mx-auto flex justify-center items-start gap-6 sm:gap-10 lg:gap-16 pb-16 [perspective:1800px]">
                 {/* Left phone — slides in from left */}
                 <motion.div
-                  initial={{ opacity: 0, x: -180, y: -20, rotateY: -25, rotate: 0 }}
-                  whileInView={{ opacity: 1, x: 0, y: 0, rotateY: -12, rotate: 0 }}
+                  initial={{ opacity: 0, x: -220, rotateY: -12, rotate: 0 }}
+                  whileInView={{ opacity: 1, x: 0, rotateY: -12, rotate: 0 }}
                   viewport={{ once: true, amount: 0.25 }}
-                  transition={{ duration: 1.1, ease: [0.16, 1, 0.3, 1] }}
+                  transition={{ duration: 1.2, ease: [0.22, 1, 0.36, 1] }}
                   style={{ transformStyle: "preserve-3d" }}
                   className="relative z-20 w-[48%] sm:w-[40%] max-w-[280px] aspect-[9/19.5] rounded-[2.4rem] sm:rounded-[3rem] p-[3px] bg-gradient-to-br from-neutral-300 via-neutral-600 to-neutral-900 shadow-[0_50px_100px_-20px_rgba(0,0,0,0.75),0_25px_50px_-15px_rgba(0,0,0,0.55)]"
                 >
