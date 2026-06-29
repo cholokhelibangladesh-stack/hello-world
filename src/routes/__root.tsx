@@ -37,24 +37,12 @@ function RootComponent() {
 }
 
 function AppShell() {
-  const [showIntro, setShowIntro] = useState(false);
-
-  useEffect(() => {
-    if (typeof window === "undefined") return;
-    const seen = sessionStorage.getItem("scoutbd-intro-seen");
-    if (!seen) {
-      setShowIntro(true);
-      sessionStorage.setItem("scoutbd-intro-seen", "1");
-    }
-  }, []);
-
   return (
     <ThemeProvider>
       <AuthProvider>
         <TooltipProvider>
           <Toaster />
           <Sonner />
-          {showIntro && <LoadingIntro onDone={() => setShowIntro(false)} />}
           <FloatingHeader />
           <Outlet />
         </TooltipProvider>
