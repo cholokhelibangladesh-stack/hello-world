@@ -262,6 +262,11 @@ const Index = () => {
 
         </motion.div>
 
+        {/* Cursor-following foggy mist */}
+        <HeroMistCursor />
+
+
+
         {/* Subtle vertical grid lines for editorial feel */}
         <div
           className="absolute inset-0 pointer-events-none opacity-[0.05]"
