@@ -33,7 +33,47 @@ type ScoutProfile = {
   full_name: string;
   organization: string | null;
   avatar_url: string | null;
+  bio: string | null;
 };
+
+const FALLBACK_SCOUTS: ScoutProfile[] = [
+  {
+    user_id: "fb-1",
+    full_name: "Tanvir Hasan",
+    organization: "Bashundhara Kings Academy",
+    avatar_url: null,
+    bio: "Fifteen years scouting football across Dhaka and Chattogram divisions. I look for players who read the game two passes ahead — technique can be coached, vision is rarer. My job is to give district-level talent a fair shot at the national pipeline.",
+  },
+  {
+    user_id: "fb-2",
+    full_name: "Nusrat Jahan",
+    organization: "Bangladesh Cricket Board",
+    avatar_url: null,
+    bio: "Former domestic all-rounder, now scouting for the women's and U-19 pathways. Cholo Kheli lets me watch tape from villages I'd never reach in person. Every week I find someone worth a closer look — that didn't happen before.",
+  },
+  {
+    user_id: "fb-3",
+    full_name: "Imran Chowdhury",
+    organization: "Sheikh Russel KC",
+    avatar_url: null,
+    bio: "I scout midfielders and defenders for the Premier League side. The verified, admin-mediated channel here means I'm talking to real players and real guardians — no agents, no noise. That trust is what made me sign up.",
+  },
+  {
+    user_id: "fb-4",
+    full_name: "Farhana Ahmed",
+    organization: "Abahani Limited Dhaka",
+    avatar_url: null,
+    bio: "Twelve years in talent identification. The grassroots in Bangladesh is deeper than people think — what's been missing is a clean way to see it. Cholo Kheli is the first platform where I trust every profile in front of me.",
+  },
+  {
+    user_id: "fb-5",
+    full_name: "Rashed Mahmud",
+    organization: "BFF Elite Academy",
+    avatar_url: null,
+    bio: "I focus on under-17 prospects. Three minutes of honest footage tells me more than a written CV ever could. The players I've shortlisted from this platform are now training with us in Sylhet — that's the proof I needed.",
+  },
+];
+
 
 /* ── Animated counter ── */
 function Counter({ target, suffix = "" }: { target: number; suffix?: string }) {
