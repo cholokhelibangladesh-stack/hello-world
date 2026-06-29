@@ -131,7 +131,7 @@ const Index = () => {
             className="absolute inset-0"
             style={{
               background:
-                "linear-gradient(to bottom, hsl(var(--paper) / 0.78) 0%, hsl(var(--paper) / 0.55) 45%, hsl(var(--paper-deep) / 0.92) 100%)",
+                "linear-gradient(to bottom, hsl(var(--paper) / 0) 0%, hsl(var(--paper) / 0.35) 55%, hsl(var(--paper-deep) / 0.92) 100%)",
             }}
           />
         </motion.div>
