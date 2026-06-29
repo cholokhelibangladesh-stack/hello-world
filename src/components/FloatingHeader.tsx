@@ -27,7 +27,7 @@ const FloatingHeader = () => {
         aria-label="Home"
         className={`fixed top-4 left-4 sm:top-6 sm:left-6 z-50 ${iconBtn}`}
       >
-        <Home className="h-5 w-5" />
+        <Home {...iconProps} />
       </Link>
 
       {/* Right cluster: theme + menu */}
@@ -37,7 +37,7 @@ const FloatingHeader = () => {
           aria-label="Toggle theme"
           className={iconBtn}
         >
-          {theme === "dark" ? <Sun className="h-5 w-5" /> : <Moon className="h-5 w-5" />}
+          {theme === "dark" ? <Sun {...iconProps} /> : <Moon {...iconProps} />}
         </button>
         <button
           onClick={() => setOpen((o) => !o)}
@@ -45,7 +45,7 @@ const FloatingHeader = () => {
           aria-expanded={open}
           className={iconBtn}
         >
-          {open ? <X className="h-5 w-5" /> : <Menu className="h-5 w-5" />}
+          {open ? <X {...iconProps} /> : <Menu {...iconProps} />}
         </button>
       </div>
 
