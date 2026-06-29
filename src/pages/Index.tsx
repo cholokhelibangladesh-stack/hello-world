@@ -1,5 +1,5 @@
 import { useState, useEffect, useRef } from "react";
-import { motion, useScroll, useTransform, useInView } from "framer-motion";
+import { motion, AnimatePresence, useScroll, useTransform, useInView, useMotionValue, useMotionTemplate, useSpring } from "framer-motion";
 import { Link } from "@tanstack/react-router";
 import {
   ArrowRight, ArrowLeft, Users, Shield, Trophy, Twitter, Facebook,
