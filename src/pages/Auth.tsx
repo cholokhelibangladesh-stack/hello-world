@@ -1,13 +1,14 @@
 import { useState, useEffect } from "react";
 import { motion } from "framer-motion";
 import { Link, useNavigate } from "@tanstack/react-router";
-import { Zap, Eye, EyeOff, Loader2, CheckCircle2 } from "lucide-react";
+import { Eye, EyeOff, Loader2, CheckCircle2 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { useToast } from "@/hooks/use-toast";
 import { useAuth } from "@/hooks/useAuth";
 import { supabase } from "@/integrations/supabase/client";
+import CholoKheliMark from "@/components/CholoKheliMark";
 
 type Role = "player" | "scout";
 type Sport = "football" | "cricket";
@@ -209,16 +210,21 @@ const Auth = () => {
   }
 
   return (
-    <div className="min-h-screen flex items-start justify-center pt-20 pb-24 px-4 overflow-y-auto">
+    <div className="min-h-screen flex items-start justify-center pt-24 pb-24 px-4 overflow-y-auto bg-gradient-to-b from-[hsl(var(--paper))] via-[hsl(var(--paper))] to-[hsl(var(--teal-deep)/0.08)]">
       <div className="w-full max-w-md">
         <div className="text-center mb-6">
-          <Link to="/" className="inline-flex items-center gap-2 mb-3 group">
-            <Zap className="h-6 w-6 text-foreground" />
-            <span className="font-display text-2xl text-foreground">SCOUT BD</span>
+          <Link to="/" className="inline-flex items-center gap-2.5 mb-4 group">
+            <CholoKheliMark className="h-10 w-10" />
+            <span className="font-display text-2xl tracking-[0.04em] text-[hsl(var(--teal-deep))] font-semibold">
+              CHOLO <span className="font-bold">KHELI</span>
+            </span>
           </Link>
-          <h1 className="font-display text-3xl text-foreground">
-            {isLogin ? "WELCOME BACK" : "JOIN THE GAME"}
+          <h1 className="font-display text-3xl text-[hsl(var(--teal-deep))]">
+            {isLogin ? "Welcome back" : "Join the game"}
           </h1>
+          <p className="text-sm text-muted-foreground mt-2">
+            {isLogin ? "Sign in to continue your journey." : "Create your account to get scouted."}
+          </p>
         </div>
 
         <motion.div
