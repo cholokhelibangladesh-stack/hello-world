@@ -11,13 +11,13 @@ import { supabase } from "@/integrations/supabase/client";
 import BangladeshMapTestimonials from "@/components/BangladeshMapTestimonials";
 import MarqueeTicker from "@/components/MarqueeTicker";
 import VideoHighlights from "@/components/VideoHighlights";
-const heroVideo = "";
+import CholoKheliMark from "@/components/CholoKheliMark";
 
 const socialLinks = [
-  { Icon: Facebook,  label: "Facebook",    href: "https://facebook.com/scoutbd",  color: "hover:text-blue-500" },
-  { Icon: Twitter,   label: "Twitter / X", href: "https://twitter.com/scoutbd",   color: "hover:text-sky-500" },
-  { Icon: Instagram, label: "Instagram",   href: "https://instagram.com/scoutbd", color: "hover:text-pink-500" },
-  { Icon: Youtube,   label: "YouTube",     href: "https://youtube.com/@scoutbd",  color: "hover:text-red-500" },
+  { Icon: Facebook,  label: "Facebook",    href: "https://facebook.com/cholokheli",  color: "hover:text-[hsl(var(--teal))]" },
+  { Icon: Twitter,   label: "Twitter / X", href: "https://twitter.com/cholokheli",   color: "hover:text-[hsl(var(--teal))]" },
+  { Icon: Instagram, label: "Instagram",   href: "https://instagram.com/cholokheli", color: "hover:text-[hsl(var(--teal))]" },
+  { Icon: Youtube,   label: "YouTube",     href: "https://youtube.com/@cholokheli",  color: "hover:text-[hsl(var(--teal))]" },
 ];
 
 type ScoutProfile = {
