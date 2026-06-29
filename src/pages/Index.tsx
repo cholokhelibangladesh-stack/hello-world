@@ -115,7 +115,8 @@ function Reveal({ children, delay = 0, className = "", direction = "up" }: {
 ════════════════════════════════════════════ */
 const Index = () => {
   const { user, role } = useAuth();
-  const [verifiedScouts, setVerifiedScouts] = useState<ScoutProfile[]>([]);
+  const [verifiedScouts, setVerifiedScouts] = useState<ScoutProfile[]>(FALLBACK_SCOUTS);
+  const [scoutIndex, setScoutIndex] = useState(0);
 
   const heroRef = useRef<HTMLDivElement>(null);
   const { scrollYProgress } = useScroll({ target: heroRef, offset: ["start start", "end start"] });
@@ -131,12 +132,13 @@ const Index = () => {
         const { data: scoutData } = await supabase.from("scout_profiles").select("user_id, organization").eq("verification_status", "active").limit(12);
         if (!scoutData?.length) return;
         const userIds = scoutData.map((s) => s.user_id);
-        const { data: profileData } = await supabase.from("profiles").select("user_id, full_name, avatar_url").in("user_id", userIds);
+        const { data: profileData } = await supabase.from("profiles").select("user_id, full_name, avatar_url, bio").in("user_id", userIds);
         const map = Object.fromEntries((profileData ?? []).map((p) => [p.user_id, p]));
         setVerifiedScouts(scoutData.map((s) => ({
           user_id: s.user_id, organization: s.organization,
           full_name: map[s.user_id]?.full_name ?? "Scout",
           avatar_url: map[s.user_id]?.avatar_url ?? null,
+          bio: map[s.user_id]?.bio ?? null,
         })));
       } catch (e) {
         console.warn("scouts fetch failed", e);
@@ -144,6 +146,7 @@ const Index = () => {
     };
     fetchScouts();
   }, []);
+
 
 
   return (
