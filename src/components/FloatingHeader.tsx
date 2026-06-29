@@ -85,7 +85,9 @@ const FloatingHeader = () => {
 
         {/* RIGHT: Login / Dashboard + mobile menu */}
         <div className="pointer-events-auto flex items-center gap-2 shrink-0">
-          {user ? (
+          {loading ? (
+            <div className={`h-9 w-24 rounded-full ${bgChip} backdrop-blur-md ring-1 animate-pulse`} aria-hidden />
+          ) : user ? (
             <>
               <div className={`hidden sm:flex items-center justify-center h-9 px-1 rounded-full ${bgChip} backdrop-blur-md ring-1 ${fg}`}>
                 <NotificationBell />
