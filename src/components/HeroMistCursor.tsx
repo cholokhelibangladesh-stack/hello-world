@@ -94,7 +94,7 @@ export default function HeroMistCursor({
       spawn(t);
 
       ctx.clearRect(0, 0, canvas.width, canvas.height);
-      ctx.globalCompositeOperation = "lighter";
+      ctx.globalCompositeOperation = "source-over";
 
       for (let i = puffs.current.length - 1; i >= 0; i--) {
         const p = puffs.current[i];
