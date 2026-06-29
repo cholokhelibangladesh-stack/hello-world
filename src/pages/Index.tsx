@@ -72,7 +72,6 @@ function Reveal({ children, delay = 0, className = "", direction = "up" }: {
 const Index = () => {
   const { user, role } = useAuth();
   const [verifiedScouts, setVerifiedScouts] = useState<ScoutProfile[]>([]);
-  const [heroReady, setHeroReady] = useState(false);
 
   const heroRef = useRef<HTMLDivElement>(null);
   const { scrollYProgress } = useScroll({ target: heroRef, offset: ["start start", "end start"] });
@@ -81,7 +80,6 @@ const Index = () => {
   const videoScale  = useTransform(scrollYProgress, [0, 0.7], [1, 1.06]);
 
   useEffect(() => {
-    setHeroReady(true);
     const isPlaceholder = !import.meta.env.VITE_SUPABASE_URL;
     if (isPlaceholder) return;
     const fetchScouts = async () => {
@@ -123,6 +121,9 @@ const Index = () => {
             src={heroImg.url}
             alt=""
             aria-hidden
+            loading="eager"
+            decoding="async"
+            {...({ fetchpriority: "high" } as any)}
             className="w-full h-full object-cover"
           />
           {/* Paper tint to keep type legible */}
@@ -153,7 +154,7 @@ const Index = () => {
         >
           <motion.div
             initial={{ opacity: 0, y: 18, scale: 0.92 }}
-            animate={heroReady ? { opacity: 1, y: 0, scale: 1 } : {}}
+            animate={{ opacity: 1, y: 0, scale: 1 }}
             transition={{ duration: 1.1, delay: 0.2, ease: [0.22, 1, 0.36, 1] }}
           >
             <CholoKheliMark
@@ -169,8 +170,8 @@ const Index = () => {
                 {word.split("").map((char, i) => (
                   <motion.span
                     key={`${word}-${i}`}
-                    initial={{ opacity: 0, y: 22, filter: "blur(6px)" }}
-                    animate={heroReady ? { opacity: 1, y: 0, filter: "blur(0px)" } : {}}
+                    initial={false}
+                    animate={{ opacity: 1, y: 0, filter: "blur(0px)" }}
                     transition={{
                       delay: 0.55 + wi * 0.18 + i * 0.04,
                       duration: 0.55,
@@ -189,8 +190,8 @@ const Index = () => {
 
           {/* Tagline */}
           <motion.p
-            initial={{ opacity: 0, y: 12 }}
-            animate={heroReady ? { opacity: 1, y: 0 } : {}}
+            initial={false}
+            animate={{ opacity: 1, y: 0 }}
             transition={{ delay: 1.3, duration: 0.7 }}
             className="mt-8 text-base sm:text-lg text-muted-foreground max-w-xl leading-relaxed"
           >
@@ -200,8 +201,8 @@ const Index = () => {
 
           {/* CTAs */}
           <motion.div
-            initial={{ opacity: 0, y: 12 }}
-            animate={heroReady ? { opacity: 1, y: 0 } : {}}
+            initial={false}
+            animate={{ opacity: 1, y: 0 }}
             transition={{ delay: 1.5, duration: 0.7 }}
             className="mt-10 flex flex-col sm:flex-row gap-3"
           >
@@ -242,9 +243,9 @@ const Index = () => {
 
           {/* Quiet stat row */}
           <motion.div
-            initial={{ opacity: 0 }}
-            animate={heroReady ? { opacity: 1 } : {}}
-            transition={{ delay: 1.8, duration: 0.8 }}
+            initial={false}
+            animate={{ opacity: 1 }}
+            transition={{ duration: 0.4 }}
             className="mt-14 grid grid-cols-3 gap-8 sm:gap-14 border-t border-foreground/10 pt-6"
           >
             {[
