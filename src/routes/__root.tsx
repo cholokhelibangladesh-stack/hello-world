@@ -1,4 +1,5 @@
-import { Outlet, createRootRouteWithContext, HeadContent, Scripts } from "@tanstack/react-router";
+import { Outlet, createRootRouteWithContext, HeadContent, Scripts, useRouterState } from "@tanstack/react-router";
+import { AnimatePresence, motion } from "framer-motion";
 
 import type { QueryClient } from "@tanstack/react-query";
 import { TooltipProvider } from "@/components/ui/tooltip";
@@ -36,6 +37,7 @@ function RootComponent() {
 }
 
 function AppShell() {
+  const pathname = useRouterState({ select: (s) => s.location.pathname });
   return (
     <ThemeProvider>
       <AuthProvider>
@@ -43,12 +45,23 @@ function AppShell() {
           <Toaster />
           <Sonner />
           <FloatingHeader />
-          <Outlet />
+          <AnimatePresence mode="wait" initial={false}>
+            <motion.div
+              key={pathname}
+              initial={{ opacity: 0, y: 8 }}
+              animate={{ opacity: 1, y: 0 }}
+              exit={{ opacity: 0, y: -8 }}
+              transition={{ duration: 0.35, ease: [0.22, 1, 0.36, 1] }}
+            >
+              <Outlet />
+            </motion.div>
+          </AnimatePresence>
         </TooltipProvider>
       </AuthProvider>
     </ThemeProvider>
   );
 }
+
 
 function RootDocument({ children }: { children: React.ReactNode }) {
   return (
