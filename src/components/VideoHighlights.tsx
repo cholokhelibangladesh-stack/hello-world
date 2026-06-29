@@ -1,11 +1,9 @@
 import { useRef, useEffect, useState } from "react";
 import { motion, useInView } from "framer-motion";
 import { Play, Volume2, VolumeX } from "lucide-react";
+import highlightLoop from "@/assets/highlight-loop.mp4.asset.json";
 
-// Public domain / royalty-free sports clips from Pexels CDN
-// Football/cricket slow-mo highlight atmosphere
-const VIDEO_SRC =
-  "https://videos.pexels.com/video-files/3257687/3257687-uhd_2560_1440_25fps.mp4";
+const VIDEO_SRC = highlightLoop.url;
 
 export default function VideoHighlights() {
   const wrapRef  = useRef<HTMLDivElement>(null);
