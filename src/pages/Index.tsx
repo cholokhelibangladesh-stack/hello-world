@@ -187,7 +187,7 @@ function ScoutCarouselCard({ scout, defaultBio }: { scout: ScoutProfile; default
   );
 }
 
-
+/* ════════════════════════════════════════════
    PAGE
 ════════════════════════════════════════════ */
 const Index = () => {
