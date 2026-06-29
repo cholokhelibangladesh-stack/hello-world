@@ -23,10 +23,10 @@ type Props = {
 };
 
 export default function HeroMistCursor({
-  density = 0.35,
-  puffSize = 22,
-  fadeSpeed = 1,
-  intensity = 0.06,
+  density = 0.6,
+  puffSize = 34,
+  fadeSpeed = 1.3,
+  intensity = 0.1,
 }: Props) {
   const canvasRef = useRef<HTMLCanvasElement>(null);
   const puffs = useRef<Puff[]>([]);
