@@ -15,8 +15,8 @@ import heroImg from "@/assets/hero-cricket.jpg.asset.json";
 import statsImg from "@/assets/stats-football.jpg.asset.json";
 import stadiumImg from "@/assets/stadium-dusk.jpg.asset.json";
 import footballerImg from "@/assets/footballer-motion.jpg.asset.json";
-import phoneDashboard from "@/assets/phone-dashboard.jpg.asset.json";
-import phonePlaystore from "@/assets/phone-playstore.jpg.asset.json";
+import phoneDashboard from "@/assets/phone-dashboard.png.asset.json";
+import phonePlaystore from "@/assets/phone-playstore.png.asset.json";
 import sportFootball from "@/assets/sport-football.jpg.asset.json";
 import sportCricket from "@/assets/sport-cricket.jpg.asset.json";
 import sportBasketball from "@/assets/sport-basketball.jpg.asset.json";
@@ -625,32 +625,48 @@ const Index = () => {
         <div className="container relative z-10">
           <Reveal>
             <div className="max-w-5xl mx-auto">
-              {/* Two vertical phones, right one offset down */}
-              <div className="relative mx-auto flex justify-center items-start gap-6 sm:gap-10 lg:gap-14 pb-12">
-                {/* Left phone */}
+              {/* Two vertical phones, tilted in 3D, right one offset down */}
+              <div className="relative mx-auto flex justify-center items-start gap-4 sm:gap-8 lg:gap-12 pb-16 [perspective:1800px]">
+                {/* Left phone — tilted left */}
                 <motion.div
-                  initial={{ opacity: 0, y: 40 }}
-                  whileInView={{ opacity: 1, y: 0 }}
+                  initial={{ opacity: 0, y: 40, rotateY: -25 }}
+                  whileInView={{ opacity: 1, y: 0, rotateY: -14 }}
                   viewport={{ once: true, amount: 0.3 }}
-                  transition={{ duration: 0.9, ease: [0.16, 1, 0.3, 1] }}
-                  className="relative w-[44%] sm:w-[38%] max-w-[280px] aspect-[9/19.5] rounded-[2.2rem] sm:rounded-[2.8rem] border-[10px] sm:border-[12px] border-black bg-black shadow-[0_30px_60px_rgba(0,0,0,0.6)] overflow-hidden"
+                  transition={{ duration: 1, ease: [0.16, 1, 0.3, 1] }}
+                  style={{ transformStyle: "preserve-3d", rotate: "-6deg" }}
+                  className="relative w-[44%] sm:w-[36%] max-w-[260px] aspect-[9/19.5] rounded-[2.4rem] sm:rounded-[3rem] p-[3px] bg-gradient-to-br from-neutral-400 via-neutral-700 to-neutral-900 shadow-[0_40px_80px_-20px_rgba(0,0,0,0.7),0_20px_40px_-10px_rgba(0,0,0,0.5)]"
                 >
-                  <div className="absolute top-0 left-1/2 -translate-x-1/2 w-1/3 h-4 sm:h-5 bg-black rounded-b-2xl z-10" />
-                  <img src={phoneDashboard.url} alt="Cholo Kheli player dashboard" loading="lazy"
-                    className="w-full h-full object-cover select-none" draggable={false} />
+                  <div className="relative w-full h-full rounded-[2.2rem] sm:rounded-[2.8rem] p-[6px] bg-black overflow-hidden">
+                    <div className="relative w-full h-full rounded-[1.9rem] sm:rounded-[2.4rem] overflow-hidden bg-black">
+                      <img src={phoneDashboard.url} alt="Cholo Kheli player dashboard" loading="lazy"
+                        className="w-full h-full object-cover select-none" draggable={false} />
+                      {/* Dynamic island */}
+                      <div className="absolute top-1.5 sm:top-2 left-1/2 -translate-x-1/2 w-[28%] h-[18px] sm:h-[22px] bg-black rounded-full z-10" />
+                      {/* Glare */}
+                      <div className="absolute inset-0 pointer-events-none rounded-[1.9rem] sm:rounded-[2.4rem]"
+                        style={{ background: "linear-gradient(115deg, rgba(255,255,255,0.18) 0%, rgba(255,255,255,0) 35%, rgba(255,255,255,0) 65%, rgba(255,255,255,0.08) 100%)" }} />
+                    </div>
+                  </div>
                 </motion.div>
 
-                {/* Right phone — offset down */}
+                {/* Right phone — tilted right, offset down */}
                 <motion.div
-                  initial={{ opacity: 0, y: 60 }}
-                  whileInView={{ opacity: 1, y: 0 }}
+                  initial={{ opacity: 0, y: 60, rotateY: 25 }}
+                  whileInView={{ opacity: 1, y: 0, rotateY: 14 }}
                   viewport={{ once: true, amount: 0.3 }}
-                  transition={{ duration: 0.9, delay: 0.15, ease: [0.16, 1, 0.3, 1] }}
-                  className="relative w-[44%] sm:w-[38%] max-w-[280px] aspect-[9/19.5] rounded-[2.2rem] sm:rounded-[2.8rem] border-[10px] sm:border-[12px] border-black bg-black shadow-[0_30px_60px_rgba(0,0,0,0.6)] overflow-hidden mt-12 sm:mt-20"
+                  transition={{ duration: 1, delay: 0.15, ease: [0.16, 1, 0.3, 1] }}
+                  style={{ transformStyle: "preserve-3d", rotate: "6deg" }}
+                  className="relative w-[44%] sm:w-[36%] max-w-[260px] aspect-[9/19.5] rounded-[2.4rem] sm:rounded-[3rem] p-[3px] bg-gradient-to-bl from-neutral-400 via-neutral-700 to-neutral-900 shadow-[0_40px_80px_-20px_rgba(0,0,0,0.7),0_20px_40px_-10px_rgba(0,0,0,0.5)] mt-16 sm:mt-24"
                 >
-                  <div className="absolute top-0 left-1/2 -translate-x-1/2 w-1/3 h-4 sm:h-5 bg-black rounded-b-2xl z-10" />
-                  <img src={phonePlaystore.url} alt="Cholo Kheli on Google Play" loading="lazy"
-                    className="w-full h-full object-cover select-none" draggable={false} />
+                  <div className="relative w-full h-full rounded-[2.2rem] sm:rounded-[2.8rem] p-[6px] bg-black overflow-hidden">
+                    <div className="relative w-full h-full rounded-[1.9rem] sm:rounded-[2.4rem] overflow-hidden bg-white">
+                      <img src={phonePlaystore.url} alt="Cholo Kheli on Google Play" loading="lazy"
+                        className="w-full h-full object-cover select-none" draggable={false} />
+                      <div className="absolute top-1.5 sm:top-2 left-1/2 -translate-x-1/2 w-[28%] h-[18px] sm:h-[22px] bg-black rounded-full z-10" />
+                      <div className="absolute inset-0 pointer-events-none rounded-[1.9rem] sm:rounded-[2.4rem]"
+                        style={{ background: "linear-gradient(245deg, rgba(255,255,255,0.18) 0%, rgba(255,255,255,0) 35%, rgba(255,255,255,0) 65%, rgba(255,255,255,0.08) 100%)" }} />
+                    </div>
+                  </div>
                 </motion.div>
               </div>
 
