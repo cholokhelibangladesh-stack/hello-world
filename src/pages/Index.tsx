@@ -897,9 +897,9 @@ const Index = () => {
         <div className="container">
           <div className="grid grid-cols-3 gap-4 sm:gap-8">
             {[
-              { label: "Players Registered", target: 2500, suffix: "+", Icon: Users },
-              { label: "Verified Scouts",    target: 120,  suffix: "+", Icon: Shield },
-              { label: "Talent Discovered",  target: 340,  suffix: "+", Icon: Trophy },
+              { label: T.playersRegistered, target: 2500, suffix: "+", Icon: Users },
+              { label: T.verifiedScouts,    target: 120,  suffix: "+", Icon: Shield },
+              { label: T.talentDiscovered,  target: 340,  suffix: "+", Icon: Trophy },
             ].map((stat, i) => (
               <Reveal key={stat.label} delay={i * 0.12} className="text-center group">
                 <div className="relative p-6 rounded-2xl border transition-all duration-300 card-hover"
