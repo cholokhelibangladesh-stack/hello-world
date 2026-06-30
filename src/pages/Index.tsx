@@ -668,16 +668,16 @@ const Index = () => {
                   <span className="font-display text-7xl sm:text-8xl leading-none" style={{ color: "hsl(var(--green) / 0.15)" }}>02</span>
                   <div className="h-px flex-1" style={{ background: "hsl(var(--green) / 0.2)" }} />
                   <span className="text-xs font-bold tracking-[0.2em] uppercase px-3 py-1 rounded-full"
-                    style={{ background: "hsl(var(--green) / 0.12)", color: "hsl(var(--green))" }}>Upload Highlights</span>
+                    style={{ background: "hsl(var(--green) / 0.12)", color: "hsl(var(--green))" }}>{T.step2Pill}</span>
                 </div>
-                <h3 className="font-display text-4xl sm:text-5xl mb-4" style={{ color: "hsl(var(--teal-deep))" }}>LET YOUR GAME<br />SPEAK</h3>
-                <p className="leading-relaxed" style={{ color: "hsl(var(--teal-deep) / 0.8)" }}>Record a 3-minute highlight video. Tag your position and traits. Pay ৳100 via bKash. Your reel goes live to hundreds of verified scouts instantly.</p>
+                <h3 className="font-display text-4xl sm:text-5xl mb-4 whitespace-pre-line" style={{ color: "hsl(var(--teal-deep))" }}>{T.step2Title}</h3>
+                <p className="leading-relaxed" style={{ color: "hsl(var(--teal-deep) / 0.8)" }}>{T.step2Body}</p>
                 <div className="mt-6 p-4 rounded-xl border flex items-center gap-4"
                   style={{ borderColor: "hsl(var(--green) / 0.15)", background: "hsl(var(--green) / 0.05)" }}>
                   <Zap className="h-8 w-8 flex-shrink-0" style={{ color: "hsl(var(--green))" }} />
                   <div>
-                    <div className="text-sm font-bold text-foreground">Only ৳100</div>
-                    <div className="text-xs text-muted-foreground">One-time payment via bKash · Instantly live</div>
+                    <div className="text-sm font-bold text-foreground">{T.only100}</div>
+                    <div className="text-xs text-muted-foreground">{T.only100Sub}</div>
                   </div>
                 </div>
               </Reveal>
