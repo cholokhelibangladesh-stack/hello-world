@@ -272,7 +272,7 @@ const ProfileTab = ({ showVideos, onDeleteVideo, deletingVideoId }: ProfileTabPr
               <Input className="mt-1 bg-secondary border-border rounded-xl" placeholder="Male / Female / Other" value={profile.gender} onChange={(e) => setProfile((p) => ({ ...p, gender: e.target.value }))} />
             </div>
             <div>
-              <Label className="text-xs text-muted-foreground uppercase tracking-wide">Date of Birth</Label>
+              <Label className="text-xs text-muted-foreground uppercase tracking-wide">Date of Birth {age !== null && <span className="ml-1 text-foreground/80 normal-case">(Age {age})</span>}</Label>
               <Input type="date" className="mt-1 bg-secondary border-border rounded-xl" value={profile.date_of_birth} onChange={(e) => setProfile((p) => ({ ...p, date_of_birth: e.target.value }))} />
             </div>
             <div>
@@ -282,11 +282,11 @@ const ProfileTab = ({ showVideos, onDeleteVideo, deletingVideoId }: ProfileTabPr
                   <button
                     key={s}
                     type="button"
-                    onClick={() => setProfile((p) => ({ ...p, sport: s }))}
+                    onClick={() => handleSportClick(s)}
                     className={`py-2 rounded-xl text-xs font-semibold capitalize transition-all border ${
                       profile.sport === s
-                        ? "bg-foreground/15 text-foreground border-foreground/50"
-                        : "bg-secondary text-secondary-foreground border-border hover:border-foreground/30"
+                        ? "bg-primary text-primary-foreground border-primary shadow-md"
+                        : "bg-secondary text-secondary-foreground border-border hover:border-primary/40"
                     }`}
                   >
                     {s === "football" ? "⚽ Football" : s === "cricket" ? "🏏 Cricket" : "🏀 Basketball"}
@@ -302,6 +302,22 @@ const ProfileTab = ({ showVideos, onDeleteVideo, deletingVideoId }: ProfileTabPr
           <div>
             <Label className="text-xs text-muted-foreground uppercase tracking-wide">Guardian Contact (if under 18)</Label>
             <Input className="mt-1 bg-secondary border-border rounded-xl" placeholder="01XXXXXXXXX" value={profile.guardian_contact} onChange={(e) => setProfile((p) => ({ ...p, guardian_contact: e.target.value }))} />
+          </div>
+
+          {/* Birth certificate */}
+          <div className={`rounded-xl border p-4 ${birthCertUrl ? "border-border bg-secondary/40" : "border-destructive/40 bg-destructive/5"}`}>
+            <div className="flex items-center gap-2 mb-2">
+              <FileText className={`h-4 w-4 ${birthCertUrl ? "text-primary" : "text-destructive"}`} />
+              <Label className="text-xs uppercase tracking-wide">
+                Birth Certificate {birthCertUrl ? <span className="text-primary normal-case ml-1">· uploaded ✓</span> : <span className="text-destructive normal-case ml-1">· required</span>}
+              </Label>
+            </div>
+            <p className="text-xs text-muted-foreground mb-3">Required for video uploads and verification. PDF/JPG/PNG, max 8 MB. Only admins can view.</p>
+            <Button type="button" size="sm" variant="outline" onClick={() => bcRef.current?.click()} disabled={bcUploading} className="border-primary/40 text-primary hover:bg-primary/10">
+              {bcUploading ? <Loader2 className="h-3 w-3 animate-spin mr-2" /> : <Upload className="h-3 w-3 mr-2" />}
+              {birthCertUrl ? "Replace" : "Upload"} Birth Certificate
+            </Button>
+            <input ref={bcRef} type="file" accept="application/pdf,image/jpeg,image/png" className="hidden" onChange={(e) => e.target.files?.[0] && handleBirthCertUpload(e.target.files[0])} />
           </div>
         </motion.div>
       )}
