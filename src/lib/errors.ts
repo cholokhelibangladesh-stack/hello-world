@@ -96,14 +96,12 @@ export function formatErrorForUser(err: AnyError, fallback: string = GENERIC_MES
 }
 
 /**
- * Lightweight reporter hook — in production, swap the body for your error
- * reporting service (Sentry, Logflare, etc). Kept side-effect free here.
+ * Lightweight reporter hook. Funnels everything into the structured logger
+ * (which scrubs sensitive fields, captures route + timestamp, and can
+ * forward to a sink in production).
  */
+import { logError } from "@/lib/logger";
+
 export function reportError(err: AnyError, context?: Record<string, unknown>): void {
-  if (isDev) {
-     
-    console.error("[reportError]", err, context);
-    return;
-  }
-  // Production: intentionally silent. Wire a reporter here when available.
+  logError(err, context);
 }
