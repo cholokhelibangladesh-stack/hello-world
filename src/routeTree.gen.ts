@@ -11,6 +11,7 @@
 import { Route as rootRouteImport } from './routes/__root'
 import { Route as SafeScoutingRouteImport } from './routes/safe-scouting'
 import { Route as ResetPasswordRouteImport } from './routes/reset-password'
+import { Route as PrivacyPolicyRouteImport } from './routes/privacy-policy'
 import { Route as MissionRouteImport } from './routes/mission'
 import { Route as FaqRouteImport } from './routes/faq'
 import { Route as AuthRouteImport } from './routes/auth'
@@ -36,6 +37,11 @@ const SafeScoutingRoute = SafeScoutingRouteImport.update({
 const ResetPasswordRoute = ResetPasswordRouteImport.update({
   id: '/reset-password',
   path: '/reset-password',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const PrivacyPolicyRoute = PrivacyPolicyRouteImport.update({
+  id: '/privacy-policy',
+  path: '/privacy-policy',
   getParentRoute: () => rootRouteImport,
 } as any)
 const MissionRoute = MissionRouteImport.update({
@@ -126,6 +132,7 @@ export interface FileRoutesByFullPath {
   '/auth': typeof AuthRoute
   '/faq': typeof FaqRoute
   '/mission': typeof MissionRoute
+  '/privacy-policy': typeof PrivacyPolicyRoute
   '/reset-password': typeof ResetPasswordRoute
   '/safe-scouting': typeof SafeScoutingRoute
   '/api/health': typeof ApiHealthRoute
@@ -146,6 +153,7 @@ export interface FileRoutesByTo {
   '/auth': typeof AuthRoute
   '/faq': typeof FaqRoute
   '/mission': typeof MissionRoute
+  '/privacy-policy': typeof PrivacyPolicyRoute
   '/reset-password': typeof ResetPasswordRoute
   '/safe-scouting': typeof SafeScoutingRoute
   '/api/health': typeof ApiHealthRoute
@@ -167,6 +175,7 @@ export interface FileRoutesById {
   '/auth': typeof AuthRoute
   '/faq': typeof FaqRoute
   '/mission': typeof MissionRoute
+  '/privacy-policy': typeof PrivacyPolicyRoute
   '/reset-password': typeof ResetPasswordRoute
   '/safe-scouting': typeof SafeScoutingRoute
   '/api/health': typeof ApiHealthRoute
@@ -189,6 +198,7 @@ export interface FileRouteTypes {
     | '/auth'
     | '/faq'
     | '/mission'
+    | '/privacy-policy'
     | '/reset-password'
     | '/safe-scouting'
     | '/api/health'
@@ -209,6 +219,7 @@ export interface FileRouteTypes {
     | '/auth'
     | '/faq'
     | '/mission'
+    | '/privacy-policy'
     | '/reset-password'
     | '/safe-scouting'
     | '/api/health'
@@ -229,6 +240,7 @@ export interface FileRouteTypes {
     | '/auth'
     | '/faq'
     | '/mission'
+    | '/privacy-policy'
     | '/reset-password'
     | '/safe-scouting'
     | '/api/health'
@@ -250,6 +262,7 @@ export interface RootRouteChildren {
   AuthRoute: typeof AuthRoute
   FaqRoute: typeof FaqRoute
   MissionRoute: typeof MissionRoute
+  PrivacyPolicyRoute: typeof PrivacyPolicyRoute
   ResetPasswordRoute: typeof ResetPasswordRoute
   SafeScoutingRoute: typeof SafeScoutingRoute
   ApiHealthRoute: typeof ApiHealthRoute
@@ -278,6 +291,13 @@ declare module '@tanstack/react-router' {
       path: '/reset-password'
       fullPath: '/reset-password'
       preLoaderRoute: typeof ResetPasswordRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/privacy-policy': {
+      id: '/privacy-policy'
+      path: '/privacy-policy'
+      fullPath: '/privacy-policy'
+      preLoaderRoute: typeof PrivacyPolicyRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/mission': {
@@ -402,6 +422,7 @@ const rootRouteChildren: RootRouteChildren = {
   AuthRoute: AuthRoute,
   FaqRoute: FaqRoute,
   MissionRoute: MissionRoute,
+  PrivacyPolicyRoute: PrivacyPolicyRoute,
   ResetPasswordRoute: ResetPasswordRoute,
   SafeScoutingRoute: SafeScoutingRoute,
   ApiHealthRoute: ApiHealthRoute,
