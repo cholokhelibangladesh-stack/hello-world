@@ -21,6 +21,7 @@ import phonePlaystore from "@/assets/phone-playstore.png.asset.json";
 import sportFootball from "@/assets/sport-football.jpg.asset.json";
 import sportCricket from "@/assets/sport-cricket.jpg.asset.json";
 import sportBasketball from "@/assets/sport-basketball.jpg.asset.json";
+import { safeMediaUrl } from "@/lib/sanitize";
 
 const socialLinks = [
   { Icon: Facebook,  label: "Facebook",    href: "https://facebook.com/cholokheli",  color: "hover:text-[hsl(var(--teal))]" },
@@ -165,7 +166,7 @@ function ScoutCarouselCard({ scout, defaultBio }: { scout: ScoutProfile; default
         <div className="w-14 h-14 rounded-full overflow-hidden border-2 flex items-center justify-center"
           style={{ borderColor: "hsl(var(--green) / 0.4)", background: "hsl(var(--green) / 0.15)" }}>
           {scout.avatar_url ? (
-            <img src={scout.avatar_url} alt={scout.full_name} className="w-full h-full object-cover" />
+            <img src={safeMediaUrl(scout.avatar_url)} alt={scout.full_name} className="w-full h-full object-cover" />
           ) : (
             <span className="font-display text-xl text-white">{scout.full_name.charAt(0).toUpperCase()}</span>
           )}

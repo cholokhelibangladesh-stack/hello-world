@@ -4,6 +4,7 @@ import { motion } from "framer-motion";
 import { User, Trophy, Tag, Phone, Loader2 } from "lucide-react";
 import { Badge } from "@/components/ui/badge";
 import { supabase } from "@/integrations/supabase/client";
+import { safeMediaUrl } from "@/lib/sanitize";
 
 interface Profile {
   full_name: string;
@@ -88,7 +89,7 @@ const PlayerResume = () => {
           {video && video.video_url && (
             <div className="bg-card border border-border rounded-xl overflow-hidden mb-6">
               <video
-                src={video.video_url}
+                src={safeMediaUrl(video.video_url)}
                 controls
                 className="w-full aspect-video bg-secondary"
               />

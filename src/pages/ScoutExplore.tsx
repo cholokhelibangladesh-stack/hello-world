@@ -8,6 +8,7 @@ import { useAuth } from "@/hooks/useAuth";
 import { supabase } from "@/integrations/supabase/client";
 import { useNavigate } from "@tanstack/react-router";
 import ScoutSelectPlayer from "@/components/ScoutSelectPlayer";
+import { safeMediaUrl } from "@/lib/sanitize";
 
 interface PlayerCard {
   id: string;
@@ -115,7 +116,7 @@ const ScoutExplore = () => {
                   onClick={() => setSelectedPlayer(player)}
                 >
                   {player.video_url ? (
-                    <video src={player.video_url} className="w-full h-full object-cover" muted />
+                    <video src={safeMediaUrl(player.video_url)} className="w-full h-full object-cover" muted />
                   ) : (
                     <div className="w-full h-full flex items-center justify-center">
                       <Play className="h-8 w-8 text-muted-foreground" />
@@ -150,7 +151,7 @@ const ScoutExplore = () => {
               <div className="flex items-center gap-3 p-4 border-b border-border">
                 <div className="w-9 h-9 rounded-full bg-secondary overflow-hidden border border-border">
                   {selectedPlayer.avatar_url ? (
-                    <img src={selectedPlayer.avatar_url} alt="" className="w-full h-full object-cover" />
+                    <img src={safeMediaUrl(selectedPlayer.avatar_url)} alt="" className="w-full h-full object-cover" />
                   ) : (
                     <div className="w-full h-full flex items-center justify-center text-muted-foreground text-xs font-bold">{selectedPlayer.full_name.charAt(0)}</div>
                   )}
@@ -166,7 +167,7 @@ const ScoutExplore = () => {
               </div>
               <div className="aspect-video bg-secondary">
                 {selectedPlayer.video_url ? (
-                  <video src={selectedPlayer.video_url} className="w-full h-full object-cover" controls autoPlay muted />
+                  <video src={safeMediaUrl(selectedPlayer.video_url)} className="w-full h-full object-cover" controls autoPlay muted />
                 ) : (
                   <div className="w-full h-full flex items-center justify-center"><Play className="h-12 w-12 text-muted-foreground" /></div>
                 )}
