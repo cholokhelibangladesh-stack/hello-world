@@ -29,6 +29,29 @@ serve(async (req) => {
 
     const { video_id, bkash_number } = await req.json();
 
+    // ── IDOR check: verify the caller owns this video before any payment work ──
+    const { data: videoRow, error: videoLookupError } = await supabase
+      .from("videos")
+      .select("id, user_id")
+      .eq("id", video_id)
+      .maybeSingle();
+
+    if (videoLookupError) {
+      return new Response(JSON.stringify({ error: videoLookupError.message }), {
+        status: 400,
+        headers: { ...corsHeaders, "Content-Type": "application/json" },
+      });
+    }
+
+    if (!videoRow || videoRow.user_id !== user.id) {
+      return new Response(JSON.stringify({ error: "Forbidden" }), {
+        status: 403,
+        headers: { ...corsHeaders, "Content-Type": "application/json" },
+      });
+    }
+
+
+
     // ── bKash Payment Gateway Integration ──
     // Check for bKash API credentials
     const BKASH_APP_KEY = Deno.env.get("BKASH_APP_KEY");
