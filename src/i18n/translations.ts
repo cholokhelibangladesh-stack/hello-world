@@ -132,6 +132,7 @@ export const translations = {
     "auth.sportCategory": "ক্রীড়া বিভাগ",
     "auth.football": "⚽ ফুটবল",
     "auth.cricket": "🏏 ক্রিকেট",
+    "auth.basketball": "🏀 বাস্কেটবল",
     "auth.fullName": "পূর্ণ নাম",
     "auth.fullNamePh": "আপনার পূর্ণ নাম",
     "auth.email": "ইমেইল",
