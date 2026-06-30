@@ -765,10 +765,10 @@ const PlayerDashboard = () => {
                       <div className="bg-card border border-border rounded-xl p-6">
                         <div className="flex items-center gap-3 mb-4">
                           <Tag className="h-5 w-5 text-primary" />
-                          <h2 className="font-display text-xl text-foreground">POSITION & TRAITS</h2>
+                          <h2 className="font-display text-xl text-foreground">{t("player.posTraits" as any)}</h2>
                         </div>
                         <div className="mb-4">
-                          <Label className="text-xs text-muted-foreground uppercase tracking-wide">Position</Label>
+                          <Label className="text-xs text-muted-foreground uppercase tracking-wide">{t("player.position" as any)}</Label>
                           <div className="flex flex-wrap gap-2 mt-2">
                             {positionTags.map((tag) => (
                               <Badge key={tag} variant={selectedPositions.includes(tag) ? "default" : "outline"}
