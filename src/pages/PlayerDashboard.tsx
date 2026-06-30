@@ -641,7 +641,7 @@ const PlayerDashboard = () => {
               {allVideos.length > 0 && !showNewUpload && (
                 <div className="flex justify-end">
                   <Button size="sm" variant="outline" onClick={() => { resetUploadForm(); setShowNewUpload(true); }} className="border-primary/40 text-primary hover:bg-primary/10 rounded-full text-xs">
-                    <Plus className="h-3 w-3 mr-1" /> Upload New Video
+                    <Plus className="h-3 w-3 mr-1" /> {t("player.uploadNew" as any)}
                   </Button>
                 </div>
               )}
