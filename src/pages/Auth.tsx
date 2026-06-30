@@ -276,7 +276,7 @@ const Auth = () => {
           {!isLogin && (
             <>
               <div className="mb-5">
-                <Label className="text-sm text-muted-foreground mb-2 block">I am a</Label>
+                <Label className="text-sm text-muted-foreground mb-2 block">{t("auth.iAmA")}</Label>
                 <div className="grid grid-cols-2 gap-3">
                   {(["player", "scout"] as Role[]).map((r) => (
                     <button
