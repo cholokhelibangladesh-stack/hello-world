@@ -661,9 +661,9 @@ const PlayerDashboard = () => {
                       <div className="w-14 h-14 rounded-full bg-secondary flex items-center justify-center mx-auto">
                         <Video className="h-6 w-6 text-muted-foreground" />
                       </div>
-                      <p className="font-display text-xl text-foreground">MONTHLY LIMIT REACHED!</p>
+                      <p className="font-display text-xl text-foreground">{t("player.monthlyLimit" as any)}</p>
                       <p className="text-sm text-muted-foreground max-w-xs mx-auto">
-                        We will start accepting videos again next month. Thank you for your patience!
+                        {t("player.limitBody" as any)}
                       </p>
                     </div>
                   ) : (
