@@ -70,8 +70,8 @@ const FloatingHeader = () => {
           </span>
         </Link>
 
-        {/* CENTER: Pill nav (desktop) */}
-        <nav className={`pointer-events-auto hidden lg:flex absolute left-1/2 -translate-x-1/2 items-center gap-1 px-2 h-11 rounded-full ${bgPill} backdrop-blur-xl ring-1 ${ring} shadow-lg shadow-black/10`}>
+        {/* LEFT-ALIGNED: Pill nav (desktop) — anchored next to logo to avoid overlap with right controls */}
+        <nav className={`pointer-events-auto hidden lg:flex absolute left-56 xl:left-64 items-center gap-1 px-2 h-11 rounded-full ${bgPill} backdrop-blur-xl ring-1 ${ring} shadow-lg shadow-black/10`}>
           {navLinks.map((l) => (
             <Link key={l.to} to={l.to as any} activeOptions={{ exact: true }} className={pill}>
               {l.label}
@@ -85,6 +85,7 @@ const FloatingHeader = () => {
             {theme === "dark" ? <Sun className="h-4 w-4" /> : <Moon className="h-4 w-4" />}
           </button>
         </nav>
+
 
         {/* RIGHT: Language + Login / Dashboard + mobile menu */}
         <div className="pointer-events-auto flex items-center gap-2 shrink-0">
