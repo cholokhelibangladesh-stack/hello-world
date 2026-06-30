@@ -18,9 +18,21 @@ import { useNavigate } from "@tanstack/react-router";
 import ProfileTab from "@/components/ProfileTab";
 import PlayerVideosTab from "@/components/PlayerVideosTab";
 
-const footballTags = ["Striker", "Defender", "Goalkeeper", "Midfielder", "Winger"];
-const cricketTags = ["Bowler (Fast)", "Bowler (Spin)", "Batsman", "Wicketkeeper", "All-rounder"];
-const traitTags = ["Tactical", "Pace Abuser", "Freestyler", "Classical", "Aggressive"];
+const positionsBySport: Record<string, string[]> = {
+  football: ["Striker", "Defender", "Goalkeeper", "Midfielder", "Winger"],
+  cricket: ["Bowler (Fast)", "Bowler (Spin)", "Batsman", "Wicketkeeper", "All-rounder"],
+  basketball: ["Point Guard", "Shooting Guard", "Small Forward", "Power Forward", "Center"],
+};
+const traitsBySport: Record<string, string[]> = {
+  football: ["Tactical", "Pace Abuser", "Freestyler", "Classical", "Aggressive"],
+  cricket: ["Aggressive", "Defensive", "Anchor", "Power Hitter", "Tactical"],
+  basketball: ["Sharpshooter", "Playmaker", "Slasher", "Lockdown Defender", "Rim Protector"],
+};
+const SPORTS: { id: "football" | "cricket" | "basketball"; label: string; icon: string }[] = [
+  { id: "football", label: "Football", icon: "⚽" },
+  { id: "cricket", label: "Cricket", icon: "🏏" },
+  { id: "basketball", label: "Basketball", icon: "🏀" },
+];
 
 interface Scout {
   user_id: string;
