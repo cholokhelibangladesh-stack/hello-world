@@ -73,11 +73,15 @@ const PlayerDashboard = () => {
   const [deletingVideoId, setDeletingVideoId] = useState<string | null>(null);
   const [showNewUpload, setShowNewUpload] = useState(false);
   const [uploadsHalted, setUploadsHalted] = useState(false);
+  const [birthCertUrl, setBirthCertUrl] = useState<string | null>(null);
+  const [birthCertUploading, setBirthCertUploading] = useState(false);
+  const [savingSport, setSavingSport] = useState(false);
   const [activeTab, setActiveTab] = useState(() => {
     const hash = window.location.hash.replace("#", "");
     return ["upload", "explore", "profile"].includes(hash) ? hash : "upload";
   });
   const fileRef = useRef<HTMLInputElement>(null);
+  const bcRef = useRef<HTMLInputElement>(null);
   const { toast } = useToast();
   const { user, loading: authLoading } = useAuth();
   const navigate = useNavigate();
