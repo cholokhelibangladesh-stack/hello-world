@@ -839,15 +839,15 @@ const PlayerDashboard = () => {
                         <div className="bg-card border border-border rounded-xl p-6">
                           <div className="flex items-center gap-3 mb-4">
                             <Award className="h-5 w-5 text-primary" />
-                            <h2 className="font-display text-xl text-foreground">DOCUMENTS</h2>
+                            <h2 className="font-display text-xl text-foreground">{t("player.documents" as any)}</h2>
                           </div>
-                          <p className="text-sm text-muted-foreground mb-4">Your video is now live! Download your certificate and invoice below.</p>
+                          <p className="text-sm text-muted-foreground mb-4">{t("player.docsHintLive" as any)}</p>
                           <div className="flex flex-col sm:flex-row gap-3">
                             <Button onClick={downloadCertificate} variant="outline" className="border-primary/40 text-primary hover:bg-primary/10">
-                              <Download className="h-4 w-4 mr-2" /> Download Certificate
+                              <Download className="h-4 w-4 mr-2" /> {t("player.downloadCert" as any)}
                             </Button>
                             <Button onClick={downloadInvoice} variant="outline" className="border-primary/40 text-primary hover:bg-primary/10">
-                              <FileText className="h-4 w-4 mr-2" /> Download Invoice
+                              <FileText className="h-4 w-4 mr-2" /> {t("player.downloadInvoice" as any)}
                             </Button>
                           </div>
                         </div>
