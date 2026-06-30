@@ -129,7 +129,7 @@ const FloatingHeader = () => {
           <button
             onClick={() => setOpen((o) => !o)}
             aria-label={t("nav.menu")}
-            className={`md:hidden inline-flex items-center justify-center h-9 w-9 rounded-full ${bgChip} backdrop-blur-md ring-1 ${fg} transition-colors`}
+            className={`lg:hidden inline-flex items-center justify-center h-9 w-9 rounded-full ${bgChip} backdrop-blur-md ring-1 ${fg} transition-colors`}
           >
             {open ? <X className="h-4 w-4" /> : <Menu className="h-4 w-4" />}
           </button>
