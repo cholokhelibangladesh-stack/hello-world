@@ -672,10 +672,10 @@ const PlayerDashboard = () => {
                       <div className="bg-card border border-border rounded-xl p-6">
                         <div className="flex items-center gap-3 mb-3">
                           <Tag className="h-5 w-5 text-primary" />
-                          <h2 className="font-display text-xl text-foreground">YOUR SPORT</h2>
+                          <h2 className="font-display text-xl text-foreground">{t("player.yourSport" as any)}</h2>
                           {savingSport && <Loader2 className="h-4 w-4 animate-spin text-muted-foreground" />}
                         </div>
-                        <p className="text-xs text-muted-foreground mb-3">Pick the sport you play — positions and play styles below update accordingly.</p>
+                        <p className="text-xs text-muted-foreground mb-3">{t("player.sportHint" as any)}</p>
                         <div className="grid grid-cols-3 gap-2">
                           {SPORTS.map((s) => (
                             <button
