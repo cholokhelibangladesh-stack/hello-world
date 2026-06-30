@@ -1,5 +1,7 @@
 import { Link } from "@tanstack/react-router";
 import CholoKheliMark from "@/components/CholoKheliMark";
+import { useLanguage } from "@/i18n/LanguageProvider";
+import PrivacyPolicyBn from "./PrivacyPolicyBn";
 
 const Section = ({ title, children }: { title: string; children: React.ReactNode }) => (
   <section className="mb-10">
