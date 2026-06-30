@@ -4,14 +4,9 @@ import { LogOut, Menu, X, Sun, Moon } from "lucide-react";
 import { useAuth } from "@/hooks/useAuth";
 import { useTheme } from "@/hooks/useTheme";
 import NotificationBell from "@/components/NotificationBell";
+import LanguageSwitcher from "@/components/LanguageSwitcher";
+import { useLanguage } from "@/i18n/LanguageProvider";
 import logoAsset from "@/assets/cholo-kheli-mark.png.asset.json";
-
-const navLinks = [
-  { label: "Home", to: "/" },
-  { label: "About Us", to: "/mission" },
-  { label: "Safe Scouting", to: "/safe-scouting" },
-  { label: "FAQ", to: "/faq" },
-];
 
 // Routes where the top of the page is dark (hero image) — icons stay white.
 // All other routes have light backgrounds — icons switch to dark for contrast.
@@ -20,9 +15,17 @@ const DARK_TOP_ROUTES = new Set<string>(["/"]);
 const FloatingHeader = () => {
   const { user, role, loading, signOut } = useAuth();
   const { theme, toggleTheme } = useTheme();
+  const { t } = useLanguage();
   const navigate = useNavigate();
   const [busy, setBusy] = useState(false);
   const [open, setOpen] = useState(false);
+
+  const navLinks = [
+    { label: t("nav.home"), to: "/" },
+    { label: t("nav.about"), to: "/mission" },
+    { label: t("nav.safeScouting"), to: "/safe-scouting" },
+    { label: t("nav.faq"), to: "/faq" },
+  ];
 
   const pathname = useRouterState({ select: (s) => s.location.pathname });
   const onDark = DARK_TOP_ROUTES.has(pathname);
@@ -54,7 +57,7 @@ const FloatingHeader = () => {
         {/* LEFT: Logo + name = home */}
         <Link
           to="/"
-          aria-label="Home"
+          aria-label={t("nav.home")}
           className="pointer-events-auto flex items-center gap-2.5 group shrink-0"
         >
           <img
@@ -76,15 +79,20 @@ const FloatingHeader = () => {
           ))}
           <button
             onClick={toggleTheme}
-            aria-label="Toggle theme"
+            aria-label={t("nav.toggleTheme")}
             className={`h-9 w-9 inline-flex items-center justify-center rounded-full ${fgSoft} hover:bg-foreground/5 transition-colors`}
           >
             {theme === "dark" ? <Sun className="h-4 w-4" /> : <Moon className="h-4 w-4" />}
           </button>
         </nav>
 
-        {/* RIGHT: Login / Dashboard + mobile menu */}
+        {/* RIGHT: Language + Login / Dashboard + mobile menu */}
         <div className="pointer-events-auto flex items-center gap-2 shrink-0">
+          {/* Language switcher — visible on all sizes */}
+          <LanguageSwitcher
+            className={`${bgChip} backdrop-blur-md ring-1 ${fg}`}
+          />
+
           {loading ? (
             <div className={`h-9 w-24 rounded-full ${bgChip} backdrop-blur-md ring-1 animate-pulse`} aria-hidden />
           ) : user ? (
@@ -96,16 +104,16 @@ const FloatingHeader = () => {
                 to={dashboard as any}
                 className={`hidden sm:inline-flex items-center px-4 h-9 rounded-full ${bgChip} backdrop-blur-md ring-1 ${fg} text-sm font-medium transition-colors`}
               >
-                Dashboard
+                {t("nav.dashboard")}
               </Link>
               <button
                 onClick={handleSignOut}
                 disabled={busy}
-                aria-label="Sign out"
+                aria-label={t("nav.signOut")}
                 className={`inline-flex items-center justify-center h-9 w-9 sm:w-auto sm:px-4 rounded-full ${bgChip} backdrop-blur-md ring-1 ${fg} text-sm font-medium transition-colors`}
               >
                 <LogOut className="h-4 w-4 sm:mr-1.5" />
-                <span className="hidden sm:inline">Sign out</span>
+                <span className="hidden sm:inline">{t("nav.signOut")}</span>
               </button>
             </>
           ) : (
@@ -113,14 +121,14 @@ const FloatingHeader = () => {
               to="/auth"
               className={`inline-flex items-center px-5 h-9 rounded-full ${bgChip} backdrop-blur-md ring-1 ${fg} text-sm font-medium transition-colors`}
             >
-              Login
+              {t("nav.login")}
             </Link>
           )}
 
           {/* Mobile menu trigger */}
           <button
             onClick={() => setOpen((o) => !o)}
-            aria-label="Menu"
+            aria-label={t("nav.menu")}
             className={`md:hidden inline-flex items-center justify-center h-9 w-9 rounded-full ${bgChip} backdrop-blur-md ring-1 ${fg} transition-colors`}
           >
             {open ? <X className="h-4 w-4" /> : <Menu className="h-4 w-4" />}
@@ -147,7 +155,7 @@ const FloatingHeader = () => {
             className={`w-full flex items-center gap-2 px-4 py-2.5 rounded-xl text-sm font-medium ${fgSoft} hover:bg-foreground/5 transition-colors`}
           >
             {theme === "dark" ? <Sun className="h-4 w-4" /> : <Moon className="h-4 w-4" />}
-            {theme === "dark" ? "Light mode" : "Dark mode"}
+            {theme === "dark" ? t("nav.lightMode") : t("nav.darkMode")}
           </button>
         </div>
       )}
