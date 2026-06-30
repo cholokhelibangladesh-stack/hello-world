@@ -126,6 +126,14 @@ const Auth = () => {
           return;
         }
       }
+      if (bcRequired && !birthCertFile) {
+        toast({ title: "Birth certificate required", description: "Please upload a valid birth certificate to create your account.", variant: "destructive" });
+        return;
+      }
+      if (birthCertFile && birthCertFile.size > 8 * 1024 * 1024) {
+        toast({ title: "File too large", description: "Birth certificate must be under 8 MB.", variant: "destructive" });
+        return;
+      }
     }
     setLoading(true);
     try {
