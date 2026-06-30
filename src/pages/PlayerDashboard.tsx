@@ -880,7 +880,7 @@ const PlayerDashboard = () => {
               {allVideos.length === 0 && !videoFile && (
                 <div className="text-center py-8 text-muted-foreground">
                   <Video className="h-12 w-12 mx-auto mb-3 opacity-30" />
-                  <p className="text-sm">No videos yet. Select a file above to get started.</p>
+                  <p className="text-sm">{t("player.noVideos" as any)}</p>
                 </div>
               )}
             </TabsContent>
