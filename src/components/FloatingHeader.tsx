@@ -138,7 +138,7 @@ const FloatingHeader = () => {
 
       {/* MOBILE: Dropdown panel */}
       {open && (
-        <div className={`md:hidden pointer-events-auto mx-4 mt-3 rounded-2xl ${onDark ? "bg-black/55" : "bg-white/85"} backdrop-blur-xl ring-1 ${ring} shadow-lg shadow-black/20 p-2`}>
+        <div className={`lg:hidden pointer-events-auto mx-4 mt-3 rounded-2xl ${onDark ? "bg-black/55" : "bg-white/85"} backdrop-blur-xl ring-1 ${ring} shadow-lg shadow-black/20 p-2`}>
           {navLinks.map((l) => (
             <Link
               key={l.to}
