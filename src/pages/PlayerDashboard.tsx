@@ -734,30 +734,30 @@ const PlayerDashboard = () => {
                       <div className="bg-card border border-border rounded-xl p-6">
                         <div className="flex items-center gap-3 mb-4">
                           <Video className="h-5 w-5 text-primary" />
-                          <h2 className="font-display text-xl text-foreground">HIGHLIGHT VIDEO</h2>
+                          <h2 className="font-display text-xl text-foreground">{t("player.highlightVideo" as any)}</h2>
                           {videoStatus && (
-                            <Badge variant={videoStatus === "live" ? "default" : "outline"} className={videoStatus === "live" ? "bg-primary text-primary-foreground" : ""}>{videoStatus.replace("_", " ")}</Badge>
+                            <Badge variant={videoStatus === "live" ? "default" : "outline"} className={videoStatus === "live" ? "bg-primary text-primary-foreground" : ""}>{videoStatus === "live" ? t("player.status.live" as any) : t("player.status.pendingPayment" as any)}</Badge>
                           )}
                         </div>
                         {!videoId ? (
                           <>
                             <div onClick={() => fileRef.current?.click()} className="border-2 border-dashed border-border rounded-xl p-12 text-center hover:border-primary/40 transition-colors cursor-pointer bg-secondary/50">
                               <Upload className="h-10 w-10 text-muted-foreground mx-auto mb-3" />
-                              <p className="text-foreground font-medium mb-1">{videoFile ? videoFile.name : "Drop your video here"}</p>
-                              <p className="text-xs text-muted-foreground">Max 3 minutes • MP4, MOV, AVI</p>
-                              {videoFile && <p className="text-xs text-primary mt-2">✓ File selected — complete payment to upload</p>}
+                              <p className="text-foreground font-medium mb-1">{videoFile ? videoFile.name : t("player.dropVideo" as any)}</p>
+                              <p className="text-xs text-muted-foreground">{t("player.maxLen" as any)}</p>
+                              {videoFile && <p className="text-xs text-primary mt-2">{t("player.fileSelectedHint" as any)}</p>}
                             </div>
                             <input ref={fileRef} type="file" accept="video/*" className="hidden" onChange={(e) => setVideoFile(e.target.files?.[0] || null)} />
                           </>
                         ) : (
                           <div className="flex items-center gap-2 bg-secondary/50 rounded-lg p-4">
                             <CheckCircle className="h-5 w-5 text-primary" />
-                            <span className="text-foreground text-sm">{paymentDone ? "Video uploaded and live!" : "Details saved — complete payment to upload video"}</span>
+                            <span className="text-foreground text-sm">{paymentDone ? t("player.videoUploadedLive" as any) : t("player.detailsSaved" as any)}</span>
                           </div>
                         )}
                         <div className="mt-4">
-                          <Label className="text-sm text-muted-foreground">Video Description (max 100 words)</Label>
-                          <Textarea placeholder="Tell scouts what makes you special..." className="mt-1 bg-secondary border-border resize-none" rows={3} maxLength={600} value={description} onChange={(e) => setDescription(e.target.value)} />
+                          <Label className="text-sm text-muted-foreground">{t("player.videoDescLabel" as any)}</Label>
+                          <Textarea placeholder={t("player.videoDescPh" as any)} className="mt-1 bg-secondary border-border resize-none" rows={3} maxLength={600} value={description} onChange={(e) => setDescription(e.target.value)} />
                         </div>
                       </div>
 
