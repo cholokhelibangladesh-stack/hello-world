@@ -1,6 +1,9 @@
 import { motion } from "framer-motion";
-import { Target, Heart, Globe } from "lucide-react";
+import { Target, Heart, Globe, FileText } from "lucide-react";
+import { Link } from "@tanstack/react-router";
 import { useLanguage } from "@/i18n/LanguageProvider";
+import PrivacyPolicy from "./PrivacyPolicy";
+
 
 const Mission = () => {
   const { t } = useLanguage();
