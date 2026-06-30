@@ -99,12 +99,14 @@ const PlayerDashboard = () => {
   };
 
   const loadUserData = async (userId: string) => {
-    const [profileRes, videosRes] = await Promise.all([
+    const [profileRes, videosRes, docsRes] = await Promise.all([
       supabase.from("profiles").select("sport").eq("user_id", userId).maybeSingle(),
       supabase.from("videos").select("*").eq("user_id", userId).order("created_at", { ascending: false }),
+      supabase.from("documents").select("url").eq("user_id", userId).eq("type", "birth_certificate").maybeSingle(),
     ]);
 
     if (profileRes.data?.sport) setSport(profileRes.data.sport);
+    if (docsRes.data?.url) setBirthCertUrl(docsRes.data.url);
 
     const videos = (videosRes.data || []) as VideoRecord[];
     setAllVideos(videos);
