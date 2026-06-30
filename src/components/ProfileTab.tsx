@@ -231,11 +231,11 @@ const ProfileTab = ({ showVideos, onDeleteVideo, deletingVideoId }: ProfileTabPr
 
           {!editing && (
             <div className="flex flex-wrap gap-2 mt-3">
-              {profile.sport && <Badge variant="outline" className="text-xs border-border text-muted-foreground rounded-full">{profile.sport}</Badge>}
-              {profile.gender && <Badge variant="outline" className="text-xs border-border text-muted-foreground rounded-full">{profile.gender}</Badge>}
+              {profile.sport && <Badge variant="outline" className="text-xs border-border text-muted-foreground rounded-full capitalize">{profile.sport}</Badge>}
+              {profile.gender && <Badge variant="outline" className="text-xs border-border text-muted-foreground rounded-full capitalize">{profile.gender}</Badge>}
               {profile.date_of_birth && (
                 <Badge variant="outline" className="text-xs border-border text-muted-foreground rounded-full">
-                  <Calendar className="h-3 w-3 mr-1" /> {new Date(profile.date_of_birth).toLocaleDateString()}
+                  <Calendar className="h-3 w-3 mr-1" /> {new Date(profile.date_of_birth).toLocaleDateString()}{age !== null ? ` · Age ${age}` : ""}
                 </Badge>
               )}
               {profile.phone && (
@@ -243,6 +243,9 @@ const ProfileTab = ({ showVideos, onDeleteVideo, deletingVideoId }: ProfileTabPr
                   <Phone className="h-3 w-3 mr-1" /> {profile.phone}
                 </Badge>
               )}
+              <Badge variant="outline" className={`text-xs rounded-full ${birthCertUrl ? "border-primary/40 text-primary" : "border-destructive/40 text-destructive"}`}>
+                <FileText className="h-3 w-3 mr-1" /> Birth certificate {birthCertUrl ? "✓" : "missing"}
+              </Badge>
             </div>
           )}
         </div>
