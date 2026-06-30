@@ -420,7 +420,7 @@ const Auth = () => {
             )}
             {!isLogin && isMinor && age !== null && age >= 13 && (
               <div className="space-y-3 p-4 rounded-xl border border-border bg-secondary/60">
-                <p className="text-sm font-semibold text-foreground">{t("auth.parentalConsent")}</p>
+                <p className="text-sm font-semibold text-foreground">{t("auth.guardianHeading")}</p>
                 <div>
                   <Label htmlFor="guardianName" className="text-sm text-muted-foreground">{t("auth.guardianName")}</Label>
                   <Input
