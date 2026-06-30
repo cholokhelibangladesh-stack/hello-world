@@ -466,8 +466,40 @@ const Auth = () => {
                 </button>
               </div>
             </div>
-            {!isLogin && selectedRole === "player" && (
-              <div className="hidden" />
+            {!isLogin && selectedRole === "player" && !isBcExempt && (
+              <div className="p-4 rounded-xl border border-border bg-secondary/50 space-y-2">
+                <div className="flex items-center gap-2">
+                  <FileText className={`h-4 w-4 ${birthCertFile ? "text-foreground" : "text-destructive"}`} />
+                  <Label className="text-sm font-semibold text-foreground">
+                    Birth Certificate <span className="text-destructive">*</span>
+                  </Label>
+                </div>
+                <p className="text-xs text-muted-foreground">
+                  A valid birth certificate is mandatory to create a player account. Accepted: PDF, JPG, PNG (max 8 MB). Only admins can view this document.
+                </p>
+                <input
+                  ref={bcRef}
+                  type="file"
+                  accept="application/pdf,image/jpeg,image/png"
+                  className="hidden"
+                  onChange={(e) => setBirthCertFile(e.target.files?.[0] || null)}
+                />
+                <div className="flex items-center gap-2">
+                  <Button
+                    type="button"
+                    variant="outline"
+                    size="sm"
+                    onClick={() => bcRef.current?.click()}
+                    className="border-border"
+                  >
+                    <Upload className="h-3.5 w-3.5 mr-2" />
+                    {birthCertFile ? "Replace file" : "Choose file"}
+                  </Button>
+                  <span className="text-xs text-muted-foreground truncate">
+                    {birthCertFile ? birthCertFile.name : "No file chosen"}
+                  </span>
+                </div>
+              </div>
             )}
             {!isLogin && isMinor && age !== null && age >= 13 && (
               <div className="space-y-3 p-4 rounded-xl border border-border bg-secondary/60">
