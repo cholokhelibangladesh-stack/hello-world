@@ -310,7 +310,7 @@ const Auth = () => {
                             : "bg-secondary text-secondary-foreground border-border hover:border-foreground/30"
                         }`}
                       >
-                        {s === "football" ? "⚽ Football" : "🏏 Cricket"}
+                        {s === "football" ? t("auth.football") : t("auth.cricket")}
                       </button>
                     ))}
                   </div>
