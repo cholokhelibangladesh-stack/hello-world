@@ -748,12 +748,12 @@ const Index = () => {
         <div className="container relative z-10">
           <Reveal className="text-center mb-12">
             <span className="inline-block text-xs font-bold tracking-[0.2em] uppercase mb-4 px-4 py-1.5 rounded-full"
-              style={{ background: "hsl(var(--green) / 0.15)", color: "hsl(var(--green))" }}>Our Network</span>
+              style={{ background: "hsl(var(--green) / 0.15)", color: "hsl(var(--green))" }}>{T.ourNetwork}</span>
             <h2 className="font-display text-3xl sm:text-5xl text-white">
-              VERIFIED <span style={{ color: "hsl(var(--green))" }}>SCOUTS</span>
+              {T.verified} <span style={{ color: "hsl(var(--green))" }}>{T.scouts}</span>
             </h2>
             <p className="text-sm sm:text-base text-white/60 max-w-lg mx-auto mt-2">
-              Hear directly from the professionals discovering talent across Bangladesh
+              {T.scoutsSub}
             </p>
           </Reveal>
 
