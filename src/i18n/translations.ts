@@ -149,6 +149,16 @@ export const translations = {
     "player.noVideos": "No videos yet. Select a file above to get started.",
     "player.status.live": "live",
     "player.status.pendingPayment": "pending payment",
+
+    // Mission page
+    "mission.title": "OUR MISSION",
+    "mission.intro": "To digitize Bangladesh sports, remove corruption from talent discovery, and give every young athlete a fair shot at greatness.",
+    "mission.problem.title": "THE PROBLEM",
+    "mission.problem.body": "In Bangladesh, countless talented athletes never get discovered. The traditional scouting system is broken — plagued by middlemen, corruption, and geography. A striker in Barisal has almost no chance of being seen by a scout in Dhaka. We're here to change that.",
+    "mission.approach.title": "OUR APPROACH",
+    "mission.approach.body": "Cholo Kheli creates a transparent digital bridge between grassroots talent and professional scouts. Every player gets the same platform. Every scout is verified. Every interaction is tracked. No middlemen, no corruption — just pure talent.",
+    "mission.vision.title": "THE VISION",
+    "mission.vision.body": "We envision a Bangladesh where talent speaks louder than connections. Where a 16-year-old cricketer from Rangpur can be discovered by a national selector. Where the next football star doesn't need to know the right people — just be the right player.",
   },
 
   bn: {
@@ -299,6 +309,16 @@ export const translations = {
     "player.noVideos": "এখনো কোনো ভিডিও নেই। শুরু করতে উপরে একটি ফাইল নির্বাচন করুন।",
     "player.status.live": "লাইভ",
     "player.status.pendingPayment": "পেমেন্ট বাকি",
+
+    // Mission page
+    "mission.title": "আমাদের লক্ষ্য",
+    "mission.intro": "বাংলাদেশের ক্রীড়াঙ্গনকে ডিজিটাল করা, প্রতিভা অন্বেষণ থেকে দুর্নীতি দূর করা, এবং প্রতিটি তরুণ অ্যাথলেটকে শ্রেষ্ঠত্বের ন্যায্য সুযোগ দেওয়া।",
+    "mission.problem.title": "সমস্যা",
+    "mission.problem.body": "বাংলাদেশে অসংখ্য প্রতিভাবান অ্যাথলেট কখনো আবিষ্কৃত হন না। প্রচলিত স্কাউটিং ব্যবস্থা ভেঙে পড়েছে — দালাল, দুর্নীতি ও ভৌগোলিক দূরত্বে জর্জরিত। বরিশালের একজন স্ট্রাইকারের ঢাকার কোনো স্কাউটের নজরে পড়ার সম্ভাবনা প্রায় শূন্য। আমরা এটাই বদলাতে এসেছি।",
+    "mission.approach.title": "আমাদের পদ্ধতি",
+    "mission.approach.body": "চলো খেলি তৃণমূলের প্রতিভা ও পেশাদার স্কাউটদের মধ্যে একটি স্বচ্ছ ডিজিটাল সেতু তৈরি করে। প্রতিটি খেলোয়াড় একই প্ল্যাটফর্ম পান। প্রতিটি স্কাউট যাচাইকৃত। প্রতিটি ইন্টারঅ্যাকশন ট্র্যাক করা হয়। কোনো দালাল নেই, কোনো দুর্নীতি নেই — শুধু খাঁটি প্রতিভা।",
+    "mission.vision.title": "আমাদের স্বপ্ন",
+    "mission.vision.body": "আমরা এমন এক বাংলাদেশের স্বপ্ন দেখি যেখানে প্রতিভা পরিচিতির চেয়ে জোরে কথা বলে। যেখানে রংপুরের একজন ১৬ বছরের ক্রিকেটার জাতীয় নির্বাচকের নজরে আসতে পারে। যেখানে পরবর্তী ফুটবল তারকার সঠিক মানুষদের চেনার দরকার নেই — শুধু সঠিক খেলোয়াড় হওয়াই যথেষ্ট।",
   },
 } as const;
 
