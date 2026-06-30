@@ -781,10 +781,19 @@ const PlayerDashboard = () => {
 
                       {/* Save details */}
                       {!videoId && videoFile && (
-                        <Button onClick={handleUpload} disabled={uploading} className="w-full bg-primary text-primary-foreground font-bold hover:bg-primary/90">
-                          {uploading ? <Loader2 className="h-4 w-4 animate-spin mr-2" /> : <Upload className="h-4 w-4 mr-2" />}
-                          Save Details & Proceed to Payment
-                        </Button>
+                        <div className="space-y-2">
+                          {!birthCertUrl && (
+                            <p className="text-xs text-destructive text-center">⚠ Upload your birth certificate above before saving.</p>
+                          )}
+                          <Button
+                            onClick={handleUpload}
+                            disabled={uploading || !birthCertUrl}
+                            className="w-full bg-primary text-primary-foreground font-bold hover:bg-primary/90 disabled:opacity-50"
+                          >
+                            {uploading ? <Loader2 className="h-4 w-4 animate-spin mr-2" /> : <Upload className="h-4 w-4 mr-2" />}
+                            Save Details & Proceed to Payment
+                          </Button>
+                        </div>
                       )}
 
                       {/* Payment */}
