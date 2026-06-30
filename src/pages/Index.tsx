@@ -439,8 +439,7 @@ const Index = () => {
             transition={{ delay: 0.5, duration: 0.5, ease: [0.22, 1, 0.36, 1] }}
             className="mt-8 text-base sm:text-lg text-white/85 max-w-xl leading-relaxed drop-shadow-[0_2px_8px_rgba(0,0,0,0.6)]"
           >
-            A quiet place where Bangladesh's grassroots talent meets verified scouts.
-            Safe. Transparent. Built for the love of the game.
+            {T.heroTagline}
           </motion.p>
 
           {/* CTAs */}
