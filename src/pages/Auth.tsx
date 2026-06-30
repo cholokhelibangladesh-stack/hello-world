@@ -73,9 +73,14 @@ const Auth = () => {
   const [guardianEmail, setGuardianEmail] = useState("");
   const [parentalConsent, setParentalConsent] = useState(false);
   const [birthCertFile, setBirthCertFile] = useState<File | null>(null);
+  const [scoutOrgIdFile, setScoutOrgIdFile] = useState<File | null>(null);
+  const [scoutCvFile, setScoutCvFile] = useState<File | null>(null);
   const bcRef = useRef<HTMLInputElement>(null);
+  const orgIdRef = useRef<HTMLInputElement>(null);
+  const cvRef = useRef<HTMLInputElement>(null);
   const isBcExempt = BC_EXEMPT_EMAILS.includes(formEmail.trim().toLowerCase());
   const bcRequired = !isLogin && selectedRole === "player" && !isBcExempt;
+  const scoutDocsRequired = !isLogin && selectedRole === "scout";
 
   const computeAge = (dob: string): number | null => {
     if (!dob) return null;
@@ -134,6 +139,18 @@ const Auth = () => {
         toast({ title: "File too large", description: "Birth certificate must be under 8 MB.", variant: "destructive" });
         return;
       }
+      if (scoutDocsRequired && (!scoutOrgIdFile || !scoutCvFile)) {
+        toast({ title: "Scout documents required", description: "Please upload your organization ID card and official CV to apply as a scout.", variant: "destructive" });
+        return;
+      }
+      if (scoutOrgIdFile && scoutOrgIdFile.size > 8 * 1024 * 1024) {
+        toast({ title: "File too large", description: "Organization ID card must be under 8 MB.", variant: "destructive" });
+        return;
+      }
+      if (scoutCvFile && scoutCvFile.size > 8 * 1024 * 1024) {
+        toast({ title: "File too large", description: "CV must be under 8 MB.", variant: "destructive" });
+        return;
+      }
     }
     setLoading(true);
     try {
@@ -187,6 +204,24 @@ const Auth = () => {
               sessionStorage.setItem("pendingBirthCertType", birthCertFile.type);
             } catch { /* ignore — gate will catch missing BC */ }
           }
+
+          // Stash scout documents (org ID + CV) for upload once authenticated
+          const stashScoutDoc = async (file: File | null, key: string) => {
+            if (!file) return;
+            try {
+              const b64 = await new Promise<string>((resolve, reject) => {
+                const r = new FileReader();
+                r.onload = () => resolve(String(r.result));
+                r.onerror = () => reject(r.error);
+                r.readAsDataURL(file);
+              });
+              sessionStorage.setItem(`pending${key}Data`, b64);
+              sessionStorage.setItem(`pending${key}Name`, file.name);
+              sessionStorage.setItem(`pending${key}Type`, file.type);
+            } catch { /* ignore */ }
+          };
+          await stashScoutDoc(scoutOrgIdFile, "ScoutOrgId");
+          await stashScoutDoc(scoutCvFile, "ScoutCv");
         }
 
         setEmailSent(true);
@@ -242,6 +277,32 @@ const Auth = () => {
         sessionStorage.removeItem("pendingBirthCertName");
         sessionStorage.removeItem("pendingBirthCertType");
       }
+
+      // Upload stashed scout documents, if present
+      const uploadScoutDoc = async (key: string, docType: string, defaultName: string) => {
+        const data = sessionStorage.getItem(`pending${key}Data`);
+        if (!data || pendingRole !== "scout") return;
+        const name = sessionStorage.getItem(`pending${key}Name`) || defaultName;
+        const type = sessionStorage.getItem(`pending${key}Type`) || "application/octet-stream";
+        try {
+          const res = await fetch(data);
+          const blob = await res.blob();
+          const ext = (name.split(".").pop() || "bin").toLowerCase();
+          const path = `${user.id}/${docType}_${Date.now()}.${ext}`;
+          const { error: upErr } = await supabase.storage.from("documents").upload(path, blob, { upsert: true, contentType: type });
+          if (!upErr) {
+            const { data: { publicUrl } } = supabase.storage.from("documents").getPublicUrl(path);
+            await supabase.from("documents").delete().eq("user_id", user.id).eq("type", docType);
+            await supabase.from("documents").insert({ user_id: user.id, type: docType, url: publicUrl, name } as any);
+          }
+        } catch { /* ignore */ }
+        sessionStorage.removeItem(`pending${key}Data`);
+        sessionStorage.removeItem(`pending${key}Name`);
+        sessionStorage.removeItem(`pending${key}Type`);
+      };
+      await uploadScoutDoc("ScoutOrgId", "scout_org_id", "organization_id");
+      await uploadScoutDoc("ScoutCv", "scout_cv", "cv");
+
 
       localStorage.removeItem("pendingRole");
       localStorage.removeItem("pendingSport");
@@ -501,6 +562,64 @@ const Auth = () => {
                 </div>
               </div>
             )}
+            {!isLogin && selectedRole === "scout" && (
+              <div className="p-4 rounded-xl border border-border bg-secondary/50 space-y-4">
+                <p className="text-sm font-semibold text-foreground">Scout verification documents</p>
+                <p className="text-xs text-muted-foreground -mt-2">
+                  Both documents are required to apply as a scout. Accepted: PDF, JPG, PNG (max 8 MB each). Only admins can view these documents.
+                </p>
+
+                <div className="space-y-2">
+                  <div className="flex items-center gap-2">
+                    <FileText className={`h-4 w-4 ${scoutOrgIdFile ? "text-foreground" : "text-destructive"}`} />
+                    <Label className="text-sm font-semibold text-foreground">
+                      Organization ID card <span className="text-destructive">*</span>
+                    </Label>
+                  </div>
+                  <input
+                    ref={orgIdRef}
+                    type="file"
+                    accept="application/pdf,image/jpeg,image/png"
+                    className="hidden"
+                    onChange={(e) => setScoutOrgIdFile(e.target.files?.[0] || null)}
+                  />
+                  <div className="flex items-center gap-2">
+                    <Button type="button" variant="outline" size="sm" onClick={() => orgIdRef.current?.click()} className="border-border">
+                      <Upload className="h-3.5 w-3.5 mr-2" />
+                      {scoutOrgIdFile ? "Replace file" : "Choose file"}
+                    </Button>
+                    <span className="text-xs text-muted-foreground truncate">
+                      {scoutOrgIdFile ? scoutOrgIdFile.name : "No file chosen"}
+                    </span>
+                  </div>
+                </div>
+
+                <div className="space-y-2">
+                  <div className="flex items-center gap-2">
+                    <FileText className={`h-4 w-4 ${scoutCvFile ? "text-foreground" : "text-destructive"}`} />
+                    <Label className="text-sm font-semibold text-foreground">
+                      Official CV <span className="text-destructive">*</span>
+                    </Label>
+                  </div>
+                  <input
+                    ref={cvRef}
+                    type="file"
+                    accept="application/pdf,image/jpeg,image/png"
+                    className="hidden"
+                    onChange={(e) => setScoutCvFile(e.target.files?.[0] || null)}
+                  />
+                  <div className="flex items-center gap-2">
+                    <Button type="button" variant="outline" size="sm" onClick={() => cvRef.current?.click()} className="border-border">
+                      <Upload className="h-3.5 w-3.5 mr-2" />
+                      {scoutCvFile ? "Replace file" : "Choose file"}
+                    </Button>
+                    <span className="text-xs text-muted-foreground truncate">
+                      {scoutCvFile ? scoutCvFile.name : "No file chosen"}
+                    </span>
+                  </div>
+                </div>
+              </div>
+            )}
             {!isLogin && isMinor && age !== null && age >= 13 && (
               <div className="space-y-3 p-4 rounded-xl border border-border bg-secondary/60">
                 <p className="text-sm font-semibold text-foreground">{t("auth.guardianHeading")}</p>
@@ -559,7 +678,7 @@ const Auth = () => {
             )}
             <Button
               type="submit"
-              disabled={loading || (!isLogin && !agreePrivacy) || (!isLogin && isMinor && !parentalConsent) || (bcRequired && !birthCertFile)}
+              disabled={loading || (!isLogin && !agreePrivacy) || (!isLogin && isMinor && !parentalConsent) || (bcRequired && !birthCertFile) || (scoutDocsRequired && (!scoutOrgIdFile || !scoutCvFile))}
               className="w-full bg-foreground text-background font-bold hover:bg-foreground/90 transition-all duration-300 disabled:opacity-50"
             >
               {loading ? <Loader2 className="h-4 w-4 animate-spin" /> : isLogin ? t("auth.signIn") : t("auth.createAccount")}
