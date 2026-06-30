@@ -26,7 +26,7 @@ const players: PlayerPin[] = [
     x: 43, y: 47,
     district: "Dhaka", name: "Rafiqul Islam", sport: "Football", position: "Midfielder",
     issue: "No platform to showcase talent outside his locality. Spent 3 years unnoticed.",
-    story: "Within weeks of uploading his highlight reel on Scout BD, three clubs reached out. He now plays for a Dhaka Premier Division club.",
+    story: "Within weeks of uploading his highlight reel on Cholo Kheli, three clubs reached out. He now plays for a Dhaka Premier Division club.",
     image: playerRafiq, defaultOpen: true,
   },
   {
@@ -34,7 +34,7 @@ const players: PlayerPin[] = [
     x: 57, y: 26,
     district: "Sylhet", name: "Tanjim Ahmed", sport: "Cricket", position: "All-rounder",
     issue: "Playing in remote Sylhet with zero scouting infrastructure. His talent was invisible.",
-    story: "Scout BD connected him to a BPL franchise scout. He now holds a regional cricket contract and represents Sylhet in the National Championship.",
+    story: "Cholo Kheli connected him to a BPL franchise scout. He now holds a regional cricket contract and represents Sylhet in the National Championship.",
     image: playerTanjim, defaultOpen: true,
   },
   {
@@ -45,12 +45,12 @@ const players: PlayerPin[] = [
     story: "After uploading her skills video, she received an invite to the Bangladesh Women's U-20 trials. She made the squad.",
     image: playerNusrat, defaultOpen: true,
   },
-  { id: "p4", x: 28, y: 38, district: "Rajshahi", name: "Arif Hossain", sport: "Football", position: "Goalkeeper", issue: "Limited access to professional coaching.", story: "Now training with Rajshahi FC youth academy after being spotted on Scout BD.", image: playerRafiq },
-  { id: "p5", x: 38, y: 70, district: "Barisal", name: "Sumon Dey", sport: "Cricket", position: "Fast Bowler", issue: "No way to reach metropolitan scouts from coastal Barisal.", story: "Secured a trial with a Dhaka-based cricket academy through Scout BD.", image: playerTanjim },
-  { id: "p6", x: 44, y: 30, district: "Mymensingh", name: "Karim Uddin", sport: "Football", position: "Defender", issue: "Talented but invisible due to lack of local scouting.", story: "Joined Dhaka Abahani youth team after being discovered on Scout BD.", image: playerNusrat },
+  { id: "p4", x: 28, y: 38, district: "Rajshahi", name: "Arif Hossain", sport: "Football", position: "Goalkeeper", issue: "Limited access to professional coaching.", story: "Now training with Rajshahi FC youth academy after being spotted on Cholo Kheli.", image: playerRafiq },
+  { id: "p5", x: 38, y: 70, district: "Barisal", name: "Sumon Dey", sport: "Cricket", position: "Fast Bowler", issue: "No way to reach metropolitan scouts from coastal Barisal.", story: "Secured a trial with a Dhaka-based cricket academy through Cholo Kheli.", image: playerTanjim },
+  { id: "p6", x: 44, y: 30, district: "Mymensingh", name: "Karim Uddin", sport: "Football", position: "Defender", issue: "Talented but invisible due to lack of local scouting.", story: "Joined Dhaka Abahani youth team after being discovered on Cholo Kheli.", image: playerNusrat },
   { id: "p7", x: 28, y: 18, district: "Rangpur", name: "Belal Khan", sport: "Cricket", position: "Spinner", issue: "Northern districts ignored by big club scouts.", story: "Offered contract by Rangpur Riders academy after highlight reel went viral.", image: playerRafiq },
   { id: "p8", x: 50, y: 53, district: "Comilla", name: "Rony Mia", sport: "Football", position: "Winger", issue: "Played street football with no professional pathway.", story: "Discovered by a scout from Chittagong Abahani and offered a trial.", image: playerTanjim },
-  { id: "p9", x: 53, y: 58, district: "Chittagong", name: "Sadia Islam", sport: "Football", position: "Midfielder", issue: "Women's football completely unscouted in Chittagong.", story: "Selected for national women's development camp after Scout BD profile.", image: playerNusrat },
+  { id: "p9", x: 53, y: 58, district: "Chittagong", name: "Sadia Islam", sport: "Football", position: "Midfielder", issue: "Women's football completely unscouted in Chittagong.", story: "Selected for national women's development camp after Cholo Kheli profile.", image: playerNusrat },
 ];
 
 const districtLabels = [

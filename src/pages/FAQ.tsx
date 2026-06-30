@@ -12,7 +12,7 @@ const faqs = [
   { q: "What sports are supported?", a: "Currently we support Football and Cricket, with plans to add more sports in the future." },
   { q: "Can I update my video after payment?", a: "Yes, you can replace your video once. Contact support for additional changes." },
   { q: "What if I'm under 18?", a: "Players under 18 must provide a guardian contact. All communication with scouts will be shared with the guardian." },
-  { q: "How do I report suspicious behaviour?", a: "Use the 'Report a Scout' button on the Safe Scouting page or email legal@scoutbd.com immediately." },
+  { q: "How do I report suspicious behaviour?", a: "Use the 'Report a Scout' button on the Safe Scouting page or email legal@cholokheli.com immediately." },
 ];
 
 const FAQ = () => {

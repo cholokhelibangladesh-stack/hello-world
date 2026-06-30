@@ -174,22 +174,22 @@ const PlayerUpload = () => {
     doc.setDrawColor(240, 240, 240); doc.setLineWidth(0.6); doc.rect(8, 8, w - 16, h - 16);
     doc.setDrawColor(60, 60, 60); doc.setLineWidth(0.3); doc.rect(12, 12, w - 24, h - 24);
     doc.setFillColor(240, 240, 240); doc.rect(12, 12, w - 24, 2, "F"); doc.rect(12, h - 14, w - 24, 2, "F");
-    doc.setFont("helvetica", "bold"); doc.setFontSize(10); doc.setTextColor(160, 160, 160); doc.text("SCOUT BD", w / 2, 30, { align: "center" });
+    doc.setFont("helvetica", "bold"); doc.setFontSize(10); doc.setTextColor(160, 160, 160); doc.text("CHOLO KHELI", w / 2, 30, { align: "center" });
     doc.setFontSize(28); doc.setTextColor(240, 240, 240); doc.text("CERTIFICATE OF PARTICIPATION", w / 2, 50, { align: "center" });
     doc.setDrawColor(80, 80, 80); doc.setLineWidth(0.4); doc.line(w / 2 - 80, 56, w / 2 + 80, 56);
     doc.setFont("helvetica", "normal"); doc.setFontSize(11); doc.setTextColor(160, 160, 160); doc.text("This certifies that", w / 2, 72, { align: "center" });
     doc.setFont("helvetica", "bold"); doc.setFontSize(32); doc.setTextColor(255, 255, 255); doc.text(name, w / 2, 92, { align: "center" });
     const nameWidth = doc.getTextWidth(name); doc.setDrawColor(180, 180, 180); doc.setLineWidth(0.3); doc.line(w / 2 - nameWidth / 2, 95, w / 2 + nameWidth / 2, 95);
     doc.setFont("helvetica", "normal"); doc.setFontSize(11); doc.setTextColor(140, 140, 140); doc.text("has successfully registered and submitted a highlight video on the", w / 2, 108, { align: "center" });
-    doc.setFont("helvetica", "bold"); doc.setFontSize(14); doc.setTextColor(220, 220, 220); doc.text("Scout BD Platform — Digitizing Bangladesh Sports", w / 2, 122, { align: "center" });
+    doc.setFont("helvetica", "bold"); doc.setFontSize(14); doc.setTextColor(220, 220, 220); doc.text("Cholo Kheli Platform — Digitizing Bangladesh Sports", w / 2, 122, { align: "center" });
     doc.setFont("helvetica", "normal"); doc.setFontSize(9); doc.setTextColor(100, 100, 100); doc.text(`Date: ${date}   |   Transaction ID: ${transactionId || "N/A"}`, w / 2, 136, { align: "center" });
     const sigY = h - 36; const sig1X = w / 2 - 60; const sig2X = w / 2 + 60;
     doc.setDrawColor(80, 80, 80); doc.setLineWidth(0.3); doc.line(sig1X - 40, sigY, sig1X + 40, sigY); doc.line(sig2X - 40, sigY, sig2X + 40, sigY);
     doc.setFont("helvetica", "bold"); doc.setFontSize(8); doc.setTextColor(180, 180, 180);
     doc.text("Nahroor Rahman Khan", sig1X, sigY + 6, { align: "center" }); doc.text("Rayeed Bin Abdul Khaleque", sig2X, sigY + 6, { align: "center" });
     doc.setFont("helvetica", "normal"); doc.setFontSize(7); doc.setTextColor(90, 90, 90);
-    doc.text("Co-Founder, Scout BD", sig1X, sigY + 11, { align: "center" }); doc.text("Co-Founder, Scout BD", sig2X, sigY + 11, { align: "center" });
-    doc.save("ScoutBD_Certificate.pdf");
+    doc.text("Co-Founder, Cholo Kheli", sig1X, sigY + 11, { align: "center" }); doc.text("Co-Founder, Cholo Kheli", sig2X, sigY + 11, { align: "center" });
+    doc.save("CholoKheli_Certificate.pdf");
   };
 
   const downloadInvoice = () => {
@@ -199,7 +199,7 @@ const PlayerUpload = () => {
     const date = new Date().toLocaleDateString("en-BD", { year: "numeric", month: "long", day: "numeric" });
     doc.setFillColor(10, 10, 10); doc.rect(0, 0, w, h, "F");
     doc.setFillColor(240, 240, 240); doc.rect(0, 0, w, 38, "F");
-    doc.setFont("helvetica", "bold"); doc.setFontSize(22); doc.setTextColor(10, 10, 10); doc.text("SCOUT BD", 18, 24);
+    doc.setFont("helvetica", "bold"); doc.setFontSize(22); doc.setTextColor(10, 10, 10); doc.text("CHOLO KHELI", 18, 24);
     doc.setFont("helvetica", "normal"); doc.setFontSize(9); doc.setTextColor(60, 60, 60); doc.text("INVOICE", w - 18, 20, { align: "right" }); doc.text(`Date: ${date}`, w - 18, 28, { align: "right" });
     let y = 54; doc.setFont("helvetica", "normal"); doc.setFontSize(9); doc.setTextColor(120, 120, 120);
     doc.text(`Transaction ID: ${transactionId || "N/A"}`, 18, y); doc.text(`Payment ID: ${paymentId || "N/A"}`, 18, y + 8);
@@ -218,8 +218,8 @@ const PlayerUpload = () => {
     y += 18; doc.setFillColor(25, 25, 25); doc.rect(18, y - 6, w - 36, 16, "F");
     doc.setFont("helvetica", "normal"); doc.setFontSize(8); doc.setTextColor(120, 120, 120); doc.text("Payment Method: bKash", 24, y + 2);
     doc.setFont("helvetica", "bold"); doc.setTextColor(200, 200, 200); doc.text("Status: PAID ✓", w - 24, y + 2, { align: "right" });
-    doc.setFont("helvetica", "normal"); doc.setFontSize(7); doc.setTextColor(60, 60, 60); doc.text("Scout BD — Digitizing Bangladesh Sports", w / 2, h - 12, { align: "center" });
-    doc.save("ScoutBD_Invoice.pdf");
+    doc.setFont("helvetica", "normal"); doc.setFontSize(7); doc.setTextColor(60, 60, 60); doc.text("Cholo Kheli — Digitizing Bangladesh Sports", w / 2, h - 12, { align: "center" });
+    doc.save("CholoKheli_Invoice.pdf");
   };
 
   if (authLoading) return <div className="min-h-screen flex items-center justify-center"><Loader2 className="h-8 w-8 animate-spin text-primary" /></div>;
