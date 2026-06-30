@@ -286,11 +286,7 @@ const ScoutDashboard = () => {
                               </div>
                             </div>
                             <div className="grid grid-cols-2 gap-2 text-sm">
-                              {r.player_details.phone && (
-                                <div className="flex items-center gap-2 text-muted-foreground">
-                                  <Phone className="h-3 w-3 text-primary" /> {r.player_details.phone}
-                                </div>
-                              )}
+                              {/* Phone hidden — only admins can view contact info */}
                               {r.player_details.gender && (
                                 <div className="flex items-center gap-2 text-muted-foreground">
                                   <User className="h-3 w-3 text-primary" /> {r.player_details.gender}
