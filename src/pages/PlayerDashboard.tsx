@@ -188,9 +188,9 @@ const PlayerDashboard = () => {
       const { error: upErr } = await supabase.storage.from("documents").upload(path, file, { upsert: true });
       if (upErr) throw upErr;
       const { data: { publicUrl } } = supabase.storage.from("documents").getPublicUrl(path);
-      await supabase.from("documents").upsert(
-        { user_id: user.id, type: "birth_certificate", url: publicUrl, name: file.name } as any,
-        { onConflict: "user_id,type" } as any
+      await supabase.from("documents").delete().eq("user_id", user.id).eq("type", "birth_certificate");
+      await supabase.from("documents").insert(
+        { user_id: user.id, type: "birth_certificate", url: publicUrl, name: file.name } as any
       );
       setBirthCertUrl(publicUrl);
       toast({ title: "Birth certificate uploaded ✅" });
