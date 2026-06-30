@@ -1,5 +1,5 @@
 import { useState, useEffect, useRef } from "react";
-import { User, Camera, Loader2, Save, MapPin, Calendar, Phone, Shield, Video, Trash2, AlertTriangle, Plus } from "lucide-react";
+import { User, Camera, Loader2, Save, MapPin, Calendar, Phone, Shield, Video, Trash2, AlertTriangle, Plus, FileText, Upload } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -44,18 +44,36 @@ const ProfileTab = ({ showVideos, onDeleteVideo, deletingVideoId }: ProfileTabPr
   const { user, role } = useAuth();
   const { toast } = useToast();
   const fileRef = useRef<HTMLInputElement>(null);
+  const bcRef = useRef<HTMLInputElement>(null);
   const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState(false);
   const [uploading, setUploading] = useState(false);
+  const [bcUploading, setBcUploading] = useState(false);
+  const [birthCertUrl, setBirthCertUrl] = useState<string | null>(null);
   const [editing, setEditing] = useState(false);
   const [profile, setProfile] = useState<ProfileData>({
     full_name: "", username: "", bio: "", phone: "", avatar_url: "",
     sport: "", gender: "", date_of_birth: "", guardian_contact: "",
   });
 
+  const computeAge = (dob: string): number | null => {
+    if (!dob) return null;
+    const d = new Date(dob);
+    if (Number.isNaN(d.getTime())) return null;
+    const now = new Date();
+    let age = now.getFullYear() - d.getFullYear();
+    const m = now.getMonth() - d.getMonth();
+    if (m < 0 || (m === 0 && now.getDate() < d.getDate())) age--;
+    return age;
+  };
+  const age = computeAge(profile.date_of_birth);
+
   useEffect(() => {
     if (!user) return;
-    supabase.from("profiles").select("*").eq("user_id", user.id).maybeSingle().then(({ data }) => {
+    Promise.all([
+      supabase.from("profiles").select("*").eq("user_id", user.id).maybeSingle(),
+      supabase.from("documents").select("url").eq("user_id", user.id).eq("type", "birth_certificate").maybeSingle(),
+    ]).then(([{ data }, { data: bc }]) => {
       if (data) {
         setProfile({
           full_name: data.full_name || "", username: (data as any).username || "",
@@ -64,9 +82,46 @@ const ProfileTab = ({ showVideos, onDeleteVideo, deletingVideoId }: ProfileTabPr
           date_of_birth: data.date_of_birth || "", guardian_contact: data.guardian_contact || "",
         });
       }
+      if (bc?.url) setBirthCertUrl(bc.url);
       setLoading(false);
     });
   }, [user]);
+
+  const handleBirthCertUpload = async (file: File) => {
+    if (!user) return;
+    if (file.size > 8 * 1024 * 1024) {
+      toast({ title: "File too large", description: "Birth certificate must be under 8 MB.", variant: "destructive" });
+      return;
+    }
+    setBcUploading(true);
+    try {
+      const ext = file.name.split(".").pop();
+      const path = `${user.id}/birth_certificate_${Date.now()}.${ext}`;
+      const { error: upErr } = await supabase.storage.from("documents").upload(path, file, { upsert: true });
+      if (upErr) throw upErr;
+      const { data: { publicUrl } } = supabase.storage.from("documents").getPublicUrl(path);
+      await supabase.from("documents").delete().eq("user_id", user.id).eq("type", "birth_certificate");
+      await supabase.from("documents").insert({ user_id: user.id, type: "birth_certificate", url: publicUrl, name: file.name } as any);
+      setBirthCertUrl(publicUrl);
+      toast({ title: "Birth certificate uploaded ✅" });
+    } catch (err: any) {
+      toast({ title: "Upload failed", description: err.message, variant: "destructive" });
+    } finally {
+      setBcUploading(false);
+    }
+  };
+
+  const handleSportClick = async (s: "football" | "cricket" | "basketball") => {
+    if (!user || profile.sport === s) return;
+    setProfile((p) => ({ ...p, sport: s }));
+    try {
+      const { error } = await supabase.from("profiles").update({ sport: s } as any).eq("user_id", user.id);
+      if (error) throw error;
+      toast({ title: "Sport updated", description: `Your profile sport is now ${s}.` });
+    } catch (err: any) {
+      toast({ title: "Failed to save sport", description: err.message, variant: "destructive" });
+    }
+  };
 
   const handleAvatarUpload = async (file: File) => {
     if (!user) return;
@@ -176,11 +231,11 @@ const ProfileTab = ({ showVideos, onDeleteVideo, deletingVideoId }: ProfileTabPr
 
           {!editing && (
             <div className="flex flex-wrap gap-2 mt-3">
-              {profile.sport && <Badge variant="outline" className="text-xs border-border text-muted-foreground rounded-full">{profile.sport}</Badge>}
-              {profile.gender && <Badge variant="outline" className="text-xs border-border text-muted-foreground rounded-full">{profile.gender}</Badge>}
+              {profile.sport && <Badge variant="outline" className="text-xs border-border text-muted-foreground rounded-full capitalize">{profile.sport}</Badge>}
+              {profile.gender && <Badge variant="outline" className="text-xs border-border text-muted-foreground rounded-full capitalize">{profile.gender}</Badge>}
               {profile.date_of_birth && (
                 <Badge variant="outline" className="text-xs border-border text-muted-foreground rounded-full">
-                  <Calendar className="h-3 w-3 mr-1" /> {new Date(profile.date_of_birth).toLocaleDateString()}
+                  <Calendar className="h-3 w-3 mr-1" /> {new Date(profile.date_of_birth).toLocaleDateString()}{age !== null ? ` · Age ${age}` : ""}
                 </Badge>
               )}
               {profile.phone && (
@@ -188,6 +243,9 @@ const ProfileTab = ({ showVideos, onDeleteVideo, deletingVideoId }: ProfileTabPr
                   <Phone className="h-3 w-3 mr-1" /> {profile.phone}
                 </Badge>
               )}
+              <Badge variant="outline" className={`text-xs rounded-full ${birthCertUrl ? "border-primary/40 text-primary" : "border-destructive/40 text-destructive"}`}>
+                <FileText className="h-3 w-3 mr-1" /> Birth certificate {birthCertUrl ? "✓" : "missing"}
+              </Badge>
             </div>
           )}
         </div>
@@ -214,7 +272,7 @@ const ProfileTab = ({ showVideos, onDeleteVideo, deletingVideoId }: ProfileTabPr
               <Input className="mt-1 bg-secondary border-border rounded-xl" placeholder="Male / Female / Other" value={profile.gender} onChange={(e) => setProfile((p) => ({ ...p, gender: e.target.value }))} />
             </div>
             <div>
-              <Label className="text-xs text-muted-foreground uppercase tracking-wide">Date of Birth</Label>
+              <Label className="text-xs text-muted-foreground uppercase tracking-wide">Date of Birth {age !== null && <span className="ml-1 text-foreground/80 normal-case">(Age {age})</span>}</Label>
               <Input type="date" className="mt-1 bg-secondary border-border rounded-xl" value={profile.date_of_birth} onChange={(e) => setProfile((p) => ({ ...p, date_of_birth: e.target.value }))} />
             </div>
             <div>
@@ -224,11 +282,11 @@ const ProfileTab = ({ showVideos, onDeleteVideo, deletingVideoId }: ProfileTabPr
                   <button
                     key={s}
                     type="button"
-                    onClick={() => setProfile((p) => ({ ...p, sport: s }))}
+                    onClick={() => handleSportClick(s)}
                     className={`py-2 rounded-xl text-xs font-semibold capitalize transition-all border ${
                       profile.sport === s
-                        ? "bg-foreground/15 text-foreground border-foreground/50"
-                        : "bg-secondary text-secondary-foreground border-border hover:border-foreground/30"
+                        ? "bg-primary text-primary-foreground border-primary shadow-md"
+                        : "bg-secondary text-secondary-foreground border-border hover:border-primary/40"
                     }`}
                   >
                     {s === "football" ? "⚽ Football" : s === "cricket" ? "🏏 Cricket" : "🏀 Basketball"}
@@ -244,6 +302,22 @@ const ProfileTab = ({ showVideos, onDeleteVideo, deletingVideoId }: ProfileTabPr
           <div>
             <Label className="text-xs text-muted-foreground uppercase tracking-wide">Guardian Contact (if under 18)</Label>
             <Input className="mt-1 bg-secondary border-border rounded-xl" placeholder="01XXXXXXXXX" value={profile.guardian_contact} onChange={(e) => setProfile((p) => ({ ...p, guardian_contact: e.target.value }))} />
+          </div>
+
+          {/* Birth certificate */}
+          <div className={`rounded-xl border p-4 ${birthCertUrl ? "border-border bg-secondary/40" : "border-destructive/40 bg-destructive/5"}`}>
+            <div className="flex items-center gap-2 mb-2">
+              <FileText className={`h-4 w-4 ${birthCertUrl ? "text-primary" : "text-destructive"}`} />
+              <Label className="text-xs uppercase tracking-wide">
+                Birth Certificate {birthCertUrl ? <span className="text-primary normal-case ml-1">· uploaded ✓</span> : <span className="text-destructive normal-case ml-1">· required</span>}
+              </Label>
+            </div>
+            <p className="text-xs text-muted-foreground mb-3">Required for video uploads and verification. PDF/JPG/PNG, max 8 MB. Only admins can view.</p>
+            <Button type="button" size="sm" variant="outline" onClick={() => bcRef.current?.click()} disabled={bcUploading} className="border-primary/40 text-primary hover:bg-primary/10">
+              {bcUploading ? <Loader2 className="h-3 w-3 animate-spin mr-2" /> : <Upload className="h-3 w-3 mr-2" />}
+              {birthCertUrl ? "Replace" : "Upload"} Birth Certificate
+            </Button>
+            <input ref={bcRef} type="file" accept="application/pdf,image/jpeg,image/png" className="hidden" onChange={(e) => e.target.files?.[0] && handleBirthCertUpload(e.target.files[0])} />
           </div>
         </motion.div>
       )}

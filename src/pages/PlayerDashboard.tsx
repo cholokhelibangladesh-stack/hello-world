@@ -18,9 +18,21 @@ import { useNavigate } from "@tanstack/react-router";
 import ProfileTab from "@/components/ProfileTab";
 import PlayerVideosTab from "@/components/PlayerVideosTab";
 
-const footballTags = ["Striker", "Defender", "Goalkeeper", "Midfielder", "Winger"];
-const cricketTags = ["Bowler (Fast)", "Bowler (Spin)", "Batsman", "Wicketkeeper", "All-rounder"];
-const traitTags = ["Tactical", "Pace Abuser", "Freestyler", "Classical", "Aggressive"];
+const positionsBySport: Record<string, string[]> = {
+  football: ["Striker", "Defender", "Goalkeeper", "Midfielder", "Winger"],
+  cricket: ["Bowler (Fast)", "Bowler (Spin)", "Batsman", "Wicketkeeper", "All-rounder"],
+  basketball: ["Point Guard", "Shooting Guard", "Small Forward", "Power Forward", "Center"],
+};
+const traitsBySport: Record<string, string[]> = {
+  football: ["Tactical", "Pace Abuser", "Freestyler", "Classical", "Aggressive"],
+  cricket: ["Aggressive", "Defensive", "Anchor", "Power Hitter", "Tactical"],
+  basketball: ["Sharpshooter", "Playmaker", "Slasher", "Lockdown Defender", "Rim Protector"],
+};
+const SPORTS: { id: "football" | "cricket" | "basketball"; label: string; icon: string }[] = [
+  { id: "football", label: "Football", icon: "⚽" },
+  { id: "cricket", label: "Cricket", icon: "🏏" },
+  { id: "basketball", label: "Basketball", icon: "🏀" },
+];
 
 interface Scout {
   user_id: string;
@@ -61,11 +73,15 @@ const PlayerDashboard = () => {
   const [deletingVideoId, setDeletingVideoId] = useState<string | null>(null);
   const [showNewUpload, setShowNewUpload] = useState(false);
   const [uploadsHalted, setUploadsHalted] = useState(false);
+  const [birthCertUrl, setBirthCertUrl] = useState<string | null>(null);
+  const [birthCertUploading, setBirthCertUploading] = useState(false);
+  const [savingSport, setSavingSport] = useState(false);
   const [activeTab, setActiveTab] = useState(() => {
     const hash = window.location.hash.replace("#", "");
     return ["upload", "explore", "profile"].includes(hash) ? hash : "upload";
   });
   const fileRef = useRef<HTMLInputElement>(null);
+  const bcRef = useRef<HTMLInputElement>(null);
   const { toast } = useToast();
   const { user, loading: authLoading } = useAuth();
   const navigate = useNavigate();
@@ -83,12 +99,14 @@ const PlayerDashboard = () => {
   };
 
   const loadUserData = async (userId: string) => {
-    const [profileRes, videosRes] = await Promise.all([
+    const [profileRes, videosRes, docsRes] = await Promise.all([
       supabase.from("profiles").select("sport").eq("user_id", userId).maybeSingle(),
       supabase.from("videos").select("*").eq("user_id", userId).order("created_at", { ascending: false }),
+      supabase.from("documents").select("url").eq("user_id", userId).eq("type", "birth_certificate").maybeSingle(),
     ]);
 
     if (profileRes.data?.sport) setSport(profileRes.data.sport);
+    if (docsRes.data?.url) setBirthCertUrl(docsRes.data.url);
 
     const videos = (videosRes.data || []) as VideoRecord[];
     setAllVideos(videos);
@@ -134,9 +152,53 @@ const PlayerDashboard = () => {
     if (user) loadUserData(user.id);
   }, [user, authLoading]);
 
-  const positionTags = sport === "cricket" ? cricketTags : footballTags;
+  const positionTags = positionsBySport[sport] || positionsBySport.football;
+  const traitTags = traitsBySport[sport] || traitsBySport.football;
   const toggleTag = (tag: string, list: string[], setter: (v: string[]) => void) => {
     setter(list.includes(tag) ? list.filter((t) => t !== tag) : [...list, tag]);
+  };
+
+  const handleSportChange = async (newSport: "football" | "cricket" | "basketball") => {
+    if (!user || newSport === sport) return;
+    setSport(newSport);
+    setSelectedPositions([]);
+    setSelectedTraits([]);
+    setSavingSport(true);
+    try {
+      const { error } = await supabase.from("profiles").update({ sport: newSport } as any).eq("user_id", user.id);
+      if (error) throw error;
+      toast({ title: "Sport updated", description: `Your profile sport is now ${newSport}.` });
+    } catch (err: any) {
+      toast({ title: "Failed to save sport", description: err.message, variant: "destructive" });
+    } finally {
+      setSavingSport(false);
+    }
+  };
+
+  const handleBirthCertUpload = async (file: File) => {
+    if (!user) return;
+    if (file.size > 8 * 1024 * 1024) {
+      toast({ title: "File too large", description: "Birth certificate must be under 8 MB.", variant: "destructive" });
+      return;
+    }
+    setBirthCertUploading(true);
+    try {
+      const ext = file.name.split(".").pop();
+      const path = `${user.id}/birth_certificate_${Date.now()}.${ext}`;
+      const { error: upErr } = await supabase.storage.from("documents").upload(path, file, { upsert: true });
+      if (upErr) throw upErr;
+      const { data: { publicUrl } } = supabase.storage.from("documents").getPublicUrl(path);
+      await supabase.from("documents").delete().eq("user_id", user.id).eq("type", "birth_certificate");
+      await supabase.from("documents").insert(
+        { user_id: user.id, type: "birth_certificate", url: publicUrl, name: file.name } as any
+      );
+      setBirthCertUrl(publicUrl);
+      toast({ title: "Birth certificate uploaded ✅" });
+    } catch (err: any) {
+      toast({ title: "Upload failed", description: err.message, variant: "destructive" });
+    } finally {
+      setBirthCertUploading(false);
+    }
   };
 
   const resetUploadForm = () => {
@@ -596,6 +658,68 @@ const PlayerDashboard = () => {
                     </div>
                   ) : (
                     <div className="space-y-6">
+                      {/* Sport selector */}
+                      <div className="bg-card border border-border rounded-xl p-6">
+                        <div className="flex items-center gap-3 mb-3">
+                          <Tag className="h-5 w-5 text-primary" />
+                          <h2 className="font-display text-xl text-foreground">YOUR SPORT</h2>
+                          {savingSport && <Loader2 className="h-4 w-4 animate-spin text-muted-foreground" />}
+                        </div>
+                        <p className="text-xs text-muted-foreground mb-3">Pick the sport you play — positions and play styles below update accordingly.</p>
+                        <div className="grid grid-cols-3 gap-2">
+                          {SPORTS.map((s) => (
+                            <button
+                              key={s.id}
+                              type="button"
+                              disabled={savingSport}
+                              onClick={() => handleSportChange(s.id)}
+                              className={`py-3 rounded-xl text-sm font-semibold transition-all border ${
+                                sport === s.id
+                                  ? "bg-primary text-primary-foreground border-primary shadow-md"
+                                  : "bg-secondary text-secondary-foreground border-border hover:border-primary/40"
+                              }`}
+                            >
+                              <span className="mr-1">{s.icon}</span> {s.label}
+                            </button>
+                          ))}
+                        </div>
+                      </div>
+
+                      {/* Birth certificate (required) */}
+                      <div className={`bg-card border rounded-xl p-6 ${birthCertUrl ? "border-border" : "border-destructive/40"}`}>
+                        <div className="flex items-center gap-3 mb-3">
+                          <FileText className={`h-5 w-5 ${birthCertUrl ? "text-primary" : "text-destructive"}`} />
+                          <h2 className="font-display text-xl text-foreground">BIRTH CERTIFICATE</h2>
+                          {birthCertUrl ? (
+                            <Badge className="bg-primary/20 text-primary border-primary/30">Uploaded ✓</Badge>
+                          ) : (
+                            <Badge variant="outline" className="border-destructive/40 text-destructive">Required</Badge>
+                          )}
+                        </div>
+                        <p className="text-xs text-muted-foreground mb-3">
+                          A valid birth certificate is required before you can submit a video. Accepted: PDF, JPG, PNG (max 8 MB). Only admins can view this document.
+                        </p>
+                        <div className="flex flex-col sm:flex-row gap-2">
+                          <Button
+                            type="button"
+                            variant="outline"
+                            onClick={() => bcRef.current?.click()}
+                            disabled={birthCertUploading}
+                            className="border-primary/40 text-primary hover:bg-primary/10"
+                          >
+                            {birthCertUploading ? <Loader2 className="h-4 w-4 animate-spin mr-2" /> : <Upload className="h-4 w-4 mr-2" />}
+                            {birthCertUrl ? "Replace Birth Certificate" : "Upload Birth Certificate"}
+                          </Button>
+                          <input
+                            ref={bcRef}
+                            type="file"
+                            accept="application/pdf,image/jpeg,image/png"
+                            className="hidden"
+                            onChange={(e) => e.target.files?.[0] && handleBirthCertUpload(e.target.files[0])}
+                          />
+                        </div>
+                      </div>
+
                       {/* Video Upload */}
                       <div className="bg-card border border-border rounded-xl p-6">
                         <div className="flex items-center gap-3 mb-4">
@@ -657,10 +781,19 @@ const PlayerDashboard = () => {
 
                       {/* Save details */}
                       {!videoId && videoFile && (
-                        <Button onClick={handleUpload} disabled={uploading} className="w-full bg-primary text-primary-foreground font-bold hover:bg-primary/90">
-                          {uploading ? <Loader2 className="h-4 w-4 animate-spin mr-2" /> : <Upload className="h-4 w-4 mr-2" />}
-                          Save Details & Proceed to Payment
-                        </Button>
+                        <div className="space-y-2">
+                          {!birthCertUrl && (
+                            <p className="text-xs text-destructive text-center">⚠ Upload your birth certificate above before saving.</p>
+                          )}
+                          <Button
+                            onClick={handleUpload}
+                            disabled={uploading || !birthCertUrl}
+                            className="w-full bg-primary text-primary-foreground font-bold hover:bg-primary/90 disabled:opacity-50"
+                          >
+                            {uploading ? <Loader2 className="h-4 w-4 animate-spin mr-2" /> : <Upload className="h-4 w-4 mr-2" />}
+                            Save Details & Proceed to Payment
+                          </Button>
+                        </div>
                       )}
 
                       {/* Payment */}
