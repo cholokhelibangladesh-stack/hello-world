@@ -70,11 +70,19 @@ serve(async (req) => {
       .update({ full_name, phone, gender, sport: role === "player" ? sport : null })
       .eq("user_id", user.id);
 
-    // Create scout profile if scout
+    // Create scout profile if scout — defaults to verification_status='pending'
     if (role === "scout") {
       await supabase
         .from("scout_profiles")
         .insert({ user_id: user.id });
+
+      // Hold notification — non-emoji pending message
+      await supabase.from("notifications").insert({
+        user_id: user.id,
+        title: "Account pending verification",
+        message: "Your request is being authenticated. Please wait until your account is verified.",
+        type: "scout_verification",
+      });
     }
 
     return new Response(JSON.stringify({ success: true }), {
