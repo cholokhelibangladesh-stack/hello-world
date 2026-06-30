@@ -304,6 +304,8 @@ function ScoutCarouselCard({ scout, defaultBio }: { scout: ScoutProfile; default
 ════════════════════════════════════════════ */
 const Index = () => {
   const { user, role } = useAuth();
+  const { lang } = useLanguage();
+  const T = COPY[lang];
   const [verifiedScouts, setVerifiedScouts] = useState<ScoutProfile[]>(FALLBACK_SCOUTS);
   const [scoutIndex, setScoutIndex] = useState(0);
 
