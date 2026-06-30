@@ -870,14 +870,14 @@ const Index = () => {
                   <Link to="/auth">
                     <Button size="lg" className="font-bold text-lg px-12 py-6 animate-pulse-glow"
                       style={{ background: "hsl(var(--green))", color: "hsl(var(--primary-foreground))" }}>
-                      Join Cholo Kheli Free <ArrowRight className="ml-2 h-5 w-5" />
+                      {T.joinFree} <ArrowRight className="ml-2 h-5 w-5" />
                     </Button>
                   </Link>
                 )}
                 <Link to="/mission">
                   <Button size="lg" variant="outline" className="font-semibold text-lg px-10 py-6"
                     style={{ borderColor: "hsl(var(--green) / 0.3)", color: "hsl(var(--green))" }}>
-                    Our Mission
+                    {T.ourMission}
                   </Button>
                 </Link>
               </div>
