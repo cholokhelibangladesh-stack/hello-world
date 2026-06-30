@@ -71,7 +71,7 @@ const FloatingHeader = () => {
         </Link>
 
         {/* CENTER: Pill nav (desktop) */}
-        <nav className={`pointer-events-auto hidden md:flex absolute left-1/2 -translate-x-1/2 items-center gap-1 px-2 h-11 rounded-full ${bgPill} backdrop-blur-xl ring-1 ${ring} shadow-lg shadow-black/10`}>
+        <nav className={`pointer-events-auto hidden lg:flex absolute left-1/2 -translate-x-1/2 items-center gap-1 px-2 h-11 rounded-full ${bgPill} backdrop-blur-xl ring-1 ${ring} shadow-lg shadow-black/10`}>
           {navLinks.map((l) => (
             <Link key={l.to} to={l.to as any} activeOptions={{ exact: true }} className={pill}>
               {l.label}
