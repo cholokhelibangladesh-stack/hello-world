@@ -163,7 +163,7 @@ export const translations = {
     // Safe Scouting
     "safe.title": "SAFE SCOUTING",
     "safe.promise.title": "OUR PROMISE",
-    "safe.promise.1": "Scout BD never asks players for extra money for trials, beyond the ৳100 registration fee.",
+    "safe.promise.1": "Cholo Kheli never asks players for extra money for trials, beyond the ৳100 registration fee.",
     "safe.promise.2": "All scouts are verified by our admin team before gaining access to player profiles.",
     "safe.promise.3": "All communication between scouts and players is logged for safety.",
     "safe.promise.4": "Guardian contact is mandatory for players under 18.",

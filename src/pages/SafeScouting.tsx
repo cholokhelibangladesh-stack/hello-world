@@ -58,11 +58,11 @@ const SafeScouting = () => {
             <div className="space-y-3 text-sm">
               <div className="flex items-center gap-3 text-muted-foreground">
                 <Mail className="h-4 w-4 text-primary" />
-                <span>{t("safe.contact.legal")}: <strong className="text-foreground">legal@scoutbd.com</strong></span>
+                <span>{t("safe.contact.legal")}: <strong className="text-foreground">legal@cholokheli.com</strong></span>
               </div>
               <div className="flex items-center gap-3 text-muted-foreground">
                 <Mail className="h-4 w-4 text-primary" />
-                <span>{t("safe.contact.support")}: <strong className="text-foreground">support@scoutbd.com</strong></span>
+                <span>{t("safe.contact.support")}: <strong className="text-foreground">support@cholokheli.com</strong></span>
               </div>
               <div className="flex items-center gap-3 text-muted-foreground">
                 <Phone className="h-4 w-4 text-primary" />

@@ -362,7 +362,7 @@ const PlayerDashboard = () => {
     doc.setFont("helvetica", "bold");
     doc.setFontSize(10);
     doc.setTextColor(160, 160, 160);
-    doc.text("SCOUT BD", w / 2, 30, { align: "center" });
+    doc.text("CHOLO KHELI", w / 2, 30, { align: "center" });
 
     doc.setFontSize(28);
     doc.setTextColor(240, 240, 240);
@@ -399,7 +399,7 @@ const PlayerDashboard = () => {
     doc.setFont("helvetica", "bold");
     doc.setFontSize(14);
     doc.setTextColor(220, 220, 220);
-    doc.text("Scout BD Platform — Digitizing Bangladesh Sports", w / 2, 122, { align: "center" });
+    doc.text("Cholo Kheli Platform — Digitizing Bangladesh Sports", w / 2, 122, { align: "center" });
 
     doc.setFont("helvetica", "normal");
     doc.setFontSize(9);
@@ -425,10 +425,10 @@ const PlayerDashboard = () => {
     doc.setFont("helvetica", "normal");
     doc.setFontSize(7);
     doc.setTextColor(90, 90, 90);
-    doc.text("Co-Founder, Scout BD", sig1X, sigY + 11, { align: "center" });
-    doc.text("Co-Founder, Scout BD", sig2X, sigY + 11, { align: "center" });
+    doc.text("Co-Founder, Cholo Kheli", sig1X, sigY + 11, { align: "center" });
+    doc.text("Co-Founder, Cholo Kheli", sig2X, sigY + 11, { align: "center" });
 
-    doc.save("ScoutBD_Certificate.pdf");
+    doc.save("CholoKheli_Certificate.pdf");
   };
 
   const downloadInvoice = () => {
@@ -451,7 +451,7 @@ const PlayerDashboard = () => {
     doc.setFont("helvetica", "bold");
     doc.setFontSize(22);
     doc.setTextColor(10, 10, 10);
-    doc.text("SCOUT BD", 18, 24);
+    doc.text("CHOLO KHELI", 18, 24);
 
     doc.setFont("helvetica", "normal");
     doc.setFontSize(9);
@@ -537,9 +537,9 @@ const PlayerDashboard = () => {
     doc.setFont("helvetica", "normal");
     doc.setFontSize(7);
     doc.setTextColor(60, 60, 60);
-    doc.text("Scout BD — Digitizing Bangladesh Sports", w / 2, h - 12, { align: "center" });
+    doc.text("Cholo Kheli — Digitizing Bangladesh Sports", w / 2, h - 12, { align: "center" });
 
-    doc.save("ScoutBD_Invoice.pdf");
+    doc.save("CholoKheli_Invoice.pdf");
   };
 
   // Swipe gesture handling
