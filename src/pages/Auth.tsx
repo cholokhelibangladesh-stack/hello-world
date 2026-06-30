@@ -73,9 +73,14 @@ const Auth = () => {
   const [guardianEmail, setGuardianEmail] = useState("");
   const [parentalConsent, setParentalConsent] = useState(false);
   const [birthCertFile, setBirthCertFile] = useState<File | null>(null);
+  const [scoutOrgIdFile, setScoutOrgIdFile] = useState<File | null>(null);
+  const [scoutCvFile, setScoutCvFile] = useState<File | null>(null);
   const bcRef = useRef<HTMLInputElement>(null);
+  const orgIdRef = useRef<HTMLInputElement>(null);
+  const cvRef = useRef<HTMLInputElement>(null);
   const isBcExempt = BC_EXEMPT_EMAILS.includes(formEmail.trim().toLowerCase());
   const bcRequired = !isLogin && selectedRole === "player" && !isBcExempt;
+  const scoutDocsRequired = !isLogin && selectedRole === "scout";
 
   const computeAge = (dob: string): number | null => {
     if (!dob) return null;
