@@ -394,7 +394,7 @@ const Auth = () => {
               </>
             )}
             <div>
-              <Label htmlFor="password" className="text-sm text-muted-foreground">Password</Label>
+              <Label htmlFor="password" className="text-sm text-muted-foreground">{t("auth.password")}</Label>
               <div className="relative mt-1">
                 <Input
                   id="password"
