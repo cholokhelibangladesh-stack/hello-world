@@ -35,6 +35,20 @@ const Mission = () => {
           </div>
         </motion.div>
       </div>
+
+      <div className="container max-w-3xl mt-16">
+        <div className="border-t border-border pt-10 flex items-center gap-3 mb-6">
+          <FileText className="h-5 w-5 text-[hsl(var(--teal-deep))]" />
+          <h2 className="font-display text-2xl text-foreground">Privacy Policy</h2>
+          <Link to="/privacy-policy" className="ml-auto text-sm text-primary hover:underline">
+            Open full page →
+          </Link>
+        </div>
+      </div>
+
+      <div className="-mt-20">
+        <PrivacyPolicy />
+      </div>
     </div>
   );
 };
