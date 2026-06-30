@@ -609,12 +609,12 @@ const Index = () => {
                   <span className="font-display text-7xl sm:text-8xl leading-none" style={{ color: "hsl(var(--green) / 0.15)" }}>01</span>
                   <div className="h-px flex-1" style={{ background: "hsl(var(--green) / 0.2)" }} />
                   <span className="text-xs font-bold tracking-[0.2em] uppercase px-3 py-1 rounded-full"
-                    style={{ background: "hsl(var(--green) / 0.12)", color: "hsl(var(--green))" }}>Create Profile</span>
+                    style={{ background: "hsl(var(--green) / 0.12)", color: "hsl(var(--green))" }}>{T.step1Pill}</span>
                 </div>
-                <h3 className="font-display text-4xl sm:text-5xl mb-4" style={{ color: "hsl(var(--teal-deep))" }}>YOUR STORY<br />STARTS HERE</h3>
-                <p className="leading-relaxed" style={{ color: "hsl(var(--teal-deep) / 0.8)" }}>Sign up as a Player, add your details, select your sport — Football or Cricket. Your profile becomes your digital identity, visible to scouts across Bangladesh.</p>
+                <h3 className="font-display text-4xl sm:text-5xl mb-4 whitespace-pre-line" style={{ color: "hsl(var(--teal-deep))" }}>{T.step1Title}</h3>
+                <p className="leading-relaxed" style={{ color: "hsl(var(--teal-deep) / 0.8)" }}>{T.step1Body}</p>
                 <div className="mt-6 flex gap-3">
-                  {["Football", "Cricket", "Athletics"].map((s) => (
+                  {[T.football, T.cricket, T.athletics].map((s) => (
                     <span key={s} className="text-xs px-3 py-1 rounded-full border font-medium"
                       style={{ borderColor: "hsl(var(--green) / 0.25)", color: "hsl(var(--green))", background: "hsl(var(--green) / 0.06)" }}>{s}</span>
                   ))}
