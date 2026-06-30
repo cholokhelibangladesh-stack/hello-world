@@ -26,6 +26,7 @@ import { Route as ResumeUserIdRouteImport } from './routes/resume.$userId'
 import { Route as PlayerUploadRouteImport } from './routes/player/upload'
 import { Route as PlayerProfileRouteImport } from './routes/player/profile'
 import { Route as PlayerExploreRouteImport } from './routes/player/explore'
+import { Route as ApiHealthRouteImport } from './routes/api/health'
 
 const SafeScoutingRoute = SafeScoutingRouteImport.update({
   id: '/safe-scouting',
@@ -112,6 +113,11 @@ const PlayerExploreRoute = PlayerExploreRouteImport.update({
   path: '/player/explore',
   getParentRoute: () => rootRouteImport,
 } as any)
+const ApiHealthRoute = ApiHealthRouteImport.update({
+  id: '/api/health',
+  path: '/api/health',
+  getParentRoute: () => rootRouteImport,
+} as any)
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
@@ -122,6 +128,7 @@ export interface FileRoutesByFullPath {
   '/mission': typeof MissionRoute
   '/reset-password': typeof ResetPasswordRoute
   '/safe-scouting': typeof SafeScoutingRoute
+  '/api/health': typeof ApiHealthRoute
   '/player/explore': typeof PlayerExploreRoute
   '/player/profile': typeof PlayerProfileRoute
   '/player/upload': typeof PlayerUploadRoute
@@ -141,6 +148,7 @@ export interface FileRoutesByTo {
   '/mission': typeof MissionRoute
   '/reset-password': typeof ResetPasswordRoute
   '/safe-scouting': typeof SafeScoutingRoute
+  '/api/health': typeof ApiHealthRoute
   '/player/explore': typeof PlayerExploreRoute
   '/player/profile': typeof PlayerProfileRoute
   '/player/upload': typeof PlayerUploadRoute
@@ -161,6 +169,7 @@ export interface FileRoutesById {
   '/mission': typeof MissionRoute
   '/reset-password': typeof ResetPasswordRoute
   '/safe-scouting': typeof SafeScoutingRoute
+  '/api/health': typeof ApiHealthRoute
   '/player/explore': typeof PlayerExploreRoute
   '/player/profile': typeof PlayerProfileRoute
   '/player/upload': typeof PlayerUploadRoute
@@ -182,6 +191,7 @@ export interface FileRouteTypes {
     | '/mission'
     | '/reset-password'
     | '/safe-scouting'
+    | '/api/health'
     | '/player/explore'
     | '/player/profile'
     | '/player/upload'
@@ -201,6 +211,7 @@ export interface FileRouteTypes {
     | '/mission'
     | '/reset-password'
     | '/safe-scouting'
+    | '/api/health'
     | '/player/explore'
     | '/player/profile'
     | '/player/upload'
@@ -220,6 +231,7 @@ export interface FileRouteTypes {
     | '/mission'
     | '/reset-password'
     | '/safe-scouting'
+    | '/api/health'
     | '/player/explore'
     | '/player/profile'
     | '/player/upload'
@@ -240,6 +252,7 @@ export interface RootRouteChildren {
   MissionRoute: typeof MissionRoute
   ResetPasswordRoute: typeof ResetPasswordRoute
   SafeScoutingRoute: typeof SafeScoutingRoute
+  ApiHealthRoute: typeof ApiHealthRoute
   PlayerExploreRoute: typeof PlayerExploreRoute
   PlayerProfileRoute: typeof PlayerProfileRoute
   PlayerUploadRoute: typeof PlayerUploadRoute
@@ -372,6 +385,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof PlayerExploreRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/api/health': {
+      id: '/api/health'
+      path: '/api/health'
+      fullPath: '/api/health'
+      preLoaderRoute: typeof ApiHealthRouteImport
+      parentRoute: typeof rootRouteImport
+    }
   }
 }
 
@@ -384,6 +404,7 @@ const rootRouteChildren: RootRouteChildren = {
   MissionRoute: MissionRoute,
   ResetPasswordRoute: ResetPasswordRoute,
   SafeScoutingRoute: SafeScoutingRoute,
+  ApiHealthRoute: ApiHealthRoute,
   PlayerExploreRoute: PlayerExploreRoute,
   PlayerProfileRoute: PlayerProfileRoute,
   PlayerUploadRoute: PlayerUploadRoute,
