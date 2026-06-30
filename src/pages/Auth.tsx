@@ -12,7 +12,7 @@ import CholoKheliMark from "@/components/CholoKheliMark";
 import { useLanguage } from "@/i18n/LanguageProvider";
 
 type Role = "player" | "scout";
-type Sport = "football" | "cricket";
+type Sport = "football" | "cricket" | "basketball";
 
 const ForgotPasswordInline = ({ email, toast }: { email: string; toast: any }) => {
   const [sending, setSending] = useState(false);
