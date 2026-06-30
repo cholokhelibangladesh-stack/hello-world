@@ -420,12 +420,12 @@ const Auth = () => {
             )}
             {!isLogin && isMinor && age !== null && age >= 13 && (
               <div className="space-y-3 p-4 rounded-xl border border-border bg-secondary/60">
-                <p className="text-sm font-semibold text-foreground">Parental / Guardian Consent</p>
+                <p className="text-sm font-semibold text-foreground">{t("auth.parentalConsent")}</p>
                 <div>
-                  <Label htmlFor="guardianName" className="text-sm text-muted-foreground">Parent / Guardian Full Name</Label>
+                  <Label htmlFor="guardianName" className="text-sm text-muted-foreground">{t("auth.guardianName")}</Label>
                   <Input
                     id="guardianName"
-                    placeholder="Guardian's full name"
+                    placeholder={t("auth.guardianNamePh")}
                     required
                     className="bg-background border-border mt-1"
                     value={guardianName}
@@ -433,11 +433,11 @@ const Auth = () => {
                   />
                 </div>
                 <div>
-                  <Label htmlFor="guardianEmail" className="text-sm text-muted-foreground">Parent / Guardian Email</Label>
+                  <Label htmlFor="guardianEmail" className="text-sm text-muted-foreground">{t("auth.guardianEmail")}</Label>
                   <Input
                     id="guardianEmail"
                     type="email"
-                    placeholder="guardian@example.com"
+                    placeholder={t("auth.guardianEmailPh")}
                     required
                     className="bg-background border-border mt-1"
                     value={guardianEmail}
