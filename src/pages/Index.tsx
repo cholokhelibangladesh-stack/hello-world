@@ -477,7 +477,7 @@ const Index = () => {
                     className="font-medium text-base px-9 py-6 rounded-full bg-white/5 backdrop-blur-sm hover:bg-white/15"
                     style={{ borderColor: "rgba(255,255,255,0.4)", color: "#ffffff" }}
                   >
-                    I'm a Scout
+                    {T.imAScout}
                   </Button>
                 </Link>
               </>
