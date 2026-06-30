@@ -479,18 +479,18 @@ const Auth = () => {
               disabled={loading || (!isLogin && !agreePrivacy) || (!isLogin && isMinor && !parentalConsent)}
               className="w-full bg-foreground text-background font-bold hover:bg-foreground/90 transition-all duration-300 disabled:opacity-50"
             >
-              {loading ? <Loader2 className="h-4 w-4 animate-spin" /> : isLogin ? "Sign In" : "Create Account"}
+              {loading ? <Loader2 className="h-4 w-4 animate-spin" /> : isLogin ? t("auth.signIn") : t("auth.createAccount")}
             </Button>
           </form>
 
           <p className="text-center text-sm text-muted-foreground mt-4">
-            {isLogin ? "Don't have an account? " : "Already have an account? "}
+            {isLogin ? t("auth.noAccount") : t("auth.hasAccount")}
             <button
               type="button"
               onClick={() => { setIsLogin(!isLogin); }}
               className="text-foreground hover:underline font-medium transition-colors"
             >
-              {isLogin ? "Sign Up" : "Sign In"}
+              {isLogin ? t("auth.signUp") : t("auth.signIn")}
             </button>
           </p>
           {isLogin && (
