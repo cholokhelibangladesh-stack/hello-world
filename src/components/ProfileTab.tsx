@@ -219,7 +219,22 @@ const ProfileTab = ({ showVideos, onDeleteVideo, deletingVideoId }: ProfileTabPr
             </div>
             <div>
               <Label className="text-xs text-muted-foreground uppercase tracking-wide">Sport</Label>
-              <Input className="mt-1 bg-secondary border-border rounded-xl" placeholder="Football / Cricket" value={profile.sport} onChange={(e) => setProfile((p) => ({ ...p, sport: e.target.value }))} />
+              <div className="grid grid-cols-3 gap-2 mt-1">
+                {(["football", "cricket", "basketball"] as const).map((s) => (
+                  <button
+                    key={s}
+                    type="button"
+                    onClick={() => setProfile((p) => ({ ...p, sport: s }))}
+                    className={`py-2 rounded-xl text-xs font-semibold capitalize transition-all border ${
+                      profile.sport === s
+                        ? "bg-foreground/15 text-foreground border-foreground/50"
+                        : "bg-secondary text-secondary-foreground border-border hover:border-foreground/30"
+                    }`}
+                  >
+                    {s === "football" ? "⚽ Football" : s === "cricket" ? "🏏 Cricket" : "🏀 Basketball"}
+                  </button>
+                ))}
+              </div>
             </div>
           </div>
           <div>
