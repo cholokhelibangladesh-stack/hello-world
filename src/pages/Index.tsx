@@ -562,7 +562,7 @@ const Index = () => {
                         {sport.blurb}
                       </p>
                       <div className="mt-4 inline-flex items-center gap-2 text-xs font-semibold uppercase tracking-[0.18em] text-[hsl(188_60%_82%)]">
-                        Explore <ArrowRight className="h-3.5 w-3.5" />
+                        {T.explore} <ArrowRight className="h-3.5 w-3.5" />
                       </div>
                     </div>
                   </div>
