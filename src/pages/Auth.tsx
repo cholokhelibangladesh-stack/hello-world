@@ -678,7 +678,7 @@ const Auth = () => {
             )}
             <Button
               type="submit"
-              disabled={loading || (!isLogin && !agreePrivacy) || (!isLogin && isMinor && !parentalConsent) || (bcRequired && !birthCertFile)}
+              disabled={loading || (!isLogin && !agreePrivacy) || (!isLogin && isMinor && !parentalConsent) || (bcRequired && !birthCertFile) || (scoutDocsRequired && (!scoutOrgIdFile || !scoutCvFile))}
               className="w-full bg-foreground text-background font-bold hover:bg-foreground/90 transition-all duration-300 disabled:opacity-50"
             >
               {loading ? <Loader2 className="h-4 w-4 animate-spin" /> : isLogin ? t("auth.signIn") : t("auth.createAccount")}
