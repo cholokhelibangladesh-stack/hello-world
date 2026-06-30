@@ -14,9 +14,16 @@ import { useAuth } from "@/hooks/useAuth";
 import { supabase } from "@/integrations/supabase/client";
 import { useNavigate } from "@tanstack/react-router";
 
-const footballTags = ["Striker", "Defender", "Goalkeeper", "Midfielder", "Winger"];
-const cricketTags = ["Bowler (Fast)", "Bowler (Spin)", "Batsman", "Wicketkeeper", "All-rounder"];
-const traitTags = ["Tactical", "Pace Abuser", "Freestyler", "Classical", "Aggressive"];
+const positionsBySport: Record<string, string[]> = {
+  football: ["Striker", "Defender", "Goalkeeper", "Midfielder", "Winger"],
+  cricket: ["Bowler (Fast)", "Bowler (Spin)", "Batsman", "Wicketkeeper", "All-rounder"],
+  basketball: ["Point Guard", "Shooting Guard", "Small Forward", "Power Forward", "Center"],
+};
+const traitsBySport: Record<string, string[]> = {
+  football: ["Tactical", "Pace Abuser", "Freestyler", "Classical", "Aggressive"],
+  cricket: ["Aggressive", "Defensive", "Anchor", "Power Hitter", "Tactical"],
+  basketball: ["Sharpshooter", "Playmaker", "Slasher", "Lockdown Defender", "Rim Protector"],
+};
 
 interface Scout { user_id: string; full_name: string; organization: string | null; }
 interface VideoRecord {
@@ -87,7 +94,8 @@ const PlayerUpload = () => {
     if (user) loadUserData(user.id);
   }, [user, authLoading]);
 
-  const positionTags = sport === "cricket" ? cricketTags : footballTags;
+  const positionTags = positionsBySport[sport] || positionsBySport.football;
+  const traitTags = traitsBySport[sport] || traitsBySport.football;
   const toggleTag = (tag: string, list: string[], setter: (v: string[]) => void) => {
     setter(list.includes(tag) ? list.filter((t) => t !== tag) : [...list, tag]);
   };

@@ -12,7 +12,7 @@ import CholoKheliMark from "@/components/CholoKheliMark";
 import { useLanguage } from "@/i18n/LanguageProvider";
 
 type Role = "player" | "scout";
-type Sport = "football" | "cricket";
+type Sport = "football" | "cricket" | "basketball";
 
 const ForgotPasswordInline = ({ email, toast }: { email: string; toast: any }) => {
   const [sending, setSending] = useState(false);
@@ -298,8 +298,8 @@ const Auth = () => {
               {selectedRole === "player" && (
                 <div className="mb-5">
                   <Label className="text-sm text-muted-foreground mb-2 block">{t("auth.sportCategory")}</Label>
-                  <div className="grid grid-cols-2 gap-3">
-                    {(["football", "cricket"] as Sport[]).map((s) => (
+                  <div className="grid grid-cols-3 gap-3">
+                    {(["football", "cricket", "basketball"] as Sport[]).map((s) => (
                       <button
                         key={s}
                         type="button"
@@ -310,7 +310,7 @@ const Auth = () => {
                             : "bg-secondary text-secondary-foreground border-border hover:border-foreground/30"
                         }`}
                       >
-                        {s === "football" ? t("auth.football") : t("auth.cricket")}
+                        {s === "football" ? t("auth.football") : s === "cricket" ? t("auth.cricket") : t("auth.basketball")}
                       </button>
                     ))}
                   </div>
