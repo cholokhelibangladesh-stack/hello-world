@@ -562,6 +562,64 @@ const Auth = () => {
                 </div>
               </div>
             )}
+            {!isLogin && selectedRole === "scout" && (
+              <div className="p-4 rounded-xl border border-border bg-secondary/50 space-y-4">
+                <p className="text-sm font-semibold text-foreground">Scout verification documents</p>
+                <p className="text-xs text-muted-foreground -mt-2">
+                  Both documents are required to apply as a scout. Accepted: PDF, JPG, PNG (max 8 MB each). Only admins can view these documents.
+                </p>
+
+                <div className="space-y-2">
+                  <div className="flex items-center gap-2">
+                    <FileText className={`h-4 w-4 ${scoutOrgIdFile ? "text-foreground" : "text-destructive"}`} />
+                    <Label className="text-sm font-semibold text-foreground">
+                      Organization ID card <span className="text-destructive">*</span>
+                    </Label>
+                  </div>
+                  <input
+                    ref={orgIdRef}
+                    type="file"
+                    accept="application/pdf,image/jpeg,image/png"
+                    className="hidden"
+                    onChange={(e) => setScoutOrgIdFile(e.target.files?.[0] || null)}
+                  />
+                  <div className="flex items-center gap-2">
+                    <Button type="button" variant="outline" size="sm" onClick={() => orgIdRef.current?.click()} className="border-border">
+                      <Upload className="h-3.5 w-3.5 mr-2" />
+                      {scoutOrgIdFile ? "Replace file" : "Choose file"}
+                    </Button>
+                    <span className="text-xs text-muted-foreground truncate">
+                      {scoutOrgIdFile ? scoutOrgIdFile.name : "No file chosen"}
+                    </span>
+                  </div>
+                </div>
+
+                <div className="space-y-2">
+                  <div className="flex items-center gap-2">
+                    <FileText className={`h-4 w-4 ${scoutCvFile ? "text-foreground" : "text-destructive"}`} />
+                    <Label className="text-sm font-semibold text-foreground">
+                      Official CV <span className="text-destructive">*</span>
+                    </Label>
+                  </div>
+                  <input
+                    ref={cvRef}
+                    type="file"
+                    accept="application/pdf,image/jpeg,image/png"
+                    className="hidden"
+                    onChange={(e) => setScoutCvFile(e.target.files?.[0] || null)}
+                  />
+                  <div className="flex items-center gap-2">
+                    <Button type="button" variant="outline" size="sm" onClick={() => cvRef.current?.click()} className="border-border">
+                      <Upload className="h-3.5 w-3.5 mr-2" />
+                      {scoutCvFile ? "Replace file" : "Choose file"}
+                    </Button>
+                    <span className="text-xs text-muted-foreground truncate">
+                      {scoutCvFile ? scoutCvFile.name : "No file chosen"}
+                    </span>
+                  </div>
+                </div>
+              </div>
+            )}
             {!isLogin && isMinor && age !== null && age >= 13 && (
               <div className="space-y-3 p-4 rounded-xl border border-border bg-secondary/60">
                 <p className="text-sm font-semibold text-foreground">{t("auth.guardianHeading")}</p>
