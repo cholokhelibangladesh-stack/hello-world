@@ -493,7 +493,7 @@ const Index = () => {
           transition={{ delay: 1, duration: 0.5 }}
           className="absolute bottom-8 left-1/2 -translate-x-1/2 z-10 flex flex-col items-center gap-1.5"
         >
-          <span className="text-[9px] tracking-[0.35em] uppercase text-white/70">Scroll</span>
+          <span className="text-[9px] tracking-[0.35em] uppercase text-white/70">{T.scroll}</span>
           <motion.div animate={{ y: [0, 6, 0] }} transition={{ duration: 1.6, repeat: Infinity }}>
             <ChevronDown className="h-4 w-4 text-white/70" />
           </motion.div>
