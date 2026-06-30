@@ -453,9 +453,8 @@ const Auth = () => {
                     required
                   />
                   <span>
-                    I am the parent or legal guardian of this Minor and I provide my explicit consent
-                    for their registration and the processing of their data in accordance with the{" "}
-                    <Link to="/privacy-policy" className="underline font-medium">Privacy Policy</Link>.
+                    {t("auth.guardianConsentText")}{" "}
+                    <Link to="/privacy-policy" className="underline font-medium">{t("auth.privacyPolicy")}</Link>.
                   </span>
                 </label>
               </div>
