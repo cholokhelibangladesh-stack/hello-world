@@ -453,7 +453,7 @@ const Auth = () => {
                     required
                   />
                   <span>
-                    {t("auth.guardianConsentText")}{" "}
+                    {t("auth.parentalConsent")}{" "}
                     <Link to="/privacy-policy" className="underline font-medium">{t("auth.privacyPolicy")}</Link>.
                   </span>
                 </label>
