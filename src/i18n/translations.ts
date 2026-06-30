@@ -1,0 +1,178 @@
+// Baseline translation dictionaries. Add new keys to BOTH languages.
+// Keys use dot.notation grouped by surface (nav, auth, cookie, footer, common).
+
+export const translations = {
+  en: {
+    // Global navigation
+    "nav.home": "Home",
+    "nav.about": "About Us",
+    "nav.safeScouting": "Safe Scouting",
+    "nav.faq": "FAQ",
+    "nav.dashboard": "Dashboard",
+    "nav.login": "Login",
+    "nav.signOut": "Sign out",
+    "nav.menu": "Menu",
+    "nav.language": "Language",
+    "nav.lightMode": "Light mode",
+    "nav.darkMode": "Dark mode",
+    "nav.toggleTheme": "Toggle theme",
+
+    // Footer
+    "footer.tagline":
+      "Digitising Bangladesh sports. Connecting talent with opportunity — safely, transparently, beautifully.",
+    "footer.quickLinks": "QUICK LINKS",
+    "footer.ourMission": "Our Mission",
+    "footer.faqHelpline": "FAQ & Helpline",
+    "footer.contact": "CONTACT",
+    "footer.dhaka": "Dhaka, Bangladesh",
+    "footer.copyright": "© 2026 Cholo Kheli — Let's Play",
+
+    // Cookie banner
+    "cookie.title": "We use cookies.",
+    "cookie.body":
+      "Essential cookies keep you signed in and the Platform running. We only enable analytics and non-essential tracking after you accept. Read our",
+    "cookie.privacyPolicy": "Privacy Policy",
+    "cookie.essentialOnly": "Essential only",
+    "cookie.acceptAll": "Accept all",
+
+    // Auth (form labels, buttons, headings)
+    "auth.welcomeBack": "Welcome back",
+    "auth.joinTheGame": "Join the game",
+    "auth.signInSub": "Sign in to continue your journey.",
+    "auth.signUpSub": "Create your account to get scouted.",
+    "auth.iAmA": "I am a",
+    "auth.player": "⚽ PLAYER",
+    "auth.scout": "🔍 SCOUT",
+    "auth.sportCategory": "Sport Category",
+    "auth.football": "⚽ Football",
+    "auth.cricket": "🏏 Cricket",
+    "auth.fullName": "Full Name",
+    "auth.fullNamePh": "Your full name",
+    "auth.email": "Email",
+    "auth.emailPh": "you@example.com",
+    "auth.phone": "Phone (BD)",
+    "auth.phonePh": "+880 1XXXXXXXXX",
+    "auth.gender": "Gender",
+    "auth.selectGender": "Select gender",
+    "auth.male": "Male",
+    "auth.female": "Female",
+    "auth.other": "Other",
+    "auth.dob": "Date of Birth",
+    "auth.tooYoung": "You must be at least 13 to register.",
+    "auth.minorNotice": "Since you are under 18, parental consent is required below.",
+    "auth.password": "Password",
+    "auth.guardianHeading": "Parental / Guardian Consent",
+    "auth.guardianName": "Parent / Guardian Full Name",
+    "auth.guardianNamePh": "Guardian's full name",
+    "auth.guardianEmail": "Parent / Guardian Email",
+    "auth.guardianEmailPh": "guardian@example.com",
+    "auth.parentalConsent":
+      "I am the parent or legal guardian of this Minor and I provide my explicit consent for their registration and the processing of their data in accordance with the",
+    "auth.agreePrivacy": "I have read and agree to the",
+    "auth.privacyPolicy": "Privacy Policy",
+    "auth.signIn": "Sign In",
+    "auth.createAccount": "Create Account",
+    "auth.noAccount": "Don't have an account? ",
+    "auth.hasAccount": "Already have an account? ",
+    "auth.signUp": "Sign Up",
+    "auth.checkEmail": "CHECK YOUR EMAIL",
+    "auth.confirmSent": "We sent a confirmation link to",
+    "auth.scoutReview": "🔍 Scout Account Under Review",
+    "auth.scoutReviewBody":
+      "Your account is being reviewed by our Team for authentication purposes and you will be shortly notified via Email.",
+    "auth.activateHint": "Click the link in the email to activate your account. You can close this tab.",
+    "auth.alreadyConfirmed": "Already confirmed? Sign in",
+
+    // Common
+    "common.loading": "Loading…",
+  },
+
+  bn: {
+    // Global navigation
+    "nav.home": "হোম",
+    "nav.about": "আমাদের সম্পর্কে",
+    "nav.safeScouting": "নিরাপদ স্কাউটিং",
+    "nav.faq": "প্রশ্নোত্তর",
+    "nav.dashboard": "ড্যাশবোর্ড",
+    "nav.login": "লগইন",
+    "nav.signOut": "সাইন আউট",
+    "nav.menu": "মেনু",
+    "nav.language": "ভাষা",
+    "nav.lightMode": "লাইট মোড",
+    "nav.darkMode": "ডার্ক মোড",
+    "nav.toggleTheme": "থিম পরিবর্তন",
+
+    // Footer
+    "footer.tagline":
+      "বাংলাদেশের ক্রীড়াকে ডিজিটাল করছি। প্রতিভাকে সুযোগের সাথে যুক্ত করছি — নিরাপদে, স্বচ্ছভাবে, সুন্দরভাবে।",
+    "footer.quickLinks": "দ্রুত লিঙ্ক",
+    "footer.ourMission": "আমাদের লক্ষ্য",
+    "footer.faqHelpline": "প্রশ্নোত্তর ও হেল্পলাইন",
+    "footer.contact": "যোগাযোগ",
+    "footer.dhaka": "ঢাকা, বাংলাদেশ",
+    "footer.copyright": "© ২০২৬ চলো খেলি — চলো খেলি",
+
+    // Cookie banner
+    "cookie.title": "আমরা কুকি ব্যবহার করি।",
+    "cookie.body":
+      "অপরিহার্য কুকি আপনাকে সাইন ইন রাখে এবং প্ল্যাটফর্ম চালু রাখে। আপনি সম্মতি দিলে কেবল তখনই অ্যানালিটিক্স ও অন্যান্য ট্র্যাকিং চালু হয়। পড়ুন আমাদের",
+    "cookie.privacyPolicy": "গোপনীয়তা নীতি",
+    "cookie.essentialOnly": "শুধু অপরিহার্য",
+    "cookie.acceptAll": "সব গ্রহণ করুন",
+
+    // Auth
+    "auth.welcomeBack": "আবার স্বাগতম",
+    "auth.joinTheGame": "খেলায় যোগ দিন",
+    "auth.signInSub": "আপনার যাত্রা চালিয়ে যেতে সাইন ইন করুন।",
+    "auth.signUpSub": "স্কাউটেড হতে আপনার অ্যাকাউন্ট তৈরি করুন।",
+    "auth.iAmA": "আমি একজন",
+    "auth.player": "⚽ প্লেয়ার",
+    "auth.scout": "🔍 স্কাউট",
+    "auth.sportCategory": "ক্রীড়া বিভাগ",
+    "auth.football": "⚽ ফুটবল",
+    "auth.cricket": "🏏 ক্রিকেট",
+    "auth.fullName": "পূর্ণ নাম",
+    "auth.fullNamePh": "আপনার পূর্ণ নাম",
+    "auth.email": "ইমেইল",
+    "auth.emailPh": "you@example.com",
+    "auth.phone": "ফোন (বিডি)",
+    "auth.phonePh": "+৮৮০ ১XXXXXXXXX",
+    "auth.gender": "লিঙ্গ",
+    "auth.selectGender": "লিঙ্গ নির্বাচন করুন",
+    "auth.male": "পুরুষ",
+    "auth.female": "মহিলা",
+    "auth.other": "অন্যান্য",
+    "auth.dob": "জন্ম তারিখ",
+    "auth.tooYoung": "নিবন্ধনের জন্য আপনার বয়স অন্তত ১৩ হতে হবে।",
+    "auth.minorNotice": "যেহেতু আপনার বয়স ১৮ এর নিচে, নিচে অভিভাবকের সম্মতি প্রয়োজন।",
+    "auth.password": "পাসওয়ার্ড",
+    "auth.guardianHeading": "অভিভাবকের সম্মতি",
+    "auth.guardianName": "অভিভাবকের পূর্ণ নাম",
+    "auth.guardianNamePh": "অভিভাবকের পূর্ণ নাম",
+    "auth.guardianEmail": "অভিভাবকের ইমেইল",
+    "auth.guardianEmailPh": "guardian@example.com",
+    "auth.parentalConsent":
+      "আমি এই অপ্রাপ্তবয়স্কের পিতামাতা বা আইনগত অভিভাবক এবং আমি তার নিবন্ধন ও তথ্য প্রক্রিয়াকরণে স্পষ্ট সম্মতি প্রদান করছি, যা নিম্নলিখিত অনুসারে",
+    "auth.agreePrivacy": "আমি পড়েছি এবং সম্মত আছি",
+    "auth.privacyPolicy": "গোপনীয়তা নীতি",
+    "auth.signIn": "সাইন ইন",
+    "auth.createAccount": "অ্যাকাউন্ট তৈরি করুন",
+    "auth.noAccount": "অ্যাকাউন্ট নেই? ",
+    "auth.hasAccount": "ইতিমধ্যে অ্যাকাউন্ট আছে? ",
+    "auth.signUp": "সাইন আপ",
+    "auth.checkEmail": "আপনার ইমেইল দেখুন",
+    "auth.confirmSent": "আমরা একটি নিশ্চিতকরণ লিঙ্ক পাঠিয়েছি",
+    "auth.scoutReview": "🔍 স্কাউট অ্যাকাউন্ট পর্যালোচনায়",
+    "auth.scoutReviewBody":
+      "আপনার অ্যাকাউন্ট প্রমাণীকরণের উদ্দেশ্যে আমাদের টিম পর্যালোচনা করছে এবং শীঘ্রই ইমেইলের মাধ্যমে আপনাকে জানানো হবে।",
+    "auth.activateHint":
+      "আপনার অ্যাকাউন্ট সক্রিয় করতে ইমেইলের লিঙ্কে ক্লিক করুন। আপনি এই ট্যাবটি বন্ধ করতে পারেন।",
+    "auth.alreadyConfirmed": "ইতিমধ্যে নিশ্চিত? সাইন ইন",
+
+    // Common
+    "common.loading": "লোড হচ্ছে…",
+  },
+} as const;
+
+export type Language = keyof typeof translations;
+export type TranslationKey = keyof (typeof translations)["en"];

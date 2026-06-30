@@ -2,6 +2,7 @@ import { useEffect, useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { Link } from "@tanstack/react-router";
 import { Button } from "@/components/ui/button";
+import { useLanguage } from "@/i18n/LanguageProvider";
 
 const STORAGE_KEY = "ck.cookie-consent.v1";
 
@@ -17,6 +18,7 @@ export const hasAnalyticsConsent = (): boolean => {
 };
 
 const CookieConsentBanner = () => {
+  const { t } = useLanguage();
   const [visible, setVisible] = useState(false);
 
   useEffect(() => {
@@ -52,12 +54,11 @@ const CookieConsentBanner = () => {
           <div className="bg-card/95 backdrop-blur-xl border border-border rounded-2xl shadow-2xl p-5 sm:p-6">
             <div className="flex flex-col sm:flex-row sm:items-start gap-4">
               <div className="flex-1 text-sm text-foreground/85 leading-relaxed">
-                <p className="font-display text-base text-foreground mb-1">We use cookies.</p>
+                <p className="font-display text-base text-foreground mb-1">{t("cookie.title")}</p>
                 <p>
-                  Essential cookies keep you signed in and the Platform running. We only enable
-                  analytics and non-essential tracking after you accept. Read our{" "}
+                  {t("cookie.body")}{" "}
                   <Link to="/privacy-policy" className="underline text-foreground font-medium">
-                    Privacy Policy
+                    {t("cookie.privacyPolicy")}
                   </Link>
                   .
                 </p>
@@ -68,13 +69,13 @@ const CookieConsentBanner = () => {
                   className="flex-1 sm:w-full"
                   onClick={() => setConsent("essential-only")}
                 >
-                  Essential only
+                  {t("cookie.essentialOnly")}
                 </Button>
                 <Button
                   className="flex-1 sm:w-full bg-foreground text-background hover:bg-foreground/90"
                   onClick={() => setConsent("accepted")}
                 >
-                  Accept all
+                  {t("cookie.acceptAll")}
                 </Button>
               </div>
             </div>

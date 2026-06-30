@@ -9,6 +9,7 @@ import { useToast } from "@/hooks/use-toast";
 import { useAuth } from "@/hooks/useAuth";
 import { supabase } from "@/integrations/supabase/client";
 import CholoKheliMark from "@/components/CholoKheliMark";
+import { useLanguage } from "@/i18n/LanguageProvider";
 
 type Role = "player" | "scout";
 type Sport = "football" | "cricket";
@@ -50,6 +51,7 @@ const Auth = () => {
   const navigate = useNavigate();
   const { user, role: userRole, signIn } = useAuth();
   const { toast } = useToast();
+  const { t } = useLanguage();
   const [isLogin, setIsLogin] = useState(false);
   const initialRole: Role = typeof window !== "undefined" && new URLSearchParams(window.location.search).get("role") === "scout" ? "scout" : "player";
   const [selectedRole, setSelectedRole] = useState<Role>(initialRole);
@@ -218,21 +220,21 @@ const Auth = () => {
             </motion.div>
           </div>
           <div>
-            <h2 className="font-display text-3xl text-foreground mb-2">CHECK YOUR EMAIL</h2>
+            <h2 className="font-display text-3xl text-foreground mb-2">{t("auth.checkEmail")}</h2>
             <p className="text-sm text-muted-foreground">
-              We sent a confirmation link to{" "}
+              {t("auth.confirmSent")}{" "}
               <span className="text-foreground font-medium">{formEmail}</span>
             </p>
             {isScout ? (
               <div className="mt-4 bg-primary/10 border border-primary/30 rounded-xl p-4">
-                <p className="text-sm text-foreground font-medium mb-1">🔍 Scout Account Under Review</p>
+                <p className="text-sm text-foreground font-medium mb-1">{t("auth.scoutReview")}</p>
                 <p className="text-xs text-muted-foreground leading-relaxed">
-                  Your account is being reviewed by our Team for authentication purposes and you will be shortly notified via Email.
+                  {t("auth.scoutReviewBody")}
                 </p>
               </div>
             ) : (
               <p className="text-xs text-muted-foreground mt-3">
-                Click the link in the email to activate your account. You can close this tab.
+                {t("auth.activateHint")}
               </p>
             )}
           </div>
@@ -240,7 +242,7 @@ const Auth = () => {
             onClick={() => { setEmailSent(false); setIsLogin(true); }}
             className="text-sm text-muted-foreground hover:text-foreground transition-colors underline underline-offset-4"
           >
-            Already confirmed? Sign in
+            {t("auth.alreadyConfirmed")}
           </button>
         </motion.div>
       </div>
@@ -258,10 +260,10 @@ const Auth = () => {
             </span>
           </Link>
           <h1 className="font-display text-3xl text-[hsl(var(--teal-deep))]">
-            {isLogin ? "Welcome back" : "Join the game"}
+            {isLogin ? t("auth.welcomeBack") : t("auth.joinTheGame")}
           </h1>
           <p className="text-sm text-muted-foreground mt-2">
-            {isLogin ? "Sign in to continue your journey." : "Create your account to get scouted."}
+            {isLogin ? t("auth.signInSub") : t("auth.signUpSub")}
           </p>
         </div>
 
@@ -274,7 +276,7 @@ const Auth = () => {
           {!isLogin && (
             <>
               <div className="mb-5">
-                <Label className="text-sm text-muted-foreground mb-2 block">I am a</Label>
+                <Label className="text-sm text-muted-foreground mb-2 block">{t("auth.iAmA")}</Label>
                 <div className="grid grid-cols-2 gap-3">
                   {(["player", "scout"] as Role[]).map((r) => (
                     <button
@@ -287,7 +289,7 @@ const Auth = () => {
                           : "bg-secondary text-secondary-foreground border-border hover:border-foreground/40"
                       }`}
                     >
-                      {r === "player" ? "⚽ PLAYER" : "🔍 SCOUT"}
+                      {r === "player" ? t("auth.player") : t("auth.scout")}
                     </button>
                   ))}
                 </div>
@@ -295,7 +297,7 @@ const Auth = () => {
 
               {selectedRole === "player" && (
                 <div className="mb-5">
-                  <Label className="text-sm text-muted-foreground mb-2 block">Sport Category</Label>
+                  <Label className="text-sm text-muted-foreground mb-2 block">{t("auth.sportCategory")}</Label>
                   <div className="grid grid-cols-2 gap-3">
                     {(["football", "cricket"] as Sport[]).map((s) => (
                       <button
@@ -308,7 +310,7 @@ const Auth = () => {
                             : "bg-secondary text-secondary-foreground border-border hover:border-foreground/30"
                         }`}
                       >
-                        {s === "football" ? "⚽ Football" : "🏏 Cricket"}
+                        {s === "football" ? t("auth.football") : t("auth.cricket")}
                       </button>
                     ))}
                   </div>
@@ -320,10 +322,10 @@ const Auth = () => {
           <form onSubmit={handleSubmit} className="space-y-4">
             {!isLogin && (
               <div>
-                <Label htmlFor="name" className="text-sm text-muted-foreground">Full Name</Label>
+                <Label htmlFor="name" className="text-sm text-muted-foreground">{t("auth.fullName")}</Label>
                 <Input
                   id="name"
-                  placeholder="Your full name"
+                  placeholder={t("auth.fullNamePh")}
                   required
                   className="bg-secondary border-border mt-1"
                   value={formName}
@@ -332,11 +334,11 @@ const Auth = () => {
               </div>
             )}
             <div>
-              <Label htmlFor="email" className="text-sm text-muted-foreground">Email</Label>
+              <Label htmlFor="email" className="text-sm text-muted-foreground">{t("auth.email")}</Label>
               <Input
                 id="email"
                 type="email"
-                placeholder="you@example.com"
+                placeholder={t("auth.emailPh")}
                 required
                 className="bg-secondary border-border mt-1"
                 value={formEmail}
@@ -346,10 +348,10 @@ const Auth = () => {
             {!isLogin && (
               <>
                 <div>
-                  <Label htmlFor="phone" className="text-sm text-muted-foreground">Phone (BD)</Label>
+                  <Label htmlFor="phone" className="text-sm text-muted-foreground">{t("auth.phone")}</Label>
                   <Input
                     id="phone"
-                    placeholder="+880 1XXXXXXXXX"
+                    placeholder={t("auth.phonePh")}
                     required
                     className="bg-secondary border-border mt-1"
                     value={formPhone}
@@ -357,7 +359,7 @@ const Auth = () => {
                   />
                 </div>
                 <div>
-                  <Label htmlFor="gender" className="text-sm text-muted-foreground">Gender</Label>
+                  <Label htmlFor="gender" className="text-sm text-muted-foreground">{t("auth.gender")}</Label>
                   <select
                     id="gender"
                     className="flex h-10 w-full rounded-md border border-border bg-secondary px-3 py-2 text-sm text-foreground focus:outline-none focus:ring-2 focus:ring-ring mt-1"
@@ -365,14 +367,14 @@ const Auth = () => {
                     onChange={(e) => setFormGender(e.target.value)}
                     required
                   >
-                    <option value="">Select gender</option>
-                    <option value="male">Male</option>
-                    <option value="female">Female</option>
-                    <option value="other">Other</option>
+                    <option value="">{t("auth.selectGender")}</option>
+                    <option value="male">{t("auth.male")}</option>
+                    <option value="female">{t("auth.female")}</option>
+                    <option value="other">{t("auth.other")}</option>
                   </select>
                 </div>
                 <div>
-                  <Label htmlFor="dob" className="text-sm text-muted-foreground">Date of Birth</Label>
+                  <Label htmlFor="dob" className="text-sm text-muted-foreground">{t("auth.dob")}</Label>
                   <Input
                     id="dob"
                     type="date"
@@ -383,16 +385,16 @@ const Auth = () => {
                     onChange={(e) => setFormDob(e.target.value)}
                   />
                   {age !== null && age >= 0 && age < 13 && (
-                    <p className="text-xs text-destructive mt-1">You must be at least 13 to register.</p>
+                    <p className="text-xs text-destructive mt-1">{t("auth.tooYoung")}</p>
                   )}
                   {isMinor && age !== null && age >= 13 && (
-                    <p className="text-xs text-muted-foreground mt-1">Since you are under 18, parental consent is required below.</p>
+                    <p className="text-xs text-muted-foreground mt-1">{t("auth.minorNotice")}</p>
                   )}
                 </div>
               </>
             )}
             <div>
-              <Label htmlFor="password" className="text-sm text-muted-foreground">Password</Label>
+              <Label htmlFor="password" className="text-sm text-muted-foreground">{t("auth.password")}</Label>
               <div className="relative mt-1">
                 <Input
                   id="password"
@@ -418,12 +420,12 @@ const Auth = () => {
             )}
             {!isLogin && isMinor && age !== null && age >= 13 && (
               <div className="space-y-3 p-4 rounded-xl border border-border bg-secondary/60">
-                <p className="text-sm font-semibold text-foreground">Parental / Guardian Consent</p>
+                <p className="text-sm font-semibold text-foreground">{t("auth.guardianHeading")}</p>
                 <div>
-                  <Label htmlFor="guardianName" className="text-sm text-muted-foreground">Parent / Guardian Full Name</Label>
+                  <Label htmlFor="guardianName" className="text-sm text-muted-foreground">{t("auth.guardianName")}</Label>
                   <Input
                     id="guardianName"
-                    placeholder="Guardian's full name"
+                    placeholder={t("auth.guardianNamePh")}
                     required
                     className="bg-background border-border mt-1"
                     value={guardianName}
@@ -431,11 +433,11 @@ const Auth = () => {
                   />
                 </div>
                 <div>
-                  <Label htmlFor="guardianEmail" className="text-sm text-muted-foreground">Parent / Guardian Email</Label>
+                  <Label htmlFor="guardianEmail" className="text-sm text-muted-foreground">{t("auth.guardianEmail")}</Label>
                   <Input
                     id="guardianEmail"
                     type="email"
-                    placeholder="guardian@example.com"
+                    placeholder={t("auth.guardianEmailPh")}
                     required
                     className="bg-background border-border mt-1"
                     value={guardianEmail}
@@ -451,9 +453,8 @@ const Auth = () => {
                     required
                   />
                   <span>
-                    I am the parent or legal guardian of this Minor and I provide my explicit consent
-                    for their registration and the processing of their data in accordance with the{" "}
-                    <Link to="/privacy-policy" className="underline font-medium">Privacy Policy</Link>.
+                    {t("auth.parentalConsent")}{" "}
+                    <Link to="/privacy-policy" className="underline font-medium">{t("auth.privacyPolicy")}</Link>.
                   </span>
                 </label>
               </div>
@@ -468,8 +469,8 @@ const Auth = () => {
                   required
                 />
                 <span>
-                  I have read and agree to the{" "}
-                  <Link to="/privacy-policy" className="underline font-medium" target="_blank">Privacy Policy</Link>.
+                  {t("auth.agreePrivacy")}{" "}
+                  <Link to="/privacy-policy" className="underline font-medium" target="_blank">{t("auth.privacyPolicy")}</Link>.
                 </span>
               </label>
             )}
@@ -478,18 +479,18 @@ const Auth = () => {
               disabled={loading || (!isLogin && !agreePrivacy) || (!isLogin && isMinor && !parentalConsent)}
               className="w-full bg-foreground text-background font-bold hover:bg-foreground/90 transition-all duration-300 disabled:opacity-50"
             >
-              {loading ? <Loader2 className="h-4 w-4 animate-spin" /> : isLogin ? "Sign In" : "Create Account"}
+              {loading ? <Loader2 className="h-4 w-4 animate-spin" /> : isLogin ? t("auth.signIn") : t("auth.createAccount")}
             </Button>
           </form>
 
           <p className="text-center text-sm text-muted-foreground mt-4">
-            {isLogin ? "Don't have an account? " : "Already have an account? "}
+            {isLogin ? t("auth.noAccount") : t("auth.hasAccount")}
             <button
               type="button"
               onClick={() => { setIsLogin(!isLogin); }}
               className="text-foreground hover:underline font-medium transition-colors"
             >
-              {isLogin ? "Sign Up" : "Sign In"}
+              {isLogin ? t("auth.signUp") : t("auth.signIn")}
             </button>
           </p>
           {isLogin && (
