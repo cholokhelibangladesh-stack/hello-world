@@ -778,7 +778,7 @@ const PlayerDashboard = () => {
                           </div>
                         </div>
                         <div>
-                          <Label className="text-xs text-muted-foreground uppercase tracking-wide">Play Style</Label>
+                          <Label className="text-xs text-muted-foreground uppercase tracking-wide">{t("player.playStyle" as any)}</Label>
                           <div className="flex flex-wrap gap-2 mt-2">
                             {traitTags.map((tag) => (
                               <Badge key={tag} variant={selectedTraits.includes(tag) ? "default" : "outline"}
