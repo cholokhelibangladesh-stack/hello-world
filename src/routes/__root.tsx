@@ -9,6 +9,7 @@ import { AuthProvider } from "@/hooks/useAuth";
 import { ThemeProvider } from "@/hooks/useTheme";
 import FloatingHeader from "@/components/FloatingHeader";
 import { AppErrorBoundary } from "@/components/AppErrorBoundary";
+import CookieConsentBanner from "@/components/CookieConsentBanner";
 import appCss from "@/index.css?url";
 
 export const Route = createRootRouteWithContext<{ queryClient: QueryClient }>()({
@@ -48,6 +49,7 @@ function AppShell() {
           <Sonner />
           <FloatingHeader />
           <Outlet />
+          <CookieConsentBanner />
         </TooltipProvider>
       </AuthProvider>
     </ThemeProvider>
