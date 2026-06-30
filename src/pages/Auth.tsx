@@ -469,8 +469,8 @@ const Auth = () => {
                   required
                 />
                 <span>
-                  I have read and agree to the{" "}
-                  <Link to="/privacy-policy" className="underline font-medium" target="_blank">Privacy Policy</Link>.
+                  {t("auth.agreePrivacy")}{" "}
+                  <Link to="/privacy-policy" className="underline font-medium" target="_blank">{t("auth.privacyPolicy")}</Link>.
                 </span>
               </label>
             )}
