@@ -51,6 +51,7 @@ const Auth = () => {
   const navigate = useNavigate();
   const { user, role: userRole, signIn } = useAuth();
   const { toast } = useToast();
+  const { t } = useLanguage();
   const [isLogin, setIsLogin] = useState(false);
   const initialRole: Role = typeof window !== "undefined" && new URLSearchParams(window.location.search).get("role") === "scout" ? "scout" : "player";
   const [selectedRole, setSelectedRole] = useState<Role>(initialRole);
