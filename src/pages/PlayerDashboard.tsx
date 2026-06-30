@@ -17,6 +17,7 @@ import { supabase } from "@/integrations/supabase/client";
 import { useNavigate } from "@tanstack/react-router";
 import ProfileTab from "@/components/ProfileTab";
 import PlayerVideosTab from "@/components/PlayerVideosTab";
+import { useLanguage } from "@/i18n/LanguageProvider";
 
 const positionsBySport: Record<string, string[]> = {
   football: ["Striker", "Defender", "Goalkeeper", "Midfielder", "Winger"],
@@ -84,7 +85,13 @@ const PlayerDashboard = () => {
   const bcRef = useRef<HTMLInputElement>(null);
   const { toast } = useToast();
   const { user, loading: authLoading } = useAuth();
+  const { t } = useLanguage();
   const navigate = useNavigate();
+  const SPORT_LABEL: Record<string, string> = {
+    football: t("player.football" as any),
+    cricket: t("player.cricket" as any),
+    basketball: t("player.basketball" as any),
+  };
 
   // Sync tab with URL hash
   useEffect(() => {
@@ -560,26 +567,26 @@ const PlayerDashboard = () => {
         <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }}>
           <div className="flex items-start justify-between mb-5 pt-4">
             <div>
-              <h1 className="font-display text-3xl sm:text-4xl text-foreground mb-0.5">PLAYER DASHBOARD</h1>
-              <p className="text-sm text-muted-foreground">Manage your profile, upload videos, and explore players</p>
+              <h1 className="font-display text-3xl sm:text-4xl text-foreground mb-0.5">{t("player.title" as any)}</h1>
+              <p className="text-sm text-muted-foreground">{t("player.subtitle" as any)}</p>
             </div>
             <Dialog open={reportOpen} onOpenChange={setReportOpen}>
               <DialogTrigger asChild>
                 <Button variant="outline" size="sm" className="border-destructive/40 text-destructive hover:bg-destructive/10 rounded-full text-xs shrink-0">
-                  <Flag className="h-3 w-3 mr-1" /> <span className="hidden xs:inline">Report Scout</span><span className="xs:hidden">Report</span>
+                  <Flag className="h-3 w-3 mr-1" /> <span className="hidden xs:inline">{t("player.reportScout" as any)}</span><span className="xs:hidden">{t("player.report" as any)}</span>
                 </Button>
               </DialogTrigger>
               <DialogContent className="bg-card border-border">
                 <DialogHeader>
-                  <DialogTitle className="font-display text-xl text-foreground">REPORT A SCOUT</DialogTitle>
+                  <DialogTitle className="font-display text-xl text-foreground">{t("player.reportTitle" as any)}</DialogTitle>
                 </DialogHeader>
-                <p className="text-sm text-muted-foreground">Select the scout you want to report and describe the issue. Only the admin will see this.</p>
+                <p className="text-sm text-muted-foreground">{t("player.reportDesc" as any)}</p>
                 <div className="space-y-3">
                   <div>
-                    <Label className="text-sm text-muted-foreground">Select Scout</Label>
+                    <Label className="text-sm text-muted-foreground">{t("player.selectScout" as any)}</Label>
                     <Select value={selectedScoutId} onValueChange={setSelectedScoutId}>
                       <SelectTrigger className="bg-secondary border-border mt-1">
-                        <SelectValue placeholder="Choose a scout..." />
+                        <SelectValue placeholder={t("player.chooseScout" as any)} />
                       </SelectTrigger>
                       <SelectContent className="bg-card border-border">
                         {scouts.map((s) => (
@@ -591,9 +598,9 @@ const PlayerDashboard = () => {
                     </Select>
                   </div>
                   <div>
-                    <Label className="text-sm text-muted-foreground">Reason / Description</Label>
+                    <Label className="text-sm text-muted-foreground">{t("player.reason" as any)}</Label>
                     <Textarea
-                      placeholder="Describe what happened..."
+                      placeholder={t("player.reasonPh" as any)}
                       className="mt-1 bg-secondary border-border resize-none"
                       rows={3}
                       value={reportReason}
@@ -606,7 +613,7 @@ const PlayerDashboard = () => {
                     className="w-full bg-destructive text-white hover:bg-destructive/90"
                   >
                     {reporting ? <Loader2 className="h-4 w-4 animate-spin mr-2" /> : <Flag className="h-4 w-4 mr-2" />}
-                    Submit Report to Admin
+                    {t("player.submitReport" as any)}
                   </Button>
                 </div>
               </DialogContent>
@@ -616,22 +623,25 @@ const PlayerDashboard = () => {
           <Tabs value={activeTab} onValueChange={handleTabChange} className="space-y-4 sm:space-y-6" onTouchStart={handleTouchStart} onTouchEnd={handleTouchEnd}>
             <TabsList className="bg-card border border-border w-full grid grid-cols-3">
               <TabsTrigger value="upload" className="data-[state=active]:bg-primary data-[state=active]:text-primary-foreground text-xs sm:text-sm">
-                <Upload className="h-3.5 w-3.5 sm:mr-1.5 shrink-0" /> <span className="hidden sm:inline">Upload Hub</span><span className="sm:hidden ml-1">Upload</span>
+                <Upload className="h-3.5 w-3.5 sm:mr-1.5 shrink-0" /> <span className="hidden sm:inline">{t("player.tab.uploadFull" as any)}</span><span className="sm:hidden ml-1">{t("player.tab.upload" as any)}</span>
               </TabsTrigger>
               <TabsTrigger value="explore" className="data-[state=active]:bg-primary data-[state=active]:text-primary-foreground text-xs sm:text-sm">
-                <Eye className="h-3.5 w-3.5 sm:mr-1.5 shrink-0" /> <span className="hidden sm:inline">Explore Players</span><span className="sm:hidden ml-1">Explore</span>
+                <Eye className="h-3.5 w-3.5 sm:mr-1.5 shrink-0" /> <span className="hidden sm:inline">{t("player.tab.exploreFull" as any)}</span><span className="sm:hidden ml-1">{t("player.tab.explore" as any)}</span>
               </TabsTrigger>
               <TabsTrigger value="profile" className="data-[state=active]:bg-primary data-[state=active]:text-primary-foreground text-xs sm:text-sm">
-                <User className="h-3.5 w-3.5 sm:mr-1.5 shrink-0" /> <span className="hidden sm:inline">My Profile</span><span className="sm:hidden ml-1">Profile</span>
+                <User className="h-3.5 w-3.5 sm:mr-1.5 shrink-0" /> <span className="hidden sm:inline">{t("player.tab.profileFull" as any)}</span><span className="sm:hidden ml-1">{t("player.tab.profile" as any)}</span>
               </TabsTrigger>
             </TabsList>
+
+
+
 
             <TabsContent value="upload" className="space-y-6">
               {/* Upload New button when videos already exist */}
               {allVideos.length > 0 && !showNewUpload && (
                 <div className="flex justify-end">
                   <Button size="sm" variant="outline" onClick={() => { resetUploadForm(); setShowNewUpload(true); }} className="border-primary/40 text-primary hover:bg-primary/10 rounded-full text-xs">
-                    <Plus className="h-3 w-3 mr-1" /> Upload New Video
+                    <Plus className="h-3 w-3 mr-1" /> {t("player.uploadNew" as any)}
                   </Button>
                 </div>
               )}
@@ -641,8 +651,8 @@ const PlayerDashboard = () => {
                 <div className="space-y-6">
                   {showNewUpload && (
                     <div className="flex items-center justify-between">
-                      <h3 className="font-display text-lg text-foreground">NEW VIDEO UPLOAD</h3>
-                      <Button variant="ghost" size="sm" onClick={() => setShowNewUpload(false)} className="text-muted-foreground text-xs">Cancel</Button>
+                      <h3 className="font-display text-lg text-foreground">{t("player.newUploadHeading" as any)}</h3>
+                      <Button variant="ghost" size="sm" onClick={() => setShowNewUpload(false)} className="text-muted-foreground text-xs">{t("player.cancel" as any)}</Button>
                     </div>
                   )}
 
@@ -651,9 +661,9 @@ const PlayerDashboard = () => {
                       <div className="w-14 h-14 rounded-full bg-secondary flex items-center justify-center mx-auto">
                         <Video className="h-6 w-6 text-muted-foreground" />
                       </div>
-                      <p className="font-display text-xl text-foreground">MONTHLY LIMIT REACHED!</p>
+                      <p className="font-display text-xl text-foreground">{t("player.monthlyLimit" as any)}</p>
                       <p className="text-sm text-muted-foreground max-w-xs mx-auto">
-                        We will start accepting videos again next month. Thank you for your patience!
+                        {t("player.limitBody" as any)}
                       </p>
                     </div>
                   ) : (
@@ -662,10 +672,10 @@ const PlayerDashboard = () => {
                       <div className="bg-card border border-border rounded-xl p-6">
                         <div className="flex items-center gap-3 mb-3">
                           <Tag className="h-5 w-5 text-primary" />
-                          <h2 className="font-display text-xl text-foreground">YOUR SPORT</h2>
+                          <h2 className="font-display text-xl text-foreground">{t("player.yourSport" as any)}</h2>
                           {savingSport && <Loader2 className="h-4 w-4 animate-spin text-muted-foreground" />}
                         </div>
-                        <p className="text-xs text-muted-foreground mb-3">Pick the sport you play — positions and play styles below update accordingly.</p>
+                        <p className="text-xs text-muted-foreground mb-3">{t("player.sportHint" as any)}</p>
                         <div className="grid grid-cols-3 gap-2">
                           {SPORTS.map((s) => (
                             <button
@@ -679,7 +689,7 @@ const PlayerDashboard = () => {
                                   : "bg-secondary text-secondary-foreground border-border hover:border-primary/40"
                               }`}
                             >
-                              <span className="mr-1">{s.icon}</span> {s.label}
+                              <span className="mr-1">{s.icon}</span> {SPORT_LABEL[s.id]}
                             </button>
                           ))}
                         </div>
@@ -689,15 +699,15 @@ const PlayerDashboard = () => {
                       <div className={`bg-card border rounded-xl p-6 ${birthCertUrl ? "border-border" : "border-destructive/40"}`}>
                         <div className="flex items-center gap-3 mb-3">
                           <FileText className={`h-5 w-5 ${birthCertUrl ? "text-primary" : "text-destructive"}`} />
-                          <h2 className="font-display text-xl text-foreground">BIRTH CERTIFICATE</h2>
+                          <h2 className="font-display text-xl text-foreground">{t("player.birthCertificate" as any)}</h2>
                           {birthCertUrl ? (
-                            <Badge className="bg-primary/20 text-primary border-primary/30">Uploaded ✓</Badge>
+                            <Badge className="bg-primary/20 text-primary border-primary/30">{t("player.uploaded" as any)}</Badge>
                           ) : (
-                            <Badge variant="outline" className="border-destructive/40 text-destructive">Required</Badge>
+                            <Badge variant="outline" className="border-destructive/40 text-destructive">{t("player.required" as any)}</Badge>
                           )}
                         </div>
                         <p className="text-xs text-muted-foreground mb-3">
-                          A valid birth certificate is required before you can submit a video. Accepted: PDF, JPG, PNG (max 8 MB). Only admins can view this document.
+                          {t("player.bcHint" as any)}
                         </p>
                         <div className="flex flex-col sm:flex-row gap-2">
                           <Button
@@ -708,7 +718,7 @@ const PlayerDashboard = () => {
                             className="border-primary/40 text-primary hover:bg-primary/10"
                           >
                             {birthCertUploading ? <Loader2 className="h-4 w-4 animate-spin mr-2" /> : <Upload className="h-4 w-4 mr-2" />}
-                            {birthCertUrl ? "Replace Birth Certificate" : "Upload Birth Certificate"}
+                            {birthCertUrl ? t("player.replaceBC" as any) : t("player.uploadBC" as any)}
                           </Button>
                           <input
                             ref={bcRef}
@@ -724,30 +734,30 @@ const PlayerDashboard = () => {
                       <div className="bg-card border border-border rounded-xl p-6">
                         <div className="flex items-center gap-3 mb-4">
                           <Video className="h-5 w-5 text-primary" />
-                          <h2 className="font-display text-xl text-foreground">HIGHLIGHT VIDEO</h2>
+                          <h2 className="font-display text-xl text-foreground">{t("player.highlightVideo" as any)}</h2>
                           {videoStatus && (
-                            <Badge variant={videoStatus === "live" ? "default" : "outline"} className={videoStatus === "live" ? "bg-primary text-primary-foreground" : ""}>{videoStatus.replace("_", " ")}</Badge>
+                            <Badge variant={videoStatus === "live" ? "default" : "outline"} className={videoStatus === "live" ? "bg-primary text-primary-foreground" : ""}>{videoStatus === "live" ? t("player.status.live" as any) : t("player.status.pendingPayment" as any)}</Badge>
                           )}
                         </div>
                         {!videoId ? (
                           <>
                             <div onClick={() => fileRef.current?.click()} className="border-2 border-dashed border-border rounded-xl p-12 text-center hover:border-primary/40 transition-colors cursor-pointer bg-secondary/50">
                               <Upload className="h-10 w-10 text-muted-foreground mx-auto mb-3" />
-                              <p className="text-foreground font-medium mb-1">{videoFile ? videoFile.name : "Drop your video here"}</p>
-                              <p className="text-xs text-muted-foreground">Max 3 minutes • MP4, MOV, AVI</p>
-                              {videoFile && <p className="text-xs text-primary mt-2">✓ File selected — complete payment to upload</p>}
+                              <p className="text-foreground font-medium mb-1">{videoFile ? videoFile.name : t("player.dropVideo" as any)}</p>
+                              <p className="text-xs text-muted-foreground">{t("player.maxLen" as any)}</p>
+                              {videoFile && <p className="text-xs text-primary mt-2">{t("player.fileSelectedHint" as any)}</p>}
                             </div>
                             <input ref={fileRef} type="file" accept="video/*" className="hidden" onChange={(e) => setVideoFile(e.target.files?.[0] || null)} />
                           </>
                         ) : (
                           <div className="flex items-center gap-2 bg-secondary/50 rounded-lg p-4">
                             <CheckCircle className="h-5 w-5 text-primary" />
-                            <span className="text-foreground text-sm">{paymentDone ? "Video uploaded and live!" : "Details saved — complete payment to upload video"}</span>
+                            <span className="text-foreground text-sm">{paymentDone ? t("player.videoUploadedLive" as any) : t("player.detailsSaved" as any)}</span>
                           </div>
                         )}
                         <div className="mt-4">
-                          <Label className="text-sm text-muted-foreground">Video Description (max 100 words)</Label>
-                          <Textarea placeholder="Tell scouts what makes you special..." className="mt-1 bg-secondary border-border resize-none" rows={3} maxLength={600} value={description} onChange={(e) => setDescription(e.target.value)} />
+                          <Label className="text-sm text-muted-foreground">{t("player.videoDescLabel" as any)}</Label>
+                          <Textarea placeholder={t("player.videoDescPh" as any)} className="mt-1 bg-secondary border-border resize-none" rows={3} maxLength={600} value={description} onChange={(e) => setDescription(e.target.value)} />
                         </div>
                       </div>
 
@@ -755,10 +765,10 @@ const PlayerDashboard = () => {
                       <div className="bg-card border border-border rounded-xl p-6">
                         <div className="flex items-center gap-3 mb-4">
                           <Tag className="h-5 w-5 text-primary" />
-                          <h2 className="font-display text-xl text-foreground">POSITION & TRAITS</h2>
+                          <h2 className="font-display text-xl text-foreground">{t("player.posTraits" as any)}</h2>
                         </div>
                         <div className="mb-4">
-                          <Label className="text-xs text-muted-foreground uppercase tracking-wide">Position</Label>
+                          <Label className="text-xs text-muted-foreground uppercase tracking-wide">{t("player.position" as any)}</Label>
                           <div className="flex flex-wrap gap-2 mt-2">
                             {positionTags.map((tag) => (
                               <Badge key={tag} variant={selectedPositions.includes(tag) ? "default" : "outline"}
@@ -768,7 +778,7 @@ const PlayerDashboard = () => {
                           </div>
                         </div>
                         <div>
-                          <Label className="text-xs text-muted-foreground uppercase tracking-wide">Play Style</Label>
+                          <Label className="text-xs text-muted-foreground uppercase tracking-wide">{t("player.playStyle" as any)}</Label>
                           <div className="flex flex-wrap gap-2 mt-2">
                             {traitTags.map((tag) => (
                               <Badge key={tag} variant={selectedTraits.includes(tag) ? "default" : "outline"}
@@ -783,7 +793,7 @@ const PlayerDashboard = () => {
                       {!videoId && videoFile && (
                         <div className="space-y-2">
                           {!birthCertUrl && (
-                            <p className="text-xs text-destructive text-center">⚠ Upload your birth certificate above before saving.</p>
+                            <p className="text-xs text-destructive text-center">{t("player.uploadBCFirst" as any)}</p>
                           )}
                           <Button
                             onClick={handleUpload}
@@ -791,7 +801,7 @@ const PlayerDashboard = () => {
                             className="w-full bg-primary text-primary-foreground font-bold hover:bg-primary/90 disabled:opacity-50"
                           >
                             {uploading ? <Loader2 className="h-4 w-4 animate-spin mr-2" /> : <Upload className="h-4 w-4 mr-2" />}
-                            Save Details & Proceed to Payment
+                            {t("player.saveDetails" as any)}
                           </Button>
                         </div>
                       )}
@@ -801,25 +811,25 @@ const PlayerDashboard = () => {
                         <div className="bg-card border border-border rounded-xl p-6">
                           <div className="flex items-center gap-3 mb-4">
                             <CreditCard className="h-5 w-5 text-primary" />
-                            <h2 className="font-display text-xl text-foreground">PAYMENT</h2>
+                            <h2 className="font-display text-xl text-foreground">{t("player.payment" as any)}</h2>
                           </div>
                           <div className="bg-primary/5 border border-primary/20 rounded-lg p-3 mb-4 text-sm text-muted-foreground">
-                            💡 Your video will be uploaded <span className="text-foreground font-medium">only after</span> payment is confirmed.
+                            💡 {t("player.payHint" as any)}
                           </div>
                           <div className="flex items-center justify-between bg-secondary rounded-lg p-4 mb-4">
                             <div>
-                              <p className="text-foreground font-medium">Participation Fee</p>
-                              <p className="text-xs text-muted-foreground">One-time payment via bKash</p>
+                              <p className="text-foreground font-medium">{t("player.fee" as any)}</p>
+                              <p className="text-xs text-muted-foreground">{t("player.feeSub" as any)}</p>
                             </div>
                             <span className="font-display text-3xl text-primary">৳100</span>
                           </div>
                           <div className="mb-4">
-                            <Label className="text-sm text-muted-foreground">bKash Number</Label>
+                            <Label className="text-sm text-muted-foreground">{t("player.bkashNumber" as any)}</Label>
                             <Input placeholder="01XXXXXXXXX" className="mt-1 bg-secondary border-border" value={bkashNumber} onChange={(e) => setBkashNumber(e.target.value)} />
                           </div>
                           <Button className="w-full bg-primary text-primary-foreground font-bold hover:bg-primary/90" onClick={handlePayment} disabled={paying || !bkashNumber || !videoFile}>
                             {paying ? <Loader2 className="h-4 w-4 animate-spin mr-2" /> : null}
-                            {paying ? "Uploading & Processing..." : "Pay with bKash & Upload Video"}
+                            {paying ? t("player.uploadingProcessing" as any) : t("player.payWithBkash" as any)}
                           </Button>
                         </div>
                       )}
@@ -829,15 +839,15 @@ const PlayerDashboard = () => {
                         <div className="bg-card border border-border rounded-xl p-6">
                           <div className="flex items-center gap-3 mb-4">
                             <Award className="h-5 w-5 text-primary" />
-                            <h2 className="font-display text-xl text-foreground">DOCUMENTS</h2>
+                            <h2 className="font-display text-xl text-foreground">{t("player.documents" as any)}</h2>
                           </div>
-                          <p className="text-sm text-muted-foreground mb-4">Your video is now live! Download your certificate and invoice below.</p>
+                          <p className="text-sm text-muted-foreground mb-4">{t("player.docsHintLive" as any)}</p>
                           <div className="flex flex-col sm:flex-row gap-3">
                             <Button onClick={downloadCertificate} variant="outline" className="border-primary/40 text-primary hover:bg-primary/10">
-                              <Download className="h-4 w-4 mr-2" /> Download Certificate
+                              <Download className="h-4 w-4 mr-2" /> {t("player.downloadCert" as any)}
                             </Button>
                             <Button onClick={downloadInvoice} variant="outline" className="border-primary/40 text-primary hover:bg-primary/10">
-                              <FileText className="h-4 w-4 mr-2" /> Download Invoice
+                              <FileText className="h-4 w-4 mr-2" /> {t("player.downloadInvoice" as any)}
                             </Button>
                           </div>
                         </div>
@@ -852,15 +862,15 @@ const PlayerDashboard = () => {
                 <div className="bg-card border border-border rounded-xl p-6">
                   <div className="flex items-center gap-3 mb-4">
                     <Award className="h-5 w-5 text-primary" />
-                    <h2 className="font-display text-xl text-foreground">DOCUMENTS</h2>
+                    <h2 className="font-display text-xl text-foreground">{t("player.documents" as any)}</h2>
                   </div>
-                  <p className="text-sm text-muted-foreground mb-4">Download your certificate and invoice.</p>
+                  <p className="text-sm text-muted-foreground mb-4">{t("player.docsHint" as any)}</p>
                   <div className="flex flex-col sm:flex-row gap-3">
                     <Button onClick={downloadCertificate} variant="outline" className="border-primary/40 text-primary hover:bg-primary/10">
-                      <Download className="h-4 w-4 mr-2" /> Download Certificate
+                      <Download className="h-4 w-4 mr-2" /> {t("player.downloadCert" as any)}
                     </Button>
                     <Button onClick={downloadInvoice} variant="outline" className="border-primary/40 text-primary hover:bg-primary/10">
-                      <FileText className="h-4 w-4 mr-2" /> Download Invoice
+                      <FileText className="h-4 w-4 mr-2" /> {t("player.downloadInvoice" as any)}
                     </Button>
                   </div>
                 </div>
@@ -870,7 +880,7 @@ const PlayerDashboard = () => {
               {allVideos.length === 0 && !videoFile && (
                 <div className="text-center py-8 text-muted-foreground">
                   <Video className="h-12 w-12 mx-auto mb-3 opacity-30" />
-                  <p className="text-sm">No videos yet. Select a file above to get started.</p>
+                  <p className="text-sm">{t("player.noVideos" as any)}</p>
                 </div>
               )}
             </TabsContent>
