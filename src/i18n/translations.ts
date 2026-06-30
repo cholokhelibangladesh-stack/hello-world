@@ -46,6 +46,7 @@ export const translations = {
     "auth.sportCategory": "Sport Category",
     "auth.football": "⚽ Football",
     "auth.cricket": "🏏 Cricket",
+    "auth.basketball": "🏀 Basketball",
     "auth.fullName": "Full Name",
     "auth.fullNamePh": "Your full name",
     "auth.email": "Email",
