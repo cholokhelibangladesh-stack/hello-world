@@ -63,6 +63,24 @@ const Auth = () => {
   const [formPhone, setFormPhone] = useState("");
   const [formGender, setFormGender] = useState("");
   const [formPassword, setFormPassword] = useState("");
+  const [formDob, setFormDob] = useState("");
+  const [agreePrivacy, setAgreePrivacy] = useState(false);
+  const [guardianName, setGuardianName] = useState("");
+  const [guardianEmail, setGuardianEmail] = useState("");
+  const [parentalConsent, setParentalConsent] = useState(false);
+
+  const computeAge = (dob: string): number | null => {
+    if (!dob) return null;
+    const d = new Date(dob);
+    if (Number.isNaN(d.getTime())) return null;
+    const now = new Date();
+    let age = now.getFullYear() - d.getFullYear();
+    const m = now.getMonth() - d.getMonth();
+    if (m < 0 || (m === 0 && now.getDate() < d.getDate())) age--;
+    return age;
+  };
+  const age = computeAge(formDob);
+  const isMinor = age !== null && age < 18;
 
   useEffect(() => {
     if (user && userRole) {
