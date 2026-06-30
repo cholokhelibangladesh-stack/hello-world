@@ -297,7 +297,7 @@ const Auth = () => {
 
               {selectedRole === "player" && (
                 <div className="mb-5">
-                  <Label className="text-sm text-muted-foreground mb-2 block">Sport Category</Label>
+                  <Label className="text-sm text-muted-foreground mb-2 block">{t("auth.sportCategory")}</Label>
                   <div className="grid grid-cols-2 gap-3">
                     {(["football", "cricket"] as Sport[]).map((s) => (
                       <button
