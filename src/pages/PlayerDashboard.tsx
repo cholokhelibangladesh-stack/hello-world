@@ -17,6 +17,7 @@ import { supabase } from "@/integrations/supabase/client";
 import { useNavigate } from "@tanstack/react-router";
 import ProfileTab from "@/components/ProfileTab";
 import PlayerVideosTab from "@/components/PlayerVideosTab";
+import { useLanguage } from "@/i18n/LanguageProvider";
 
 const positionsBySport: Record<string, string[]> = {
   football: ["Striker", "Defender", "Goalkeeper", "Midfielder", "Winger"],
