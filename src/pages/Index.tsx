@@ -634,14 +634,14 @@ const Index = () => {
                       style={{ borderColor: "hsl(var(--green) / 0.4)", background: "hsl(var(--green) / 0.08)", color: "hsl(var(--green))" }}>R</div>
                     <div>
                       <div className="font-semibold text-foreground">Rafiqul Islam</div>
-                      <div className="text-xs text-muted-foreground">Midfielder · Football · Dhaka</div>
+                      <div className="text-xs text-muted-foreground">{T.midfielderLong}</div>
                     </div>
                     <div className="ml-auto flex items-center gap-1 rounded-full px-2 py-0.5 border text-[10px] font-semibold"
                       style={{ borderColor: "hsl(var(--green) / 0.3)", color: "hsl(var(--green))" }}>
-                      <Shield className="h-2.5 w-2.5" /> Live
+                      <Shield className="h-2.5 w-2.5" /> {T.live}
                     </div>
                   </div>
-                  {["Speed", "Dribbling", "Vision", "Positioning"].map((skill, j) => (
+                  {[T.skillSpeed, T.skillDribbling, T.skillVision, T.skillPositioning].map((skill, j) => (
                     <div key={skill} className="mb-3">
                       <div className="flex justify-between text-[11px] mb-1">
                         <span className="text-muted-foreground">{skill}</span>
