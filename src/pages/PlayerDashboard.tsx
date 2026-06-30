@@ -146,7 +146,8 @@ const PlayerDashboard = () => {
     if (user) loadUserData(user.id);
   }, [user, authLoading]);
 
-  const positionTags = sport === "cricket" ? cricketTags : footballTags;
+  const positionTags = positionsBySport[sport] || positionsBySport.football;
+  const traitTags = traitsBySport[sport] || traitsBySport.football;
   const toggleTag = (tag: string, list: string[], setter: (v: string[]) => void) => {
     setter(list.includes(tag) ? list.filter((t) => t !== tag) : [...list, tag]);
   };
