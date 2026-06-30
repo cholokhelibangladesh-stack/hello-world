@@ -517,31 +517,16 @@ const Index = () => {
         <div className="container">
           <Reveal className="text-center mb-12 sm:mb-16">
             <h2 className="font-display text-4xl sm:text-6xl" style={{ color: "hsl(var(--teal-deep))" }}>
-              EVERY GAME, <span style={{ color: "hsl(var(--teal))" }}>EVERY PLAYER</span>
+              {T.sportsTitle1} <span style={{ color: "hsl(var(--teal))" }}>{T.sportsTitle2}</span>
             </h2>
           </Reveal>
 
 
           <div className="grid grid-cols-1 sm:grid-cols-3 gap-5 sm:gap-6">
             {[
-              {
-                img: sportFootball.url,
-                name: "Football",
-                tagline: "From para to pitch",
-                blurb: "Bangladesh's most-loved game. We connect strikers, keepers, and midfielders from every district to scouts who're watching.",
-              },
-              {
-                img: sportCricket.url,
-                name: "Cricket",
-                tagline: "Bat. Ball. Belief.",
-                blurb: "From maktab grounds to national selection — batters, bowlers, and all-rounders get a verified pathway to be seen.",
-              },
-              {
-                img: sportBasketball.url,
-                name: "Basketball",
-                tagline: "Rising on the hardwood",
-                blurb: "A growing scene in Dhaka and Chattogram. Guards, forwards, and centres — your jump shot deserves an audience.",
-              },
+              { img: sportFootball.url, name: T.football, tagline: T.footballTag, blurb: T.footballBlurb },
+              { img: sportCricket.url, name: T.cricket, tagline: T.cricketTag, blurb: T.cricketBlurb },
+              { img: sportBasketball.url, name: T.basketball, tagline: T.basketballTag, blurb: T.basketballBlurb },
             ].map((sport, i) => (
               <Reveal key={sport.name} delay={i * 0.12}>
                 <motion.div
