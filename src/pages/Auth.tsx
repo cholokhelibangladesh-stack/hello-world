@@ -204,6 +204,24 @@ const Auth = () => {
               sessionStorage.setItem("pendingBirthCertType", birthCertFile.type);
             } catch { /* ignore — gate will catch missing BC */ }
           }
+
+          // Stash scout documents (org ID + CV) for upload once authenticated
+          const stashScoutDoc = async (file: File | null, key: string) => {
+            if (!file) return;
+            try {
+              const b64 = await new Promise<string>((resolve, reject) => {
+                const r = new FileReader();
+                r.onload = () => resolve(String(r.result));
+                r.onerror = () => reject(r.error);
+                r.readAsDataURL(file);
+              });
+              sessionStorage.setItem(`pending${key}Data`, b64);
+              sessionStorage.setItem(`pending${key}Name`, file.name);
+              sessionStorage.setItem(`pending${key}Type`, file.type);
+            } catch { /* ignore */ }
+          };
+          await stashScoutDoc(scoutOrgIdFile, "ScoutOrgId");
+          await stashScoutDoc(scoutCvFile, "ScoutCv");
         }
 
         setEmailSent(true);
