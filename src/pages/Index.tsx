@@ -930,7 +930,7 @@ const Index = () => {
       <section className="py-16 border-t border-border surface-paper">
         <div className="container text-center">
           <Reveal>
-            <p className="text-xs tracking-[0.2em] uppercase text-muted-foreground mb-6">Follow the Journey</p>
+            <p className="text-xs tracking-[0.2em] uppercase text-muted-foreground mb-6">{T.followJourney}</p>
             <div className="flex justify-center gap-5">
               {socialLinks.map(({ Icon, label, href, color }) => (
                 <motion.a key={label} href={href} target="_blank" rel="noopener noreferrer"
