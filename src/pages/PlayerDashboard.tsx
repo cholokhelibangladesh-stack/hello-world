@@ -634,18 +634,7 @@ const PlayerDashboard = () => {
             </TabsList>
 
 
-          <Tabs value={activeTab} onValueChange={handleTabChange} className="space-y-4 sm:space-y-6" onTouchStart={handleTouchStart} onTouchEnd={handleTouchEnd}>
-            <TabsList className="bg-card border border-border w-full grid grid-cols-3">
-              <TabsTrigger value="upload" className="data-[state=active]:bg-primary data-[state=active]:text-primary-foreground text-xs sm:text-sm">
-                <Upload className="h-3.5 w-3.5 sm:mr-1.5 shrink-0" /> <span className="hidden sm:inline">Upload Hub</span><span className="sm:hidden ml-1">Upload</span>
-              </TabsTrigger>
-              <TabsTrigger value="explore" className="data-[state=active]:bg-primary data-[state=active]:text-primary-foreground text-xs sm:text-sm">
-                <Eye className="h-3.5 w-3.5 sm:mr-1.5 shrink-0" /> <span className="hidden sm:inline">Explore Players</span><span className="sm:hidden ml-1">Explore</span>
-              </TabsTrigger>
-              <TabsTrigger value="profile" className="data-[state=active]:bg-primary data-[state=active]:text-primary-foreground text-xs sm:text-sm">
-                <User className="h-3.5 w-3.5 sm:mr-1.5 shrink-0" /> <span className="hidden sm:inline">My Profile</span><span className="sm:hidden ml-1">Profile</span>
-              </TabsTrigger>
-            </TabsList>
+
 
             <TabsContent value="upload" className="space-y-6">
               {/* Upload New button when videos already exist */}
