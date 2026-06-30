@@ -1,7 +1,7 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef } from "react";
 import { motion } from "framer-motion";
 import { Link, useNavigate } from "@tanstack/react-router";
-import { Eye, EyeOff, Loader2, CheckCircle2 } from "lucide-react";
+import { Eye, EyeOff, Loader2, CheckCircle2, FileText, Upload } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -10,6 +10,8 @@ import { useAuth } from "@/hooks/useAuth";
 import { supabase } from "@/integrations/supabase/client";
 import CholoKheliMark from "@/components/CholoKheliMark";
 import { useLanguage } from "@/i18n/LanguageProvider";
+
+const BC_EXEMPT_EMAILS = ["player@cholokheli.test"];
 
 type Role = "player" | "scout";
 type Sport = "football" | "cricket" | "basketball";
@@ -70,6 +72,10 @@ const Auth = () => {
   const [guardianName, setGuardianName] = useState("");
   const [guardianEmail, setGuardianEmail] = useState("");
   const [parentalConsent, setParentalConsent] = useState(false);
+  const [birthCertFile, setBirthCertFile] = useState<File | null>(null);
+  const bcRef = useRef<HTMLInputElement>(null);
+  const isBcExempt = BC_EXEMPT_EMAILS.includes(formEmail.trim().toLowerCase());
+  const bcRequired = !isLogin && selectedRole === "player" && !isBcExempt;
 
   const computeAge = (dob: string): number | null => {
     if (!dob) return null;
@@ -120,6 +126,14 @@ const Auth = () => {
           return;
         }
       }
+      if (bcRequired && !birthCertFile) {
+        toast({ title: "Birth certificate required", description: "Please upload a valid birth certificate to create your account.", variant: "destructive" });
+        return;
+      }
+      if (birthCertFile && birthCertFile.size > 8 * 1024 * 1024) {
+        toast({ title: "File too large", description: "Birth certificate must be under 8 MB.", variant: "destructive" });
+        return;
+      }
     }
     setLoading(true);
     try {
@@ -158,13 +172,28 @@ const Auth = () => {
           localStorage.setItem("pendingPhone", formPhone);
           localStorage.setItem("pendingGender", formGender);
           localStorage.setItem("pendingName", formName);
+
+          // Stash birth certificate (base64) for upload once authenticated
+          if (birthCertFile) {
+            try {
+              const b64 = await new Promise<string>((resolve, reject) => {
+                const r = new FileReader();
+                r.onload = () => resolve(String(r.result));
+                r.onerror = () => reject(r.error);
+                r.readAsDataURL(birthCertFile);
+              });
+              sessionStorage.setItem("pendingBirthCertData", b64);
+              sessionStorage.setItem("pendingBirthCertName", birthCertFile.name);
+              sessionStorage.setItem("pendingBirthCertType", birthCertFile.type);
+            } catch { /* ignore — gate will catch missing BC */ }
+          }
         }
 
         setEmailSent(true);
         if (selectedRole === "scout") {
-          toast({ title: "Account created! 📧", description: "Please confirm your email first." });
+          toast({ title: "Account created", description: "Please confirm your email to continue." });
         } else {
-          toast({ title: "Check your email! 📧", description: "Click the confirmation link to activate your account." });
+          toast({ title: "Check your email", description: "Click the confirmation link to activate your account." });
         }
       }
     } catch (err: any) {
@@ -191,6 +220,28 @@ const Auth = () => {
           body: { role: pendingRole, sport, phone, gender, full_name: name },
         });
       } catch {}
+
+      // Upload stashed birth certificate, if present
+      const bcData = sessionStorage.getItem("pendingBirthCertData");
+      const bcName = sessionStorage.getItem("pendingBirthCertName") || "birth_certificate";
+      const bcType = sessionStorage.getItem("pendingBirthCertType") || "application/octet-stream";
+      if (bcData && pendingRole === "player") {
+        try {
+          const res = await fetch(bcData);
+          const blob = await res.blob();
+          const ext = (bcName.split(".").pop() || "bin").toLowerCase();
+          const path = `${user.id}/birth_certificate_${Date.now()}.${ext}`;
+          const { error: upErr } = await supabase.storage.from("documents").upload(path, blob, { upsert: true, contentType: bcType });
+          if (!upErr) {
+            const { data: { publicUrl } } = supabase.storage.from("documents").getPublicUrl(path);
+            await supabase.from("documents").delete().eq("user_id", user.id).eq("type", "birth_certificate");
+            await supabase.from("documents").insert({ user_id: user.id, type: "birth_certificate", url: publicUrl, name: bcName } as any);
+          }
+        } catch { /* ignore — user can re-upload from dashboard */ }
+        sessionStorage.removeItem("pendingBirthCertData");
+        sessionStorage.removeItem("pendingBirthCertName");
+        sessionStorage.removeItem("pendingBirthCertType");
+      }
 
       localStorage.removeItem("pendingRole");
       localStorage.removeItem("pendingSport");
@@ -415,8 +466,40 @@ const Auth = () => {
                 </button>
               </div>
             </div>
-            {!isLogin && selectedRole === "player" && (
-              <div className="hidden" />
+            {!isLogin && selectedRole === "player" && !isBcExempt && (
+              <div className="p-4 rounded-xl border border-border bg-secondary/50 space-y-2">
+                <div className="flex items-center gap-2">
+                  <FileText className={`h-4 w-4 ${birthCertFile ? "text-foreground" : "text-destructive"}`} />
+                  <Label className="text-sm font-semibold text-foreground">
+                    Birth Certificate <span className="text-destructive">*</span>
+                  </Label>
+                </div>
+                <p className="text-xs text-muted-foreground">
+                  A valid birth certificate is mandatory to create a player account. Accepted: PDF, JPG, PNG (max 8 MB). Only admins can view this document.
+                </p>
+                <input
+                  ref={bcRef}
+                  type="file"
+                  accept="application/pdf,image/jpeg,image/png"
+                  className="hidden"
+                  onChange={(e) => setBirthCertFile(e.target.files?.[0] || null)}
+                />
+                <div className="flex items-center gap-2">
+                  <Button
+                    type="button"
+                    variant="outline"
+                    size="sm"
+                    onClick={() => bcRef.current?.click()}
+                    className="border-border"
+                  >
+                    <Upload className="h-3.5 w-3.5 mr-2" />
+                    {birthCertFile ? "Replace file" : "Choose file"}
+                  </Button>
+                  <span className="text-xs text-muted-foreground truncate">
+                    {birthCertFile ? birthCertFile.name : "No file chosen"}
+                  </span>
+                </div>
+              </div>
             )}
             {!isLogin && isMinor && age !== null && age >= 13 && (
               <div className="space-y-3 p-4 rounded-xl border border-border bg-secondary/60">
@@ -476,7 +559,7 @@ const Auth = () => {
             )}
             <Button
               type="submit"
-              disabled={loading || (!isLogin && !agreePrivacy) || (!isLogin && isMinor && !parentalConsent)}
+              disabled={loading || (!isLogin && !agreePrivacy) || (!isLogin && isMinor && !parentalConsent) || (bcRequired && !birthCertFile)}
               className="w-full bg-foreground text-background font-bold hover:bg-foreground/90 transition-all duration-300 disabled:opacity-50"
             >
               {loading ? <Loader2 className="h-4 w-4 animate-spin" /> : isLogin ? t("auth.signIn") : t("auth.createAccount")}
