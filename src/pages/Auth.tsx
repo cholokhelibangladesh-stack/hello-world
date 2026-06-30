@@ -348,10 +348,10 @@ const Auth = () => {
             {!isLogin && (
               <>
                 <div>
-                  <Label htmlFor="phone" className="text-sm text-muted-foreground">Phone (BD)</Label>
+                  <Label htmlFor="phone" className="text-sm text-muted-foreground">{t("auth.phone")}</Label>
                   <Input
                     id="phone"
-                    placeholder="+880 1XXXXXXXXX"
+                    placeholder={t("auth.phonePh")}
                     required
                     className="bg-secondary border-border mt-1"
                     value={formPhone}
@@ -359,7 +359,7 @@ const Auth = () => {
                   />
                 </div>
                 <div>
-                  <Label htmlFor="gender" className="text-sm text-muted-foreground">Gender</Label>
+                  <Label htmlFor="gender" className="text-sm text-muted-foreground">{t("auth.gender")}</Label>
                   <select
                     id="gender"
                     className="flex h-10 w-full rounded-md border border-border bg-secondary px-3 py-2 text-sm text-foreground focus:outline-none focus:ring-2 focus:ring-ring mt-1"
@@ -367,14 +367,14 @@ const Auth = () => {
                     onChange={(e) => setFormGender(e.target.value)}
                     required
                   >
-                    <option value="">Select gender</option>
-                    <option value="male">Male</option>
-                    <option value="female">Female</option>
-                    <option value="other">Other</option>
+                    <option value="">{t("auth.selectGender")}</option>
+                    <option value="male">{t("auth.male")}</option>
+                    <option value="female">{t("auth.female")}</option>
+                    <option value="other">{t("auth.other")}</option>
                   </select>
                 </div>
                 <div>
-                  <Label htmlFor="dob" className="text-sm text-muted-foreground">Date of Birth</Label>
+                  <Label htmlFor="dob" className="text-sm text-muted-foreground">{t("auth.dob")}</Label>
                   <Input
                     id="dob"
                     type="date"
@@ -385,10 +385,10 @@ const Auth = () => {
                     onChange={(e) => setFormDob(e.target.value)}
                   />
                   {age !== null && age >= 0 && age < 13 && (
-                    <p className="text-xs text-destructive mt-1">You must be at least 13 to register.</p>
+                    <p className="text-xs text-destructive mt-1">{t("auth.tooYoung")}</p>
                   )}
                   {isMinor && age !== null && age >= 13 && (
-                    <p className="text-xs text-muted-foreground mt-1">Since you are under 18, parental consent is required below.</p>
+                    <p className="text-xs text-muted-foreground mt-1">{t("auth.minorNotice")}</p>
                   )}
                 </div>
               </>
