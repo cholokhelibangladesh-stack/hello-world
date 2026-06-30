@@ -718,7 +718,7 @@ const PlayerDashboard = () => {
                             className="border-primary/40 text-primary hover:bg-primary/10"
                           >
                             {birthCertUploading ? <Loader2 className="h-4 w-4 animate-spin mr-2" /> : <Upload className="h-4 w-4 mr-2" />}
-                            {birthCertUrl ? "Replace Birth Certificate" : "Upload Birth Certificate"}
+                            {birthCertUrl ? t("player.replaceBC" as any) : t("player.uploadBC" as any)}
                           </Button>
                           <input
                             ref={bcRef}
