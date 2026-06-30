@@ -651,8 +651,8 @@ const PlayerDashboard = () => {
                 <div className="space-y-6">
                   {showNewUpload && (
                     <div className="flex items-center justify-between">
-                      <h3 className="font-display text-lg text-foreground">NEW VIDEO UPLOAD</h3>
-                      <Button variant="ghost" size="sm" onClick={() => setShowNewUpload(false)} className="text-muted-foreground text-xs">Cancel</Button>
+                      <h3 className="font-display text-lg text-foreground">{t("player.newUploadHeading" as any)}</h3>
+                      <Button variant="ghost" size="sm" onClick={() => setShowNewUpload(false)} className="text-muted-foreground text-xs">{t("player.cancel" as any)}</Button>
                     </div>
                   )}
 
