@@ -593,10 +593,10 @@ const Index = () => {
           <Reveal className="text-center mb-16 sm:mb-24">
             <span className="inline-block text-xs font-bold tracking-[0.2em] uppercase mb-4 px-4 py-1.5 rounded-full"
               style={{ background: "hsl(var(--teal-deep) / 0.12)", color: "hsl(var(--teal-deep))" }}>
-              The Platform
+              {T.thePlatform}
             </span>
-            <h2 className="font-display text-4xl sm:text-6xl" style={{ color: "hsl(var(--teal-deep))" }}>HOW IT <span style={{ color: "hsl(var(--teal))" }}>WORKS</span></h2>
-            <p className="mt-3 max-w-md mx-auto" style={{ color: "hsl(var(--teal-deep) / 0.75)" }}>Three simple steps from unknown talent to scouted athlete</p>
+            <h2 className="font-display text-4xl sm:text-6xl" style={{ color: "hsl(var(--teal-deep))" }}>{T.howItWorks1} <span style={{ color: "hsl(var(--teal))" }}>{T.howItWorks2}</span></h2>
+            <p className="mt-3 max-w-md mx-auto" style={{ color: "hsl(var(--teal-deep) / 0.75)" }}>{T.howItWorksSub}</p>
           </Reveal>
 
 
