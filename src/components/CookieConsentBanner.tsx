@@ -18,6 +18,7 @@ export const hasAnalyticsConsent = (): boolean => {
 };
 
 const CookieConsentBanner = () => {
+  const { t } = useLanguage();
   const [visible, setVisible] = useState(false);
 
   useEffect(() => {
