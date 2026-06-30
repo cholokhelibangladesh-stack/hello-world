@@ -658,6 +658,68 @@ const PlayerDashboard = () => {
                     </div>
                   ) : (
                     <div className="space-y-6">
+                      {/* Sport selector */}
+                      <div className="bg-card border border-border rounded-xl p-6">
+                        <div className="flex items-center gap-3 mb-3">
+                          <Tag className="h-5 w-5 text-primary" />
+                          <h2 className="font-display text-xl text-foreground">YOUR SPORT</h2>
+                          {savingSport && <Loader2 className="h-4 w-4 animate-spin text-muted-foreground" />}
+                        </div>
+                        <p className="text-xs text-muted-foreground mb-3">Pick the sport you play — positions and play styles below update accordingly.</p>
+                        <div className="grid grid-cols-3 gap-2">
+                          {SPORTS.map((s) => (
+                            <button
+                              key={s.id}
+                              type="button"
+                              disabled={savingSport}
+                              onClick={() => handleSportChange(s.id)}
+                              className={`py-3 rounded-xl text-sm font-semibold transition-all border ${
+                                sport === s.id
+                                  ? "bg-primary text-primary-foreground border-primary shadow-md"
+                                  : "bg-secondary text-secondary-foreground border-border hover:border-primary/40"
+                              }`}
+                            >
+                              <span className="mr-1">{s.icon}</span> {s.label}
+                            </button>
+                          ))}
+                        </div>
+                      </div>
+
+                      {/* Birth certificate (required) */}
+                      <div className={`bg-card border rounded-xl p-6 ${birthCertUrl ? "border-border" : "border-destructive/40"}`}>
+                        <div className="flex items-center gap-3 mb-3">
+                          <FileText className={`h-5 w-5 ${birthCertUrl ? "text-primary" : "text-destructive"}`} />
+                          <h2 className="font-display text-xl text-foreground">BIRTH CERTIFICATE</h2>
+                          {birthCertUrl ? (
+                            <Badge className="bg-primary/20 text-primary border-primary/30">Uploaded ✓</Badge>
+                          ) : (
+                            <Badge variant="outline" className="border-destructive/40 text-destructive">Required</Badge>
+                          )}
+                        </div>
+                        <p className="text-xs text-muted-foreground mb-3">
+                          A valid birth certificate is required before you can submit a video. Accepted: PDF, JPG, PNG (max 8 MB). Only admins can view this document.
+                        </p>
+                        <div className="flex flex-col sm:flex-row gap-2">
+                          <Button
+                            type="button"
+                            variant="outline"
+                            onClick={() => bcRef.current?.click()}
+                            disabled={birthCertUploading}
+                            className="border-primary/40 text-primary hover:bg-primary/10"
+                          >
+                            {birthCertUploading ? <Loader2 className="h-4 w-4 animate-spin mr-2" /> : <Upload className="h-4 w-4 mr-2" />}
+                            {birthCertUrl ? "Replace Birth Certificate" : "Upload Birth Certificate"}
+                          </Button>
+                          <input
+                            ref={bcRef}
+                            type="file"
+                            accept="application/pdf,image/jpeg,image/png"
+                            className="hidden"
+                            onChange={(e) => e.target.files?.[0] && handleBirthCertUpload(e.target.files[0])}
+                          />
+                        </div>
+                      </div>
+
                       {/* Video Upload */}
                       <div className="bg-card border border-border rounded-xl p-6">
                         <div className="flex items-center gap-3 mb-4">
