@@ -278,6 +278,32 @@ const Auth = () => {
         sessionStorage.removeItem("pendingBirthCertType");
       }
 
+      // Upload stashed scout documents, if present
+      const uploadScoutDoc = async (key: string, docType: string, defaultName: string) => {
+        const data = sessionStorage.getItem(`pending${key}Data`);
+        if (!data || pendingRole !== "scout") return;
+        const name = sessionStorage.getItem(`pending${key}Name`) || defaultName;
+        const type = sessionStorage.getItem(`pending${key}Type`) || "application/octet-stream";
+        try {
+          const res = await fetch(data);
+          const blob = await res.blob();
+          const ext = (name.split(".").pop() || "bin").toLowerCase();
+          const path = `${user.id}/${docType}_${Date.now()}.${ext}`;
+          const { error: upErr } = await supabase.storage.from("documents").upload(path, blob, { upsert: true, contentType: type });
+          if (!upErr) {
+            const { data: { publicUrl } } = supabase.storage.from("documents").getPublicUrl(path);
+            await supabase.from("documents").delete().eq("user_id", user.id).eq("type", docType);
+            await supabase.from("documents").insert({ user_id: user.id, type: docType, url: publicUrl, name } as any);
+          }
+        } catch { /* ignore */ }
+        sessionStorage.removeItem(`pending${key}Data`);
+        sessionStorage.removeItem(`pending${key}Name`);
+        sessionStorage.removeItem(`pending${key}Type`);
+      };
+      await uploadScoutDoc("ScoutOrgId", "scout_org_id", "organization_id");
+      await uploadScoutDoc("ScoutCv", "scout_cv", "cv");
+
+
       localStorage.removeItem("pendingRole");
       localStorage.removeItem("pendingSport");
       localStorage.removeItem("pendingPhone");
