@@ -567,26 +567,26 @@ const PlayerDashboard = () => {
         <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }}>
           <div className="flex items-start justify-between mb-5 pt-4">
             <div>
-              <h1 className="font-display text-3xl sm:text-4xl text-foreground mb-0.5">PLAYER DASHBOARD</h1>
-              <p className="text-sm text-muted-foreground">Manage your profile, upload videos, and explore players</p>
+              <h1 className="font-display text-3xl sm:text-4xl text-foreground mb-0.5">{t("player.title" as any)}</h1>
+              <p className="text-sm text-muted-foreground">{t("player.subtitle" as any)}</p>
             </div>
             <Dialog open={reportOpen} onOpenChange={setReportOpen}>
               <DialogTrigger asChild>
                 <Button variant="outline" size="sm" className="border-destructive/40 text-destructive hover:bg-destructive/10 rounded-full text-xs shrink-0">
-                  <Flag className="h-3 w-3 mr-1" /> <span className="hidden xs:inline">Report Scout</span><span className="xs:hidden">Report</span>
+                  <Flag className="h-3 w-3 mr-1" /> <span className="hidden xs:inline">{t("player.reportScout" as any)}</span><span className="xs:hidden">{t("player.report" as any)}</span>
                 </Button>
               </DialogTrigger>
               <DialogContent className="bg-card border-border">
                 <DialogHeader>
-                  <DialogTitle className="font-display text-xl text-foreground">REPORT A SCOUT</DialogTitle>
+                  <DialogTitle className="font-display text-xl text-foreground">{t("player.reportTitle" as any)}</DialogTitle>
                 </DialogHeader>
-                <p className="text-sm text-muted-foreground">Select the scout you want to report and describe the issue. Only the admin will see this.</p>
+                <p className="text-sm text-muted-foreground">{t("player.reportDesc" as any)}</p>
                 <div className="space-y-3">
                   <div>
-                    <Label className="text-sm text-muted-foreground">Select Scout</Label>
+                    <Label className="text-sm text-muted-foreground">{t("player.selectScout" as any)}</Label>
                     <Select value={selectedScoutId} onValueChange={setSelectedScoutId}>
                       <SelectTrigger className="bg-secondary border-border mt-1">
-                        <SelectValue placeholder="Choose a scout..." />
+                        <SelectValue placeholder={t("player.chooseScout" as any)} />
                       </SelectTrigger>
                       <SelectContent className="bg-card border-border">
                         {scouts.map((s) => (
@@ -598,9 +598,9 @@ const PlayerDashboard = () => {
                     </Select>
                   </div>
                   <div>
-                    <Label className="text-sm text-muted-foreground">Reason / Description</Label>
+                    <Label className="text-sm text-muted-foreground">{t("player.reason" as any)}</Label>
                     <Textarea
-                      placeholder="Describe what happened..."
+                      placeholder={t("player.reasonPh" as any)}
                       className="mt-1 bg-secondary border-border resize-none"
                       rows={3}
                       value={reportReason}
@@ -613,12 +613,26 @@ const PlayerDashboard = () => {
                     className="w-full bg-destructive text-white hover:bg-destructive/90"
                   >
                     {reporting ? <Loader2 className="h-4 w-4 animate-spin mr-2" /> : <Flag className="h-4 w-4 mr-2" />}
-                    Submit Report to Admin
+                    {t("player.submitReport" as any)}
                   </Button>
                 </div>
               </DialogContent>
             </Dialog>
           </div>
+
+          <Tabs value={activeTab} onValueChange={handleTabChange} className="space-y-4 sm:space-y-6" onTouchStart={handleTouchStart} onTouchEnd={handleTouchEnd}>
+            <TabsList className="bg-card border border-border w-full grid grid-cols-3">
+              <TabsTrigger value="upload" className="data-[state=active]:bg-primary data-[state=active]:text-primary-foreground text-xs sm:text-sm">
+                <Upload className="h-3.5 w-3.5 sm:mr-1.5 shrink-0" /> <span className="hidden sm:inline">{t("player.tab.uploadFull" as any)}</span><span className="sm:hidden ml-1">{t("player.tab.upload" as any)}</span>
+              </TabsTrigger>
+              <TabsTrigger value="explore" className="data-[state=active]:bg-primary data-[state=active]:text-primary-foreground text-xs sm:text-sm">
+                <Eye className="h-3.5 w-3.5 sm:mr-1.5 shrink-0" /> <span className="hidden sm:inline">{t("player.tab.exploreFull" as any)}</span><span className="sm:hidden ml-1">{t("player.tab.explore" as any)}</span>
+              </TabsTrigger>
+              <TabsTrigger value="profile" className="data-[state=active]:bg-primary data-[state=active]:text-primary-foreground text-xs sm:text-sm">
+                <User className="h-3.5 w-3.5 sm:mr-1.5 shrink-0" /> <span className="hidden sm:inline">{t("player.tab.profileFull" as any)}</span><span className="sm:hidden ml-1">{t("player.tab.profile" as any)}</span>
+              </TabsTrigger>
+            </TabsList>
+
 
           <Tabs value={activeTab} onValueChange={handleTabChange} className="space-y-4 sm:space-y-6" onTouchStart={handleTouchStart} onTouchEnd={handleTouchEnd}>
             <TabsList className="bg-card border border-border w-full grid grid-cols-3">
