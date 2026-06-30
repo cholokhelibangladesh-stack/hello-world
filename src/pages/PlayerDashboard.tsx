@@ -689,7 +689,7 @@ const PlayerDashboard = () => {
                                   : "bg-secondary text-secondary-foreground border-border hover:border-primary/40"
                               }`}
                             >
-                              <span className="mr-1">{s.icon}</span> {s.label}
+                              <span className="mr-1">{s.icon}</span> {SPORT_LABEL[s.id]}
                             </button>
                           ))}
                         </div>
