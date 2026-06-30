@@ -44,18 +44,36 @@ const ProfileTab = ({ showVideos, onDeleteVideo, deletingVideoId }: ProfileTabPr
   const { user, role } = useAuth();
   const { toast } = useToast();
   const fileRef = useRef<HTMLInputElement>(null);
+  const bcRef = useRef<HTMLInputElement>(null);
   const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState(false);
   const [uploading, setUploading] = useState(false);
+  const [bcUploading, setBcUploading] = useState(false);
+  const [birthCertUrl, setBirthCertUrl] = useState<string | null>(null);
   const [editing, setEditing] = useState(false);
   const [profile, setProfile] = useState<ProfileData>({
     full_name: "", username: "", bio: "", phone: "", avatar_url: "",
     sport: "", gender: "", date_of_birth: "", guardian_contact: "",
   });
 
+  const computeAge = (dob: string): number | null => {
+    if (!dob) return null;
+    const d = new Date(dob);
+    if (Number.isNaN(d.getTime())) return null;
+    const now = new Date();
+    let age = now.getFullYear() - d.getFullYear();
+    const m = now.getMonth() - d.getMonth();
+    if (m < 0 || (m === 0 && now.getDate() < d.getDate())) age--;
+    return age;
+  };
+  const age = computeAge(profile.date_of_birth);
+
   useEffect(() => {
     if (!user) return;
-    supabase.from("profiles").select("*").eq("user_id", user.id).maybeSingle().then(({ data }) => {
+    Promise.all([
+      supabase.from("profiles").select("*").eq("user_id", user.id).maybeSingle(),
+      supabase.from("documents").select("url").eq("user_id", user.id).eq("type", "birth_certificate").maybeSingle(),
+    ]).then(([{ data }, { data: bc }]) => {
       if (data) {
         setProfile({
           full_name: data.full_name || "", username: (data as any).username || "",
@@ -64,9 +82,46 @@ const ProfileTab = ({ showVideos, onDeleteVideo, deletingVideoId }: ProfileTabPr
           date_of_birth: data.date_of_birth || "", guardian_contact: data.guardian_contact || "",
         });
       }
+      if (bc?.url) setBirthCertUrl(bc.url);
       setLoading(false);
     });
   }, [user]);
+
+  const handleBirthCertUpload = async (file: File) => {
+    if (!user) return;
+    if (file.size > 8 * 1024 * 1024) {
+      toast({ title: "File too large", description: "Birth certificate must be under 8 MB.", variant: "destructive" });
+      return;
+    }
+    setBcUploading(true);
+    try {
+      const ext = file.name.split(".").pop();
+      const path = `${user.id}/birth_certificate_${Date.now()}.${ext}`;
+      const { error: upErr } = await supabase.storage.from("documents").upload(path, file, { upsert: true });
+      if (upErr) throw upErr;
+      const { data: { publicUrl } } = supabase.storage.from("documents").getPublicUrl(path);
+      await supabase.from("documents").delete().eq("user_id", user.id).eq("type", "birth_certificate");
+      await supabase.from("documents").insert({ user_id: user.id, type: "birth_certificate", url: publicUrl, name: file.name } as any);
+      setBirthCertUrl(publicUrl);
+      toast({ title: "Birth certificate uploaded ✅" });
+    } catch (err: any) {
+      toast({ title: "Upload failed", description: err.message, variant: "destructive" });
+    } finally {
+      setBcUploading(false);
+    }
+  };
+
+  const handleSportClick = async (s: "football" | "cricket" | "basketball") => {
+    if (!user || profile.sport === s) return;
+    setProfile((p) => ({ ...p, sport: s }));
+    try {
+      const { error } = await supabase.from("profiles").update({ sport: s } as any).eq("user_id", user.id);
+      if (error) throw error;
+      toast({ title: "Sport updated", description: `Your profile sport is now ${s}.` });
+    } catch (err: any) {
+      toast({ title: "Failed to save sport", description: err.message, variant: "destructive" });
+    }
+  };
 
   const handleAvatarUpload = async (file: File) => {
     if (!user) return;
