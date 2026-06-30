@@ -260,10 +260,10 @@ const Auth = () => {
             </span>
           </Link>
           <h1 className="font-display text-3xl text-[hsl(var(--teal-deep))]">
-            {isLogin ? "Welcome back" : "Join the game"}
+            {isLogin ? t("auth.welcomeBack") : t("auth.joinTheGame")}
           </h1>
           <p className="text-sm text-muted-foreground mt-2">
-            {isLogin ? "Sign in to continue your journey." : "Create your account to get scouted."}
+            {isLogin ? t("auth.signInSub") : t("auth.signUpSub")}
           </p>
         </div>
 
