@@ -699,15 +699,15 @@ const PlayerDashboard = () => {
                       <div className={`bg-card border rounded-xl p-6 ${birthCertUrl ? "border-border" : "border-destructive/40"}`}>
                         <div className="flex items-center gap-3 mb-3">
                           <FileText className={`h-5 w-5 ${birthCertUrl ? "text-primary" : "text-destructive"}`} />
-                          <h2 className="font-display text-xl text-foreground">BIRTH CERTIFICATE</h2>
+                          <h2 className="font-display text-xl text-foreground">{t("player.birthCertificate" as any)}</h2>
                           {birthCertUrl ? (
-                            <Badge className="bg-primary/20 text-primary border-primary/30">Uploaded ✓</Badge>
+                            <Badge className="bg-primary/20 text-primary border-primary/30">{t("player.uploaded" as any)}</Badge>
                           ) : (
-                            <Badge variant="outline" className="border-destructive/40 text-destructive">Required</Badge>
+                            <Badge variant="outline" className="border-destructive/40 text-destructive">{t("player.required" as any)}</Badge>
                           )}
                         </div>
                         <p className="text-xs text-muted-foreground mb-3">
-                          A valid birth certificate is required before you can submit a video. Accepted: PDF, JPG, PNG (max 8 MB). Only admins can view this document.
+                          {t("player.bcHint" as any)}
                         </p>
                         <div className="flex flex-col sm:flex-row gap-2">
                           <Button
