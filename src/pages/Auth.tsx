@@ -220,21 +220,21 @@ const Auth = () => {
             </motion.div>
           </div>
           <div>
-            <h2 className="font-display text-3xl text-foreground mb-2">CHECK YOUR EMAIL</h2>
+            <h2 className="font-display text-3xl text-foreground mb-2">{t("auth.checkEmail")}</h2>
             <p className="text-sm text-muted-foreground">
-              We sent a confirmation link to{" "}
+              {t("auth.confirmSent")}{" "}
               <span className="text-foreground font-medium">{formEmail}</span>
             </p>
             {isScout ? (
               <div className="mt-4 bg-primary/10 border border-primary/30 rounded-xl p-4">
-                <p className="text-sm text-foreground font-medium mb-1">🔍 Scout Account Under Review</p>
+                <p className="text-sm text-foreground font-medium mb-1">{t("auth.scoutReview")}</p>
                 <p className="text-xs text-muted-foreground leading-relaxed">
-                  Your account is being reviewed by our Team for authentication purposes and you will be shortly notified via Email.
+                  {t("auth.scoutReviewBody")}
                 </p>
               </div>
             ) : (
               <p className="text-xs text-muted-foreground mt-3">
-                Click the link in the email to activate your account. You can close this tab.
+                {t("auth.activateHint")}
               </p>
             )}
           </div>
@@ -242,7 +242,7 @@ const Auth = () => {
             onClick={() => { setEmailSent(false); setIsLogin(true); }}
             className="text-sm text-muted-foreground hover:text-foreground transition-colors underline underline-offset-4"
           >
-            Already confirmed? Sign in
+            {t("auth.alreadyConfirmed")}
           </button>
         </motion.div>
       </div>
