@@ -693,10 +693,10 @@ const Index = () => {
                   <span className="font-display text-7xl sm:text-8xl leading-none" style={{ color: "hsl(var(--green) / 0.15)" }}>03</span>
                   <div className="h-px flex-1" style={{ background: "hsl(var(--green) / 0.2)" }} />
                   <span className="text-xs font-bold tracking-[0.2em] uppercase px-3 py-1 rounded-full"
-                    style={{ background: "hsl(var(--green) / 0.12)", color: "hsl(var(--green))" }}>Get Discovered</span>
+                    style={{ background: "hsl(var(--green) / 0.12)", color: "hsl(var(--green))" }}>{T.step3Pill}</span>
                 </div>
-                <h3 className="font-display text-4xl sm:text-5xl mb-4" style={{ color: "hsl(var(--teal-deep))" }}>SCOUTS<br />FIND YOU</h3>
-                <p className="leading-relaxed" style={{ color: "hsl(var(--teal-deep) / 0.8)" }}>Verified scouts browse your profile, shortlist you, and reach out through our safe admin-mediated channel. No direct contact. No corruption. Pure merit.</p>
+                <h3 className="font-display text-4xl sm:text-5xl mb-4 whitespace-pre-line" style={{ color: "hsl(var(--teal-deep))" }}>{T.step3Title}</h3>
+                <p className="leading-relaxed" style={{ color: "hsl(var(--teal-deep) / 0.8)" }}>{T.step3Body}</p>
               </Reveal>
 
               {/* Scout dashboard mockup */}
