@@ -585,9 +585,6 @@ const Index = () => {
           className="absolute inset-0 w-full h-full object-cover opacity-[0.07]" />
         <div className="absolute inset-0 pointer-events-none"
           style={{ background: "linear-gradient(to bottom, hsl(var(--paper-deep) / 0.96), hsl(var(--paper) / 0.98))" }} />
-        {/* Vertical timeline */}
-        <div className="hidden sm:block absolute left-1/2 top-0 bottom-0 w-px -translate-x-1/2 pointer-events-none"
-          style={{ background: "linear-gradient(to bottom, transparent, hsl(var(--teal-deep) / 0.35) 20%, hsl(var(--teal-deep) / 0.35) 80%, transparent)" }} />
 
         <div className="container relative z-10">
           <Reveal className="text-center mb-16 sm:mb-24">
