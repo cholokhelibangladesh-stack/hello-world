@@ -85,7 +85,13 @@ const PlayerDashboard = () => {
   const bcRef = useRef<HTMLInputElement>(null);
   const { toast } = useToast();
   const { user, loading: authLoading } = useAuth();
+  const { t } = useLanguage();
   const navigate = useNavigate();
+  const SPORT_LABEL: Record<string, string> = {
+    football: t("player.football" as any),
+    cricket: t("player.cricket" as any),
+    basketball: t("player.basketball" as any),
+  };
 
   // Sync tab with URL hash
   useEffect(() => {
