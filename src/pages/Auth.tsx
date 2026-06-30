@@ -139,6 +139,18 @@ const Auth = () => {
         toast({ title: "File too large", description: "Birth certificate must be under 8 MB.", variant: "destructive" });
         return;
       }
+      if (scoutDocsRequired && (!scoutOrgIdFile || !scoutCvFile)) {
+        toast({ title: "Scout documents required", description: "Please upload your organization ID card and official CV to apply as a scout.", variant: "destructive" });
+        return;
+      }
+      if (scoutOrgIdFile && scoutOrgIdFile.size > 8 * 1024 * 1024) {
+        toast({ title: "File too large", description: "Organization ID card must be under 8 MB.", variant: "destructive" });
+        return;
+      }
+      if (scoutCvFile && scoutCvFile.size > 8 * 1024 * 1024) {
+        toast({ title: "File too large", description: "CV must be under 8 MB.", variant: "destructive" });
+        return;
+      }
     }
     setLoading(true);
     try {
