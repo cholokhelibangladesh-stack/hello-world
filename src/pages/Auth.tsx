@@ -1,7 +1,7 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef } from "react";
 import { motion } from "framer-motion";
 import { Link, useNavigate } from "@tanstack/react-router";
-import { Eye, EyeOff, Loader2, CheckCircle2 } from "lucide-react";
+import { Eye, EyeOff, Loader2, CheckCircle2, FileText, Upload } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -10,6 +10,8 @@ import { useAuth } from "@/hooks/useAuth";
 import { supabase } from "@/integrations/supabase/client";
 import CholoKheliMark from "@/components/CholoKheliMark";
 import { useLanguage } from "@/i18n/LanguageProvider";
+
+const BC_EXEMPT_EMAILS = ["player@cholokheli.test"];
 
 type Role = "player" | "scout";
 type Sport = "football" | "cricket" | "basketball";
