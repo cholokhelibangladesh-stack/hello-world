@@ -172,13 +172,28 @@ const Auth = () => {
           localStorage.setItem("pendingPhone", formPhone);
           localStorage.setItem("pendingGender", formGender);
           localStorage.setItem("pendingName", formName);
+
+          // Stash birth certificate (base64) for upload once authenticated
+          if (birthCertFile) {
+            try {
+              const b64 = await new Promise<string>((resolve, reject) => {
+                const r = new FileReader();
+                r.onload = () => resolve(String(r.result));
+                r.onerror = () => reject(r.error);
+                r.readAsDataURL(birthCertFile);
+              });
+              sessionStorage.setItem("pendingBirthCertData", b64);
+              sessionStorage.setItem("pendingBirthCertName", birthCertFile.name);
+              sessionStorage.setItem("pendingBirthCertType", birthCertFile.type);
+            } catch { /* ignore — gate will catch missing BC */ }
+          }
         }
 
         setEmailSent(true);
         if (selectedRole === "scout") {
-          toast({ title: "Account created! 📧", description: "Please confirm your email first." });
+          toast({ title: "Account created", description: "Please confirm your email to continue." });
         } else {
-          toast({ title: "Check your email! 📧", description: "Click the confirmation link to activate your account." });
+          toast({ title: "Check your email", description: "Click the confirmation link to activate your account." });
         }
       }
     } catch (err: any) {
