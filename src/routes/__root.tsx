@@ -10,6 +10,7 @@ import { ThemeProvider } from "@/hooks/useTheme";
 import FloatingHeader from "@/components/FloatingHeader";
 import { AppErrorBoundary } from "@/components/AppErrorBoundary";
 import CookieConsentBanner from "@/components/CookieConsentBanner";
+import { LanguageProvider } from "@/i18n/LanguageProvider";
 import appCss from "@/index.css?url";
 
 export const Route = createRootRouteWithContext<{ queryClient: QueryClient }>()({
