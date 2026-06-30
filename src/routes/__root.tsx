@@ -44,15 +44,17 @@ function RootComponent() {
 function AppShell() {
   return (
     <ThemeProvider>
-      <AuthProvider>
-        <TooltipProvider>
-          <Toaster />
-          <Sonner />
-          <FloatingHeader />
-          <Outlet />
-          <CookieConsentBanner />
-        </TooltipProvider>
-      </AuthProvider>
+      <LanguageProvider>
+        <AuthProvider>
+          <TooltipProvider>
+            <Toaster />
+            <Sonner />
+            <FloatingHeader />
+            <Outlet />
+            <CookieConsentBanner />
+          </TooltipProvider>
+        </AuthProvider>
+      </LanguageProvider>
     </ThemeProvider>
   );
 }
