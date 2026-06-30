@@ -149,6 +149,16 @@ export const translations = {
     "player.noVideos": "No videos yet. Select a file above to get started.",
     "player.status.live": "live",
     "player.status.pendingPayment": "pending payment",
+
+    // Mission page
+    "mission.title": "OUR MISSION",
+    "mission.intro": "To digitize Bangladesh sports, remove corruption from talent discovery, and give every young athlete a fair shot at greatness.",
+    "mission.problem.title": "THE PROBLEM",
+    "mission.problem.body": "In Bangladesh, countless talented athletes never get discovered. The traditional scouting system is broken — plagued by middlemen, corruption, and geography. A striker in Barisal has almost no chance of being seen by a scout in Dhaka. We're here to change that.",
+    "mission.approach.title": "OUR APPROACH",
+    "mission.approach.body": "Cholo Kheli creates a transparent digital bridge between grassroots talent and professional scouts. Every player gets the same platform. Every scout is verified. Every interaction is tracked. No middlemen, no corruption — just pure talent.",
+    "mission.vision.title": "THE VISION",
+    "mission.vision.body": "We envision a Bangladesh where talent speaks louder than connections. Where a 16-year-old cricketer from Rangpur can be discovered by a national selector. Where the next football star doesn't need to know the right people — just be the right player.",
   },
 
   bn: {
