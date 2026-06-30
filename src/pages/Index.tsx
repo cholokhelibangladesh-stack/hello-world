@@ -22,6 +22,116 @@ import sportFootball from "@/assets/sport-football.jpg.asset.json";
 import sportCricket from "@/assets/sport-cricket.jpg.asset.json";
 import sportBasketball from "@/assets/sport-basketball.jpg.asset.json";
 import { safeMediaUrl } from "@/lib/sanitize";
+import { useLanguage } from "@/i18n/LanguageProvider";
+
+const COPY = {
+  en: {
+    heroTagline: "A quiet place where Bangladesh's grassroots talent meets verified scouts. Safe. Transparent. Built for the love of the game.",
+    openDashboard: "Open Dashboard",
+    joinAsPlayer: "Join as Player",
+    imAScout: "I'm a Scout",
+    scroll: "Scroll",
+    sportsTitle1: "EVERY GAME,",
+    sportsTitle2: "EVERY PLAYER",
+    football: "Football",
+    cricket: "Cricket",
+    basketball: "Basketball",
+    footballTag: "From para to pitch",
+    cricketTag: "Bat. Ball. Belief.",
+    basketballTag: "Rising on the hardwood",
+    footballBlurb: "Bangladesh's most-loved game. We connect strikers, keepers, and midfielders from every district to scouts who're watching.",
+    cricketBlurb: "From maktab grounds to national selection — batters, bowlers, and all-rounders get a verified pathway to be seen.",
+    basketballBlurb: "A growing scene in Dhaka and Chattogram. Guards, forwards, and centres — your jump shot deserves an audience.",
+    explore: "Explore",
+    thePlatform: "The Platform",
+    howItWorks1: "HOW IT",
+    howItWorks2: "WORKS",
+    howItWorksSub: "Three simple steps from unknown talent to scouted athlete",
+    step1Pill: "Create Profile",
+    step1Title: "YOUR STORY\nSTARTS HERE",
+    step1Body: "Sign up as a Player, add your details, select your sport — Football or Cricket. Your profile becomes your digital identity, visible to scouts across Bangladesh.",
+    athletics: "Athletics",
+    step2Pill: "Upload Highlights",
+    step2Title: "LET YOUR GAME\nSPEAK",
+    step2Body: "Record a 3-minute highlight video. Tag your position and traits. Pay ৳100 via bKash. Your reel goes live to hundreds of verified scouts instantly.",
+    only100: "Only ৳100",
+    only100Sub: "One-time payment via bKash · Instantly live",
+    step3Pill: "Get Discovered",
+    step3Title: "SCOUTS\nFIND YOU",
+    step3Body: "Verified scouts browse your profile, shortlist you, and reach out through our safe admin-mediated channel. No direct contact. No corruption. Pure merit.",
+    scoutDashboard: "Scout Dashboard",
+    midfielder: "Midfielder", forward: "Forward", allRounder: "All-rounder",
+    shortlisted: "★ Shortlisted",
+    live: "Live",
+    midfielderLong: "Midfielder · Football · Dhaka",
+    skillSpeed: "Speed", skillDribbling: "Dribbling", skillVision: "Vision", skillPositioning: "Positioning",
+    ourNetwork: "Our Network",
+    verified: "VERIFIED", scouts: "SCOUTS",
+    scoutsSub: "Hear directly from the professionals discovering talent across Bangladesh",
+    of: "OF",
+    previous: "Previous", next: "Next",
+    joinFree: "Join Cholo Kheli Free",
+    ourMission: "Our Mission",
+    playersRegistered: "Players Registered",
+    verifiedScouts: "Verified Scouts",
+    talentDiscovered: "Talent Discovered",
+    followJourney: "Follow the Journey",
+    copyright: "© 2026 Cholo Kheli — Let's Play",
+  },
+  bn: {
+    heroTagline: "একটি শান্ত জায়গা যেখানে বাংলাদেশের তৃণমূল প্রতিভা যাচাইকৃত স্কাউটদের সাথে মিলিত হয়। নিরাপদ। স্বচ্ছ। খেলার ভালোবাসার জন্য তৈরি।",
+    openDashboard: "ড্যাশবোর্ড খুলুন",
+    joinAsPlayer: "প্লেয়ার হিসেবে যোগ দিন",
+    imAScout: "আমি একজন স্কাউট",
+    scroll: "স্ক্রল",
+    sportsTitle1: "প্রতিটি খেলা,",
+    sportsTitle2: "প্রতিটি খেলোয়াড়",
+    football: "ফুটবল",
+    cricket: "ক্রিকেট",
+    basketball: "বাস্কেটবল",
+    footballTag: "পাড়া থেকে মাঠে",
+    cricketTag: "ব্যাট। বল। বিশ্বাস।",
+    basketballTag: "কাঠের কোর্টে উদীয়মান",
+    footballBlurb: "বাংলাদেশের সবচেয়ে প্রিয় খেলা। আমরা প্রতিটি জেলার স্ট্রাইকার, গোলরক্ষক ও মিডফিল্ডারদের যাচাইকৃত স্কাউটদের সাথে যুক্ত করি।",
+    cricketBlurb: "মক্তবের মাঠ থেকে জাতীয় নির্বাচন পর্যন্ত — ব্যাটার, বোলার ও অলরাউন্ডাররা দৃশ্যমান হওয়ার একটি যাচাইকৃত পথ পায়।",
+    basketballBlurb: "ঢাকা ও চট্টগ্রামে ক্রমবর্ধমান একটি অঙ্গন। গার্ড, ফরোয়ার্ড ও সেন্টার — আপনার জাম্প শট দর্শক প্রাপ্য।",
+    explore: "অন্বেষণ",
+    thePlatform: "প্ল্যাটফর্ম",
+    howItWorks1: "এটি কীভাবে",
+    howItWorks2: "কাজ করে",
+    howItWorksSub: "অজানা প্রতিভা থেকে স্কাউটেড অ্যাথলিটে — তিনটি সহজ ধাপ",
+    step1Pill: "প্রোফাইল তৈরি করুন",
+    step1Title: "আপনার গল্প\nএখানেই শুরু",
+    step1Body: "প্লেয়ার হিসেবে সাইন আপ করুন, আপনার তথ্য যোগ করুন, আপনার খেলা নির্বাচন করুন — ফুটবল বা ক্রিকেট। আপনার প্রোফাইলই আপনার ডিজিটাল পরিচয়, বাংলাদেশের সকল স্কাউটের কাছে দৃশ্যমান।",
+    athletics: "অ্যাথলেটিক্স",
+    step2Pill: "হাইলাইট আপলোড করুন",
+    step2Title: "আপনার খেলা\nকথা বলুক",
+    step2Body: "একটি ৩-মিনিটের হাইলাইট ভিডিও রেকর্ড করুন। আপনার পজিশন ও বৈশিষ্ট্য ট্যাগ করুন। বিকাশে ১০০ টাকা পরিশোধ করুন। আপনার রিল তাৎক্ষণিকভাবে শত শত যাচাইকৃত স্কাউটের কাছে লাইভ হয়ে যাবে।",
+    only100: "মাত্র ১০০ টাকা",
+    only100Sub: "বিকাশে এককালীন পেমেন্ট · তাৎক্ষণিক লাইভ",
+    step3Pill: "আবিষ্কৃত হন",
+    step3Title: "স্কাউট\nআপনাকে খুঁজে পাবে",
+    step3Body: "যাচাইকৃত স্কাউটরা আপনার প্রোফাইল দেখে, আপনাকে শর্টলিস্ট করে এবং আমাদের নিরাপদ অ্যাডমিন-মধ্যস্থ চ্যানেলে যোগাযোগ করে। কোনো সরাসরি যোগাযোগ নেই। কোনো দুর্নীতি নেই। শুধুই মেধা।",
+    scoutDashboard: "স্কাউট ড্যাশবোর্ড",
+    midfielder: "মিডফিল্ডার", forward: "ফরোয়ার্ড", allRounder: "অলরাউন্ডার",
+    shortlisted: "★ শর্টলিস্টেড",
+    live: "লাইভ",
+    midfielderLong: "মিডফিল্ডার · ফুটবল · ঢাকা",
+    skillSpeed: "গতি", skillDribbling: "ড্রিবলিং", skillVision: "দৃষ্টি", skillPositioning: "পজিশনিং",
+    ourNetwork: "আমাদের নেটওয়ার্ক",
+    verified: "যাচাইকৃত", scouts: "স্কাউট",
+    scoutsSub: "বাংলাদেশজুড়ে প্রতিভা আবিষ্কারকারী পেশাদারদের কাছ থেকে সরাসরি শুনুন",
+    of: "এর",
+    previous: "পূর্ববর্তী", next: "পরবর্তী",
+    joinFree: "চলো খেলিতে বিনামূল্যে যোগ দিন",
+    ourMission: "আমাদের লক্ষ্য",
+    playersRegistered: "নিবন্ধিত খেলোয়াড়",
+    verifiedScouts: "যাচাইকৃত স্কাউট",
+    talentDiscovered: "আবিষ্কৃত প্রতিভা",
+    followJourney: "যাত্রা অনুসরণ করুন",
+    copyright: "© ২০২৬ চলো খেলি — চলো খেলি",
+  },
+} as const;
 
 const socialLinks = [
   { Icon: Facebook,  label: "Facebook",    href: "https://facebook.com/cholokheli",  color: "hover:text-[hsl(var(--teal))]" },
@@ -194,6 +304,8 @@ function ScoutCarouselCard({ scout, defaultBio }: { scout: ScoutProfile; default
 ════════════════════════════════════════════ */
 const Index = () => {
   const { user, role } = useAuth();
+  const { lang } = useLanguage();
+  const T = COPY[lang];
   const [verifiedScouts, setVerifiedScouts] = useState<ScoutProfile[]>(FALLBACK_SCOUTS);
   const [scoutIndex, setScoutIndex] = useState(0);
 
@@ -327,8 +439,7 @@ const Index = () => {
             transition={{ delay: 0.5, duration: 0.5, ease: [0.22, 1, 0.36, 1] }}
             className="mt-8 text-base sm:text-lg text-white/85 max-w-xl leading-relaxed drop-shadow-[0_2px_8px_rgba(0,0,0,0.6)]"
           >
-            A quiet place where Bangladesh's grassroots talent meets verified scouts.
-            Safe. Transparent. Built for the love of the game.
+            {T.heroTagline}
           </motion.p>
 
           {/* CTAs */}
@@ -345,7 +456,7 @@ const Index = () => {
                   className="font-medium text-base px-9 py-6 rounded-full"
                   style={{ background: "hsl(var(--teal-deep))", color: "hsl(var(--primary-foreground))" }}
                 >
-                  Open Dashboard <ArrowRight className="ml-2 h-4 w-4" />
+                  {T.openDashboard} <ArrowRight className="ml-2 h-4 w-4" />
                 </Button>
               </Link>
             ) : (
@@ -356,7 +467,7 @@ const Index = () => {
                     className="font-medium text-base px-9 py-6 rounded-full"
                     style={{ background: "hsl(var(--teal-deep))", color: "hsl(var(--primary-foreground))" }}
                   >
-                    Join as Player <ArrowRight className="ml-2 h-4 w-4" />
+                    {T.joinAsPlayer} <ArrowRight className="ml-2 h-4 w-4" />
                   </Button>
                 </Link>
                 <Link to="/auth" search={{ role: "scout" }}>
@@ -366,7 +477,7 @@ const Index = () => {
                     className="font-medium text-base px-9 py-6 rounded-full bg-white/5 backdrop-blur-sm hover:bg-white/15"
                     style={{ borderColor: "rgba(255,255,255,0.4)", color: "#ffffff" }}
                   >
-                    I'm a Scout
+                    {T.imAScout}
                   </Button>
                 </Link>
               </>
@@ -382,7 +493,7 @@ const Index = () => {
           transition={{ delay: 1, duration: 0.5 }}
           className="absolute bottom-8 left-1/2 -translate-x-1/2 z-10 flex flex-col items-center gap-1.5"
         >
-          <span className="text-[9px] tracking-[0.35em] uppercase text-white/70">Scroll</span>
+          <span className="text-[9px] tracking-[0.35em] uppercase text-white/70">{T.scroll}</span>
           <motion.div animate={{ y: [0, 6, 0] }} transition={{ duration: 1.6, repeat: Infinity }}>
             <ChevronDown className="h-4 w-4 text-white/70" />
           </motion.div>
@@ -406,31 +517,16 @@ const Index = () => {
         <div className="container">
           <Reveal className="text-center mb-12 sm:mb-16">
             <h2 className="font-display text-4xl sm:text-6xl" style={{ color: "hsl(var(--teal-deep))" }}>
-              EVERY GAME, <span style={{ color: "hsl(var(--teal))" }}>EVERY PLAYER</span>
+              {T.sportsTitle1} <span style={{ color: "hsl(var(--teal))" }}>{T.sportsTitle2}</span>
             </h2>
           </Reveal>
 
 
           <div className="grid grid-cols-1 sm:grid-cols-3 gap-5 sm:gap-6">
             {[
-              {
-                img: sportFootball.url,
-                name: "Football",
-                tagline: "From para to pitch",
-                blurb: "Bangladesh's most-loved game. We connect strikers, keepers, and midfielders from every district to scouts who're watching.",
-              },
-              {
-                img: sportCricket.url,
-                name: "Cricket",
-                tagline: "Bat. Ball. Belief.",
-                blurb: "From maktab grounds to national selection — batters, bowlers, and all-rounders get a verified pathway to be seen.",
-              },
-              {
-                img: sportBasketball.url,
-                name: "Basketball",
-                tagline: "Rising on the hardwood",
-                blurb: "A growing scene in Dhaka and Chattogram. Guards, forwards, and centres — your jump shot deserves an audience.",
-              },
+              { img: sportFootball.url, name: T.football, tagline: T.footballTag, blurb: T.footballBlurb },
+              { img: sportCricket.url, name: T.cricket, tagline: T.cricketTag, blurb: T.cricketBlurb },
+              { img: sportBasketball.url, name: T.basketball, tagline: T.basketballTag, blurb: T.basketballBlurb },
             ].map((sport, i) => (
               <Reveal key={sport.name} delay={i * 0.12}>
                 <motion.div
@@ -466,7 +562,7 @@ const Index = () => {
                         {sport.blurb}
                       </p>
                       <div className="mt-4 inline-flex items-center gap-2 text-xs font-semibold uppercase tracking-[0.18em] text-[hsl(188_60%_82%)]">
-                        Explore <ArrowRight className="h-3.5 w-3.5" />
+                        {T.explore} <ArrowRight className="h-3.5 w-3.5" />
                       </div>
                     </div>
                   </div>
@@ -497,10 +593,10 @@ const Index = () => {
           <Reveal className="text-center mb-16 sm:mb-24">
             <span className="inline-block text-xs font-bold tracking-[0.2em] uppercase mb-4 px-4 py-1.5 rounded-full"
               style={{ background: "hsl(var(--teal-deep) / 0.12)", color: "hsl(var(--teal-deep))" }}>
-              The Platform
+              {T.thePlatform}
             </span>
-            <h2 className="font-display text-4xl sm:text-6xl" style={{ color: "hsl(var(--teal-deep))" }}>HOW IT <span style={{ color: "hsl(var(--teal))" }}>WORKS</span></h2>
-            <p className="mt-3 max-w-md mx-auto" style={{ color: "hsl(var(--teal-deep) / 0.75)" }}>Three simple steps from unknown talent to scouted athlete</p>
+            <h2 className="font-display text-4xl sm:text-6xl" style={{ color: "hsl(var(--teal-deep))" }}>{T.howItWorks1} <span style={{ color: "hsl(var(--teal))" }}>{T.howItWorks2}</span></h2>
+            <p className="mt-3 max-w-md mx-auto" style={{ color: "hsl(var(--teal-deep) / 0.75)" }}>{T.howItWorksSub}</p>
           </Reveal>
 
 
@@ -513,12 +609,12 @@ const Index = () => {
                   <span className="font-display text-7xl sm:text-8xl leading-none" style={{ color: "hsl(var(--green) / 0.15)" }}>01</span>
                   <div className="h-px flex-1" style={{ background: "hsl(var(--green) / 0.2)" }} />
                   <span className="text-xs font-bold tracking-[0.2em] uppercase px-3 py-1 rounded-full"
-                    style={{ background: "hsl(var(--green) / 0.12)", color: "hsl(var(--green))" }}>Create Profile</span>
+                    style={{ background: "hsl(var(--green) / 0.12)", color: "hsl(var(--green))" }}>{T.step1Pill}</span>
                 </div>
-                <h3 className="font-display text-4xl sm:text-5xl mb-4" style={{ color: "hsl(var(--teal-deep))" }}>YOUR STORY<br />STARTS HERE</h3>
-                <p className="leading-relaxed" style={{ color: "hsl(var(--teal-deep) / 0.8)" }}>Sign up as a Player, add your details, select your sport — Football or Cricket. Your profile becomes your digital identity, visible to scouts across Bangladesh.</p>
+                <h3 className="font-display text-4xl sm:text-5xl mb-4 whitespace-pre-line" style={{ color: "hsl(var(--teal-deep))" }}>{T.step1Title}</h3>
+                <p className="leading-relaxed" style={{ color: "hsl(var(--teal-deep) / 0.8)" }}>{T.step1Body}</p>
                 <div className="mt-6 flex gap-3">
-                  {["Football", "Cricket", "Athletics"].map((s) => (
+                  {[T.football, T.cricket, T.athletics].map((s) => (
                     <span key={s} className="text-xs px-3 py-1 rounded-full border font-medium"
                       style={{ borderColor: "hsl(var(--green) / 0.25)", color: "hsl(var(--green))", background: "hsl(var(--green) / 0.06)" }}>{s}</span>
                   ))}
@@ -538,14 +634,14 @@ const Index = () => {
                       style={{ borderColor: "hsl(var(--green) / 0.4)", background: "hsl(var(--green) / 0.08)", color: "hsl(var(--green))" }}>R</div>
                     <div>
                       <div className="font-semibold text-foreground">Rafiqul Islam</div>
-                      <div className="text-xs text-muted-foreground">Midfielder · Football · Dhaka</div>
+                      <div className="text-xs text-muted-foreground">{T.midfielderLong}</div>
                     </div>
                     <div className="ml-auto flex items-center gap-1 rounded-full px-2 py-0.5 border text-[10px] font-semibold"
                       style={{ borderColor: "hsl(var(--green) / 0.3)", color: "hsl(var(--green))" }}>
-                      <Shield className="h-2.5 w-2.5" /> Live
+                      <Shield className="h-2.5 w-2.5" /> {T.live}
                     </div>
                   </div>
-                  {["Speed", "Dribbling", "Vision", "Positioning"].map((skill, j) => (
+                  {[T.skillSpeed, T.skillDribbling, T.skillVision, T.skillPositioning].map((skill, j) => (
                     <div key={skill} className="mb-3">
                       <div className="flex justify-between text-[11px] mb-1">
                         <span className="text-muted-foreground">{skill}</span>
@@ -572,16 +668,16 @@ const Index = () => {
                   <span className="font-display text-7xl sm:text-8xl leading-none" style={{ color: "hsl(var(--green) / 0.15)" }}>02</span>
                   <div className="h-px flex-1" style={{ background: "hsl(var(--green) / 0.2)" }} />
                   <span className="text-xs font-bold tracking-[0.2em] uppercase px-3 py-1 rounded-full"
-                    style={{ background: "hsl(var(--green) / 0.12)", color: "hsl(var(--green))" }}>Upload Highlights</span>
+                    style={{ background: "hsl(var(--green) / 0.12)", color: "hsl(var(--green))" }}>{T.step2Pill}</span>
                 </div>
-                <h3 className="font-display text-4xl sm:text-5xl mb-4" style={{ color: "hsl(var(--teal-deep))" }}>LET YOUR GAME<br />SPEAK</h3>
-                <p className="leading-relaxed" style={{ color: "hsl(var(--teal-deep) / 0.8)" }}>Record a 3-minute highlight video. Tag your position and traits. Pay ৳100 via bKash. Your reel goes live to hundreds of verified scouts instantly.</p>
+                <h3 className="font-display text-4xl sm:text-5xl mb-4 whitespace-pre-line" style={{ color: "hsl(var(--teal-deep))" }}>{T.step2Title}</h3>
+                <p className="leading-relaxed" style={{ color: "hsl(var(--teal-deep) / 0.8)" }}>{T.step2Body}</p>
                 <div className="mt-6 p-4 rounded-xl border flex items-center gap-4"
                   style={{ borderColor: "hsl(var(--green) / 0.15)", background: "hsl(var(--green) / 0.05)" }}>
                   <Zap className="h-8 w-8 flex-shrink-0" style={{ color: "hsl(var(--green))" }} />
                   <div>
-                    <div className="text-sm font-bold text-foreground">Only ৳100</div>
-                    <div className="text-xs text-muted-foreground">One-time payment via bKash · Instantly live</div>
+                    <div className="text-sm font-bold text-foreground">{T.only100}</div>
+                    <div className="text-xs text-muted-foreground">{T.only100Sub}</div>
                   </div>
                 </div>
               </Reveal>
@@ -597,10 +693,10 @@ const Index = () => {
                   <span className="font-display text-7xl sm:text-8xl leading-none" style={{ color: "hsl(var(--green) / 0.15)" }}>03</span>
                   <div className="h-px flex-1" style={{ background: "hsl(var(--green) / 0.2)" }} />
                   <span className="text-xs font-bold tracking-[0.2em] uppercase px-3 py-1 rounded-full"
-                    style={{ background: "hsl(var(--green) / 0.12)", color: "hsl(var(--green))" }}>Get Discovered</span>
+                    style={{ background: "hsl(var(--green) / 0.12)", color: "hsl(var(--green))" }}>{T.step3Pill}</span>
                 </div>
-                <h3 className="font-display text-4xl sm:text-5xl mb-4" style={{ color: "hsl(var(--teal-deep))" }}>SCOUTS<br />FIND YOU</h3>
-                <p className="leading-relaxed" style={{ color: "hsl(var(--teal-deep) / 0.8)" }}>Verified scouts browse your profile, shortlist you, and reach out through our safe admin-mediated channel. No direct contact. No corruption. Pure merit.</p>
+                <h3 className="font-display text-4xl sm:text-5xl mb-4 whitespace-pre-line" style={{ color: "hsl(var(--teal-deep))" }}>{T.step3Title}</h3>
+                <p className="leading-relaxed" style={{ color: "hsl(var(--teal-deep) / 0.8)" }}>{T.step3Body}</p>
               </Reveal>
 
               {/* Scout dashboard mockup */}
@@ -611,12 +707,12 @@ const Index = () => {
                   <div className="absolute top-0 inset-x-0 h-0.5" style={{ background: "linear-gradient(90deg, transparent, hsl(var(--green) / 0.6), transparent)" }} />
                   <div className="flex items-center gap-2 mb-4">
                     <Shield className="h-4 w-4" style={{ color: "hsl(var(--green))" }} />
-                    <span className="text-xs font-bold tracking-widest uppercase" style={{ color: "hsl(var(--green))" }}>Scout Dashboard</span>
+                    <span className="text-xs font-bold tracking-widest uppercase" style={{ color: "hsl(var(--green))" }}>{T.scoutDashboard}</span>
                   </div>
                   {[
-                    { name: "Rafiqul Islam", pos: "Midfielder",  score: 91 },
-                    { name: "Nusrat Jahan",  pos: "Forward",     score: 87 },
-                    { name: "Tanjim Ahmed",  pos: "All-rounder", score: 84 },
+                    { name: "Rafiqul Islam", pos: T.midfielder,  score: 91 },
+                    { name: "Nusrat Jahan",  pos: T.forward,     score: 87 },
+                    { name: "Tanjim Ahmed",  pos: T.allRounder,  score: 84 },
                   ].map((p, j) => (
                     <motion.div key={p.name}
                       initial={{ opacity: 0, x: -20 }} whileInView={{ opacity: 1, x: 0 }}
@@ -633,7 +729,7 @@ const Index = () => {
                       </div>
                       <div className="text-sm font-bold" style={{ color: "hsl(var(--green))" }}>{p.score}</div>
                       <div className="text-[9px] px-2 py-1 rounded-full font-semibold"
-                        style={{ background: "hsl(var(--green) / 0.12)", color: "hsl(var(--green))" }}>★ Shortlisted</div>
+                        style={{ background: "hsl(var(--green) / 0.12)", color: "hsl(var(--green))" }}>{T.shortlisted}</div>
                     </motion.div>
                   ))}
                 </motion.div>
@@ -652,12 +748,12 @@ const Index = () => {
         <div className="container relative z-10">
           <Reveal className="text-center mb-12">
             <span className="inline-block text-xs font-bold tracking-[0.2em] uppercase mb-4 px-4 py-1.5 rounded-full"
-              style={{ background: "hsl(var(--green) / 0.15)", color: "hsl(var(--green))" }}>Our Network</span>
+              style={{ background: "hsl(var(--green) / 0.15)", color: "hsl(var(--green))" }}>{T.ourNetwork}</span>
             <h2 className="font-display text-3xl sm:text-5xl text-white">
-              VERIFIED <span style={{ color: "hsl(var(--green))" }}>SCOUTS</span>
+              {T.verified} <span style={{ color: "hsl(var(--green))" }}>{T.scouts}</span>
             </h2>
             <p className="text-sm sm:text-base text-white/60 max-w-lg mx-auto mt-2">
-              Hear directly from the professionals discovering talent across Bangladesh
+              {T.scoutsSub}
             </p>
           </Reveal>
 
@@ -677,19 +773,19 @@ const Index = () => {
 
                 <div className="flex lg:flex-col justify-between gap-4 lg:py-2">
                   <div className="text-xs font-mono tracking-[0.2em] text-white/50 self-start">
-                    {String(scoutIndex + 1).padStart(2, "0")} OF {String(verifiedScouts.length).padStart(2, "0")} //
+                    {String(scoutIndex + 1).padStart(2, "0")} {T.of} {String(verifiedScouts.length).padStart(2, "0")} //
                   </div>
                   <div className="flex lg:flex-col gap-3 lg:gap-2 lg:mt-auto w-full">
                     <button onClick={prev}
                       className="group flex-1 flex items-center justify-between gap-3 px-4 py-4 rounded-xl border transition-colors hover:bg-white/5"
                       style={{ borderColor: "hsl(var(--green) / 0.2)" }}>
                       <ArrowLeft className="h-4 w-4 text-white/70 group-hover:text-white transition-colors" />
-                      <span className="text-sm font-medium text-white/80 group-hover:text-white">Previous</span>
+                      <span className="text-sm font-medium text-white/80 group-hover:text-white">{T.previous}</span>
                     </button>
                     <button onClick={next}
                       className="group flex-1 flex items-center justify-between gap-3 px-4 py-4 rounded-xl border transition-colors hover:bg-white/5"
                       style={{ borderColor: "hsl(var(--green) / 0.2)" }}>
-                      <span className="text-sm font-medium text-white/80 group-hover:text-white">Next</span>
+                      <span className="text-sm font-medium text-white/80 group-hover:text-white">{T.next}</span>
                       <ArrowRight className="h-4 w-4 text-white/70 group-hover:text-white transition-colors" />
                     </button>
                   </div>
@@ -774,14 +870,14 @@ const Index = () => {
                   <Link to="/auth">
                     <Button size="lg" className="font-bold text-lg px-12 py-6 animate-pulse-glow"
                       style={{ background: "hsl(var(--green))", color: "hsl(var(--primary-foreground))" }}>
-                      Join Cholo Kheli Free <ArrowRight className="ml-2 h-5 w-5" />
+                      {T.joinFree} <ArrowRight className="ml-2 h-5 w-5" />
                     </Button>
                   </Link>
                 )}
                 <Link to="/mission">
                   <Button size="lg" variant="outline" className="font-semibold text-lg px-10 py-6"
                     style={{ borderColor: "hsl(var(--green) / 0.3)", color: "hsl(var(--green))" }}>
-                    Our Mission
+                    {T.ourMission}
                   </Button>
                 </Link>
               </div>
@@ -801,9 +897,9 @@ const Index = () => {
         <div className="container">
           <div className="grid grid-cols-3 gap-4 sm:gap-8">
             {[
-              { label: "Players Registered", target: 2500, suffix: "+", Icon: Users },
-              { label: "Verified Scouts",    target: 120,  suffix: "+", Icon: Shield },
-              { label: "Talent Discovered",  target: 340,  suffix: "+", Icon: Trophy },
+              { label: T.playersRegistered, target: 2500, suffix: "+", Icon: Users },
+              { label: T.verifiedScouts,    target: 120,  suffix: "+", Icon: Shield },
+              { label: T.talentDiscovered,  target: 340,  suffix: "+", Icon: Trophy },
             ].map((stat, i) => (
               <Reveal key={stat.label} delay={i * 0.12} className="text-center group">
                 <div className="relative p-6 rounded-2xl border transition-all duration-300 card-hover"
@@ -834,7 +930,7 @@ const Index = () => {
       <section className="py-16 border-t border-border surface-paper">
         <div className="container text-center">
           <Reveal>
-            <p className="text-xs tracking-[0.2em] uppercase text-muted-foreground mb-6">Follow the Journey</p>
+            <p className="text-xs tracking-[0.2em] uppercase text-muted-foreground mb-6">{T.followJourney}</p>
             <div className="flex justify-center gap-5">
               {socialLinks.map(({ Icon, label, href, color }) => (
                 <motion.a key={label} href={href} target="_blank" rel="noopener noreferrer"

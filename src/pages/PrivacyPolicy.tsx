@@ -1,5 +1,7 @@
 import { Link } from "@tanstack/react-router";
 import CholoKheliMark from "@/components/CholoKheliMark";
+import { useLanguage } from "@/i18n/LanguageProvider";
+import PrivacyPolicyBn from "./PrivacyPolicyBn";
 
 const Section = ({ title, children }: { title: string; children: React.ReactNode }) => (
   <section className="mb-10">
@@ -47,6 +49,8 @@ const Table = ({ head, rows }: { head: string[]; rows: string[][] }) => (
 );
 
 const PrivacyPolicy = () => {
+  const { lang } = useLanguage();
+  if (lang === "bn") return <PrivacyPolicyBn />;
   return (
     <main className="min-h-screen pt-28 pb-24 px-4 bg-gradient-to-b from-[hsl(var(--paper))] to-[hsl(var(--teal-deep)/0.06)]">
       <article className="max-w-3xl mx-auto">
