@@ -1,6 +1,6 @@
 import { useState, useEffect } from "react";
 import { motion } from "framer-motion";
-import { Eye, EyeOff, Loader2, CheckCircle2, Zap } from "lucide-react";
+import { Eye, EyeOff, Loader2, CheckCircle2, Zap, AlertTriangle } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -8,47 +8,101 @@ import { useToast } from "@/hooks/use-toast";
 import { supabase } from "@/integrations/supabase/client";
 import { useNavigate, Link } from "@tanstack/react-router";
 
+type SessionState = "checking" | "valid" | "invalid";
+
 const ResetPassword = () => {
   const [password, setPassword] = useState("");
   const [confirm, setConfirm] = useState("");
   const [showPass, setShowPass] = useState(false);
   const [loading, setLoading] = useState(false);
   const [done, setDone] = useState(false);
-  const [validSession, setValidSession] = useState(false);
+  const [sessionState, setSessionState] = useState<SessionState>("checking");
+  const [errorMsg, setErrorMsg] = useState<string>("");
   const { toast } = useToast();
   const navigate = useNavigate();
 
   useEffect(() => {
-    // Check if this is a valid recovery session
-    supabase.auth.getSession().then(({ data: { session } }) => {
-      if (session) setValidSession(true);
+    let cancelled = false;
+    let recoveryFlow = false;
+
+    // Detect Supabase error params in URL (expired/invalid links arrive here)
+    const hash = typeof window !== "undefined" ? window.location.hash : "";
+    const search = typeof window !== "undefined" ? window.location.search : "";
+    const params = new URLSearchParams(
+      hash.startsWith("#") ? hash.slice(1) : search.startsWith("?") ? search.slice(1) : ""
+    );
+    const urlError = params.get("error_description") || params.get("error");
+    if (urlError) {
+      setErrorMsg(decodeURIComponent(urlError).replace(/\+/g, " "));
+      setSessionState("invalid");
+      return;
+    }
+
+    const { data: { subscription } } = supabase.auth.onAuthStateChange((event, session) => {
+      if (cancelled) return;
+      if (event === "PASSWORD_RECOVERY") {
+        recoveryFlow = true;
+        setSessionState("valid");
+      } else if (event === "SIGNED_OUT") {
+        if (!done) setSessionState("invalid");
+      } else if (event === "SIGNED_IN" && session && !recoveryFlow && sessionState === "checking") {
+        // Non-recovery session landing here is not a valid reset context
+        setSessionState("invalid");
+      }
     });
-    // Listen for the recovery event
-    const { data: { subscription } } = supabase.auth.onAuthStateChange((event) => {
-      if (event === "PASSWORD_RECOVERY") setValidSession(true);
-    });
-    return () => subscription.unsubscribe();
+
+    // Fallback check after auth library has a chance to parse the URL
+    const timer = setTimeout(async () => {
+      if (cancelled) return;
+      const { data: { session } } = await supabase.auth.getSession();
+      setSessionState((prev) => {
+        if (prev !== "checking") return prev;
+        return session && recoveryFlow ? "valid" : "invalid";
+      });
+      if (!session) setErrorMsg("This password reset link is invalid or has expired.");
+    }, 1200);
+
+    return () => {
+      cancelled = true;
+      clearTimeout(timer);
+      subscription.unsubscribe();
+    };
   }, []);
 
   const handleReset = async (e: React.FormEvent) => {
     e.preventDefault();
+    if (sessionState !== "valid") return;
     if (password !== confirm) {
       toast({ title: "Passwords don't match", variant: "destructive" });
       return;
     }
-    if (password.length < 6) {
-      toast({ title: "Password must be at least 6 characters", variant: "destructive" });
+    if (password.length < 8) {
+      toast({ title: "Password must be at least 8 characters", variant: "destructive" });
       return;
     }
     setLoading(true);
     try {
       const { error } = await supabase.auth.updateUser({ password });
       if (error) throw error;
+
       setDone(true);
-      toast({ title: "Password updated!", description: "You can now sign in with your new password." });
-      setTimeout(() => navigate({ to: "/auth" as any }), 2500);
+      // Rotate/clear the recovery session — force a fresh login with the new password
+      await supabase.auth.signOut();
+
+      toast({
+        title: "Password updated",
+        description: "Please sign in with your new password.",
+      });
+      setTimeout(() => navigate({ to: "/auth" as any, replace: true }), 1800);
     } catch (err: any) {
-      toast({ title: "Error", description: err.message, variant: "destructive" });
+      const msg = err?.message || "Could not update password. The reset link may have expired.";
+      setErrorMsg(msg);
+      toast({ title: "Reset failed", description: msg, variant: "destructive" });
+      // If Supabase rejected the token, lock the form
+      if (/expired|invalid|token|session/i.test(msg)) {
+        await supabase.auth.signOut().catch(() => {});
+        setSessionState("invalid");
+      }
     } finally {
       setLoading(false);
     }
@@ -82,11 +136,24 @@ const ResetPassword = () => {
               <p className="font-display text-xl text-foreground">PASSWORD UPDATED</p>
               <p className="text-sm text-muted-foreground">Redirecting you to sign in...</p>
             </div>
-          ) : !validSession ? (
+          ) : sessionState === "checking" ? (
+            <div className="text-center py-6 space-y-3">
+              <Loader2 className="h-6 w-6 animate-spin text-foreground mx-auto" />
+              <p className="text-sm text-muted-foreground">Verifying your reset link…</p>
+            </div>
+          ) : sessionState === "invalid" ? (
             <div className="text-center py-4 space-y-3">
-              <p className="text-muted-foreground text-sm">This link is invalid or has expired.</p>
+              <div className="w-12 h-12 rounded-full bg-destructive/10 border border-destructive/30 flex items-center justify-center mx-auto">
+                <AlertTriangle className="h-6 w-6 text-destructive" />
+              </div>
+              <p className="font-display text-lg text-foreground">LINK INVALID OR EXPIRED</p>
+              <p className="text-muted-foreground text-sm">
+                {errorMsg || "This password reset link is no longer valid. Please request a new one."}
+              </p>
               <Link to="/auth">
-                <Button className="bg-foreground text-background hover:bg-foreground/90 w-full">Go to Sign In</Button>
+                <Button className="bg-foreground text-background hover:bg-foreground/90 w-full">
+                  Back to Sign In
+                </Button>
               </Link>
             </div>
           ) : (
@@ -99,7 +166,7 @@ const ResetPassword = () => {
                     type={showPass ? "text" : "password"}
                     placeholder="••••••••"
                     required
-                    minLength={6}
+                    minLength={8}
                     className="bg-secondary border-border pr-10"
                     value={password}
                     onChange={(e) => setPassword(e.target.value)}
@@ -116,6 +183,7 @@ const ResetPassword = () => {
                   type="password"
                   placeholder="••••••••"
                   required
+                  minLength={8}
                   className="bg-secondary border-border mt-1"
                   value={confirm}
                   onChange={(e) => setConfirm(e.target.value)}
