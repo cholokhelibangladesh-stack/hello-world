@@ -773,19 +773,19 @@ const Index = () => {
 
                 <div className="flex lg:flex-col justify-between gap-4 lg:py-2">
                   <div className="text-xs font-mono tracking-[0.2em] text-white/50 self-start">
-                    {String(scoutIndex + 1).padStart(2, "0")} OF {String(verifiedScouts.length).padStart(2, "0")} //
+                    {String(scoutIndex + 1).padStart(2, "0")} {T.of} {String(verifiedScouts.length).padStart(2, "0")} //
                   </div>
                   <div className="flex lg:flex-col gap-3 lg:gap-2 lg:mt-auto w-full">
                     <button onClick={prev}
                       className="group flex-1 flex items-center justify-between gap-3 px-4 py-4 rounded-xl border transition-colors hover:bg-white/5"
                       style={{ borderColor: "hsl(var(--green) / 0.2)" }}>
                       <ArrowLeft className="h-4 w-4 text-white/70 group-hover:text-white transition-colors" />
-                      <span className="text-sm font-medium text-white/80 group-hover:text-white">Previous</span>
+                      <span className="text-sm font-medium text-white/80 group-hover:text-white">{T.previous}</span>
                     </button>
                     <button onClick={next}
                       className="group flex-1 flex items-center justify-between gap-3 px-4 py-4 rounded-xl border transition-colors hover:bg-white/5"
                       style={{ borderColor: "hsl(var(--green) / 0.2)" }}>
-                      <span className="text-sm font-medium text-white/80 group-hover:text-white">Next</span>
+                      <span className="text-sm font-medium text-white/80 group-hover:text-white">{T.next}</span>
                       <ArrowRight className="h-4 w-4 text-white/70 group-hover:text-white transition-colors" />
                     </button>
                   </div>
