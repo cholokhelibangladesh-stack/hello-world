@@ -71,7 +71,7 @@ const FloatingHeader = () => {
         </Link>
 
         {/* CENTER: Pill nav (desktop) */}
-        <nav className={`pointer-events-auto hidden md:flex absolute left-1/2 -translate-x-1/2 items-center gap-1 px-2 h-11 rounded-full ${bgPill} backdrop-blur-xl ring-1 ${ring} shadow-lg shadow-black/10`}>
+        <nav className={`pointer-events-auto hidden lg:flex absolute left-1/2 -translate-x-1/2 items-center gap-1 px-2 h-11 rounded-full ${bgPill} backdrop-blur-xl ring-1 ${ring} shadow-lg shadow-black/10`}>
           {navLinks.map((l) => (
             <Link key={l.to} to={l.to as any} activeOptions={{ exact: true }} className={pill}>
               {l.label}
@@ -129,7 +129,7 @@ const FloatingHeader = () => {
           <button
             onClick={() => setOpen((o) => !o)}
             aria-label={t("nav.menu")}
-            className={`md:hidden inline-flex items-center justify-center h-9 w-9 rounded-full ${bgChip} backdrop-blur-md ring-1 ${fg} transition-colors`}
+            className={`lg:hidden inline-flex items-center justify-center h-9 w-9 rounded-full ${bgChip} backdrop-blur-md ring-1 ${fg} transition-colors`}
           >
             {open ? <X className="h-4 w-4" /> : <Menu className="h-4 w-4" />}
           </button>
@@ -138,7 +138,7 @@ const FloatingHeader = () => {
 
       {/* MOBILE: Dropdown panel */}
       {open && (
-        <div className={`md:hidden pointer-events-auto mx-4 mt-3 rounded-2xl ${onDark ? "bg-black/55" : "bg-white/85"} backdrop-blur-xl ring-1 ${ring} shadow-lg shadow-black/20 p-2`}>
+        <div className={`lg:hidden pointer-events-auto mx-4 mt-3 rounded-2xl ${onDark ? "bg-black/55" : "bg-white/85"} backdrop-blur-xl ring-1 ${ring} shadow-lg shadow-black/20 p-2`}>
           {navLinks.map((l) => (
             <Link
               key={l.to}
