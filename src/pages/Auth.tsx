@@ -371,6 +371,24 @@ const Auth = () => {
                     <option value="other">Other</option>
                   </select>
                 </div>
+                <div>
+                  <Label htmlFor="dob" className="text-sm text-muted-foreground">Date of Birth</Label>
+                  <Input
+                    id="dob"
+                    type="date"
+                    required
+                    max={new Date().toISOString().split("T")[0]}
+                    className="bg-secondary border-border mt-1"
+                    value={formDob}
+                    onChange={(e) => setFormDob(e.target.value)}
+                  />
+                  {age !== null && age >= 0 && age < 13 && (
+                    <p className="text-xs text-destructive mt-1">You must be at least 13 to register.</p>
+                  )}
+                  {isMinor && age !== null && age >= 13 && (
+                    <p className="text-xs text-muted-foreground mt-1">Since you are under 18, parental consent is required below.</p>
+                  )}
+                </div>
               </>
             )}
             <div>
@@ -398,10 +416,67 @@ const Auth = () => {
             {!isLogin && selectedRole === "player" && (
               <div className="hidden" />
             )}
+            {!isLogin && isMinor && age !== null && age >= 13 && (
+              <div className="space-y-3 p-4 rounded-xl border border-border bg-secondary/60">
+                <p className="text-sm font-semibold text-foreground">Parental / Guardian Consent</p>
+                <div>
+                  <Label htmlFor="guardianName" className="text-sm text-muted-foreground">Parent / Guardian Full Name</Label>
+                  <Input
+                    id="guardianName"
+                    placeholder="Guardian's full name"
+                    required
+                    className="bg-background border-border mt-1"
+                    value={guardianName}
+                    onChange={(e) => setGuardianName(e.target.value)}
+                  />
+                </div>
+                <div>
+                  <Label htmlFor="guardianEmail" className="text-sm text-muted-foreground">Parent / Guardian Email</Label>
+                  <Input
+                    id="guardianEmail"
+                    type="email"
+                    placeholder="guardian@example.com"
+                    required
+                    className="bg-background border-border mt-1"
+                    value={guardianEmail}
+                    onChange={(e) => setGuardianEmail(e.target.value)}
+                  />
+                </div>
+                <label className="flex items-start gap-2 text-sm text-foreground/85 cursor-pointer">
+                  <input
+                    type="checkbox"
+                    className="mt-1 h-4 w-4 rounded border-border accent-foreground"
+                    checked={parentalConsent}
+                    onChange={(e) => setParentalConsent(e.target.checked)}
+                    required
+                  />
+                  <span>
+                    I am the parent or legal guardian of this Minor and I provide my explicit consent
+                    for their registration and the processing of their data in accordance with the{" "}
+                    <Link to="/privacy-policy" className="underline font-medium">Privacy Policy</Link>.
+                  </span>
+                </label>
+              </div>
+            )}
+            {!isLogin && (
+              <label className="flex items-start gap-2 text-sm text-foreground/85 cursor-pointer">
+                <input
+                  type="checkbox"
+                  className="mt-1 h-4 w-4 rounded border-border accent-foreground"
+                  checked={agreePrivacy}
+                  onChange={(e) => setAgreePrivacy(e.target.checked)}
+                  required
+                />
+                <span>
+                  I have read and agree to the{" "}
+                  <Link to="/privacy-policy" className="underline font-medium" target="_blank">Privacy Policy</Link>.
+                </span>
+              </label>
+            )}
             <Button
               type="submit"
-              disabled={loading}
-              className="w-full bg-foreground text-background font-bold hover:bg-foreground/90 transition-all duration-300"
+              disabled={loading || (!isLogin && !agreePrivacy) || (!isLogin && isMinor && !parentalConsent)}
+              className="w-full bg-foreground text-background font-bold hover:bg-foreground/90 transition-all duration-300 disabled:opacity-50"
             >
               {loading ? <Loader2 className="h-4 w-4 animate-spin" /> : isLogin ? "Sign In" : "Create Account"}
             </Button>
