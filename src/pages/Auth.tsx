@@ -9,6 +9,7 @@ import { useToast } from "@/hooks/use-toast";
 import { useAuth } from "@/hooks/useAuth";
 import { supabase } from "@/integrations/supabase/client";
 import CholoKheliMark from "@/components/CholoKheliMark";
+import { useLanguage } from "@/i18n/LanguageProvider";
 
 type Role = "player" | "scout";
 type Sport = "football" | "cricket";
