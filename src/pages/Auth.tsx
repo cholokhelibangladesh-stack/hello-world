@@ -221,6 +221,28 @@ const Auth = () => {
         });
       } catch {}
 
+      // Upload stashed birth certificate, if present
+      const bcData = sessionStorage.getItem("pendingBirthCertData");
+      const bcName = sessionStorage.getItem("pendingBirthCertName") || "birth_certificate";
+      const bcType = sessionStorage.getItem("pendingBirthCertType") || "application/octet-stream";
+      if (bcData && pendingRole === "player") {
+        try {
+          const res = await fetch(bcData);
+          const blob = await res.blob();
+          const ext = (bcName.split(".").pop() || "bin").toLowerCase();
+          const path = `${user.id}/birth_certificate_${Date.now()}.${ext}`;
+          const { error: upErr } = await supabase.storage.from("documents").upload(path, blob, { upsert: true, contentType: bcType });
+          if (!upErr) {
+            const { data: { publicUrl } } = supabase.storage.from("documents").getPublicUrl(path);
+            await supabase.from("documents").delete().eq("user_id", user.id).eq("type", "birth_certificate");
+            await supabase.from("documents").insert({ user_id: user.id, type: "birth_certificate", url: publicUrl, name: bcName } as any);
+          }
+        } catch { /* ignore — user can re-upload from dashboard */ }
+        sessionStorage.removeItem("pendingBirthCertData");
+        sessionStorage.removeItem("pendingBirthCertName");
+        sessionStorage.removeItem("pendingBirthCertType");
+      }
+
       localStorage.removeItem("pendingRole");
       localStorage.removeItem("pendingSport");
       localStorage.removeItem("pendingPhone");
