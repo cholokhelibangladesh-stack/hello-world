@@ -811,25 +811,25 @@ const PlayerDashboard = () => {
                         <div className="bg-card border border-border rounded-xl p-6">
                           <div className="flex items-center gap-3 mb-4">
                             <CreditCard className="h-5 w-5 text-primary" />
-                            <h2 className="font-display text-xl text-foreground">PAYMENT</h2>
+                            <h2 className="font-display text-xl text-foreground">{t("player.payment" as any)}</h2>
                           </div>
                           <div className="bg-primary/5 border border-primary/20 rounded-lg p-3 mb-4 text-sm text-muted-foreground">
-                            💡 Your video will be uploaded <span className="text-foreground font-medium">only after</span> payment is confirmed.
+                            💡 {t("player.payHint" as any)}
                           </div>
                           <div className="flex items-center justify-between bg-secondary rounded-lg p-4 mb-4">
                             <div>
-                              <p className="text-foreground font-medium">Participation Fee</p>
-                              <p className="text-xs text-muted-foreground">One-time payment via bKash</p>
+                              <p className="text-foreground font-medium">{t("player.fee" as any)}</p>
+                              <p className="text-xs text-muted-foreground">{t("player.feeSub" as any)}</p>
                             </div>
                             <span className="font-display text-3xl text-primary">৳100</span>
                           </div>
                           <div className="mb-4">
-                            <Label className="text-sm text-muted-foreground">bKash Number</Label>
+                            <Label className="text-sm text-muted-foreground">{t("player.bkashNumber" as any)}</Label>
                             <Input placeholder="01XXXXXXXXX" className="mt-1 bg-secondary border-border" value={bkashNumber} onChange={(e) => setBkashNumber(e.target.value)} />
                           </div>
                           <Button className="w-full bg-primary text-primary-foreground font-bold hover:bg-primary/90" onClick={handlePayment} disabled={paying || !bkashNumber || !videoFile}>
                             {paying ? <Loader2 className="h-4 w-4 animate-spin mr-2" /> : null}
-                            {paying ? "Uploading & Processing..." : "Pay with bKash & Upload Video"}
+                            {paying ? t("player.uploadingProcessing" as any) : t("player.payWithBkash" as any)}
                           </Button>
                         </div>
                       )}
