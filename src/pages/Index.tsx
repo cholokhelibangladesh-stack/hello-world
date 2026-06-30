@@ -707,12 +707,12 @@ const Index = () => {
                   <div className="absolute top-0 inset-x-0 h-0.5" style={{ background: "linear-gradient(90deg, transparent, hsl(var(--green) / 0.6), transparent)" }} />
                   <div className="flex items-center gap-2 mb-4">
                     <Shield className="h-4 w-4" style={{ color: "hsl(var(--green))" }} />
-                    <span className="text-xs font-bold tracking-widest uppercase" style={{ color: "hsl(var(--green))" }}>Scout Dashboard</span>
+                    <span className="text-xs font-bold tracking-widest uppercase" style={{ color: "hsl(var(--green))" }}>{T.scoutDashboard}</span>
                   </div>
                   {[
-                    { name: "Rafiqul Islam", pos: "Midfielder",  score: 91 },
-                    { name: "Nusrat Jahan",  pos: "Forward",     score: 87 },
-                    { name: "Tanjim Ahmed",  pos: "All-rounder", score: 84 },
+                    { name: "Rafiqul Islam", pos: T.midfielder,  score: 91 },
+                    { name: "Nusrat Jahan",  pos: T.forward,     score: 87 },
+                    { name: "Tanjim Ahmed",  pos: T.allRounder,  score: 84 },
                   ].map((p, j) => (
                     <motion.div key={p.name}
                       initial={{ opacity: 0, x: -20 }} whileInView={{ opacity: 1, x: 0 }}
@@ -729,7 +729,7 @@ const Index = () => {
                       </div>
                       <div className="text-sm font-bold" style={{ color: "hsl(var(--green))" }}>{p.score}</div>
                       <div className="text-[9px] px-2 py-1 rounded-full font-semibold"
-                        style={{ background: "hsl(var(--green) / 0.12)", color: "hsl(var(--green))" }}>★ Shortlisted</div>
+                        style={{ background: "hsl(var(--green) / 0.12)", color: "hsl(var(--green))" }}>{T.shortlisted}</div>
                     </motion.div>
                   ))}
                 </motion.div>
