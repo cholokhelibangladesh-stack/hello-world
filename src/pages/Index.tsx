@@ -456,7 +456,7 @@ const Index = () => {
                   className="font-medium text-base px-9 py-6 rounded-full"
                   style={{ background: "hsl(var(--teal-deep))", color: "hsl(var(--primary-foreground))" }}
                 >
-                  Open Dashboard <ArrowRight className="ml-2 h-4 w-4" />
+                  {T.openDashboard} <ArrowRight className="ml-2 h-4 w-4" />
                 </Button>
               </Link>
             ) : (
