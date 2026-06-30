@@ -99,6 +99,26 @@ const Auth = () => {
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
+    if (!isLogin) {
+      if (!formDob) {
+        toast({ title: "Date of birth required", description: "Please enter your date of birth.", variant: "destructive" });
+        return;
+      }
+      if (age === null || age < 13) {
+        toast({ title: "Not eligible", description: "You must be at least 13 years old to register.", variant: "destructive" });
+        return;
+      }
+      if (!agreePrivacy) {
+        toast({ title: "Privacy agreement required", description: "You must agree to the Privacy Policy to continue.", variant: "destructive" });
+        return;
+      }
+      if (isMinor) {
+        if (!guardianName.trim() || !guardianEmail.trim() || !parentalConsent) {
+          toast({ title: "Parental consent required", description: "Parent/Guardian name, email, and consent are required for users under 18.", variant: "destructive" });
+          return;
+        }
+      }
+    }
     setLoading(true);
     try {
       if (isLogin) {
