@@ -322,10 +322,10 @@ const Auth = () => {
           <form onSubmit={handleSubmit} className="space-y-4">
             {!isLogin && (
               <div>
-                <Label htmlFor="name" className="text-sm text-muted-foreground">Full Name</Label>
+                <Label htmlFor="name" className="text-sm text-muted-foreground">{t("auth.fullName")}</Label>
                 <Input
                   id="name"
-                  placeholder="Your full name"
+                  placeholder={t("auth.fullNamePh")}
                   required
                   className="bg-secondary border-border mt-1"
                   value={formName}
@@ -334,11 +334,11 @@ const Auth = () => {
               </div>
             )}
             <div>
-              <Label htmlFor="email" className="text-sm text-muted-foreground">Email</Label>
+              <Label htmlFor="email" className="text-sm text-muted-foreground">{t("auth.email")}</Label>
               <Input
                 id="email"
                 type="email"
-                placeholder="you@example.com"
+                placeholder={t("auth.emailPh")}
                 required
                 className="bg-secondary border-border mt-1"
                 value={formEmail}
