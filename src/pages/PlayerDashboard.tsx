@@ -793,7 +793,7 @@ const PlayerDashboard = () => {
                       {!videoId && videoFile && (
                         <div className="space-y-2">
                           {!birthCertUrl && (
-                            <p className="text-xs text-destructive text-center">⚠ Upload your birth certificate above before saving.</p>
+                            <p className="text-xs text-destructive text-center">{t("player.uploadBCFirst" as any)}</p>
                           )}
                           <Button
                             onClick={handleUpload}
@@ -801,7 +801,7 @@ const PlayerDashboard = () => {
                             className="w-full bg-primary text-primary-foreground font-bold hover:bg-primary/90 disabled:opacity-50"
                           >
                             {uploading ? <Loader2 className="h-4 w-4 animate-spin mr-2" /> : <Upload className="h-4 w-4 mr-2" />}
-                            Save Details & Proceed to Payment
+                            {t("player.saveDetails" as any)}
                           </Button>
                         </div>
                       )}
