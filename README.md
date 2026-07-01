@@ -123,12 +123,35 @@ be touched from:
 Module-scope reads such as `const origin = window.location.origin;`
 at the top of a file are forbidden and will fail CI.
 
+### Browser-only npm packages
+
+Some libraries touch `window` / `document` at import time and cannot be
+loaded during SSR (`html2canvas`, `jspdf`, `jspdf-autotable`,
+`html-to-image`, `dom-to-image*`, `canvas-confetti`, `quill` /
+`react-quill`, `tinymce`, `codemirror`, `monaco-editor`, `chart.js`,
+`swiper`, `leaflet`, `mapbox-gl`, `hls.js`, `video.js`, ...).
+
+Never import them statically at the top of a file. Load them dynamically
+inside the handler that actually needs them:
+
+```ts
+const downloadPdf = async () => {
+  const { default: jsPDF } = await import("jspdf");
+  const doc = new jsPDF();
+  // ...
+};
+```
+
+Type-only imports (`import type { jsPDF } from "jspdf"`) are allowed —
+they are erased at build time.
+
 ### Automated enforcement
 
 Two scripts back these rules and run in CI (`.github/workflows/ssr-check.yml`):
 
 ```sh
-# Scans src/ for module-scope window/document/localStorage/... reads.
+# Scans src/ for module-scope browser-global reads AND module-scope
+# imports of known browser-only libraries.
 node scripts/check-ssr-leaks.mjs
 
 # Runs the scan, then the production build, then verifies the SSR
