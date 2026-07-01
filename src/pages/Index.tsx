@@ -1,4 +1,4 @@
-import { useState, useEffect, useRef } from "react";
+import React, { useState, useEffect, useRef } from "react";
 import { motion, AnimatePresence, useScroll, useTransform, useInView, useMotionValue, useMotionTemplate, useSpring } from "framer-motion";
 import { Link } from "@tanstack/react-router";
 import {
@@ -208,10 +208,10 @@ function Counter({ target, suffix = "" }: { target: number; suffix?: string }) {
 }
 
 /* ── Scroll-reveal ── */
-function Reveal({ children, delay = 0, className = "", direction = "up" }: {
+const Reveal = React.forwardRef<HTMLDivElement, {
   children: React.ReactNode; delay?: number; className?: string; direction?: "up" | "left" | "right";
-}) {
-  const ref = useRef(null);
+}>(function Reveal({ children, delay = 0, className = "", direction = "up" }, _forwardedRef) {
+  const ref = useRef<HTMLDivElement>(null);
   const inView = useInView(ref, { once: true, margin: "-8% 0px" });
   const initial = direction === "left" ? { opacity: 0, x: -50 } : direction === "right" ? { opacity: 0, x: 50 } : { opacity: 0, y: 50 };
   return (
@@ -220,10 +220,10 @@ function Reveal({ children, delay = 0, className = "", direction = "up" }: {
       {children}
     </motion.div>
   );
-}
+});
 
 /* ── Scout carousel card with parallax shine + smooth fade ── */
-function ScoutCarouselCard({ scout, defaultBio }: { scout: ScoutProfile; defaultBio: string }) {
+const ScoutCarouselCard = React.forwardRef<HTMLDivElement, { scout: ScoutProfile; defaultBio: string }>(function ScoutCarouselCard({ scout, defaultBio }, _forwardedRef) {
   const ref = useRef<HTMLDivElement>(null);
   const mx = useMotionValue(50);
   const my = useMotionValue(25);
@@ -297,7 +297,7 @@ function ScoutCarouselCard({ scout, defaultBio }: { scout: ScoutProfile; default
       </div>
     </motion.div>
   );
-}
+});
 
 /* ════════════════════════════════════════════
    PAGE
