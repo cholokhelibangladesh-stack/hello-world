@@ -25,6 +25,7 @@ const Footer = () => {
               <Link to="/safe-scouting" className="text-sm text-muted-foreground hover:text-primary transition-colors">{t("nav.safeScouting")}</Link>
               <Link to="/mission" className="text-sm text-muted-foreground hover:text-primary transition-colors">{t("footer.ourMission")}</Link>
               <Link to="/faq" className="text-sm text-muted-foreground hover:text-primary transition-colors">{t("footer.faqHelpline")}</Link>
+              <Link to="/privacy-policy" className="text-sm text-muted-foreground hover:text-primary transition-colors">{t("cookie.privacyPolicy")}</Link>
             </div>
           </div>
           <div>
