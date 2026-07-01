@@ -71,3 +71,72 @@ Yes, you can!
 To connect a domain, navigate to Project > Settings > Domains and click Connect Domain.
 
 Read more here: [Setting up a custom domain](https://docs.lovable.dev/features/custom-domain#custom-domain)
+
+## Client / Server Boundaries (SSR rules)
+
+This project is a **TanStack Start** app that server-renders on Cloudflare
+Workers. Every file under `src/` is isomorphic by default — it runs on the
+server during SSR and on the client during navigation. Break the rules
+below and requests return HTTP 500 the moment a page is rendered.
+
+### The `"use client"` rule
+
+**Do not add `"use client"` to any file in this repo.** TanStack Start is
+not a React Server Components framework; the directive has no meaning
+here and Rollup will emit a warning ("Module level directives cause
+errors when bundled"). Client / server separation is enforced by
+**boundary APIs**, not by a top-of-file string.
+
+Third-party packages that ship their own `"use client"` (`@radix-ui/*`,
+`@tanstack/react-router`, `sonner`, `next-themes`, etc.) are safe — the
+ignored-directive warning during bundling is expected and can be
+disregarded.
+
+### Server-only code
+
+Anything that touches secrets, environment variables, service-role keys,
+the filesystem, or privileged APIs MUST live behind a real boundary:
+
+| API | Use for |
+| --- | --- |
+| `createServerFn().handler()` | RPC-style reads/writes called from components |
+| `createServerOnlyFn()` | Server utility helpers |
+| `*.server.ts(x)` module | Server-only helpers (blocked from client bundles) |
+| `src/routes/api/**` | Raw HTTP endpoints (webhooks, cron, public APIs) |
+
+Reading `process.env.X` at module scope of a shared file is a bug —
+values may be `undefined` at request time on Workers. Read them **inside
+the handler body**.
+
+### Client-only code
+
+Browser globals — `window`, `document`, `localStorage`,
+`sessionStorage`, `navigator` — do not exist during SSR. They may only
+be touched from:
+
+- inside a `useEffect` callback
+- inside an event handler (`onClick`, `onSubmit`, ...)
+- inside a `<ClientOnly>` render tree
+- behind a `typeof window !== "undefined"` guard, when the value is
+  read at call time (not at module load time)
+
+Module-scope reads such as `const origin = window.location.origin;`
+at the top of a file are forbidden and will fail CI.
+
+### Automated enforcement
+
+Two scripts back these rules and run in CI (`.github/workflows/ssr-check.yml`):
+
+```sh
+# Scans src/ for module-scope window/document/localStorage/... reads.
+node scripts/check-ssr-leaks.mjs
+
+# Runs the scan, then the production build, then verifies the SSR
+# entry (dist/server/index.mjs) exists. Fails the pipeline on any
+# missing-export error or server-bundle failure.
+bun run check:ssr
+```
+
+Run `bun run check:ssr` locally before opening a PR that changes
+component logic, routing, or dependencies.
+
