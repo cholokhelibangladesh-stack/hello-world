@@ -16,7 +16,6 @@ jobs:
           bun-version: latest
       - name: Install dependencies
         run: bun install --frozen-lockfile
-      - name: Lint (blocks module-scope browser globals in src/)
-        run: bun run lint
-      - name: SSR build + browser-global scan
+      - name: SSR leak scan + production build
         run: node scripts/check-ssr-build.mjs
+

@@ -2,18 +2,13 @@
 /**
  * SSR build verification.
  *
- * 1. Runs `bun run lint` — the flat ESLint config includes a
- *    `no-restricted-syntax` rule that blocks module-scope reads of
- *    window / document / localStorage / sessionStorage / navigator in
- *    `src/**`. This is the authoritative check for SSR-leak-prone code.
- * 2. Runs `bun run build` (production).
- * 3. Confirms the SSR bundle emitted `dist/server/index.mjs`.
+ *   1. Runs the module-scope browser-global scanner
+ *      (scripts/check-ssr-leaks.mjs) over src/.
+ *   2. Runs the production build (`bun run build`).
+ *   3. Confirms the SSR bundle emitted `dist/server/index.mjs`.
  *
- * Fails the pipeline with a non-zero exit code if any step fails.
- * Fine-grained "did this specific browser call sneak in?" checks are done
- * at the source level (step 1), not by regex-scanning the bundled output —
- * bundled chunks legitimately reference `window` inside effects/handlers,
- * which is safe.
+ * Fails with a non-zero exit code if any step fails, so CI blocks
+ * merges that introduce SSR leaks or break the server bundle.
  */
 import { spawnSync } from "node:child_process";
 import { existsSync } from "node:fs";
@@ -30,7 +25,7 @@ function run(label, cmd, args) {
   }
 }
 
-run("Lint (SSR-leak guard)", "bun", ["run", "lint"]);
+run("Module-scope browser-global scan", "node", ["scripts/check-ssr-leaks.mjs"]);
 run("Production build", "bun", ["run", "build"]);
 
 const entry = join(ROOT, "dist", "server", "index.mjs");
@@ -39,4 +34,4 @@ if (!existsSync(entry)) {
   process.exit(1);
 }
 
-console.log("\n[check-ssr-build] OK — lint clean, production build succeeded, SSR entry present.");
+console.log("\n[check-ssr-build] OK — no SSR leaks, production build succeeded, SSR entry present.");

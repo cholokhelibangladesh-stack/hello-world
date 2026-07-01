@@ -4,18 +4,13 @@ import reactHooks from "eslint-plugin-react-hooks";
 import reactRefresh from "eslint-plugin-react-refresh";
 import tseslint from "typescript-eslint";
 
-// Block module-scope reads of browser-only globals in src/. These crash SSR
-// on Cloudflare Workers because there is no window/document at request time.
-// Allowed inside functions (useEffect, event handlers, <ClientOnly>, etc.)
-// or behind a `typeof window !== "undefined"` guard.
-const browserGlobalSelectors = ["window", "document", "localStorage", "sessionStorage", "navigator"].flatMap((name) => [
-  `Program > ExpressionStatement > MemberExpression[object.name="${name}"]`,
-  `Program > VariableDeclaration VariableDeclarator > MemberExpression[object.name="${name}"]`,
-  `Program > VariableDeclaration VariableDeclarator > CallExpression > MemberExpression[object.name="${name}"]`,
-]);
+// Note: module-scope browser-global enforcement lives in
+// scripts/check-ssr-leaks.mjs (invoked via `bun run check:ssr`).
+// The scanner tracks brace depth so nested reads inside effects/handlers
+// stay allowed, which is hard to express purely via ESLint AST selectors.
 
 export default tseslint.config(
-  { ignores: ["dist", "node_modules", "src/routeTree.gen.ts", "scripts/**"] },
+  { ignores: ["dist", "node_modules", "src/routeTree.gen.ts"] },
   {
     extends: [js.configs.recommended, ...tseslint.configs.recommended],
     files: ["**/*.{ts,tsx}"],
@@ -33,25 +28,6 @@ export default tseslint.config(
       "@typescript-eslint/no-unused-vars": "off",
     },
   },
-  {
-    files: ["src/**/*.{ts,tsx}"],
-    ignores: [
-      "src/routeTree.gen.ts",
-      "src/integrations/**",
-      "src/**/*.server.ts",
-      "src/**/*.server.tsx",
-      "src/routes/api/**",
-    ],
-    rules: {
-      "no-restricted-syntax": [
-        "error",
-        ...browserGlobalSelectors.map((selector) => ({
-          selector,
-          message:
-            "Do not touch browser globals (window/document/localStorage/sessionStorage/navigator) at module scope — it breaks SSR. Move the read into useEffect, an event handler, <ClientOnly>, or a typeof-window guard.",
-        })),
-      ],
-    },
-  },
 );
+
 
