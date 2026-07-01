@@ -31,6 +31,40 @@ const GLOBALS = ["window", "document", "localStorage", "sessionStorage", "naviga
 const BARE = new RegExp(`(^|[^\\w$.])(${GLOBALS.join("|")})\\s*(\\.|\\[|\\()`);
 const GUARD = /typeof\s+(window|document|localStorage|sessionStorage|navigator)\s*[!=]==?\s*["']undefined["']/;
 
+/**
+ * Packages that touch the DOM, `window`, or other browser-only APIs at
+ * import time (or on first construction from module scope). Importing
+ * these statically from a file that gets included in the SSR bundle
+ * crashes the Worker at request time. Use a dynamic `await import()`
+ * inside a client-only handler (event handler, useEffect, etc.) instead.
+ */
+const BROWSER_ONLY_LIBS = [
+  "html2canvas",
+  "jspdf",
+  "jspdf-autotable",
+  "html-to-image",
+  "dom-to-image",
+  "dom-to-image-more",
+  "canvas-confetti",
+  "quill",
+  "react-quill",
+  "tinymce",
+  "@tinymce/tinymce-react",
+  "codemirror",
+  "monaco-editor",
+  "@monaco-editor/react",
+  "chart.js",
+  "swiper",
+  "leaflet",
+  "mapbox-gl",
+  "hls.js",
+  "video.js",
+];
+const IMPORT_RX = new RegExp(
+  `^\\s*(?:import\\b[^;]*?from\\s*|import\\s*\\(\\s*|require\\s*\\(\\s*)` +
+    `["']((?:${BROWSER_ONLY_LIBS.map((n) => n.replace(/[/\\-]/g, "\\$&")).join("|")}))(?:/[^"']*)?["']`,
+);
+
 function walk(dir, out = []) {
   for (const name of readdirSync(dir)) {
     const p = join(dir, name);
@@ -97,22 +131,53 @@ for (const file of files) {
       else if (ch === "}") depth = Math.max(0, depth - 1);
     }
     if (depthAtLine !== 0) continue;
+    const imp = cleanLine.match(IMPORT_RX);
+    if (imp) {
+      // A dynamic `await import("jspdf")` inside a function is fine — those
+      // land at depth > 0 and never reach here. Anything at depth 0 is a
+      // static top-level import that ships to the SSR bundle.
+      // Skip pure type-only imports: `import type ... from "pkg"`.
+      if (!/^\s*import\s+type\b/.test(cleanLine)) {
+        violations.push({
+          file: relative(ROOT, file),
+          line: ln + 1,
+          name: imp[1],
+          kind: "lib",
+          text: rawLines[ln].trim(),
+        });
+        continue;
+      }
+    }
     const m = cleanLine.match(BARE);
     if (!m) continue;
     if (GUARD.test(cleanLine)) continue;
-    violations.push({ file: relative(ROOT, file), line: ln + 1, name: m[2], text: rawLines[ln].trim() });
+    violations.push({ file: relative(ROOT, file), line: ln + 1, name: m[2], kind: "global", text: rawLines[ln].trim() });
   }
 }
 
 if (violations.length > 0) {
-  console.error(`\n[check-ssr-leaks] Found ${violations.length} module-scope browser-global read(s) in src/:\n`);
-  for (const v of violations) {
-    console.error(`  ${v.file}:${v.line}  (${v.name})`);
-    console.error(`    ${v.text}`);
+  const globals = violations.filter((v) => v.kind === "global");
+  const libs = violations.filter((v) => v.kind === "lib");
+  console.error(`\n[check-ssr-leaks] Found ${violations.length} SSR leak(s) in src/:\n`);
+  if (globals.length) {
+    console.error(`  Module-scope browser-global reads (${globals.length}):`);
+    for (const v of globals) {
+      console.error(`    ${v.file}:${v.line}  (${v.name})`);
+      console.error(`      ${v.text}`);
+    }
+  }
+  if (libs.length) {
+    console.error(`  Module-scope browser-only library imports (${libs.length}):`);
+    for (const v of libs) {
+      console.error(`    ${v.file}:${v.line}  (${v.name})`);
+      console.error(`      ${v.text}`);
+    }
   }
   console.error(
-    `\nFix: move the read into useEffect, an event handler, <ClientOnly>, or wrap it in a\n` +
-    `\`typeof window !== "undefined"\` guard. See README > "Client / Server Boundaries".`,
+    `\nFix globals: move the read into useEffect, an event handler, <ClientOnly>, or a\n` +
+    `\`typeof window !== "undefined"\` guard.\n` +
+    `Fix libs: replace the static import with a dynamic \`await import("<pkg>")\` inside\n` +
+    `a client-only handler (event handler / useEffect). See README > "Client / Server Boundaries".`,
   );
   process.exit(1);
 }
