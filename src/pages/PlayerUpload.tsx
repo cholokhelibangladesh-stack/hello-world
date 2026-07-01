@@ -1,6 +1,6 @@
 import { motion } from "framer-motion";
 import { Upload, Tag, CreditCard, Award, Video, Loader2, Download, FileText, Plus, Flag } from "lucide-react";
-import jsPDF from "jspdf";
+// jspdf is browser-only — dynamic-imported inside the download handlers below.
 import { Button } from "@/components/ui/button";
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
@@ -165,7 +165,8 @@ const PlayerUpload = () => {
     } finally { setReporting(false); }
   };
 
-  const downloadCertificate = () => {
+  const downloadCertificate = async () => {
+    const { default: jsPDF } = await import("jspdf");
     const doc = new jsPDF({ orientation: "landscape", unit: "mm", format: "a4" });
     const w = doc.internal.pageSize.getWidth(); const h = doc.internal.pageSize.getHeight();
     const name = user?.user_metadata?.full_name || "Player";
@@ -192,7 +193,8 @@ const PlayerUpload = () => {
     doc.save("CholoKheli_Certificate.pdf");
   };
 
-  const downloadInvoice = () => {
+  const downloadInvoice = async () => {
+    const { default: jsPDF } = await import("jspdf");
     const doc = new jsPDF({ orientation: "portrait", unit: "mm", format: "a4" });
     const w = doc.internal.pageSize.getWidth(); const h = doc.internal.pageSize.getHeight();
     const name = user?.user_metadata?.full_name || "Player"; const email = user?.email || "";
