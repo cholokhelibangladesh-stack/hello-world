@@ -4,8 +4,13 @@ import reactHooks from "eslint-plugin-react-hooks";
 import reactRefresh from "eslint-plugin-react-refresh";
 import tseslint from "typescript-eslint";
 
+// Note: module-scope browser-global enforcement lives in
+// scripts/check-ssr-leaks.mjs (invoked via `bun run check:ssr`).
+// The scanner tracks brace depth so nested reads inside effects/handlers
+// stay allowed, which is hard to express purely via ESLint AST selectors.
+
 export default tseslint.config(
-  { ignores: ["dist"] },
+  { ignores: ["dist", "node_modules", "src/routeTree.gen.ts"] },
   {
     extends: [js.configs.recommended, ...tseslint.configs.recommended],
     files: ["**/*.{ts,tsx}"],
@@ -24,3 +29,5 @@ export default tseslint.config(
     },
   },
 );
+
+
