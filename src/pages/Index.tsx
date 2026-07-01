@@ -1,4 +1,4 @@
-import { useState, useEffect, useRef } from "react";
+import React, { useState, useEffect, useRef } from "react";
 import { motion, AnimatePresence, useScroll, useTransform, useInView, useMotionValue, useMotionTemplate, useSpring } from "framer-motion";
 import { Link } from "@tanstack/react-router";
 import {
@@ -297,7 +297,7 @@ const ScoutCarouselCard = React.forwardRef<HTMLDivElement, { scout: ScoutProfile
       </div>
     </motion.div>
   );
-}
+});
 
 /* ════════════════════════════════════════════
    PAGE
