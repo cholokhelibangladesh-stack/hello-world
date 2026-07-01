@@ -380,9 +380,9 @@ const Index = () => {
 
 
 
-        {/* Subtle vertical grid lines for editorial feel */}
+        {/* Subtle vertical grid lines — light mode only */}
         <div
-          className="absolute inset-0 pointer-events-none opacity-[0.05]"
+          className="absolute inset-0 pointer-events-none opacity-[0.05] dark:hidden"
           style={{
             backgroundImage:
               "linear-gradient(to right, hsl(var(--foreground)) 1px, transparent 1px)",
