@@ -86,34 +86,21 @@ const Hero = () => {
             >
               <span
                 className="relative flex items-center justify-between gap-6 rounded-[5px] px-6 py-3.5 min-w-[280px] overflow-hidden dark:bg-[#0a1620] dark:group-hover:bg-transparent transition-colors"
+                style={{ background: BLUE_GRADIENT }}
               >
-                {/* Light-mode gradient fill: soft candy-blue → deep teal on hover.
-                    Two layers cross-fade so the whole gradient shifts, not just a solid color. */}
+                {/* Hover sheen — subtle horizontal wash that brightens the gradient on hover */}
                 <span
                   aria-hidden
-                  className="absolute inset-0 dark:hidden transition-opacity duration-300 group-hover:opacity-0"
+                  className="pointer-events-none absolute inset-0 opacity-0 transition-opacity duration-300 group-hover:opacity-100"
                   style={{
                     background:
-                      "linear-gradient(90deg, hsl(var(--teal-soft)) 0%, hsl(var(--teal-soft) / 0.55) 55%, hsl(var(--teal-deep) / 0.35) 100%)",
+                      "linear-gradient(90deg, transparent 0%, hsl(var(--teal-soft) / 0.55) 50%, transparent 100%)",
                   }}
                 />
-                <span
-                  aria-hidden
-                  className="absolute inset-0 dark:hidden opacity-0 transition-opacity duration-300 group-hover:opacity-100"
-                  style={{ background: BLUE_GRADIENT }}
-                />
-                <span
-                  className="relative text-[11px] tracking-[0.35em] font-mono uppercase transition-colors
-                    text-[hsl(var(--teal-deep))] group-hover:text-white
-                    dark:text-white dark:group-hover:text-white"
-                >
+                <span className="relative text-[11px] tracking-[0.35em] font-mono uppercase text-white">
                   {t("mission.hero.cta")}
                 </span>
-                <ArrowUpRight
-                  className="relative h-4 w-4 transition-colors
-                    text-[hsl(var(--teal-deep))] group-hover:text-white
-                    dark:text-white dark:group-hover:text-white"
-                />
+                <ArrowUpRight className="relative h-4 w-4 text-white transition-transform duration-300 group-hover:translate-x-0.5 group-hover:-translate-y-0.5" />
               </span>
             </Link>
           </motion.div>
