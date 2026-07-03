@@ -665,9 +665,10 @@ const Index = () => {
           CINEMATIC CTA
       ══════════════════════════════════════════ */}
       <section className="py-24 sm:py-36 relative overflow-hidden surface-ink">
-        {/* Top blend ← previous section (default background under map) */}
-        <div aria-hidden className="pointer-events-none absolute inset-x-0 top-0 h-32 z-[2]"
-          style={{ background: "linear-gradient(to top, transparent 0%, hsl(var(--ink) / 0.65) 45%, hsl(var(--background)) 100%)" }} />
+        {/* Top blend ← previous section (default background under map) — long soft background→ink */}
+        <div aria-hidden className="pointer-events-none absolute inset-x-0 top-0 h-64 z-[2]"
+          style={{ background: "linear-gradient(to top, transparent 0%, hsl(var(--ink) / 0.35) 25%, hsl(var(--background) / 0.55) 55%, hsl(var(--background) / 0.9) 82%, hsl(var(--background)) 100%)" }} />
+
         {/* Cinematic backdrop */}
         <img src={footballerImg.url} alt="" aria-hidden loading="lazy" decoding="async"
           className="absolute inset-0 w-full h-full object-cover opacity-40" />
