@@ -24,6 +24,7 @@ const FloatingHeader = () => {
     { label: t("nav.about"), to: "/mission" },
     { label: t("nav.safeScouting"), to: "/safe-scouting" },
     { label: t("nav.faq"), to: "/faq" },
+    { label: t("nav.privacy"), to: "/privacy-policy" },
   ];
 
   const pathname = useRouterState({ select: (s) => s.location.pathname });
