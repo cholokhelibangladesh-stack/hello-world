@@ -649,28 +649,26 @@ const Index = () => {
             );
           })()}
         </div>
-        {/* Bottom blend → next section (map, default background) — simple transparent→background so ink fades out cleanly */}
-        <div aria-hidden className="pointer-events-none absolute inset-x-0 bottom-0 h-48 z-[1]"
-          style={{ background: "linear-gradient(to bottom, transparent 0%, hsl(var(--ink) / 0.4) 40%, hsl(var(--ink) / 0.85) 80%, hsl(var(--ink)) 100%)" }} />
-
-
       </section>
 
-
+      {/* Physical gradient bridge: scouts (ink) → map (background) */}
+      <div aria-hidden className="relative h-32 sm:h-40"
+        style={{ background: "linear-gradient(to bottom, hsl(var(--ink)) 0%, hsl(var(--background)) 100%)" }} />
 
       {/* ══════════════════════════════════════════
           MAP SECTION
       ══════════════════════════════════════════ */}
       <BangladeshMapTestimonials />
 
+      {/* Physical gradient bridge: map (background) → CTA (ink) */}
+      <div aria-hidden className="relative h-32 sm:h-40"
+        style={{ background: "linear-gradient(to bottom, hsl(var(--background)) 0%, hsl(var(--ink)) 100%)" }} />
 
       {/* ══════════════════════════════════════════
           CINEMATIC CTA
       ══════════════════════════════════════════ */}
       <section className="py-24 sm:py-36 relative overflow-hidden surface-ink">
-        {/* Top blend ← previous section (default background under map) — long soft background→ink */}
-        <div aria-hidden className="pointer-events-none absolute inset-x-0 top-0 h-64 z-[2]"
-          style={{ background: "linear-gradient(to top, transparent 0%, hsl(var(--ink) / 0.35) 25%, hsl(var(--background) / 0.55) 55%, hsl(var(--background) / 0.9) 82%, hsl(var(--background)) 100%)" }} />
+
 
         {/* Cinematic backdrop */}
         <img src={footballerImg.url} alt="" aria-hidden loading="lazy" decoding="async"
