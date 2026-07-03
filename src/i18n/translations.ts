@@ -16,6 +16,7 @@ export const translations = {
     "nav.lightMode": "Light mode",
     "nav.darkMode": "Dark mode",
     "nav.toggleTheme": "Toggle theme",
+    "nav.privacy": "Privacy Policy",
 
     // Footer
     "footer.tagline":
