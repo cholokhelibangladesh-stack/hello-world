@@ -103,7 +103,7 @@ export default function HeroScrollVideo({
   const wrapRef = useRef<HTMLDivElement>(null);
   const pinRef = useRef<HTMLDivElement>(null);
   const canvasRef = useRef<HTMLCanvasElement>(null);
-  const atlasImgRef = useRef<HTMLImageElement | null>(null);
+  const atlasImgsRef = useRef<(HTMLImageElement | null)[]>([null, null]);
   const currentFrameRef = useRef<number>(-1);
   const pendingFrameRef = useRef<number>(-1);
   const rafRef = useRef<number | null>(null);
