@@ -7,11 +7,9 @@ import heroVideo from "@/assets/about-hero.mp4.asset.json";
 import heroPoster from "@/assets/about-hero-form.jpg.asset.json";
 import nahroorPortrait from "@/assets/nahroor-rahman-khan.jpg.asset.json";
 
-/* Shared blue palette (matches homepage `--teal-*` tokens) */
-const BLUE_GRADIENT = "linear-gradient(90deg, #2E7A9E 0%, #B2D5E5 100%)";
-const BLUE_GRADIENT_135 = "linear-gradient(135deg, #2E7A9E 0%, #B2D5E5 100%)";
-const BLUE_ACCENT = "#B2D5E5";
-const BLUE_DEEP = "#2E7A9E";
+/* Blue palette driven by theme tokens — deep teal + candy blue in both modes */
+const BLUE_GRADIENT = "linear-gradient(90deg, hsl(var(--teal-deep)) 0%, hsl(var(--teal-soft)) 100%)";
+const BLUE_GRADIENT_135 = "linear-gradient(135deg, hsl(var(--teal-deep)) 0%, hsl(var(--teal-soft)) 100%)";
 
 /* ------------------------------------------------------------------ */
 /* Hero                                                                */
@@ -20,12 +18,12 @@ const BLUE_DEEP = "#2E7A9E";
 const Hero = () => {
   const { t } = useLanguage();
   return (
-    <section className="relative min-h-[100vh] w-full overflow-hidden bg-[#050505]">
+    <section className="relative min-h-[100vh] w-full overflow-hidden bg-[hsl(var(--paper-deep))]">
       <div
         className="pointer-events-none absolute inset-0 opacity-[0.06]"
         style={{
           backgroundImage:
-            "linear-gradient(to right, #fff 1px, transparent 1px)",
+            "linear-gradient(to right, hsl(var(--foreground)) 1px, transparent 1px)",
           backgroundSize: "16.6667% 100%",
         }}
       />
@@ -38,13 +36,14 @@ const Hero = () => {
           loop
           muted
           playsInline
-          className="h-full w-full object-cover object-right opacity-90"
+          className="h-full w-full object-cover object-right opacity-90 dark:opacity-90"
         />
+        {/* Fade the video into the page background so it feels seamless in both modes */}
         <div
           className="absolute inset-0"
           style={{
             background:
-              "linear-gradient(90deg, #050505 0%, rgba(5,5,5,0.85) 35%, rgba(5,5,5,0.15) 65%, transparent 100%)",
+              "linear-gradient(90deg, hsl(var(--paper-deep)) 0%, hsl(var(--paper-deep) / 0.85) 35%, hsl(var(--paper-deep) / 0.15) 65%, transparent 100%)",
           }}
         />
       </div>
@@ -54,7 +53,7 @@ const Hero = () => {
           initial={{ opacity: 0, y: 24 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.9, ease: [0.22, 1, 0.36, 1] }}
-          className="font-display text-white text-[52px] leading-[1.02] sm:text-[76px] md:text-[104px] md:leading-[0.96] tracking-[-0.02em] font-medium max-w-[10ch]"
+          className="font-display text-foreground text-[52px] leading-[1.02] sm:text-[76px] md:text-[104px] md:leading-[0.96] tracking-[-0.02em] font-medium max-w-[10ch]"
         >
           {t("mission.hero.title")}
         </motion.h1>
@@ -66,7 +65,7 @@ const Hero = () => {
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.9, delay: 0.2 }}
           >
-            <p className="text-white/70 text-sm md:text-[15px] leading-relaxed max-w-md">
+            <p className="text-foreground/75 text-sm md:text-[15px] leading-relaxed max-w-md">
               {t("mission.hero.body")}
             </p>
             <Link
@@ -74,20 +73,20 @@ const Hero = () => {
               className="group mt-6 inline-flex items-center gap-3 rounded-md p-[1px]"
               style={{ background: BLUE_GRADIENT }}
             >
-              <span className="flex items-center justify-between gap-6 rounded-[5px] bg-[#050505] px-6 py-3.5 min-w-[280px] transition-colors group-hover:bg-transparent">
-                <span className="text-[11px] tracking-[0.35em] font-mono uppercase text-white">
+              <span className="flex items-center justify-between gap-6 rounded-[5px] bg-[hsl(var(--paper-deep))] px-6 py-3.5 min-w-[280px] transition-colors group-hover:bg-transparent">
+                <span className="text-[11px] tracking-[0.35em] font-mono uppercase text-foreground">
                   {t("mission.hero.cta")}
                 </span>
-                <ArrowUpRight className="h-4 w-4 text-white" />
+                <ArrowUpRight className="h-4 w-4 text-foreground" />
               </span>
             </Link>
           </motion.div>
         </div>
 
-        <div className="mt-24 md:mt-32 flex items-center gap-3 text-white/60">
+        <div className="mt-24 md:mt-32 flex items-center gap-3 text-foreground/60">
           <span
             className="inline-block h-2 w-2 rounded-full animate-pulse"
-            style={{ backgroundColor: BLUE_ACCENT }}
+            style={{ backgroundColor: "hsl(var(--teal-soft))" }}
           />
           <span className="text-[10px] tracking-[0.4em] uppercase font-mono">
             {t("mission.hero.scroll")}
@@ -99,7 +98,7 @@ const Hero = () => {
 };
 
 /* ------------------------------------------------------------------ */
-/* History (timeline)                                                  */
+/* History                                                             */
 /* ------------------------------------------------------------------ */
 
 const History = () => {
@@ -112,16 +111,16 @@ const History = () => {
   ];
   const [active, setActive] = useState(0);
   return (
-    <section className="relative bg-[#050505] py-28 md:py-36 overflow-hidden">
+    <section className="relative bg-[hsl(var(--paper))] py-28 md:py-36 overflow-hidden">
       <div className="mx-auto max-w-7xl px-6 md:px-16">
         <div className="flex items-baseline justify-between mb-10">
-          <h2 className="font-display text-white text-4xl md:text-5xl tracking-[-0.02em]">
+          <h2 className="font-display text-foreground text-4xl md:text-5xl tracking-[-0.02em]">
             {t("mission.history.title")}
           </h2>
         </div>
 
         <div className="relative mt-16">
-          <div className="absolute left-0 right-0 top-1/2 h-px bg-white/10" />
+          <div className="absolute left-0 right-0 top-1/2 h-px bg-foreground/10" />
           <div
             className="absolute left-0 top-1/2 h-px transition-all duration-500"
             style={{
@@ -142,20 +141,26 @@ const History = () => {
                   <div
                     className="mb-8 h-6 w-6 rounded-full border transition-all"
                     style={{
-                      borderColor: isActive ? BLUE_ACCENT : "rgba(255,255,255,0.25)",
+                      borderColor: isActive
+                        ? "hsl(var(--teal-soft))"
+                        : "hsl(var(--foreground) / 0.25)",
                       transform: isActive ? "scale(1.25)" : "scale(1)",
                       background: isActive ? BLUE_GRADIENT_135 : "transparent",
                     }}
                   />
                   <div
                     className="text-[10px] font-mono tracking-[0.3em] uppercase mb-2"
-                    style={{ color: isActive ? BLUE_ACCENT : "rgba(255,255,255,0.4)" }}
+                    style={{
+                      color: isActive
+                        ? "hsl(var(--teal-deep))"
+                        : "hsl(var(--foreground) / 0.4)",
+                    }}
                   >
                     {h.year}
                   </div>
                   <div
                     className={`font-display text-2xl md:text-3xl tracking-[-0.01em] transition-colors ${
-                      isActive ? "text-white" : "text-white/30"
+                      isActive ? "text-foreground" : "text-foreground/30"
                     }`}
                   >
                     {h.date}
@@ -171,7 +176,7 @@ const History = () => {
           initial={{ opacity: 0, y: 8 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.5 }}
-          className="mt-16 max-w-2xl text-white/70 text-lg leading-relaxed"
+          className="mt-16 max-w-2xl text-foreground/75 text-lg leading-relaxed"
         >
           {HISTORY[active].body}
         </motion.p>
@@ -181,7 +186,7 @@ const History = () => {
 };
 
 /* ------------------------------------------------------------------ */
-/* What We Do — click-to-toggle                                        */
+/* What We Do                                                          */
 /* ------------------------------------------------------------------ */
 
 const WhatWeDo = () => {
@@ -194,17 +199,17 @@ const WhatWeDo = () => {
   const [active, setActive] = useState<number | null>(0);
 
   return (
-    <section className="relative bg-[#050505] py-28 md:py-40 overflow-hidden">
+    <section className="relative bg-[hsl(var(--paper-deep))] py-28 md:py-40 overflow-hidden">
       <div className="mx-auto max-w-7xl px-6 md:px-16">
         <div className="flex items-baseline justify-between mb-16">
-          <h2 className="font-display text-white text-4xl md:text-5xl tracking-[-0.02em]">
+          <h2 className="font-display text-foreground text-4xl md:text-5xl tracking-[-0.02em]">
             {t("mission.what.title")}
           </h2>
         </div>
 
         <div className="grid md:grid-cols-[1fr_1.2fr] gap-16 items-start">
           <div className="md:sticky md:top-32">
-            <p className="text-white/70 text-lg leading-relaxed max-w-md">
+            <p className="text-foreground/75 text-lg leading-relaxed max-w-md">
               {t("mission.what.lead")}
             </p>
           </div>
@@ -213,10 +218,7 @@ const WhatWeDo = () => {
             {WHAT.map((w, i) => {
               const isOpen = i === active;
               return (
-                <div
-                  key={w.title}
-                  className="relative border-t border-white/10 pt-8 pb-2"
-                >
+                <div key={w.title} className="relative border-t border-foreground/10 pt-8 pb-2">
                   <button
                     type="button"
                     onClick={() => setActive(isOpen ? null : i)}
@@ -224,25 +226,27 @@ const WhatWeDo = () => {
                     className="w-full flex items-start justify-between gap-6 text-left group"
                   >
                     <h3
-                      className="font-display text-white text-4xl md:text-6xl tracking-[-0.02em] transition-colors"
+                      className="font-display text-4xl md:text-6xl tracking-[-0.02em] transition-colors"
                       style={{
-                        WebkitTextStroke: isOpen ? "0" : "1px rgba(255,255,255,0.6)",
-                        color: isOpen ? "#fff" : "transparent",
+                        WebkitTextStroke: isOpen ? "0" : "1px hsl(var(--foreground) / 0.6)",
+                        color: isOpen ? "hsl(var(--foreground))" : "transparent",
                       }}
                     >
                       {w.title}
                     </h3>
                     <div
-                      className="mt-3 h-9 w-9 rounded-full flex items-center justify-center border border-white/20 shrink-0 transition-all"
+                      className="mt-3 h-9 w-9 rounded-full flex items-center justify-center border shrink-0 transition-all"
                       style={{
                         background: isOpen ? BLUE_GRADIENT_135 : "transparent",
-                        borderColor: isOpen ? BLUE_ACCENT : "rgba(255,255,255,0.2)",
+                        borderColor: isOpen
+                          ? "hsl(var(--teal-soft))"
+                          : "hsl(var(--foreground) / 0.2)",
                       }}
                     >
                       {isOpen ? (
-                        <Minus className="h-4 w-4 text-white" />
+                        <Minus className="h-4 w-4 text-foreground" />
                       ) : (
-                        <Plus className="h-4 w-4 text-white" />
+                        <Plus className="h-4 w-4 text-foreground" />
                       )}
                     </div>
                   </button>
@@ -250,7 +254,7 @@ const WhatWeDo = () => {
                     <motion.p
                       initial={{ opacity: 0, y: 8 }}
                       animate={{ opacity: 1, y: 0 }}
-                      className="mt-6 max-w-xl text-white/70 leading-relaxed"
+                      className="mt-6 max-w-xl text-foreground/75 leading-relaxed"
                     >
                       {w.body}
                     </motion.p>
@@ -272,31 +276,32 @@ const WhatWeDo = () => {
 const Team = () => {
   const { t } = useLanguage();
   return (
-    <section className="relative bg-[#050505] py-28 md:py-36 overflow-hidden">
+    <section className="relative bg-[hsl(var(--paper))] py-28 md:py-36 overflow-hidden">
       <div className="mx-auto max-w-7xl px-6 md:px-16">
         <div className="flex items-baseline justify-between mb-16">
-          <h2 className="font-display text-white text-4xl md:text-6xl tracking-[-0.02em]">
+          <h2 className="font-display text-foreground text-4xl md:text-6xl tracking-[-0.02em]">
             {t("mission.team.title")}
           </h2>
         </div>
 
         <div className="grid md:grid-cols-[minmax(0,420px)_1fr] gap-12 md:gap-20 items-start">
-          <div
-            className="relative rounded-md p-[1px]"
-            style={{ background: BLUE_GRADIENT_135 }}
-          >
-            <div className="relative rounded-[5px] overflow-hidden bg-[#0a0a0a]">
+          <div className="relative rounded-md p-[1px]" style={{ background: BLUE_GRADIENT_135 }}>
+            <div className="relative rounded-[5px] overflow-hidden bg-[hsl(var(--paper-deep))]">
               <img
                 src={nahroorPortrait.url}
                 alt="Nahroor Rahman Khan"
                 className="w-full aspect-square object-cover"
                 loading="lazy"
               />
-              <div className="absolute inset-x-0 bottom-0 bg-gradient-to-t from-black via-black/70 to-transparent p-6 pt-16">
-                <div className="font-display text-white text-2xl">
-                  Nahroor Rahman Khan
-                </div>
-                <div className="text-[10px] font-mono tracking-[0.3em] uppercase text-white/60 mt-1">
+              <div
+                className="absolute inset-x-0 bottom-0 p-6 pt-16"
+                style={{
+                  background:
+                    "linear-gradient(to top, hsl(var(--paper-deep)) 0%, hsl(var(--paper-deep) / 0.75) 55%, transparent 100%)",
+                }}
+              >
+                <div className="font-display text-foreground text-2xl">Nahroor Rahman Khan</div>
+                <div className="text-[10px] font-mono tracking-[0.3em] uppercase text-foreground/60 mt-1">
                   {t("mission.team.ceo")}
                 </div>
               </div>
@@ -314,18 +319,14 @@ const Team = () => {
             >
               &ldquo;
             </div>
-            <p className="text-white text-2xl md:text-3xl leading-[1.35] font-display tracking-[-0.01em] max-w-2xl">
+            <p className="text-foreground text-2xl md:text-3xl leading-[1.35] font-display tracking-[-0.01em] max-w-2xl">
               {t("mission.team.quote")}
             </p>
             <div className="mt-8 flex items-center gap-4">
-              <div className="h-px w-10 bg-white/40" />
+              <div className="h-px w-10 bg-foreground/40" />
               <div>
-                <div className="text-white text-sm font-medium">
-                  Nahroor Rahman Khan
-                </div>
-                <div className="text-white/50 text-xs mt-0.5">
-                  {t("mission.team.role")}
-                </div>
+                <div className="text-foreground text-sm font-medium">Nahroor Rahman Khan</div>
+                <div className="text-foreground/50 text-xs mt-0.5">{t("mission.team.role")}</div>
               </div>
             </div>
           </div>
@@ -363,15 +364,15 @@ const LatestNews = () => {
   ];
 
   return (
-    <section className="relative bg-[#050505] py-28 md:py-36 overflow-hidden">
+    <section className="relative bg-[hsl(var(--paper-deep))] py-28 md:py-36 overflow-hidden">
       <div className="mx-auto max-w-7xl px-6 md:px-16">
         <div className="flex items-baseline justify-between mb-12">
-          <h2 className="font-display text-white text-4xl md:text-5xl tracking-[-0.02em]">
+          <h2 className="font-display text-foreground text-4xl md:text-5xl tracking-[-0.02em]">
             {t("mission.news.title")}
           </h2>
           <span
             className="hidden md:inline-block text-[10px] tracking-[0.4em] font-mono uppercase"
-            style={{ color: BLUE_ACCENT }}
+            style={{ color: "hsl(var(--teal-deep))" }}
           >
             {t("mission.news.subtitle")}
           </span>
@@ -385,29 +386,29 @@ const LatestNews = () => {
               whileInView={{ opacity: 1, y: 0 }}
               viewport={{ once: true, margin: "-100px" }}
               transition={{ duration: 0.6, delay: i * 0.08 }}
-              className="group relative rounded-2xl border border-white/10 bg-white/[0.02] p-6 hover:border-white/25 transition-colors"
+              className="group relative rounded-2xl border border-foreground/10 bg-foreground/[0.03] p-6 hover:border-foreground/25 transition-colors"
             >
               <div className="flex items-center justify-between mb-6">
                 <span
                   className="inline-flex items-center rounded-full px-3 py-1 text-[10px] font-mono tracking-[0.25em] uppercase"
                   style={{
-                    color: BLUE_ACCENT,
-                    background: `${BLUE_DEEP}22`,
-                    border: `1px solid ${BLUE_DEEP}55`,
+                    color: "hsl(var(--teal-deep))",
+                    background: "hsl(var(--teal-deep) / 0.12)",
+                    border: "1px solid hsl(var(--teal-deep) / 0.35)",
                   }}
                 >
                   {n.tag}
                 </span>
-                <span className="text-[10px] font-mono tracking-[0.2em] uppercase text-white/40">
+                <span className="text-[10px] font-mono tracking-[0.2em] uppercase text-foreground/40">
                   {n.date}
                 </span>
               </div>
-              <h3 className="font-display text-white text-2xl leading-tight mb-3">
+              <h3 className="font-display text-foreground text-2xl leading-tight mb-3">
                 {n.title}
               </h3>
-              <p className="text-white/60 text-sm leading-relaxed">{n.body}</p>
+              <p className="text-foreground/65 text-sm leading-relaxed">{n.body}</p>
               <div
-                className="mt-8 h-px w-full opacity-40"
+                className="mt-8 h-px w-full opacity-60"
                 style={{ background: BLUE_GRADIENT }}
               />
             </motion.article>
@@ -424,7 +425,7 @@ const LatestNews = () => {
 
 const Mission = () => {
   return (
-    <div className="min-h-screen bg-[#050505] text-white">
+    <div className="min-h-screen bg-background text-foreground">
       <Hero />
       <History />
       <WhatWeDo />
