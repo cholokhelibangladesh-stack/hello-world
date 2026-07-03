@@ -6,6 +6,16 @@ import CholoKheliMark from "@/components/CholoKheliMark";
 import atlas0 from "@/assets/hero-atlas-0.jpg.asset.json";
 import atlas1 from "@/assets/hero-atlas-1.jpg.asset.json";
 import mistyField from "@/assets/hero-field-reveal.jpg.asset.json";
+import sharpBeat0 from "@/assets/hero-beat-008.jpg.asset.json";
+import sharpBeat1 from "@/assets/hero-beat-060.jpg.asset.json";
+import sharpBeat2 from "@/assets/hero-beat-108.jpg.asset.json";
+import sharpBeat3 from "@/assets/hero-beat-199.jpg.asset.json";
+import sharpBeat4 from "@/assets/hero-beat-279.jpg.asset.json";
+
+// AI-enhanced sharp still for each beat. Overlaid on top of the canvas
+// when the animation settles on that beat, then hidden again the moment
+// the next scroll gesture starts playback.
+const SHARP_BEATS = [sharpBeat0.url, sharpBeat1.url, sharpBeat2.url, sharpBeat3.url, sharpBeat4.url];
 
 interface HeroScrollVideoProps {
   tagline: string;
