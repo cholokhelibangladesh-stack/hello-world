@@ -588,14 +588,14 @@ const Index = () => {
         </div>
       </section>
 
+      {/* Physical gradient bridge: how-it-works (paper-deep) → verified scouts (ink) */}
+      <div aria-hidden className="relative h-32 sm:h-40"
+        style={{ background: "linear-gradient(to bottom, hsl(var(--paper-deep)) 0%, hsl(var(--ink)) 100%)" }} />
 
       {/* ══════════════════════════════════════════
           VERIFIED SCOUTS
       ══════════════════════════════════════════ */}
       <section className="py-20 sm:py-28 relative overflow-hidden" style={{ background: "hsl(var(--ink))" }}>
-        {/* Top blend ← previous paper section — paper→transparent so ink shows through */}
-        <div aria-hidden className="pointer-events-none absolute inset-x-0 -top-1 h-48 z-[1]"
-          style={{ background: "linear-gradient(to bottom, hsl(var(--paper)) 0%, hsl(var(--paper) / 0.6) 40%, transparent 100%)" }} />
         <div className="absolute inset-0 pointer-events-none opacity-[0.04]"
           style={{ backgroundImage: "linear-gradient(hsl(var(--green)) 1px, transparent 1px), linear-gradient(90deg, hsl(var(--green)) 1px, transparent 1px)", backgroundSize: "80px 80px" }} />
 

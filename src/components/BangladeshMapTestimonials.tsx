@@ -110,7 +110,7 @@ export default function BangladeshMapTestimonials() {
   const activePlayer = players.find(p => p.id === activePinId);
 
   return (
-    <section className="py-16 sm:py-24 border-t border-border overflow-hidden">
+    <section className="py-16 sm:py-24 overflow-hidden">
       <div className="container">
         <motion.div
           initial={{ opacity: 0, y: 20 }}
