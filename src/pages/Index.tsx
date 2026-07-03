@@ -356,10 +356,11 @@ const Index = () => {
       {/* ══════════════════════════════════════════
           SPORTS GRID — Hover to reveal
       ══════════════════════════════════════════ */}
-      <section className="relative pt-40 sm:pt-48 pb-20 sm:pb-28 surface-paper">
-        {/* Top blend ← hero video — long soft fade from near-black video into paper */}
-        <div aria-hidden className="pointer-events-none absolute inset-x-0 top-0 h-64 z-[1]"
-          style={{ background: "linear-gradient(to bottom, hsl(0 0% 3%) 0%, hsl(0 0% 3% / 0.85) 12%, hsl(198 25% 40% / 0.35) 45%, hsl(var(--paper) / 0.85) 78%, hsl(var(--paper)) 100%)" }} />
+      <section className="relative pt-32 sm:pt-40 pb-20 sm:pb-28 surface-paper">
+        {/* Top blend ← hero video — simple dark→transparent overlay so the paper below shows through cleanly (no mid-band tint) */}
+        <div aria-hidden className="pointer-events-none absolute inset-x-0 -top-1 h-40 z-[1]"
+          style={{ background: "linear-gradient(to bottom, hsl(0 0% 3%) 0%, hsl(0 0% 3% / 0.7) 25%, transparent 100%)" }} />
+
 
 
 
@@ -585,18 +586,19 @@ const Index = () => {
             </div>
           </div>
         </div>
-        {/* Bottom blend → next section (ink) — long soft fade paper→ink */}
-        <div aria-hidden className="pointer-events-none absolute inset-x-0 bottom-0 h-64 z-[1]"
-          style={{ background: "linear-gradient(to bottom, transparent 0%, hsl(var(--paper-deep) / 0.5) 25%, hsl(var(--ink) / 0.65) 60%, hsl(var(--ink) / 0.92) 88%, hsl(var(--ink)) 100%)" }} />
-
       </section>
+
 
       {/* ══════════════════════════════════════════
           VERIFIED SCOUTS
       ══════════════════════════════════════════ */}
       <section className="py-20 sm:py-28 relative overflow-hidden" style={{ background: "hsl(var(--ink))" }}>
+        {/* Top blend ← previous paper section — paper→transparent so ink shows through */}
+        <div aria-hidden className="pointer-events-none absolute inset-x-0 -top-1 h-48 z-[1]"
+          style={{ background: "linear-gradient(to bottom, hsl(var(--paper)) 0%, hsl(var(--paper) / 0.6) 40%, transparent 100%)" }} />
         <div className="absolute inset-0 pointer-events-none opacity-[0.04]"
           style={{ backgroundImage: "linear-gradient(hsl(var(--green)) 1px, transparent 1px), linear-gradient(90deg, hsl(var(--green)) 1px, transparent 1px)", backgroundSize: "80px 80px" }} />
+
 
         <div className="container relative z-10">
           <Reveal className="text-center mb-12">
@@ -647,27 +649,26 @@ const Index = () => {
             );
           })()}
         </div>
-        {/* Bottom blend → next section (default background under the map) — long soft ink→background */}
-        <div aria-hidden className="pointer-events-none absolute inset-x-0 bottom-0 h-64 z-[1]"
-          style={{ background: "linear-gradient(to bottom, transparent 0%, hsl(var(--ink) / 0.35) 25%, hsl(var(--background) / 0.55) 55%, hsl(var(--background) / 0.9) 82%, hsl(var(--background)) 100%)" }} />
-
       </section>
 
-
+      {/* Physical gradient bridge: scouts (ink) → map (background) */}
+      <div aria-hidden className="relative h-32 sm:h-40"
+        style={{ background: "linear-gradient(to bottom, hsl(var(--ink)) 0%, hsl(var(--background)) 100%)" }} />
 
       {/* ══════════════════════════════════════════
           MAP SECTION
       ══════════════════════════════════════════ */}
       <BangladeshMapTestimonials />
 
+      {/* Physical gradient bridge: map (background) → CTA (ink) */}
+      <div aria-hidden className="relative h-32 sm:h-40"
+        style={{ background: "linear-gradient(to bottom, hsl(var(--background)) 0%, hsl(var(--ink)) 100%)" }} />
 
       {/* ══════════════════════════════════════════
           CINEMATIC CTA
       ══════════════════════════════════════════ */}
       <section className="py-24 sm:py-36 relative overflow-hidden surface-ink">
-        {/* Top blend ← previous section (default background under map) — long soft background→ink */}
-        <div aria-hidden className="pointer-events-none absolute inset-x-0 top-0 h-64 z-[2]"
-          style={{ background: "linear-gradient(to top, transparent 0%, hsl(var(--ink) / 0.35) 25%, hsl(var(--background) / 0.55) 55%, hsl(var(--background) / 0.9) 82%, hsl(var(--background)) 100%)" }} />
+
 
         {/* Cinematic backdrop */}
         <img src={footballerImg.url} alt="" aria-hidden loading="lazy" decoding="async"
@@ -747,11 +748,11 @@ const Index = () => {
             </div>
           </Reveal>
         </div>
-        {/* Bottom blend → next section (card) — long soft ink→card */}
-        <div aria-hidden className="pointer-events-none absolute inset-x-0 bottom-0 h-64 z-[2]"
-          style={{ background: "linear-gradient(to bottom, transparent 0%, hsl(var(--ink) / 0.35) 25%, hsl(var(--card) / 0.6) 60%, hsl(var(--card) / 0.92) 88%, hsl(var(--card)) 100%)" }} />
-
       </section>
+
+      {/* Physical gradient bridge: CTA (ink) → stats (background overlay on card) */}
+      <div aria-hidden className="relative h-32 sm:h-40"
+        style={{ background: "linear-gradient(to bottom, hsl(var(--ink)) 0%, hsl(var(--background)) 100%)" }} />
 
       {/* ══════════════════════════════════════════
           LIVE STATS BAR — moved below CTA phones
@@ -789,17 +790,17 @@ const Index = () => {
             ))}
           </div>
         </div>
-        {/* Bottom blend → footer (paper) — soft card→paper */}
-        <div aria-hidden className="pointer-events-none absolute inset-x-0 bottom-0 h-40 z-[2]"
-          style={{ background: "linear-gradient(to bottom, transparent 0%, hsl(var(--paper) / 0.5) 40%, hsl(var(--paper) / 0.9) 80%, hsl(var(--paper)) 100%)" }} />
-
       </section>
 
+      {/* Physical gradient bridge: stats (background) → footer (paper) */}
+      <div aria-hidden className="relative h-20 sm:h-24"
+        style={{ background: "linear-gradient(to bottom, hsl(var(--background)) 0%, hsl(var(--paper)) 100%)" }} />
 
       {/* ══════════════════════════════════════════
           FOOTER SOCIAL
       ══════════════════════════════════════════ */}
       <section className="py-16 surface-paper">
+
 
         <div className="container text-center">
           <Reveal>

@@ -697,16 +697,17 @@ export default function HeroScrollVideo({
               }}
             />
             {/* Bottom fade that blends the reveal image into the next
-                section's paper background — sits above the dark overlay
-                but below the CTA content. */}
+                section's paper background — simple dark→transparent so
+                paper below shows through cleanly (no mid-band tint). */}
             <div
               aria-hidden
-              className="pointer-events-none absolute inset-x-0 bottom-0 h-56"
+              className="pointer-events-none absolute inset-x-0 bottom-0 h-40"
               style={{
                 background:
-                  "linear-gradient(to bottom, transparent 0%, hsl(0 0% 3% / 0.5) 25%, hsl(198 25% 40% / 0.35) 55%, hsl(var(--paper) / 0.9) 85%, hsl(var(--paper)) 100%)",
+                  "linear-gradient(to bottom, transparent 0%, hsl(0 0% 3% / 0.4) 40%, hsl(0 0% 3% / 0.85) 80%, hsl(0 0% 3%) 100%)",
               }}
             />
+
 
 
             <div
