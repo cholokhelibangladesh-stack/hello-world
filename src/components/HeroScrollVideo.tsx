@@ -132,26 +132,74 @@ export default function HeroScrollVideo({
         const duration = video.duration;
         if (!duration || Number.isNaN(duration)) return;
 
-        // Beats live at these fractions of the video timeline. Between them,
-        // the video plays (scrubbed linearly). At each beat we PAUSE the video
-        // (a short "hold" window) and fade the text panel in.
+        // ---- Build the scroll → (video time, beat) mapping ----
         //
-        // Timeline layout (scroll progress 0..1):
-        //   [play → beat0 hold] [play → beat1 hold] ... [play → beat4 hold]
-        //   [reveal misty field + CTAs]
+        // Timeline layout across scroll progress 0..1:
+        //   [play 0 → beat0.t] [hold beat0] [play beat0 → beat1] [hold beat1] ...
+        //   [play beat3 → beat4] [hold beat4] [reveal panel]
         //
-        // We give each of the 5 play+hold pairs equal share of the first 85%
-        // of scroll, then the last 15% is the field-reveal.
-        const N = BEATS.length; // 5
-        const REVEAL_START = 0.85;
-        const beatShare = REVEAL_START / N; // 0.17
-        const holdShare = beatShare * 0.35;  // ~35% of each pair is the "hold"
+        // Each PLAY segment gets a scroll share proportional to its Δt (video
+        // seconds), so playback runs at natural constant speed — no frame is
+        // skipped or slowed. Each HOLD gets a fixed HOLD_SHARE. The final
+        // REVEAL_SHARE is the field slide-up.
+        const N = BEATS.length;
+        const playDeltas: number[] = [];
+        let prev = 0;
+        for (const b of BEATS) {
+          playDeltas.push(Math.max(0, Math.min(duration, b.videoAt) - prev));
+          prev = b.videoAt;
+        }
+        const totalPlayTime = playDeltas.reduce((a, b) => a + b, 0) || 1;
+        const totalHoldShare = HOLD_SHARE * N;
+        const totalPlayShare = Math.max(0, 1 - totalHoldShare - REVEAL_SHARE);
+
+        // Absolute scroll-progress boundaries for each segment.
+        // segments alternate play, hold, play, hold, ..., reveal.
+        interface Seg {
+          kind: "play" | "hold" | "reveal";
+          start: number;
+          end: number;
+          from: number; // video time at seg.start
+          to: number;   // video time at seg.end
+          beatIdx: number;
+        }
+        const segs: Seg[] = [];
+        let cursor = 0;
+        let vprev = 0;
+        for (let i = 0; i < N; i++) {
+          const playLen = (playDeltas[i] / totalPlayTime) * totalPlayShare;
+          segs.push({
+            kind: "play",
+            start: cursor,
+            end: cursor + playLen,
+            from: vprev,
+            to: BEATS[i].videoAt,
+            beatIdx: i,
+          });
+          cursor += playLen;
+          segs.push({
+            kind: "hold",
+            start: cursor,
+            end: cursor + HOLD_SHARE,
+            from: BEATS[i].videoAt,
+            to: BEATS[i].videoAt,
+            beatIdx: i,
+          });
+          cursor += HOLD_SHARE;
+          vprev = BEATS[i].videoAt;
+        }
+        segs.push({
+          kind: "reveal",
+          start: cursor,
+          end: 1,
+          from: vprev,
+          to: Math.min(duration - 0.05, vprev + 1.0),
+          beatIdx: N - 1,
+        });
 
         const proxy = { t: 0 };
         const setTime = () => {
           try {
-            // requestVideoFrameCallback would be ideal but not universal;
-            // setting currentTime each tick is smooth enough with scrub.
             video.currentTime = proxy.t;
           } catch {}
         };
@@ -160,7 +208,9 @@ export default function HeroScrollVideo({
           ScrollTrigger.create({
             trigger: wrap,
             start: "top top",
-            end: () => "+=" + window.innerHeight * 6,
+            // Long scroll distance keeps the scrub smooth and gives each
+            // video second enough pixels to update without frame skipping.
+            end: () => "+=" + window.innerHeight * 7,
             pin: pin,
             pinSpacing: true,
             scrub: 1,
@@ -169,39 +219,34 @@ export default function HeroScrollVideo({
             onUpdate: (self) => {
               const p = self.progress;
 
-              // ---- Video timeline mapping ----
-              if (p < REVEAL_START) {
-                const local = p / REVEAL_START; // 0..1 within the video section
-                const idx = Math.min(N - 1, Math.floor(local / (1 / N)));
-                const withinBeat = (local - idx / N) * N; // 0..1 within this beat
-                const playPortion = 1 - (holdShare / beatShare); // 0..0.65
-
-                // From previous beat's frame → this beat's frame during "play",
-                // then hold on this beat's frame.
-                const prevFrame = idx === 0 ? 0 : BEATS[idx - 1].videoAt;
-                const targetFrame = BEATS[idx].videoAt;
-
-                let frame: number;
-                let showText: boolean;
-                if (withinBeat <= playPortion) {
-                  const k = withinBeat / playPortion; // 0..1
-                  frame = prevFrame + (targetFrame - prevFrame) * k;
-                  showText = false;
-                } else {
-                  frame = targetFrame;
-                  showText = true;
+              // Find current segment (linear scan — segs is tiny).
+              let seg = segs[segs.length - 1];
+              for (const s of segs) {
+                if (p <= s.end) {
+                  seg = s;
+                  break;
                 }
-                proxy.t = frame * (duration - 0.05);
-                setTime();
-                setBeat(showText ? idx : -1);
-                setRevealCTA(0);
-              } else {
-                // Field slide-up section
-                proxy.t = duration - 0.05;
+              }
+              const span = Math.max(1e-6, seg.end - seg.start);
+              const local = Math.min(1, Math.max(0, (p - seg.start) / span));
+
+              if (seg.kind === "play") {
+                proxy.t = seg.from + (seg.to - seg.from) * local;
                 setTime();
                 setBeat(-1);
-                const r = (p - REVEAL_START) / (1 - REVEAL_START);
-                setRevealCTA(Math.min(1, Math.max(0, r)));
+                setRevealCTA(0);
+              } else if (seg.kind === "hold") {
+                proxy.t = seg.to;
+                setTime();
+                setBeat(seg.beatIdx);
+                setRevealCTA(0);
+              } else {
+                // Reveal: keep playing out the tail of the video underneath
+                // while the misty-field panel slides up on top.
+                proxy.t = seg.from + (seg.to - seg.from) * local;
+                setTime();
+                setBeat(-1);
+                setRevealCTA(local);
               }
             },
           });
@@ -209,6 +254,7 @@ export default function HeroScrollVideo({
 
         cleanup = () => ctx.revert();
       };
+
 
       if (video.readyState >= 1 && video.duration) {
         start();
