@@ -335,7 +335,7 @@ const ProfileTab = ({ showVideos, onDeleteVideo, deletingVideoId }: ProfileTabPr
               <div key={vid.id} className="flex items-center gap-3 p-3 bg-secondary/50 rounded-lg">
                 <div className="w-10 h-10 sm:w-12 sm:h-12 rounded-lg bg-secondary overflow-hidden shrink-0">
                   {vid.video_url ? (
-                    <video src={safeMediaUrl(vid.video_url)} className="w-full h-full object-cover" muted />
+                    <div className="w-full h-full flex items-center justify-center bg-secondary"><Video className="h-4 w-4 text-muted-foreground" /></div>
                   ) : (
                     <div className="w-full h-full flex items-center justify-center"><Video className="h-4 w-4 text-muted-foreground" /></div>
                   )}
