@@ -18,13 +18,24 @@ interface HeroScrollVideoProps {
 
 /**
  * Scroll-scrubbed cinematic hero.
- * The single video timeline is broken into 5 scroll "beats"; each beat
- * plays a slice of video, then a text panel fades in over the paused frame.
- * The 6th beat slides a misty football field up to reveal the CTAs.
+ *
+ * Video is 14.72s @ 25fps. Scene keyframes (measured from the source):
+ *   0.4s  — football on misty field (opening)
+ *   3.5s  — camera pulled back to reveal the Cholo Kheli stadium
+ *   5.5s  — dive into stadium → cricket ball resting in the arena
+ *  10.0s  — ball has transformed to a basketball, hovering above the rim
+ *  13.5s  — basketball has dropped through the net (final beat)
+ *
+ * Each beat is a "play + hold" pair. The play portion of a beat gets a
+ * scroll share proportional to how many seconds of video it must cover,
+ * so playback speed is constant (natural, no frame skipping). The hold
+ * portion is a fixed slice where the video is pinned on that beat's
+ * frame and the text panel fades in. A final REVEAL beat slides the
+ * misty football-field panel up over the last frame.
  */
 type BeatKind = "split" | "center" | "left";
 interface Beat {
-  /** Fraction of the video timeline where THIS beat's text sits (paused frame). */
+  /** Exact video time in seconds where this beat lands and holds. */
   videoAt: number;
   kind: BeatKind;
   kicker: string;
@@ -34,50 +45,52 @@ interface Beat {
 }
 
 const BEATS: Beat[] = [
-  // 0 — opening: football on screen, text on either side (not centered)
+  // 0 — opening: football on misty field, text on either side (not centered)
   {
-    videoAt: 0.02,
+    videoAt: 0.4,
     kind: "split",
     kicker: "BANGLADESH",
     titleA: "From every para,",
     titleB: "a nation of players.",
-    body: "",
   },
   // 1 — camera pulls back to reveal the stadium
   {
-    videoAt: 0.28,
+    videoAt: 3.5,
     kind: "center",
     kicker: "WELCOME TO",
     titleA: "Cholo Kheli.",
     body: "The home of Bangladeshi sport — where every talent is seen.",
   },
-  // 2 — dive into stadium → cricket ball
+  // 2 — dive into stadium → cricket ball, text on either side
   {
-    videoAt: 0.52,
+    videoAt: 5.5,
     kind: "split",
     kicker: "CRICKET",
     titleA: "Every over,",
     titleB: "every opportunity.",
-    body: "",
   },
-  // 3 — cricket ball morphs to basketball, falling through rim
+  // 3 — ball is now a basketball hovering above the rim, text on the left
   {
-    videoAt: 0.78,
+    videoAt: 10.0,
     kind: "left",
     kicker: "BASKETBALL",
     titleA: "Rise. Reach.",
     titleB: "Be recruited.",
-    body: "",
   },
-  // 4 — ball drops through the rim, final frame of the video
+  // 4 — basketball has dropped through the rim (final frame)
   {
-    videoAt: 0.995,
+    videoAt: 13.5,
     kind: "center",
     kicker: "EVERY ATHLETE",
     titleA: "Discovered on merit.",
-    body: "",
   },
 ];
+
+/** Fixed scroll share reserved for each beat's "hold" (text fade-in). */
+const HOLD_SHARE = 0.06;
+/** Scroll share reserved at the end for the misty-field reveal panel. */
+const REVEAL_SHARE = 0.14;
+
 
 export default function HeroScrollVideo({
   scrollLabel,
@@ -119,26 +132,74 @@ export default function HeroScrollVideo({
         const duration = video.duration;
         if (!duration || Number.isNaN(duration)) return;
 
-        // Beats live at these fractions of the video timeline. Between them,
-        // the video plays (scrubbed linearly). At each beat we PAUSE the video
-        // (a short "hold" window) and fade the text panel in.
+        // ---- Build the scroll → (video time, beat) mapping ----
         //
-        // Timeline layout (scroll progress 0..1):
-        //   [play → beat0 hold] [play → beat1 hold] ... [play → beat4 hold]
-        //   [reveal misty field + CTAs]
+        // Timeline layout across scroll progress 0..1:
+        //   [play 0 → beat0.t] [hold beat0] [play beat0 → beat1] [hold beat1] ...
+        //   [play beat3 → beat4] [hold beat4] [reveal panel]
         //
-        // We give each of the 5 play+hold pairs equal share of the first 85%
-        // of scroll, then the last 15% is the field-reveal.
-        const N = BEATS.length; // 5
-        const REVEAL_START = 0.85;
-        const beatShare = REVEAL_START / N; // 0.17
-        const holdShare = beatShare * 0.35;  // ~35% of each pair is the "hold"
+        // Each PLAY segment gets a scroll share proportional to its Δt (video
+        // seconds), so playback runs at natural constant speed — no frame is
+        // skipped or slowed. Each HOLD gets a fixed HOLD_SHARE. The final
+        // REVEAL_SHARE is the field slide-up.
+        const N = BEATS.length;
+        const playDeltas: number[] = [];
+        let prev = 0;
+        for (const b of BEATS) {
+          playDeltas.push(Math.max(0, Math.min(duration, b.videoAt) - prev));
+          prev = b.videoAt;
+        }
+        const totalPlayTime = playDeltas.reduce((a, b) => a + b, 0) || 1;
+        const totalHoldShare = HOLD_SHARE * N;
+        const totalPlayShare = Math.max(0, 1 - totalHoldShare - REVEAL_SHARE);
+
+        // Absolute scroll-progress boundaries for each segment.
+        // segments alternate play, hold, play, hold, ..., reveal.
+        interface Seg {
+          kind: "play" | "hold" | "reveal";
+          start: number;
+          end: number;
+          from: number; // video time at seg.start
+          to: number;   // video time at seg.end
+          beatIdx: number;
+        }
+        const segs: Seg[] = [];
+        let cursor = 0;
+        let vprev = 0;
+        for (let i = 0; i < N; i++) {
+          const playLen = (playDeltas[i] / totalPlayTime) * totalPlayShare;
+          segs.push({
+            kind: "play",
+            start: cursor,
+            end: cursor + playLen,
+            from: vprev,
+            to: BEATS[i].videoAt,
+            beatIdx: i,
+          });
+          cursor += playLen;
+          segs.push({
+            kind: "hold",
+            start: cursor,
+            end: cursor + HOLD_SHARE,
+            from: BEATS[i].videoAt,
+            to: BEATS[i].videoAt,
+            beatIdx: i,
+          });
+          cursor += HOLD_SHARE;
+          vprev = BEATS[i].videoAt;
+        }
+        segs.push({
+          kind: "reveal",
+          start: cursor,
+          end: 1,
+          from: vprev,
+          to: Math.min(duration - 0.05, vprev + 1.0),
+          beatIdx: N - 1,
+        });
 
         const proxy = { t: 0 };
         const setTime = () => {
           try {
-            // requestVideoFrameCallback would be ideal but not universal;
-            // setting currentTime each tick is smooth enough with scrub.
             video.currentTime = proxy.t;
           } catch {}
         };
@@ -147,7 +208,9 @@ export default function HeroScrollVideo({
           ScrollTrigger.create({
             trigger: wrap,
             start: "top top",
-            end: () => "+=" + window.innerHeight * 6,
+            // Long scroll distance keeps the scrub smooth and gives each
+            // video second enough pixels to update without frame skipping.
+            end: () => "+=" + window.innerHeight * 7,
             pin: pin,
             pinSpacing: true,
             scrub: 1,
@@ -156,39 +219,34 @@ export default function HeroScrollVideo({
             onUpdate: (self) => {
               const p = self.progress;
 
-              // ---- Video timeline mapping ----
-              if (p < REVEAL_START) {
-                const local = p / REVEAL_START; // 0..1 within the video section
-                const idx = Math.min(N - 1, Math.floor(local / (1 / N)));
-                const withinBeat = (local - idx / N) * N; // 0..1 within this beat
-                const playPortion = 1 - (holdShare / beatShare); // 0..0.65
-
-                // From previous beat's frame → this beat's frame during "play",
-                // then hold on this beat's frame.
-                const prevFrame = idx === 0 ? 0 : BEATS[idx - 1].videoAt;
-                const targetFrame = BEATS[idx].videoAt;
-
-                let frame: number;
-                let showText: boolean;
-                if (withinBeat <= playPortion) {
-                  const k = withinBeat / playPortion; // 0..1
-                  frame = prevFrame + (targetFrame - prevFrame) * k;
-                  showText = false;
-                } else {
-                  frame = targetFrame;
-                  showText = true;
+              // Find current segment (linear scan — segs is tiny).
+              let seg = segs[segs.length - 1];
+              for (const s of segs) {
+                if (p <= s.end) {
+                  seg = s;
+                  break;
                 }
-                proxy.t = frame * (duration - 0.05);
-                setTime();
-                setBeat(showText ? idx : -1);
-                setRevealCTA(0);
-              } else {
-                // Field slide-up section
-                proxy.t = duration - 0.05;
+              }
+              const span = Math.max(1e-6, seg.end - seg.start);
+              const local = Math.min(1, Math.max(0, (p - seg.start) / span));
+
+              if (seg.kind === "play") {
+                proxy.t = seg.from + (seg.to - seg.from) * local;
                 setTime();
                 setBeat(-1);
-                const r = (p - REVEAL_START) / (1 - REVEAL_START);
-                setRevealCTA(Math.min(1, Math.max(0, r)));
+                setRevealCTA(0);
+              } else if (seg.kind === "hold") {
+                proxy.t = seg.to;
+                setTime();
+                setBeat(seg.beatIdx);
+                setRevealCTA(0);
+              } else {
+                // Reveal: keep playing out the tail of the video underneath
+                // while the misty-field panel slides up on top.
+                proxy.t = seg.from + (seg.to - seg.from) * local;
+                setTime();
+                setBeat(-1);
+                setRevealCTA(local);
               }
             },
           });
@@ -196,6 +254,7 @@ export default function HeroScrollVideo({
 
         cleanup = () => ctx.revert();
       };
+
 
       if (video.readyState >= 1 && video.duration) {
         start();
