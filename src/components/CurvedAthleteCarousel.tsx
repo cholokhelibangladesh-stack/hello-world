@@ -66,9 +66,9 @@ export default function CurvedAthleteCarousel() {
       <div
         className="relative w-full carousel-stage"
         style={{
-          height: cardH + 120,
-          perspective: "1800px",
-          perspectiveOrigin: "50% 55%",
+          height: cardH + 140,
+          perspective: "1100px",
+          perspectiveOrigin: "50% 60%",
         }}
       >
         <div className="absolute inset-0 flex items-center justify-center">
