@@ -203,15 +203,26 @@ export const translations = {
     "mission.what.title": "What We Do",
     "mission.what.lead":
       "A single stack that turns raw talent into recognised opportunity — built for players, scouts, and the federations that back them.",
+    "mission.what.intro":
+      "Cholo Kheli sits between three groups that rarely find each other in time: the athlete in a district town with real skill, the scout with limited hours and no map of the country, and the federation that needs a credible pipeline to trust. We compress that distance into a single, verified feed.",
+    "mission.what.outro":
+      "Every module below is designed to move a talented player one step closer to the field they belong on — without the middlemen, guesswork, or paperwork that today's system quietly runs on.",
     "mission.what.t1": "Scout Discovery",
     "mission.what.b1":
       "Verified scouts explore a searchable index of players filtered by sport, district, position and highlight quality — no gatekeepers, no middlemen.",
+    "mission.what.e1":
+      "Scouts save shortlists, request additional footage, and see a live timeline of every interaction with a player, so their outreach is measured and their time protected.",
     "mission.what.t2": "Player Profiles",
     "mission.what.b2":
       "Athletes build a single, credible profile: verified stats, curated highlight reels, a resume that follows them wherever the game takes them.",
+    "mission.what.e2":
+      "Profiles carry coach endorsements, match logs, and a portable ID that stays with the athlete across academies, clubs, and national trials — no restart every season.",
     "mission.what.t3": "Safe Selections",
     "mission.what.b3":
       "Every scout is vetted, every contact is logged. Selections happen inside a transparent audit trail, so families and federations can trust the outcome.",
+    "mission.what.e3":
+      "Parents receive plain-language notifications for every scout action, and federations get an exportable record — turning \"who picked whom, and why?\" into a question with an answer.",
+
 
     "mission.team.title": "Meet Our Team",
     "mission.team.ceo": "Chief Executive Officer",
@@ -437,15 +448,26 @@ export const translations = {
     "mission.what.title": "আমরা যা করি",
     "mission.what.lead":
       "একটি সমন্বিত প্ল্যাটফর্ম যা কাঁচা প্রতিভাকে স্বীকৃত সুযোগে রূপান্তর করে — খেলোয়াড়, স্কাউট এবং তাদের সমর্থনকারী ফেডারেশনের জন্য।",
+    "mission.what.intro":
+      "চলো খেলি তিনটি গোষ্ঠীকে একত্র করে যারা সময়মতো একে অপরকে খুঁজে পায় না: জেলা শহরের প্রতিভাবান খেলোয়াড়, সীমিত সময়ের স্কাউট এবং বিশ্বাসযোগ্য পাইপলাইন খোঁজা ফেডারেশন। আমরা এই দূরত্বকে একটি যাচাইকৃত ফিডে সংকুচিত করি।",
+    "mission.what.outro":
+      "নিচের প্রতিটি অংশ প্রতিভাবান খেলোয়াড়কে তার প্রাপ্য মাঠের এক ধাপ কাছে নিয়ে আসার জন্য তৈরি — মধ্যস্বত্বভোগী, অনুমান বা কাগজপত্রের ঝামেলা ছাড়াই।",
     "mission.what.t1": "স্কাউট অনুসন্ধান",
     "mission.what.b1":
       "যাচাইকৃত স্কাউটরা খেলা, জেলা, পজিশন ও হাইলাইট মান অনুসারে খেলোয়াড়দের একটি অনুসন্ধানযোগ্য তালিকা দেখতে পারেন — কোনো মধ্যস্বত্বভোগী নেই।",
+    "mission.what.e1":
+      "স্কাউটরা শর্টলিস্ট সংরক্ষণ করেন, অতিরিক্ত ফুটেজের অনুরোধ জানান এবং প্রতিটি যোগাযোগের একটি লাইভ টাইমলাইন দেখেন — যাতে তাদের সময় ও প্রচেষ্টা সুরক্ষিত থাকে।",
     "mission.what.t2": "খেলোয়াড় প্রোফাইল",
     "mission.what.b2":
       "অ্যাথলেটরা একটি বিশ্বস্ত প্রোফাইল তৈরি করেন: যাচাইকৃত পরিসংখ্যান, হাইলাইট রিল, এবং একটি রেজুমে যা তাদের সাথে সর্বত্র যায়।",
+    "mission.what.e2":
+      "প্রোফাইলে কোচের সুপারিশ, ম্যাচ লগ এবং একটি বহনযোগ্য আইডি থাকে — যা একাডেমি, ক্লাব ও জাতীয় ট্রায়ালের মধ্যে খেলোয়াড়ের সঙ্গে থাকে, প্রতি মৌসুমে নতুন করে শুরু নয়।",
     "mission.what.t3": "নিরাপদ নির্বাচন",
     "mission.what.b3":
       "প্রতিটি স্কাউট যাচাইকৃত, প্রতিটি যোগাযোগ নথিভুক্ত। নির্বাচন স্বচ্ছ পদ্ধতিতে হয় যাতে পরিবার ও ফেডারেশন ফলাফলে আস্থা রাখতে পারে।",
+    "mission.what.e3":
+      "অভিভাবকরা প্রতিটি স্কাউট কার্যক্রমের জন্য সহজ ভাষায় বিজ্ঞপ্তি পান, এবং ফেডারেশন একটি রপ্তানিযোগ্য রেকর্ড পায় — \"কে কাকে বাছাই করেছে, কেন?\" এই প্রশ্নের একটি স্পষ্ট উত্তর দাঁড়ায়।",
+
 
     "mission.team.title": "আমাদের টিমের সাথে পরিচিত হোন",
     "mission.team.ceo": "প্রধান নির্বাহী কর্মকর্তা",
