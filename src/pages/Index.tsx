@@ -589,7 +589,7 @@ const Index = () => {
       </section>
 
       {/* Physical gradient bridge: how-it-works (paper-deep) → verified scouts (ink) */}
-      <div aria-hidden className="relative h-32 sm:h-40"
+      <div aria-hidden className="relative h-56 sm:h-72"
         style={{ background: "linear-gradient(to bottom, hsl(var(--paper-deep)) 0%, hsl(var(--ink)) 100%)" }} />
 
       {/* ══════════════════════════════════════════
@@ -652,7 +652,7 @@ const Index = () => {
       </section>
 
       {/* Physical gradient bridge: scouts (ink) → map (background) */}
-      <div aria-hidden className="relative h-32 sm:h-40"
+      <div aria-hidden className="relative h-56 sm:h-72"
         style={{ background: "linear-gradient(to bottom, hsl(var(--ink)) 0%, hsl(var(--background)) 100%)" }} />
 
       {/* ══════════════════════════════════════════
@@ -661,7 +661,7 @@ const Index = () => {
       <BangladeshMapTestimonials />
 
       {/* Physical gradient bridge: map (background) → CTA (ink) */}
-      <div aria-hidden className="relative h-32 sm:h-40"
+      <div aria-hidden className="relative h-56 sm:h-72"
         style={{ background: "linear-gradient(to bottom, hsl(var(--background)) 0%, hsl(var(--ink)) 100%)" }} />
 
       {/* ══════════════════════════════════════════
@@ -675,7 +675,12 @@ const Index = () => {
           className="absolute inset-0 w-full h-full object-cover opacity-40" />
         <div className="absolute inset-0 pointer-events-none"
           style={{ background: "linear-gradient(to bottom, hsl(var(--ink) / 0.85), hsl(var(--ink) / 0.95))" }} />
-
+        {/* Top edge fade — hide image at seam so bridge (pure ink) meets pure ink */}
+        <div aria-hidden className="pointer-events-none absolute inset-x-0 top-0 h-56 z-[2]"
+          style={{ background: "linear-gradient(to bottom, hsl(var(--ink)) 0%, hsl(var(--ink) / 0.6) 55%, transparent 100%)" }} />
+        {/* Bottom edge fade — hide image at seam so section meets bridge cleanly */}
+        <div aria-hidden className="pointer-events-none absolute inset-x-0 bottom-0 h-56 z-[2]"
+          style={{ background: "linear-gradient(to top, hsl(var(--ink)) 0%, hsl(var(--ink) / 0.6) 55%, transparent 100%)" }} />
 
 
         {/* Animated grid */}
@@ -751,7 +756,7 @@ const Index = () => {
       </section>
 
       {/* Physical gradient bridge: CTA (ink) → stats (background overlay on card) */}
-      <div aria-hidden className="relative h-32 sm:h-40"
+      <div aria-hidden className="relative h-56 sm:h-72"
         style={{ background: "linear-gradient(to bottom, hsl(var(--ink)) 0%, hsl(var(--background)) 100%)" }} />
 
       {/* ══════════════════════════════════════════
@@ -762,6 +767,11 @@ const Index = () => {
           className="absolute inset-0 w-full h-full object-cover opacity-25" />
         <div className="absolute inset-0 pointer-events-none"
           style={{ background: "linear-gradient(to bottom, hsl(var(--background) / 0.92), hsl(var(--background) / 0.96))" }} />
+        {/* Top/bottom edge fades — hide image at seams */}
+        <div aria-hidden className="pointer-events-none absolute inset-x-0 top-0 h-40 z-[2]"
+          style={{ background: "linear-gradient(to bottom, hsl(var(--background)) 0%, transparent 100%)" }} />
+        <div aria-hidden className="pointer-events-none absolute inset-x-0 bottom-0 h-40 z-[2]"
+          style={{ background: "linear-gradient(to top, hsl(var(--background)) 0%, transparent 100%)" }} />
 
         <div className="container">
           <div className="grid grid-cols-3 gap-4 sm:gap-8">
@@ -793,7 +803,7 @@ const Index = () => {
       </section>
 
       {/* Physical gradient bridge: stats (background) → footer (paper) */}
-      <div aria-hidden className="relative h-20 sm:h-24"
+      <div aria-hidden className="relative h-40 sm:h-48"
         style={{ background: "linear-gradient(to bottom, hsl(var(--background)) 0%, hsl(var(--paper)) 100%)" }} />
 
       {/* ══════════════════════════════════════════
