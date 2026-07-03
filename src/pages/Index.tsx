@@ -589,7 +589,7 @@ const Index = () => {
       </section>
 
       {/* Physical gradient bridge: how-it-works (paper-deep) → verified scouts (ink) */}
-      <div aria-hidden className="relative h-32 sm:h-40"
+      <div aria-hidden className="relative h-56 sm:h-72"
         style={{ background: "linear-gradient(to bottom, hsl(var(--paper-deep)) 0%, hsl(var(--ink)) 100%)" }} />
 
       {/* ══════════════════════════════════════════
@@ -652,7 +652,7 @@ const Index = () => {
       </section>
 
       {/* Physical gradient bridge: scouts (ink) → map (background) */}
-      <div aria-hidden className="relative h-32 sm:h-40"
+      <div aria-hidden className="relative h-56 sm:h-72"
         style={{ background: "linear-gradient(to bottom, hsl(var(--ink)) 0%, hsl(var(--background)) 100%)" }} />
 
       {/* ══════════════════════════════════════════
@@ -661,7 +661,7 @@ const Index = () => {
       <BangladeshMapTestimonials />
 
       {/* Physical gradient bridge: map (background) → CTA (ink) */}
-      <div aria-hidden className="relative h-32 sm:h-40"
+      <div aria-hidden className="relative h-56 sm:h-72"
         style={{ background: "linear-gradient(to bottom, hsl(var(--background)) 0%, hsl(var(--ink)) 100%)" }} />
 
       {/* ══════════════════════════════════════════
@@ -756,7 +756,7 @@ const Index = () => {
       </section>
 
       {/* Physical gradient bridge: CTA (ink) → stats (background overlay on card) */}
-      <div aria-hidden className="relative h-32 sm:h-40"
+      <div aria-hidden className="relative h-56 sm:h-72"
         style={{ background: "linear-gradient(to bottom, hsl(var(--ink)) 0%, hsl(var(--background)) 100%)" }} />
 
       {/* ══════════════════════════════════════════
@@ -803,7 +803,7 @@ const Index = () => {
       </section>
 
       {/* Physical gradient bridge: stats (background) → footer (paper) */}
-      <div aria-hidden className="relative h-20 sm:h-24"
+      <div aria-hidden className="relative h-40 sm:h-48"
         style={{ background: "linear-gradient(to bottom, hsl(var(--background)) 0%, hsl(var(--paper)) 100%)" }} />
 
       {/* ══════════════════════════════════════════
