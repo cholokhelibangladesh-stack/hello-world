@@ -489,6 +489,55 @@ const AdminDashboard = () => {
               <AdminNoticeForm />
             </TabsContent>
 
+            {/* Contact Messages Tab */}
+            <TabsContent value="contact" className="space-y-3">
+              <div className="bg-primary/5 border border-primary/20 rounded-2xl p-4 flex items-start gap-2">
+                <Mail className="h-5 w-5 text-primary shrink-0 mt-0.5" />
+                <p className="text-sm text-muted-foreground">
+                  Messages submitted through the public Contact Us form. Click the email address to reply directly from your mail client.
+                </p>
+              </div>
+              {contactMessages.length === 0 ? (
+                <p className="text-muted-foreground text-center py-12">No contact messages yet.</p>
+              ) : (
+                contactMessages.map((c) => (
+                  <div key={c.id} className={`bg-card border rounded-xl p-4 space-y-3 ${c.is_read ? "border-border" : "border-primary/40"}`}>
+                    <div className="flex items-start justify-between gap-3">
+                      <div className="flex-1 min-w-0">
+                        <div className="flex items-center gap-2 flex-wrap">
+                          <p className="font-semibold text-foreground truncate">{c.name}</p>
+                          {!c.is_read && <Badge className="bg-primary/20 text-primary border-primary/30 rounded-full text-[10px]">New</Badge>}
+                        </div>
+                        <a href={`mailto:${c.email}?subject=Re: ${encodeURIComponent(c.subject || "Your message to Cholo Kheli")}`}
+                          className="text-xs text-primary hover:underline break-all">
+                          {c.email}
+                        </a>
+                        <p className="text-[11px] text-muted-foreground mt-0.5">{new Date(c.created_at).toLocaleString()}</p>
+                      </div>
+                    </div>
+                    {c.subject && <p className="text-sm font-medium text-foreground">{c.subject}</p>}
+                    <p className="text-sm text-muted-foreground whitespace-pre-wrap">{c.message}</p>
+                    <div className="flex gap-2 flex-wrap">
+                      <Button size="sm" variant="outline" asChild
+                        className="rounded-full text-xs border-primary/40 text-primary hover:bg-primary/10">
+                        <a href={`mailto:${c.email}?subject=Re: ${encodeURIComponent(c.subject || "Your message to Cholo Kheli")}`}>
+                          <Send className="h-3.5 w-3.5 mr-1" /> Reply by email
+                        </a>
+                      </Button>
+                      <Button size="sm" variant="outline" onClick={() => toggleContactRead(c.id, c.is_read)}
+                        className="rounded-full text-xs border-border text-muted-foreground">
+                        <CheckCircle className="h-3.5 w-3.5 mr-1" /> Mark as {c.is_read ? "unread" : "read"}
+                      </Button>
+                      <Button size="sm" variant="outline" onClick={() => deleteContact(c.id)}
+                        className="rounded-full text-xs border-destructive/40 text-destructive hover:bg-destructive/10">
+                        <Trash2 className="h-3.5 w-3.5 mr-1" /> Delete
+                      </Button>
+                    </div>
+                  </div>
+                ))
+              )}
+            </TabsContent>
+
             {/* Profile Tab */}
             <TabsContent value="profile">
               <ProfileTab />
