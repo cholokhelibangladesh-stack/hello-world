@@ -32,9 +32,10 @@ interface HeroScrollVideoProps {
 
 const ATLAS_COLS = 10;
 const ATLAS_ROWS = 8;
-const FRAME_W = 480;
-const FRAME_H = 270;
+const FRAME_W = 960;
+const FRAME_H = 540;
 const FRAME_COUNT = 74;
+
 
 type BeatKind = "split" | "center" | "left";
 interface Beat {
