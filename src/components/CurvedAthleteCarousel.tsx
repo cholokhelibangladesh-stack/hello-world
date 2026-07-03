@@ -111,7 +111,7 @@ export default function CurvedAthleteCarousel() {
                 />
                 <div className="absolute bottom-4 left-4 right-4 text-white">
                   <div className="text-[10px] tracking-[0.35em] uppercase text-white/70 mb-1">
-                    #{String(i + 1).padStart(2, "0")}
+                    #{String((i % CARDS.length) + 1).padStart(2, "0")}
                   </div>
                   <div className="font-display text-lg leading-tight">{c.sport}</div>
                   <div className="text-xs text-white/75">{c.caption}</div>
