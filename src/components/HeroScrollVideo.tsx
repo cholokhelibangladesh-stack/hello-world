@@ -329,11 +329,16 @@ export default function HeroScrollVideo({
             setSettledBeat(next);
           });
         } else if (anim.r < 1) {
-          animateRevealTo(1);
+          animateRevealTo(1, () => {
+            // Release the pin — allow the rest of the page to scroll.
+            released = true;
+            observer.disable();
+            document.documentElement.style.overflow = prevHtmlOverflow;
+            document.body.style.overflow = prevBodyOverflow;
+          });
         }
-        // If reveal is already 1, do nothing — user must scroll back up to
-        // rewind through the whole animation (see goBackward).
       };
+
 
       const goBackward = () => {
         if (animating || released) return;
