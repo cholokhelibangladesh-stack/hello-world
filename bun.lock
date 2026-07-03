@@ -46,6 +46,7 @@
         "date-fns": "^3.6.0",
         "embla-carousel-react": "^8.6.0",
         "framer-motion": "^12.42.0",
+        "gsap": "^3.15.0",
         "input-otp": "^1.4.2",
         "jspdf": "^4.2.1",
         "lucide-react": "0.544.0",
@@ -996,6 +997,8 @@
     "graceful-fs": ["graceful-fs@4.2.11", "https://europe-west4-npm.pkg.dev/lovable-core-prod/sandbox-npm-cache/graceful-fs/-/graceful-fs-4.2.11.tgz", {}, "sha512-RbJ5/jmFcNNCcDV5o9eTnBLJ/HszWV0P73bc+Ff4nS/rJj+YaS6IGyiOL0VoBYX+l1Wrl3k63h/KrH+nhJ0XvQ=="],
 
     "graphemer": ["graphemer@1.4.0", "", {}, "sha512-EtKwoO6kxCL9WO5xipiHTZlSzBm7WLT627TqC/uVRd0HKmq8NXyebnNYxDoBi7wt8eTWrUrKXCOVaFq9x1kgag=="],
+
+    "gsap": ["gsap@3.15.0", "https://europe-west1-npm.pkg.dev/lovable-core-prod/sandbox-npm-cache/gsap/-/gsap-3.15.0.tgz", {}, "sha512-dMW4CWBTUK1AEEDeZc1g4xpPGIrSf9fJF960qbTZmN/QwZIWY5wgliS6JWl9/25fpTGJrMRtSjGtOmPnfjZB+A=="],
 
     "h3": ["h3@2.0.1-rc.22", "https://europe-west4-npm.pkg.dev/lovable-core-prod/sandbox-npm-cache/h3/-/h3-2.0.1-rc.22.tgz", { "dependencies": { "rou3": "^0.8.1", "srvx": "^0.11.15" }, "peerDependencies": { "crossws": "^0.4.1" }, "optionalPeers": ["crossws"], "bin": { "h3": "bin/h3.mjs" } }, "sha512-Esv0DMIuPkCTSWCA0vO73vcTqwzH1wjSrAO1TXNu/K3up1sZHa9EKMapbmxCDYBeymC3fVTk4qxp7ogQWQ+KgA=="],
 
