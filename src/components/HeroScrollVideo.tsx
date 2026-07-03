@@ -395,12 +395,31 @@ export default function HeroScrollVideo({
         onPress: () => {},
       });
 
+      // ─── re-engage when user scrolls back to the top ──────────────
+      // After the reveal panel is showing, the pin is released and the
+      // page scrolls normally. If the user scrolls back up to the very
+      // top of the page and keeps scrolling up, re-lock the pin and let
+      // them rewind through the animation.
+      const onReengageWheel = (e: WheelEvent) => {
+        if (!released) return;
+        if (e.deltaY < 0 && window.scrollY <= 0) {
+          released = false;
+          document.documentElement.style.overflow = "hidden";
+          document.body.style.overflow = "hidden";
+          window.scrollTo(0, 0);
+          observer?.enable();
+        }
+      };
+      window.addEventListener("wheel", onReengageWheel, { passive: true });
+
       cleanup = () => {
         observer?.kill();
+        window.removeEventListener("wheel", onReengageWheel);
         document.documentElement.style.overflow = prevHtmlOverflow;
         document.body.style.overflow = prevBodyOverflow;
         gsap.killTweensOf(anim);
       };
+
 
     })();
 
