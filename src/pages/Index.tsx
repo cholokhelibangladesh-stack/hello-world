@@ -783,13 +783,17 @@ const Index = () => {
             ))}
           </div>
         </div>
+        {/* Bottom blend → footer (paper) */}
+        <div aria-hidden className="pointer-events-none absolute inset-x-0 bottom-0 h-24 z-[2]"
+          style={{ background: "linear-gradient(to bottom, transparent 0%, hsl(var(--paper) / 0.7) 55%, hsl(var(--paper)) 100%)" }} />
       </section>
 
 
       {/* ══════════════════════════════════════════
           FOOTER SOCIAL
       ══════════════════════════════════════════ */}
-      <section className="py-16 border-t border-border surface-paper">
+      <section className="py-16 surface-paper">
+
         <div className="container text-center">
           <Reveal>
             <p className="text-xs tracking-[0.2em] uppercase text-muted-foreground mb-6">{T.followJourney}</p>
