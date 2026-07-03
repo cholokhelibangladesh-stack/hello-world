@@ -94,7 +94,7 @@ const Hero = () => {
                   className="absolute inset-0 dark:hidden transition-opacity duration-300 group-hover:opacity-0"
                   style={{
                     background:
-                      "linear-gradient(90deg, hsl(var(--teal-soft)) 0%, hsl(var(--teal-soft) / 0.75) 100%)",
+                      "linear-gradient(90deg, hsl(var(--teal-soft)) 0%, hsl(var(--teal-soft) / 0.55) 55%, hsl(var(--teal-deep) / 0.35) 100%)",
                   }}
                 />
                 <span
