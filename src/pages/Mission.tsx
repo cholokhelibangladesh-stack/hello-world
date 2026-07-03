@@ -348,14 +348,27 @@ const Team = () => {
   return (
     <section className="relative bg-[hsl(var(--paper))] py-28 md:py-36 overflow-hidden">
       <div className="mx-auto max-w-7xl px-6 md:px-16">
-        <div className="flex items-baseline justify-between mb-16">
+        <motion.div
+          initial={{ opacity: 0, y: 20 }}
+          whileInView={{ opacity: 1, y: 0 }}
+          viewport={{ once: true, margin: "-80px" }}
+          transition={{ duration: 0.7, ease: [0.22, 1, 0.36, 1] }}
+          className="flex items-baseline justify-between mb-16"
+        >
           <h2 className="font-display text-foreground text-4xl md:text-6xl tracking-[-0.02em]">
             {t("mission.team.title")}
           </h2>
-        </div>
+        </motion.div>
 
         <div className="grid md:grid-cols-[minmax(0,420px)_1fr] gap-12 md:gap-20 items-start">
-          <div className="relative rounded-md p-[1px]" style={{ background: BLUE_GRADIENT_135 }}>
+          <motion.div
+            initial={{ opacity: 0, y: 24 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            viewport={{ once: true, margin: "-80px" }}
+            transition={{ duration: 0.8, delay: 0.1, ease: [0.22, 1, 0.36, 1] }}
+            className="relative rounded-md p-[1px]"
+            style={{ background: BLUE_GRADIENT_135 }}
+          >
             <div className="relative rounded-[5px] overflow-hidden bg-[hsl(var(--paper-deep))]">
               <img
                 src={nahroorPortrait.url}
@@ -376,9 +389,15 @@ const Team = () => {
                 </div>
               </div>
             </div>
-          </div>
+          </motion.div>
 
-          <div className="pt-4">
+          <motion.div
+            initial={{ opacity: 0, y: 20 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            viewport={{ once: true, margin: "-80px" }}
+            transition={{ duration: 0.8, delay: 0.2, ease: [0.22, 1, 0.36, 1] }}
+            className="pt-4"
+          >
             <div
               className="text-6xl leading-none font-display mb-4"
               style={{
@@ -399,7 +418,7 @@ const Team = () => {
                 <div className="text-foreground/50 text-xs mt-0.5">{t("mission.team.role")}</div>
               </div>
             </div>
-          </div>
+          </motion.div>
         </div>
       </div>
     </section>
