@@ -384,7 +384,7 @@ export default function HeroScrollVideo({
       // so a giant trackpad flick and a single wheel tick both count as
       // exactly one gesture. Combined with the constant-rate tween above,
       // this means the video plays at its natural speed on every scroll.
-      const observer = Observer.create({
+      observer = Observer.create({
         target: window,
         type: "wheel,touch,pointer",
         tolerance: GESTURE_TOLERANCE,
@@ -396,11 +396,12 @@ export default function HeroScrollVideo({
       });
 
       cleanup = () => {
-        observer.kill();
+        observer?.kill();
         document.documentElement.style.overflow = prevHtmlOverflow;
         document.body.style.overflow = prevBodyOverflow;
         gsap.killTweensOf(anim);
       };
+
     })();
 
     return () => {
