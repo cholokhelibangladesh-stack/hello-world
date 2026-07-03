@@ -357,6 +357,10 @@ const Index = () => {
           SPORTS GRID — Hover to reveal
       ══════════════════════════════════════════ */}
       <section className="relative pt-32 sm:pt-40 pb-20 sm:pb-28 surface-paper">
+        {/* Bottom blend → next section (also paper) — no-op color but keeps the seam invisible */}
+        <div aria-hidden className="pointer-events-none absolute inset-x-0 bottom-0 h-24 z-[1]"
+          style={{ background: "linear-gradient(to bottom, transparent 0%, hsl(var(--paper)) 100%)" }} />
+
 
 
         <div className="container">
