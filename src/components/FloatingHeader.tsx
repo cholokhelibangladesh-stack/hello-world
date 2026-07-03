@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { Link, useNavigate, useRouterState } from "@tanstack/react-router";
 import { LogOut, Menu, X, Sun, Moon, LayoutDashboard } from "lucide-react";
 import { useAuth } from "@/hooks/useAuth";
@@ -8,8 +8,13 @@ import LanguageSwitcher from "@/components/LanguageSwitcher";
 import { useLanguage } from "@/i18n/LanguageProvider";
 import logoAsset from "@/assets/cholo-kheli-mark.png.asset.json";
 
-// Routes where the top of the page is dark (hero image) — icons stay white.
-const DARK_TOP_ROUTES = new Set<string>(["/"]);
+// Routes whose hero image is dark — icons stay white while at the top of these
+// pages regardless of theme.
+const DARK_HERO_ROUTES = new Set<string>(["/"]);
+// Routes that have a hero section where the header should be in its "soft /
+// lighter" form while at the top, then switch to the solid theme colour after
+// the user scrolls past the hero.
+const HERO_SCROLL_ROUTES = new Set<string>(["/mission"]);
 
 const FloatingHeader = () => {
   const { user, role, loading, signOut } = useAuth();
@@ -18,6 +23,17 @@ const FloatingHeader = () => {
   const navigate = useNavigate();
   const [busy, setBusy] = useState(false);
   const [open, setOpen] = useState(false);
+  const [scrolledPastHero, setScrolledPastHero] = useState(false);
+
+  useEffect(() => {
+    const onScroll = () => {
+      // Switch styling roughly when the hero (100vh) leaves the viewport.
+      setScrolledPastHero(window.scrollY > Math.max(window.innerHeight * 0.6, 400));
+    };
+    onScroll();
+    window.addEventListener("scroll", onScroll, { passive: true });
+    return () => window.removeEventListener("scroll", onScroll);
+  }, []);
 
   const navLinks = [
     { label: t("nav.home"), to: "/" },
@@ -28,7 +44,10 @@ const FloatingHeader = () => {
   ];
 
   const pathname = useRouterState({ select: (s) => s.location.pathname });
-  const onDark = DARK_TOP_ROUTES.has(pathname);
+  const onDarkHero = DARK_HERO_ROUTES.has(pathname);
+  // Over the /mission hero in light mode, keep the header in its soft light
+  // form; once scrolled, revert to the solid theme colours.
+  const overSoftHero = HERO_SCROLL_ROUTES.has(pathname) && !scrolledPastHero;
 
   const dashboard = role === "admin" ? "/admin" : role === "scout" ? "/scout" : "/player";
 
@@ -41,16 +60,26 @@ const FloatingHeader = () => {
   };
 
   // Adaptive color tokens
+  const onDark = onDarkHero; // white icons on dark hero images (home)
   const fg = onDark ? "text-white" : "text-foreground";
   const fgSoft = onDark ? "text-white/85 hover:text-white" : "text-foreground/70 hover:text-foreground";
   const ring = onDark ? "ring-white/15" : "ring-foreground/15";
-  const bgChip = onDark ? "bg-white/15 hover:bg-white/25 ring-white/25" : "bg-foreground/10 hover:bg-foreground/15 ring-foreground/20";
+  // On the mission hero (light mode), soften the chip so the header reads as
+  // "lighter"; once scrolled past, use the solid theme chip.
+  const bgChip = onDark
+    ? "bg-white/15 hover:bg-white/25 ring-white/25"
+    : overSoftHero
+      ? "bg-foreground/5 hover:bg-foreground/10 ring-foreground/10"
+      : "bg-foreground/10 hover:bg-foreground/15 ring-foreground/20";
   const shadow = onDark ? "drop-shadow-[0_2px_4px_rgba(0,0,0,0.5)]" : "drop-shadow-[0_1px_2px_rgba(0,0,0,0.15)]";
   const wordmarkShadow = onDark ? "drop-shadow-[0_1px_3px_rgba(0,0,0,0.6)]" : "";
+  // Extra opacity fade over the soft hero — same colour, lighter presence.
+  const softness = overSoftHero ? "opacity-80" : "opacity-100";
+
 
   return (
     <header className="fixed top-0 left-0 right-0 z-50 pointer-events-none">
-      <div className="relative flex items-center justify-between px-4 sm:px-6 lg:px-8 pt-4 sm:pt-5">
+      <div className={`relative flex items-center justify-between px-4 sm:px-6 lg:px-8 pt-4 sm:pt-5 transition-opacity duration-300 ${softness}`}>
         {/* LEFT: Logo + name = home */}
         <Link
           to="/"
