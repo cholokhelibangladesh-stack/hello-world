@@ -415,6 +415,24 @@ export default function HeroScrollVideo({
           style={{ background: "hsl(0 0% 3%)" }}
         />
 
+        {/* AI-enhanced sharp stills, one per beat. Fade in the instant the
+            video settles on a beat; fade out again the moment the next
+            gesture starts playback. Sits above the canvas but below the
+            gradient/text so the beat text remains legible. */}
+        {SHARP_BEATS.map((url, i) => (
+          <img
+            key={i}
+            src={url}
+            alt=""
+            aria-hidden="true"
+            draggable={false}
+            className="absolute inset-0 w-full h-full object-cover pointer-events-none transition-opacity duration-300 ease-out"
+            style={{ opacity: settledBeat === i ? 1 : 0 }}
+          />
+        ))}
+
+
+
         {/* Cinematic gradient overlay */}
         <div
           className="absolute inset-0 pointer-events-none"
