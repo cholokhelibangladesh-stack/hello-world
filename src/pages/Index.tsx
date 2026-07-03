@@ -12,6 +12,7 @@ import BangladeshMapTestimonials from "@/components/BangladeshMapTestimonials";
 import VideoHighlights from "@/components/VideoHighlights";
 import CholoKheliMark from "@/components/CholoKheliMark";
 import HeroMistCursor from "@/components/HeroMistCursor";
+import HeroScrollVideo from "@/components/HeroScrollVideo";
 import heroImg from "@/assets/hero-cricket.jpg.asset.json";
 import statsImg from "@/assets/stats-football.jpg.asset.json";
 import stadiumImg from "@/assets/stadium-dusk.jpg.asset.json";
