@@ -1,4 +1,8 @@
 @import "tailwindcss";
+@import "@fontsource-variable/inter";
+@import "@fontsource-variable/space-grotesk";
+@import "@fontsource-variable/onest";
+@import "@fontsource-variable/manrope";
 
 @custom-variant dark (&:is(.dark *));
 
