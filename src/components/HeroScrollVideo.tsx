@@ -334,7 +334,7 @@ export default function HeroScrollVideo({
           animateRevealTo(1, () => {
             // Release the pin — allow the rest of the page to scroll.
             released = true;
-            observer.disable();
+            observer?.disable();
             document.documentElement.style.overflow = prevHtmlOverflow;
             document.body.style.overflow = prevBodyOverflow;
           });
