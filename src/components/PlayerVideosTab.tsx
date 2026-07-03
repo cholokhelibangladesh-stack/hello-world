@@ -48,7 +48,7 @@ const ReelItem = ({
 
   return (
     <div className="relative w-full h-full bg-black snap-start snap-always flex-shrink-0">
-      {video.video_url ? (
+      {video.video_url && isActive ? (
         <video
           ref={videoRef}
           src={safeMediaUrl(video.video_url)}
@@ -56,9 +56,10 @@ const ReelItem = ({
           loop
           muted
           playsInline
+          preload="metadata"
         />
       ) : (
-        <div className="w-full h-full flex items-center justify-center">
+        <div className="w-full h-full flex items-center justify-center bg-black">
           <Play className="h-16 w-16 text-white/40" />
         </div>
       )}
