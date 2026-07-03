@@ -130,44 +130,68 @@ export default function HeroScrollVideo({
   // reveal panel is open.
   const [settledBeat, setSettledBeat] = useState<number>(0);
 
-  // Preload both atlases in parallel.
+  // Full preloading pipeline for both atlases before the observer starts:
+  //   1. download bytes (img.onload)
+  //   2. decode into a bitmap (img.decode())
+  //   3. warm the GPU texture cache by drawing the full atlas to an
+  //      offscreen canvas and reading a pixel back — forces the browser
+  //      to upload the decoded image to the GPU right now.
+  // A subsequent drawImage of any sub-rect is then a cheap texture blit,
+  // so playback never stalls when it first crosses into atlas 1 (~frame 156).
   useEffect(() => {
     if (typeof window === "undefined") return;
     let cancelled = false;
-    const imgs: HTMLImageElement[] = [];
-    const loads = ATLAS_URLS.map(
-      (url, i) =>
-        new Promise<void>((resolve) => {
-          const img = new Image();
-          // sync decode so the FIRST drawImage of a large atlas doesn't
-          // stall the main thread mid-animation (was causing a visible
-          // freeze when playback first crossed into atlas 1)
-          img.decoding = "sync";
-          img.src = url;
-          const finish = () => {
-            imgs[i] = img;
-            atlasImgsRef.current[i] = img;
-            resolve();
-          };
-          img.onload = () => {
-            // Force full decode before we mark the atlas ready.
-            if (typeof img.decode === "function") {
-              img.decode().then(finish).catch(finish);
-            } else {
-              finish();
-            }
-          };
-          img.onerror = () => resolve();
-        })
-    );
 
-    Promise.all(loads).then(() => {
+    const warm = (img: HTMLImageElement) => {
+      const off = document.createElement("canvas");
+      off.width = Math.max(1, img.naturalWidth);
+      off.height = Math.max(1, img.naturalHeight);
+      const octx = off.getContext("2d", { alpha: false });
+      if (!octx) return;
+      octx.drawImage(img, 0, 0);
+      try {
+        // Reading back a pixel forces the GPU pipeline to flush, which
+        // guarantees the texture is fully resident before we resolve.
+        octx.getImageData(0, 0, 1, 1);
+      } catch {
+        /* cross-origin taint — safe to ignore, upload still happened */
+      }
+    };
+
+    const loadOne = (url: string, i: number) =>
+      new Promise<void>((resolve) => {
+        const img = new Image();
+        img.crossOrigin = "anonymous";
+        img.decoding = "sync";
+        const finish = () => {
+          try {
+            warm(img);
+          } catch {
+            /* warm-up is best-effort */
+          }
+          atlasImgsRef.current[i] = img;
+          resolve();
+        };
+        img.onload = () => {
+          if (typeof img.decode === "function") {
+            img.decode().then(finish).catch(finish);
+          } else {
+            finish();
+          }
+        };
+        img.onerror = () => resolve();
+        img.src = url;
+      });
+
+    Promise.all(ATLAS_URLS.map(loadOne)).then(() => {
       if (!cancelled) setReady(true);
     });
+
     return () => {
       cancelled = true;
     };
   }, []);
+
 
   // Actual canvas paint — called at most once per animation frame.
   const paintFrame = (f: number) => {
