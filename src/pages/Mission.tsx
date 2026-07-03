@@ -103,6 +103,7 @@ const Mission = () => {
       <div className="-mt-20">
         <PrivacyPolicy />
       </div>
+      </div>
     </div>
   );
 };
