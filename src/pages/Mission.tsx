@@ -18,12 +18,12 @@ const BLUE_GRADIENT_135 = "linear-gradient(135deg, hsl(var(--teal-deep)) 0%, hsl
 const Hero = () => {
   const { t } = useLanguage();
   return (
-    <section className="relative min-h-[100vh] w-full overflow-hidden bg-[hsl(var(--paper-deep))]">
+    <section className="relative min-h-[100vh] w-full overflow-hidden bg-[#0a1620]">
       <div
         className="pointer-events-none absolute inset-0 opacity-[0.06]"
         style={{
           backgroundImage:
-            "linear-gradient(to right, hsl(var(--foreground)) 1px, transparent 1px)",
+            "linear-gradient(to right, #ffffff 1px, transparent 1px)",
           backgroundSize: "16.6667% 100%",
         }}
       />
@@ -36,14 +36,13 @@ const Hero = () => {
           loop
           muted
           playsInline
-          className="h-full w-full object-cover object-right opacity-90 dark:opacity-90"
+          className="h-full w-full object-cover object-right opacity-90"
         />
-        {/* Fade the video into the page background so it feels seamless in both modes */}
         <div
           className="absolute inset-0"
           style={{
             background:
-              "linear-gradient(90deg, hsl(var(--paper-deep)) 0%, hsl(var(--paper-deep) / 0.85) 35%, hsl(var(--paper-deep) / 0.15) 65%, transparent 100%)",
+              "linear-gradient(90deg, #0a1620 0%, rgba(10,22,32,0.85) 35%, rgba(10,22,32,0.15) 65%, transparent 100%)",
           }}
         />
       </div>
