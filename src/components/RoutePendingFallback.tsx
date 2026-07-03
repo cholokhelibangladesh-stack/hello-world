@@ -6,6 +6,7 @@ export function RoutePendingFallback() {
       role="status"
       aria-live="polite"
       className="fixed inset-0 z-[9999] flex items-center justify-center bg-background/80 backdrop-blur-sm animate-fade-in pointer-events-none"
+      style={{ backgroundColor: "#030303", color: "#f5f7f8" }}
     >
       <div className="flex flex-col items-center gap-3">
         <Loader2 className="h-8 w-8 animate-spin text-foreground/70" />
