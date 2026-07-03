@@ -701,12 +701,13 @@ export default function HeroScrollVideo({
                 but below the CTA content. */}
             <div
               aria-hidden
-              className="pointer-events-none absolute inset-x-0 bottom-0 h-40"
+              className="pointer-events-none absolute inset-x-0 bottom-0 h-56"
               style={{
                 background:
-                  "linear-gradient(to bottom, transparent 0%, hsl(var(--background) / 0.6) 65%, hsl(var(--background)) 100%)",
+                  "linear-gradient(to bottom, transparent 0%, hsl(0 0% 3% / 0.5) 25%, hsl(198 25% 40% / 0.35) 55%, hsl(var(--paper) / 0.9) 85%, hsl(var(--paper)) 100%)",
               }}
             />
+
 
             <div
               className="relative z-10 h-full flex flex-col items-center justify-center px-6 text-center transition-all duration-700 ease-out"
