@@ -3,21 +3,19 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <script>
+      // Apply saved theme before paint to prevent flash
+      (function () {
+        try {
+          var t = localStorage.getItem("theme");
+          if (t === "dark") document.documentElement.classList.add("dark");
+        } catch (e) {}
+      })();
+    </script>
     <style>
-      html,
-      body,
-      #root {
-        margin: 0;
-        min-height: 100%;
-        background: #030303;
-        color: #f5f7f8;
-        color-scheme: dark;
-      }
-
-      #root:empty {
-        min-height: 100vh;
-        background: #030303;
-      }
+      html { background: #d6dee2; color-scheme: light; }
+      html.dark { background: #030303; color-scheme: dark; }
+      body, #root { margin: 0; min-height: 100%; background: inherit; }
     </style>
     <title>Cholo Kheli - Discover Bangladesh&#39;s Sports Talent</title>
     <meta name="description" content="The first platform connecting Bangladesh&#39;s grassroots football &amp; cricket talent with verified scouts. Safe, transparent, corruption-free.">
