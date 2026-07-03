@@ -1,4 +1,5 @@
 import { motion } from "framer-motion";
+import { useState } from "react";
 import a1 from "@/assets/athlete-1.jpg";
 import a2 from "@/assets/athlete-2.jpg";
 import a3 from "@/assets/athlete-3.jpg";
@@ -32,11 +33,16 @@ const RING = [...CARDS, ...CARDS.slice(0, 4)];
  */
 export default function CurvedAthleteCarousel() {
   const N = RING.length;
-  const angleStep = 360 / N; // 30°
   const cardW = 300;
   const cardH = 400;
-  // Radius just above the touching threshold so cards sit shoulder-to-shoulder.
-  const radius = 570;
+
+  // Live-tunable curvature controls.
+  const [radius, setRadius] = useState(570);
+  const [angleSpan, setAngleSpan] = useState(360); // total ring span in deg
+  const [perspective, setPerspective] = useState(1100);
+  const [tilt, setTilt] = useState(60); // perspective-origin Y%
+
+  const angleStep = angleSpan / N;
 
   return (
     <section className="relative overflow-hidden py-24 sm:py-32 bg-background">
@@ -67,8 +73,8 @@ export default function CurvedAthleteCarousel() {
         className="relative w-full carousel-stage"
         style={{
           height: cardH + 140,
-          perspective: "1100px",
-          perspectiveOrigin: "50% 60%",
+          perspective: `${perspective}px`,
+          perspectiveOrigin: `50% ${tilt}%`,
         }}
       >
         <div className="absolute inset-0 flex items-center justify-center">
@@ -140,6 +146,37 @@ export default function CurvedAthleteCarousel() {
           }}
         />
       </div>
+
+      {/* Live curvature tuner */}
+      <div className="fixed bottom-4 right-4 z-50 w-64 rounded-xl border border-white/10 bg-black/80 backdrop-blur-md p-4 text-white shadow-2xl font-mono text-[11px] space-y-3">
+        <div className="flex items-center justify-between">
+          <span className="tracking-[0.2em] uppercase text-white/60">Carousel</span>
+          <span className="text-white/40">tuner</span>
+        </div>
+        {[
+          { label: "Radius", value: radius, set: setRadius, min: 200, max: 1400, step: 10, unit: "px" },
+          { label: "Angle span", value: angleSpan, set: setAngleSpan, min: 90, max: 720, step: 5, unit: "°" },
+          { label: "Perspective", value: perspective, set: setPerspective, min: 400, max: 3000, step: 20, unit: "px" },
+          { label: "Tilt", value: tilt, set: setTilt, min: 0, max: 100, step: 1, unit: "%" },
+        ].map((c) => (
+          <label key={c.label} className="block">
+            <div className="flex items-center justify-between mb-1">
+              <span className="text-white/80">{c.label}</span>
+              <span className="tabular-nums text-white/60">{c.value}{c.unit}</span>
+            </div>
+            <input
+              type="range"
+              min={c.min}
+              max={c.max}
+              step={c.step}
+              value={c.value}
+              onChange={(e) => c.set(Number(e.target.value))}
+              className="w-full accent-primary cursor-pointer"
+            />
+          </label>
+        ))}
+      </div>
+
 
       <style>{`
         @keyframes spinCarousel {
