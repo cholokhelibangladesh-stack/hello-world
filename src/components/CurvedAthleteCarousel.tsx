@@ -1,4 +1,5 @@
 import { motion } from "framer-motion";
+import { useState } from "react";
 import a1 from "@/assets/athlete-1.jpg";
 import a2 from "@/assets/athlete-2.jpg";
 import a3 from "@/assets/athlete-3.jpg";
