@@ -125,14 +125,14 @@ const FloatingHeader = () => {
               to={l.to as any}
               activeOptions={{ exact: true }}
               onClick={() => setOpen(false)}
-              className={`block px-4 py-2.5 rounded-xl text-sm font-medium ${fgSoft} hover:bg-foreground/5 transition-colors [&.active]:font-semibold`}
+              className="block px-4 py-2.5 rounded-xl text-sm font-medium text-foreground/75 hover:text-foreground hover:bg-foreground/5 transition-colors [&.active]:font-semibold [&.active]:text-foreground"
             >
               {l.label}
             </Link>
           ))}
           <button
             onClick={() => { toggleTheme(); setOpen(false); }}
-            className={`w-full flex items-center gap-2 px-4 py-2.5 rounded-xl text-sm font-medium ${fgSoft} hover:bg-foreground/5 transition-colors`}
+            className="w-full flex items-center gap-2 px-4 py-2.5 rounded-xl text-sm font-medium text-foreground/75 hover:text-foreground hover:bg-foreground/5 transition-colors"
           >
             {theme === "dark" ? <Sun className="h-4 w-4" /> : <Moon className="h-4 w-4" />}
             {theme === "dark" ? t("nav.lightMode") : t("nav.darkMode")}
@@ -140,11 +140,11 @@ const FloatingHeader = () => {
 
           {user && (
             <>
-              <div className={`my-1 h-px ${onDark ? "bg-white/10" : "bg-foreground/10"}`} />
+              <div className="my-1 h-px bg-foreground/10" />
               <Link
                 to={dashboard as any}
                 onClick={() => setOpen(false)}
-                className={`flex items-center gap-2 px-4 py-2.5 rounded-xl text-sm font-medium ${fgSoft} hover:bg-foreground/5 transition-colors`}
+                className="flex items-center gap-2 px-4 py-2.5 rounded-xl text-sm font-medium text-foreground/75 hover:text-foreground hover:bg-foreground/5 transition-colors"
               >
                 <LayoutDashboard className="h-4 w-4" />
                 {t("nav.dashboard")}
@@ -152,7 +152,7 @@ const FloatingHeader = () => {
               <button
                 onClick={handleSignOut}
                 disabled={busy}
-                className={`w-full flex items-center gap-2 px-4 py-2.5 rounded-xl text-sm font-medium ${fgSoft} hover:bg-foreground/5 transition-colors`}
+                className="w-full flex items-center gap-2 px-4 py-2.5 rounded-xl text-sm font-medium text-foreground/75 hover:text-foreground hover:bg-foreground/5 transition-colors"
               >
                 <LogOut className="h-4 w-4" />
                 {t("nav.signOut")}
