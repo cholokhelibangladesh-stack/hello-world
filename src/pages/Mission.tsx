@@ -84,11 +84,23 @@ const Hero = () => {
               className="group mt-6 inline-flex items-center gap-3 rounded-md p-[1px]"
               style={{ background: BLUE_GRADIENT }}
             >
-              <span className="flex items-center justify-between gap-6 rounded-[5px] bg-[#0a1620] px-6 py-3.5 min-w-[280px] transition-colors group-hover:bg-transparent">
-                <span className="text-[11px] tracking-[0.35em] font-mono uppercase text-white">
+              <span
+                className="flex items-center justify-between gap-6 rounded-[5px] px-6 py-3.5 min-w-[280px] transition-colors
+                  bg-[hsl(var(--teal-soft))] group-hover:bg-[hsl(var(--teal-deep))]
+                  dark:bg-[#0a1620] dark:group-hover:bg-transparent"
+              >
+                <span
+                  className="text-[11px] tracking-[0.35em] font-mono uppercase transition-colors
+                    text-[hsl(var(--teal-deep))] group-hover:text-white
+                    dark:text-white dark:group-hover:text-white"
+                >
                   {t("mission.hero.cta")}
                 </span>
-                <ArrowUpRight className="h-4 w-4 text-white" />
+                <ArrowUpRight
+                  className="h-4 w-4 transition-colors
+                    text-[hsl(var(--teal-deep))] group-hover:text-white
+                    dark:text-white dark:group-hover:text-white"
+                />
               </span>
             </Link>
           </motion.div>
