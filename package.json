@@ -15,7 +15,7 @@
   },
   "dependencies": {
     "@hookform/resolvers": "^3.10.0",
-    "@lovable.dev/vite-tanstack-config": "2.6.4",
+    "@lovable.dev/vite-tanstack-config": "2.7.0",
     "@radix-ui/react-accordion": "^1.2.14",
     "@radix-ui/react-alert-dialog": "^1.1.17",
     "@radix-ui/react-aspect-ratio": "^1.1.10",
@@ -55,6 +55,7 @@
     "date-fns": "^3.6.0",
     "embla-carousel-react": "^8.6.0",
     "framer-motion": "^12.42.0",
+    "gsap": "^3.15.0",
     "input-otp": "^1.4.2",
     "jspdf": "^4.2.1",
     "lucide-react": "0.544.0",

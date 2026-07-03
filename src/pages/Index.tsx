@@ -12,6 +12,7 @@ import BangladeshMapTestimonials from "@/components/BangladeshMapTestimonials";
 import VideoHighlights from "@/components/VideoHighlights";
 import CholoKheliMark from "@/components/CholoKheliMark";
 import HeroMistCursor from "@/components/HeroMistCursor";
+import HeroScrollVideo from "@/components/HeroScrollVideo";
 import heroImg from "@/assets/hero-cricket.jpg.asset.json";
 import statsImg from "@/assets/stats-football.jpg.asset.json";
 import stadiumImg from "@/assets/stadium-dusk.jpg.asset.json";
@@ -309,11 +310,6 @@ const Index = () => {
   const [verifiedScouts, setVerifiedScouts] = useState<ScoutProfile[]>(FALLBACK_SCOUTS);
   const [scoutIndex, setScoutIndex] = useState(0);
 
-  const heroRef = useRef<HTMLDivElement>(null);
-  const { scrollYProgress } = useScroll({ target: heroRef, offset: ["start start", "end start"] });
-  const heroOpacity = useTransform(scrollYProgress, [0, 0.7], [1, 0]);
-  const videoY      = useTransform(scrollYProgress, [0, 1], ["0%", "18%"]);
-  const videoScale  = useTransform(scrollYProgress, [0, 0.7], [1, 1.06]);
 
   useEffect(() => {
     const isPlaceholder = !import.meta.env.VITE_SUPABASE_URL;
@@ -344,171 +340,18 @@ const Index = () => {
     <div className="min-h-screen overflow-x-hidden bg-background">
 
       {/* ══════════════════════════════════════════
-          HERO — Centered Mark, paper minimalism
+          HERO — Scroll-scrubbed cinematic video (GSAP)
       ══════════════════════════════════════════ */}
-      <section
-        ref={heroRef}
-        className="relative min-h-[100svh] flex items-center justify-center overflow-hidden surface-paper"
-      >
-        {/* Cinematic backdrop */}
-        <motion.div
-          className="absolute inset-0 pointer-events-none overflow-hidden"
-          style={{ opacity: heroOpacity, y: videoY, scale: videoScale }}
-        >
-          <img
-            src={heroImg.url}
-            alt=""
-            aria-hidden
-            loading="eager"
-            decoding="async"
-            {...({ fetchpriority: "high" } as any)}
-            className="w-full h-full object-cover"
-          />
-          {/* Dark tint for text legibility over foggy night image */}
-          <div
-            className="absolute inset-0"
-            style={{
-              background:
-                "linear-gradient(to bottom, hsl(200 40% 4% / 0.45) 0%, hsl(200 40% 6% / 0.55) 55%, hsl(var(--paper-deep) / 0.95) 100%)",
-            }}
-          />
+      <HeroScrollVideo
+        tagline={T.heroTagline}
+        scrollLabel={T.scroll}
+        joinLabel={T.joinAsPlayer}
+        scoutLabel={T.imAScout}
+        openDashboardLabel={T.openDashboard}
+        isAuthed={!!(user && role)}
+        dashboardHref={role === "admin" ? "/admin" : role === "scout" ? "/scout" : "/player"}
+      />
 
-        </motion.div>
-
-        {/* Cursor-following foggy mist */}
-        <HeroMistCursor />
-
-
-
-        {/* Subtle vertical grid lines — light mode only */}
-        <div
-          className="absolute inset-0 pointer-events-none opacity-[0.05] dark:hidden"
-          style={{
-            backgroundImage:
-              "linear-gradient(to right, hsl(var(--foreground)) 1px, transparent 1px)",
-            backgroundSize: "12.5% 100%",
-          }}
-        />
-
-
-        {/* Centered mark + wordmark */}
-        <motion.div
-          style={{ opacity: heroOpacity }}
-          className="relative z-10 flex flex-col items-center text-center px-6 max-w-3xl"
-        >
-          <motion.div
-            initial={{ opacity: 0, y: 12, scale: 0.96 }}
-            animate={{ opacity: 1, y: 0, scale: 1 }}
-            transition={{ duration: 0.5, delay: 0.05, ease: [0.22, 1, 0.36, 1] }}
-          >
-            <CholoKheliMark
-              className="h-28 w-36 sm:h-36 sm:w-48 text-white drop-shadow-[0_4px_20px_rgba(0,0,0,0.6)]"
-              accent="hsl(188 60% 70%)"
-            />
-          </motion.div>
-
-          {/* Wordmark — letter cascade */}
-          <div className="mt-6 sm:mt-8 flex items-baseline justify-center gap-3 sm:gap-4">
-            {["CHOLO", "KHELI"].map((word, wi) => (
-              <div key={word} className="flex">
-                {word.split("").map((char, i) => (
-                  <motion.span
-                    key={`${word}-${i}`}
-                    initial={{ opacity: 0, y: 16, filter: "blur(6px)" }}
-                    animate={{ opacity: 1, y: 0, filter: "blur(0px)" }}
-                    transition={{
-                      delay: 0.15 + wi * 0.08 + i * 0.025,
-                      duration: 0.4,
-                      ease: [0.22, 1, 0.36, 1],
-                    }}
-                    className={`font-display text-5xl sm:text-7xl lg:text-8xl leading-none tracking-[0.04em] drop-shadow-[0_4px_24px_rgba(0,0,0,0.7)] ${
-                      wi === 1 ? "font-bold text-[hsl(188_60%_72%)]" : "font-medium text-white"
-                    }`}
-                  >
-                    {char}
-                  </motion.span>
-                ))}
-              </div>
-            ))}
-          </div>
-
-          {/* Tagline */}
-          <motion.p
-            initial={{ opacity: 0, y: 12 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ delay: 0.5, duration: 0.5, ease: [0.22, 1, 0.36, 1] }}
-            className="mt-8 text-base sm:text-lg text-white/85 max-w-xl leading-relaxed drop-shadow-[0_2px_8px_rgba(0,0,0,0.6)]"
-          >
-            {T.heroTagline}
-          </motion.p>
-
-          {/* CTAs */}
-          <motion.div
-            initial={{ opacity: 0, y: 12 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ delay: 0.65, duration: 0.5, ease: [0.22, 1, 0.36, 1] }}
-            className="mt-10 flex flex-col sm:flex-row gap-3"
-          >
-            {user && role ? (
-              <Link to={(role === "admin" ? "/admin" : role === "scout" ? "/scout" : "/player") as any}>
-                <Button
-                  size="lg"
-                  className="font-medium text-base px-9 py-6 rounded-full"
-                  style={{ background: "hsl(var(--teal-deep))", color: "hsl(var(--primary-foreground))" }}
-                >
-                  {T.openDashboard} <ArrowRight className="ml-2 h-4 w-4" />
-                </Button>
-              </Link>
-            ) : (
-              <>
-                <Link to="/auth">
-                  <Button
-                    size="lg"
-                    className="font-medium text-base px-9 py-6 rounded-full"
-                    style={{ background: "hsl(var(--teal-deep))", color: "hsl(var(--primary-foreground))" }}
-                  >
-                    {T.joinAsPlayer} <ArrowRight className="ml-2 h-4 w-4" />
-                  </Button>
-                </Link>
-                <Link to="/auth" search={{ role: "scout" }}>
-                  <Button
-                    size="lg"
-                    variant="outline"
-                    className="font-medium text-base px-9 py-6 rounded-full bg-white/5 backdrop-blur-sm hover:bg-white/15"
-                    style={{ borderColor: "rgba(255,255,255,0.4)", color: "#ffffff" }}
-                  >
-                    {T.imAScout}
-                  </Button>
-                </Link>
-              </>
-            )}
-          </motion.div>
-
-        </motion.div>
-
-        {/* Scroll nudge */}
-        <motion.div
-          initial={{ opacity: 0 }}
-          animate={{ opacity: 1 }}
-          transition={{ delay: 1, duration: 0.5 }}
-          className="absolute bottom-8 left-1/2 -translate-x-1/2 z-10 flex flex-col items-center gap-1.5"
-        >
-          <span className="text-[9px] tracking-[0.35em] uppercase text-white/70">{T.scroll}</span>
-          <motion.div animate={{ y: [0, 6, 0] }} transition={{ duration: 1.6, repeat: Infinity }}>
-            <ChevronDown className="h-4 w-4 text-white/70" />
-          </motion.div>
-        </motion.div>
-
-
-        {/* Seamless fade into next band */}
-        <div
-          className="absolute bottom-0 left-0 right-0 h-32 pointer-events-none z-[2]"
-          style={{
-            background:
-              "linear-gradient(to bottom, transparent, hsl(var(--paper-deep)))",
-          }}
-        />
-      </section>
 
       {/* ══════════════════════════════════════════
           SPORTS GRID — Hover to reveal
