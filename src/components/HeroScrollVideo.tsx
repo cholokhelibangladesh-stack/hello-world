@@ -3,7 +3,8 @@ import { Link } from "@tanstack/react-router";
 import { ArrowRight } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import CholoKheliMark from "@/components/CholoKheliMark";
-import atlas from "@/assets/hero-atlas.jpg.asset.json";
+import atlas0 from "@/assets/hero-atlas-0.jpg.asset.json";
+import atlas1 from "@/assets/hero-atlas-1.jpg.asset.json";
 import mistyField from "@/assets/hero-field-reveal.jpg.asset.json";
 
 interface HeroScrollVideoProps {
@@ -30,11 +31,13 @@ interface HeroScrollVideoProps {
  *  70  — basketball has dropped through the net (final beat)
  */
 
-const ATLAS_COLS = 15;
-const ATLAS_ROWS = 20;
-const FRAME_W = 960;
-const FRAME_H = 540;
+const ATLAS_COLS = 12;
+const ATLAS_ROWS = 13;
+const FRAME_W = 1280;
+const FRAME_H = 720;
 const FRAME_COUNT = 295;
+const FRAMES_PER_ATLAS = ATLAS_COLS * ATLAS_ROWS; // 156
+const ATLAS_URLS = [atlas0.url, atlas1.url];
 
 
 
@@ -100,7 +103,7 @@ export default function HeroScrollVideo({
   const wrapRef = useRef<HTMLDivElement>(null);
   const pinRef = useRef<HTMLDivElement>(null);
   const canvasRef = useRef<HTMLCanvasElement>(null);
-  const atlasImgRef = useRef<HTMLImageElement | null>(null);
+  const atlasImgsRef = useRef<(HTMLImageElement | null)[]>([null, null]);
   const currentFrameRef = useRef<number>(-1);
   const pendingFrameRef = useRef<number>(-1);
   const rafRef = useRef<number | null>(null);
@@ -113,25 +116,38 @@ export default function HeroScrollVideo({
   const [revealCTA, setRevealCTA] = useState(0);
   const [ready, setReady] = useState(false);
 
-  // Preload the atlas.
+  // Preload both atlases in parallel.
   useEffect(() => {
     if (typeof window === "undefined") return;
-    const img = new Image();
-    img.decoding = "async";
-    img.src = atlas.url;
-    img.onload = () => {
-      atlasImgRef.current = img;
-      setReady(true);
-    };
+    let cancelled = false;
+    const imgs: HTMLImageElement[] = [];
+    const loads = ATLAS_URLS.map(
+      (url, i) =>
+        new Promise<void>((resolve) => {
+          const img = new Image();
+          img.decoding = "async";
+          img.src = url;
+          img.onload = () => {
+            imgs[i] = img;
+            atlasImgsRef.current[i] = img;
+            resolve();
+          };
+          img.onerror = () => resolve();
+        })
+    );
+    Promise.all(loads).then(() => {
+      if (!cancelled) setReady(true);
+    });
     return () => {
-      img.onload = null;
+      cancelled = true;
     };
   }, []);
 
   // Actual canvas paint — called at most once per animation frame.
   const paintFrame = (f: number) => {
     const canvas = canvasRef.current;
-    const img = atlasImgRef.current;
+    const atlasIdx = Math.min(ATLAS_URLS.length - 1, Math.floor(f / FRAMES_PER_ATLAS));
+    const img = atlasImgsRef.current[atlasIdx];
     if (!canvas || !img) return;
     if (currentFrameRef.current === f) return;
     currentFrameRef.current = f;
@@ -153,8 +169,9 @@ export default function HeroScrollVideo({
       ctx.imageSmoothingQuality = "high";
     }
 
-    const col = f % ATLAS_COLS;
-    const row = Math.floor(f / ATLAS_COLS);
+    const localIdx = f - atlasIdx * FRAMES_PER_ATLAS;
+    const col = localIdx % ATLAS_COLS;
+    const row = Math.floor(localIdx / ATLAS_COLS);
     const sx = col * FRAME_W;
     const sy = row * FRAME_H;
 
@@ -279,38 +296,52 @@ export default function HeroScrollVideo({
       }
       snapPoints.push(1);
 
+      // Track the last settled snap point. Every new scroll gesture
+      // advances (or retreats) exactly ONE beat from here — regardless of
+      // how large the wheel/trackpad delta was. Guarantees the frame
+      // always lands on a text-reveal boundary.
+      let lastSettled = 0;
+      const EPS = 0.0005;
+
       const ctx = gsap.context(() => {
         ScrollTrigger.create({
           trigger: wrap,
           start: "top top",
-          // Much longer scroll distance — one wheel/trackpad tick advances a
-          // small fraction of a beat instead of blowing through the whole
-          // section. This is the main scroll-sensitivity dial.
           end: () => "+=" + window.innerHeight * 14,
           pin: pin,
           pinSpacing: true,
-          // Higher scrub = the frame timeline lazily eases toward scroll
-          // position, so a flick spreads its work across ~1.4s of animation
-          // frames instead of one giant jank.
-          scrub: 1.4,
+          // Lower scrub = the frame timeline reaches the target faster
+          // after the user stops scrolling, so the snap "click" feels
+          // immediate and deliberate rather than laggy.
+          scrub: 0.6,
           anticipatePin: 1,
           invalidateOnRefresh: true,
           snap: {
             snapTo: (value) => {
-              let best = snapPoints[0];
-              let bestDist = Math.abs(value - best);
-              for (const p of snapPoints) {
-                const d = Math.abs(value - p);
-                if (d < bestDist) {
-                  best = p;
-                  bestDist = d;
+              // Direction relative to the last committed beat.
+              if (value > lastSettled + EPS) {
+                // Scrolling forward: pick the NEXT snap point strictly
+                // greater than lastSettled — never skip ahead.
+                for (const p of snapPoints) {
+                  if (p > lastSettled + EPS) {
+                    lastSettled = p;
+                    return p;
+                  }
+                }
+              } else if (value < lastSettled - EPS) {
+                // Scrolling backward: pick the PREVIOUS snap point.
+                for (let i = snapPoints.length - 1; i >= 0; i--) {
+                  if (snapPoints[i] < lastSettled - EPS) {
+                    lastSettled = snapPoints[i];
+                    return snapPoints[i];
+                  }
                 }
               }
-              return best;
+              return lastSettled;
             },
-            duration: { min: 0.4, max: 1.1 },
-            delay: 0.12,
-            ease: "power2.inOut",
+            duration: { min: 0.5, max: 0.9 },
+            delay: 0.05,
+            ease: "power3.inOut",
             directional: false,
           },
           onRefresh: () => {
