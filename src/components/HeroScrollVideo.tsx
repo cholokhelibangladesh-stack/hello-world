@@ -368,6 +368,7 @@ export default function HeroScrollVideo({
       const MIN_TRANSITION = 0.35;  // seconds, floor for very short hops
       const REVEAL_DURATION = 0.7;  // seconds, panel slide-in
       const GESTURE_TOLERANCE = 10; // pixels — ignore micro-noise
+      const TEXT_SETTLE_MS = 380;   // hold input until beat text finishes appearing
       const N = BEATS.length;
 
       // ─── mutable driver state ─────────────────────────────────────
@@ -384,7 +385,7 @@ export default function HeroScrollVideo({
       setBeat(0);
 
       // ─── frame tween (constant PLAYBACK_FPS) ──────────────────────
-      const animateFrameTo = (target: number, done?: () => void) => {
+      const animateFrameTo = (target: number, done?: () => void, settleMs = 0) => {
         animating = true;
         const delta = Math.abs(target - anim.f);
         const duration = Math.max(MIN_TRANSITION, delta / PLAYBACK_FPS);
@@ -398,8 +399,12 @@ export default function HeroScrollVideo({
 
           onUpdate: () => scheduleFrame(anim.f),
           onComplete: () => {
-            animating = false;
             done?.();
+            if (settleMs > 0) {
+              setTimeout(() => { animating = false; }, settleMs);
+            } else {
+              animating = false;
+            }
           },
         });
       };
@@ -447,7 +452,7 @@ export default function HeroScrollVideo({
             beatRef.current = next;
             setBeat(next);
             setSettledBeat(next);
-          });
+          }, TEXT_SETTLE_MS);
         } else if (anim.r < 1) {
           animateRevealTo(1, () => {
             // Release the pin — allow the rest of the page to scroll.
@@ -481,7 +486,7 @@ export default function HeroScrollVideo({
             beatRef.current = prev;
             setBeat(prev);
             setSettledBeat(prev);
-          });
+          }, TEXT_SETTLE_MS);
         } else {
           // Already at first beat — snap overlays back on.
           beatRef.current = 0;
