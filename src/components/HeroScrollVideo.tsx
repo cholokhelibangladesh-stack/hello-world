@@ -50,35 +50,35 @@ interface Beat {
 
 const BEATS: Beat[] = [
   {
-    frame: 2,
+    frame: 8,
     kind: "split",
     kicker: "BANGLADESH",
     titleA: "From every para,",
     titleB: "a nation of players.",
   },
   {
-    frame: 15,
+    frame: 60,
     kind: "center",
     kicker: "WELCOME TO",
     titleA: "Cholo Kheli.",
     body: "The home of Bangladeshi sport — where every talent is seen.",
   },
   {
-    frame: 27,
+    frame: 108,
     kind: "split",
     kicker: "CRICKET",
     titleA: "Every over,",
     titleB: "every opportunity.",
   },
   {
-    frame: 50,
+    frame: 199,
     kind: "left",
     kicker: "BASKETBALL",
     titleA: "Rise. Reach.",
     titleB: "Be recruited.",
   },
   {
-    frame: 70,
+    frame: 279,
     kind: "center",
     kicker: "EVERY ATHLETE",
     titleA: "Discovered on merit.",
