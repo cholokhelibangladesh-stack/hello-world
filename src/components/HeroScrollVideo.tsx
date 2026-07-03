@@ -102,6 +102,13 @@ export default function HeroScrollVideo({
   const canvasRef = useRef<HTMLCanvasElement>(null);
   const atlasImgRef = useRef<HTMLImageElement | null>(null);
   const currentFrameRef = useRef<number>(-1);
+  const pendingFrameRef = useRef<number>(-1);
+  const rafRef = useRef<number | null>(null);
+  const canvasSizeRef = useRef<{ w: number; h: number }>({ w: 0, h: 0 });
+  // Cached beat/reveal so we only touch React state when the visible
+  // panel actually changes — avoids a re-render on every scroll tick.
+  const beatRef = useRef<number>(0);
+  const revealRef = useRef<number>(0);
   const [beat, setBeat] = useState<number>(0);
   const [revealCTA, setRevealCTA] = useState(0);
   const [ready, setReady] = useState(false);
@@ -121,24 +128,29 @@ export default function HeroScrollVideo({
     };
   }, []);
 
-  // Draw a specific frame into the canvas, letterboxed to cover.
-  const drawFrame = (frame: number) => {
+  // Actual canvas paint — called at most once per animation frame.
+  const paintFrame = (f: number) => {
     const canvas = canvasRef.current;
     const img = atlasImgRef.current;
     if (!canvas || !img) return;
-    const f = Math.max(0, Math.min(FRAME_COUNT - 1, Math.round(frame)));
     if (currentFrameRef.current === f) return;
     currentFrameRef.current = f;
-    const ctx = canvas.getContext("2d");
+    const ctx = canvas.getContext("2d", { alpha: false });
     if (!ctx) return;
 
-    // Size canvas to viewport (accounting for DPR) once per resize.
+    // Size canvas to viewport (accounting for DPR) — recompute only when
+    // the layout box actually changes, not on every draw.
     const dpr = Math.min(2, window.devicePixelRatio || 1);
     const cw = canvas.clientWidth;
     const ch = canvas.clientHeight;
-    if (canvas.width !== Math.floor(cw * dpr) || canvas.height !== Math.floor(ch * dpr)) {
-      canvas.width = Math.floor(cw * dpr);
-      canvas.height = Math.floor(ch * dpr);
+    const targetW = Math.floor(cw * dpr);
+    const targetH = Math.floor(ch * dpr);
+    if (canvasSizeRef.current.w !== targetW || canvasSizeRef.current.h !== targetH) {
+      canvas.width = targetW;
+      canvas.height = targetH;
+      canvasSizeRef.current = { w: targetW, h: targetH };
+      ctx.imageSmoothingEnabled = true;
+      ctx.imageSmoothingQuality = "high";
     }
 
     const col = f % ATLAS_COLS;
@@ -147,8 +159,6 @@ export default function HeroScrollVideo({
     const sy = row * FRAME_H;
 
     // object-fit: cover math
-    const targetW = canvas.width;
-    const targetH = canvas.height;
     const srcAspect = FRAME_W / FRAME_H;
     const dstAspect = targetW / targetH;
     let dw: number, dh: number, dx: number, dy: number;
@@ -165,6 +175,21 @@ export default function HeroScrollVideo({
     }
     ctx.drawImage(img, sx, sy, FRAME_W, FRAME_H, dx, dy, dw, dh);
   };
+
+  // Coalesce multiple frame requests within the same animation frame into
+  // a single draw. This is the key jank-reduction on low-end devices —
+  // many scroll ticks per frame collapse to one paint.
+  const scheduleFrame = (frameFloat: number) => {
+    const f = Math.max(0, Math.min(FRAME_COUNT - 1, Math.round(frameFloat)));
+    pendingFrameRef.current = f;
+    if (rafRef.current != null) return;
+    rafRef.current = requestAnimationFrame(() => {
+      rafRef.current = null;
+      const next = pendingFrameRef.current;
+      if (next >= 0) paintFrame(next);
+    });
+  };
+
 
   // ScrollTrigger driver.
   useEffect(() => {
