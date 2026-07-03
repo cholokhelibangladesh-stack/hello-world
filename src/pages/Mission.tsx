@@ -303,12 +303,12 @@ const WhatWeDo = () => {
                 style={{ background: BLUE_GRADIENT }}
               />
               {[
-                { Icon: ShieldCheck, k: "s1" },
-                { Icon: Users, k: "s2" },
-                { Icon: TrendingUp, k: "s3" },
-              ].map(({ Icon, k }, i) => (
+                { Icon: ShieldCheck, title: t("mission.what.s1.title"), body: t("mission.what.s1.body") },
+                { Icon: Users, title: t("mission.what.s2.title"), body: t("mission.what.s2.body") },
+                { Icon: TrendingUp, title: t("mission.what.s3.title"), body: t("mission.what.s3.body") },
+              ].map(({ Icon, title, body }, i) => (
                 <motion.div
-                  key={k}
+                  key={title}
                   initial={{ opacity: 0, y: 10 }}
                   whileInView={{ opacity: 1, y: 0 }}
                   viewport={{ once: true, margin: "-40px" }}
@@ -323,10 +323,10 @@ const WhatWeDo = () => {
                   </div>
                   <div className="space-y-1">
                     <h4 className="font-display text-foreground text-base tracking-tight">
-                      {t(`mission.what.${k}.title`)}
+                      {title}
                     </h4>
                     <p className="text-foreground/65 text-sm leading-relaxed">
-                      {t(`mission.what.${k}.body`)}
+                      {body}
                     </p>
                   </div>
                 </motion.div>
