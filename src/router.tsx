@@ -5,6 +5,8 @@ import { toast } from "sonner";
 import { routeTree } from "./routeTree.gen";
 import { formatErrorForUser, reportError } from "@/lib/errors";
 import { RouteErrorFallback } from "@/components/RouteErrorFallback";
+import { RoutePendingFallback } from "@/components/RoutePendingFallback";
+
 
 export const getRouter = () => {
   const queryClient = new QueryClient({
