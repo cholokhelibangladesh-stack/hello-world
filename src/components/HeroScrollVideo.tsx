@@ -2,7 +2,7 @@ import { useEffect, useRef, useState } from "react";
 import { Link } from "@tanstack/react-router";
 import { ArrowRight } from "lucide-react";
 import { Button } from "@/components/ui/button";
-import CholoKheliMark from "@/components/CholoKheliMark";
+
 import atlas0 from "@/assets/hero-atlas-0.jpg.asset.json";
 import atlas1 from "@/assets/hero-atlas-1.jpg.asset.json";
 import mistyField from "@/assets/hero-field-reveal.jpg.asset.json";
