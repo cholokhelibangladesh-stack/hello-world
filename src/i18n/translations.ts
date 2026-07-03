@@ -249,6 +249,7 @@ export const translations = {
     "nav.lightMode": "লাইট মোড",
     "nav.darkMode": "ডার্ক মোড",
     "nav.toggleTheme": "থিম পরিবর্তন",
+    "nav.privacy": "গোপনীয়তা নীতি",
 
     // Footer
     "footer.tagline":
