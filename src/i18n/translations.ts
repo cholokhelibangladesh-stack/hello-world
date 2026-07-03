@@ -16,6 +16,7 @@ export const translations = {
     "nav.lightMode": "Light mode",
     "nav.darkMode": "Dark mode",
     "nav.toggleTheme": "Toggle theme",
+    "nav.privacy": "Privacy Policy",
 
     // Footer
     "footer.tagline":
@@ -181,6 +182,57 @@ export const translations = {
     "safe.contact.legal": "Legal",
     "safe.contact.support": "Support",
     "safe.contact.helpline": "Helpline",
+
+    // About / Mission page
+    "mission.hero.title": "We Digitise Bangladesh Sports.",
+    "mission.hero.body":
+      "Cholo Kheli connects Bangladesh's grassroots talent with verified scouts through a safe, transparent platform — turning raw ability into recognised opportunity.",
+    "mission.hero.cta": "Try it now",
+    "mission.hero.scroll": "Scroll for more",
+
+    "mission.history.title": "Our History",
+    "mission.history.d1": "Feb 13, 2026",
+    "mission.history.b1": "The idea was established — a platform to bring Bangladesh's grassroots athletes into the same conversation as verified scouts.",
+    "mission.history.d2": "Mar 8, 2026",
+    "mission.history.b2": "The concept was validated by a tech CEO whose feedback gave us the conviction to keep building.",
+    "mission.history.d3": "Mar 26, 2026",
+    "mission.history.b3": "We ran a nationwide survey that proved real, measurable demand for a trusted scouting product.",
+    "mission.history.d4": "Jul 10, 2026",
+    "mission.history.b4": "Official start of Cholo Kheli — the team, the mission, the platform, live.",
+
+    "mission.what.title": "What We Do",
+    "mission.what.lead":
+      "A single stack that turns raw talent into recognised opportunity — built for players, scouts, and the federations that back them.",
+    "mission.what.t1": "Scout Discovery",
+    "mission.what.b1":
+      "Verified scouts explore a searchable index of players filtered by sport, district, position and highlight quality — no gatekeepers, no middlemen.",
+    "mission.what.t2": "Player Profiles",
+    "mission.what.b2":
+      "Athletes build a single, credible profile: verified stats, curated highlight reels, a resume that follows them wherever the game takes them.",
+    "mission.what.t3": "Safe Selections",
+    "mission.what.b3":
+      "Every scout is vetted, every contact is logged. Selections happen inside a transparent audit trail, so families and federations can trust the outcome.",
+
+    "mission.team.title": "Meet Our Team",
+    "mission.team.ceo": "Chief Executive Officer",
+    "mission.team.quote":
+      "Cholo Kheli isn't just a product — it's the digital infrastructure Bangladeshi sport has been waiting for. Every athlete in this country deserves a fair shot at being seen, and we're here to make sure they get one.",
+    "mission.team.role": "CEO, Cholo Kheli · CEO, NRK Group",
+
+    "mission.news.title": "Latest News",
+    "mission.news.subtitle": "Updates from the field",
+    "mission.news.n1.tag": "Launch",
+    "mission.news.n1.date": "Jul 10, 2026",
+    "mission.news.n1.title": "Cholo Kheli officially goes live across Bangladesh",
+    "mission.news.n1.body": "Our platform opens to players and verified scouts nationwide — bringing safe, transparent scouting to every district.",
+    "mission.news.n2.tag": "Product",
+    "mission.news.n2.date": "Jun 22, 2026",
+    "mission.news.n2.title": "New player profiles roll out with verified stats",
+    "mission.news.n2.body": "Athletes can now showcase verified performance data and curated highlight reels — a credible digital resume for every player.",
+    "mission.news.n3.tag": "Community",
+    "mission.news.n3.date": "May 30, 2026",
+    "mission.news.n3.title": "Nationwide survey confirms demand for grassroots scouting",
+    "mission.news.n3.body": "Responses from across the country prove families and coaches want a safer, more transparent path from local grounds to national opportunity.",
   },
 
   bn: {
@@ -197,6 +249,7 @@ export const translations = {
     "nav.lightMode": "লাইট মোড",
     "nav.darkMode": "ডার্ক মোড",
     "nav.toggleTheme": "থিম পরিবর্তন",
+    "nav.privacy": "গোপনীয়তা নীতি",
 
     // Footer
     "footer.tagline":
@@ -363,6 +416,57 @@ export const translations = {
     "safe.contact.legal": "আইনি",
     "safe.contact.support": "সহায়তা",
     "safe.contact.helpline": "হেল্পলাইন",
+
+    // About / Mission page
+    "mission.hero.title": "আমরা বাংলাদেশের ক্রীড়াকে ডিজিটাল করছি।",
+    "mission.hero.body":
+      "চলো খেলি বাংলাদেশের তৃণমূল প্রতিভাকে যাচাইকৃত স্কাউটদের সাথে যুক্ত করে — একটি নিরাপদ, স্বচ্ছ প্ল্যাটফর্মের মাধ্যমে কাঁচা প্রতিভাকে স্বীকৃত সুযোগে রূপান্তর করে।",
+    "mission.hero.cta": "এখনই চেষ্টা করুন",
+    "mission.hero.scroll": "আরও দেখতে স্ক্রল করুন",
+
+    "mission.history.title": "আমাদের ইতিহাস",
+    "mission.history.d1": "১৩ ফেব্রু, ২০২৬",
+    "mission.history.b1": "ধারণাটির জন্ম — বাংলাদেশের তৃণমূল অ্যাথলেটদের যাচাইকৃত স্কাউটদের সাথে এক মঞ্চে আনার একটি প্ল্যাটফর্ম।",
+    "mission.history.d2": "৮ মার্চ, ২০২৬",
+    "mission.history.b2": "একজন টেক সিইও-এর সমর্থন আমাদের ধারণাকে বাস্তবায়ন করতে অনুপ্রাণিত করেছিল।",
+    "mission.history.d3": "২৬ মার্চ, ২০২৬",
+    "mission.history.b3": "আমরা একটি জাতীয় জরিপ পরিচালনা করেছি যা প্রমাণ করেছে বিশ্বস্ত স্কাউটিং পণ্যের প্রকৃত চাহিদা রয়েছে।",
+    "mission.history.d4": "১০ জুলাই, ২০২৬",
+    "mission.history.b4": "চলো খেলির আনুষ্ঠানিক যাত্রা শুরু — টিম, লক্ষ্য, প্ল্যাটফর্ম, সবই সক্রিয়।",
+
+    "mission.what.title": "আমরা যা করি",
+    "mission.what.lead":
+      "একটি সমন্বিত প্ল্যাটফর্ম যা কাঁচা প্রতিভাকে স্বীকৃত সুযোগে রূপান্তর করে — খেলোয়াড়, স্কাউট এবং তাদের সমর্থনকারী ফেডারেশনের জন্য।",
+    "mission.what.t1": "স্কাউট অনুসন্ধান",
+    "mission.what.b1":
+      "যাচাইকৃত স্কাউটরা খেলা, জেলা, পজিশন ও হাইলাইট মান অনুসারে খেলোয়াড়দের একটি অনুসন্ধানযোগ্য তালিকা দেখতে পারেন — কোনো মধ্যস্বত্বভোগী নেই।",
+    "mission.what.t2": "খেলোয়াড় প্রোফাইল",
+    "mission.what.b2":
+      "অ্যাথলেটরা একটি বিশ্বস্ত প্রোফাইল তৈরি করেন: যাচাইকৃত পরিসংখ্যান, হাইলাইট রিল, এবং একটি রেজুমে যা তাদের সাথে সর্বত্র যায়।",
+    "mission.what.t3": "নিরাপদ নির্বাচন",
+    "mission.what.b3":
+      "প্রতিটি স্কাউট যাচাইকৃত, প্রতিটি যোগাযোগ নথিভুক্ত। নির্বাচন স্বচ্ছ পদ্ধতিতে হয় যাতে পরিবার ও ফেডারেশন ফলাফলে আস্থা রাখতে পারে।",
+
+    "mission.team.title": "আমাদের টিমের সাথে পরিচিত হোন",
+    "mission.team.ceo": "প্রধান নির্বাহী কর্মকর্তা",
+    "mission.team.quote":
+      "চলো খেলি শুধু একটি পণ্য নয় — এটি সেই ডিজিটাল অবকাঠামো যার জন্য বাংলাদেশি খেলা অপেক্ষা করছিল। এই দেশের প্রতিটি অ্যাথলেটের একটি ন্যায্য সুযোগ প্রাপ্য, এবং আমরা তা নিশ্চিত করতে এসেছি।",
+    "mission.team.role": "সিইও, চলো খেলি · সিইও, এনআরকে গ্রুপ",
+
+    "mission.news.title": "সর্বশেষ খবর",
+    "mission.news.subtitle": "মাঠ থেকে আপডেট",
+    "mission.news.n1.tag": "লঞ্চ",
+    "mission.news.n1.date": "১০ জুলাই, ২০২৬",
+    "mission.news.n1.title": "চলো খেলি সারা বাংলাদেশে আনুষ্ঠানিকভাবে চালু",
+    "mission.news.n1.body": "আমাদের প্ল্যাটফর্ম দেশব্যাপী খেলোয়াড় ও যাচাইকৃত স্কাউটদের জন্য উন্মুক্ত — প্রতিটি জেলায় নিরাপদ ও স্বচ্ছ স্কাউটিং।",
+    "mission.news.n2.tag": "প্রোডাক্ট",
+    "mission.news.n2.date": "২২ জুন, ২০২৬",
+    "mission.news.n2.title": "যাচাইকৃত পরিসংখ্যানসহ নতুন খেলোয়াড় প্রোফাইল",
+    "mission.news.n2.body": "অ্যাথলেটরা এখন যাচাইকৃত পারফরম্যান্স তথ্য ও হাইলাইট রিল প্রদর্শন করতে পারবেন — প্রতিটি খেলোয়াড়ের জন্য একটি বিশ্বস্ত ডিজিটাল রেজুমে।",
+    "mission.news.n3.tag": "কমিউনিটি",
+    "mission.news.n3.date": "৩০ মে, ২০২৬",
+    "mission.news.n3.title": "জাতীয় জরিপে তৃণমূল স্কাউটিংয়ের চাহিদা নিশ্চিত",
+    "mission.news.n3.body": "সারা দেশের সাড়া প্রমাণ করে পরিবার ও কোচরা স্থানীয় মাঠ থেকে জাতীয় সুযোগে যাওয়ার একটি নিরাপদ, স্বচ্ছ পথ চান।",
   },
 } as const;
 
