@@ -125,6 +125,10 @@ export default function HeroScrollVideo({
   const [beat, setBeat] = useState<number>(0);
   const [revealCTA, setRevealCTA] = useState(0);
   const [ready, setReady] = useState(false);
+  // Which beat's AI-enhanced still is currently visible on top of the
+  // canvas. -1 while the video is animating between beats or while the
+  // reveal panel is open.
+  const [settledBeat, setSettledBeat] = useState<number>(0);
 
   // Preload both atlases in parallel.
   useEffect(() => {
