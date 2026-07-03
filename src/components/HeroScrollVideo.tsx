@@ -696,6 +696,18 @@ export default function HeroScrollVideo({
                   "linear-gradient(to bottom, rgba(0,0,0,0.35) 0%, rgba(0,0,0,0.55) 60%, rgba(0,0,0,0.85) 100%)",
               }}
             />
+            {/* Bottom fade that blends the reveal image into the next
+                section's paper background — sits above the dark overlay
+                but below the CTA content. */}
+            <div
+              aria-hidden
+              className="pointer-events-none absolute inset-x-0 bottom-0 h-40"
+              style={{
+                background:
+                  "linear-gradient(to bottom, transparent 0%, hsl(var(--background) / 0.6) 65%, hsl(var(--background)) 100%)",
+              }}
+            />
+
             <div
               className="relative z-10 h-full flex flex-col items-center justify-center px-6 text-center transition-all duration-700 ease-out"
               style={{
