@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
 import { motion } from "framer-motion";
-import { Shield, Users, Video, DollarSign, CheckCircle, XCircle, Clock, Loader2, Eye, AlertTriangle, MessageSquare, UserPlus, Send, User, Search, Filter, Ban, Power } from "lucide-react";
+import { Shield, Users, Video, DollarSign, CheckCircle, XCircle, Clock, Loader2, Eye, AlertTriangle, MessageSquare, UserPlus, Send, User, Search, Filter, Ban, Power, Mail, Trash2 } from "lucide-react";
 import ChatInterface from "@/components/ChatInterface";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
@@ -18,7 +18,8 @@ interface PlayerRow { user_id: string; full_name: string; is_banned?: boolean; s
 interface VideoRow { id: string; user_id: string; title: string | null; description: string | null; video_url: string | null; status: string; created_at: string; full_name?: string; }
 interface MessageRow { id: string; sender_id: string; receiver_id: string; content: string; flagged: boolean; flag_reason: string | null; created_at: string; sender_name?: string; receiver_name?: string; }
 interface ScoutRequestRow { id: string; scout_id: string; player_id: string; status: string; notes: string | null; admin_response: string | null; created_at: string; scout_name?: string; player_name?: string; }
-interface Stats { totalPlayers: number; totalScouts: number; activeScouts: number; pendingScouts: number; liveVideos: number; totalRevenue: number; flaggedMessages: number; pendingRequests: number; }
+interface ContactMessageRow { id: string; name: string; email: string; subject: string | null; message: string; is_read: boolean; created_at: string; }
+interface Stats { totalPlayers: number; totalScouts: number; activeScouts: number; pendingScouts: number; liveVideos: number; totalRevenue: number; flaggedMessages: number; pendingRequests: number; unreadContacts: number; }
 
 const AdminDashboard = () => {
   const { user, role, loading: authLoading } = useAuth();
