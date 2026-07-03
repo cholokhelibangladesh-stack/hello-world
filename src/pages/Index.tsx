@@ -583,14 +583,18 @@ const Index = () => {
             </div>
           </div>
         </div>
+        {/* Bottom blend → next section (ink) */}
+        <div aria-hidden className="pointer-events-none absolute inset-x-0 bottom-0 h-32 z-[1]"
+          style={{ background: "linear-gradient(to bottom, transparent 0%, hsl(var(--ink) / 0.65) 55%, hsl(var(--ink)) 100%)" }} />
       </section>
 
       {/* ══════════════════════════════════════════
           VERIFIED SCOUTS
       ══════════════════════════════════════════ */}
-      <section className="py-20 sm:py-28 border-t border-border relative overflow-hidden" style={{ background: "hsl(var(--ink))" }}>
+      <section className="py-20 sm:py-28 relative overflow-hidden" style={{ background: "hsl(var(--ink))" }}>
         <div className="absolute inset-0 pointer-events-none opacity-[0.04]"
           style={{ backgroundImage: "linear-gradient(hsl(var(--green)) 1px, transparent 1px), linear-gradient(90deg, hsl(var(--green)) 1px, transparent 1px)", backgroundSize: "80px 80px" }} />
+
         <div className="container relative z-10">
           <Reveal className="text-center mb-12">
             <span className="inline-block text-xs font-bold tracking-[0.2em] uppercase mb-4 px-4 py-1.5 rounded-full"
