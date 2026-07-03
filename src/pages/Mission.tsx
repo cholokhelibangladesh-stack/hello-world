@@ -85,35 +85,38 @@ const Hero = () => {
               style={{ background: BLUE_GRADIENT }}
             >
               <span
-                className="flex items-center justify-between gap-6 rounded-[5px] px-6 py-3.5 min-w-[280px] transition-colors
-                  bg-[hsl(var(--teal-soft))] group-hover:bg-[hsl(var(--teal-deep))]
-                  dark:bg-[#0a1620] dark:group-hover:bg-transparent"
+                className="relative flex items-center justify-between gap-6 rounded-[5px] px-6 py-3.5 min-w-[280px] overflow-hidden dark:bg-[#0a1620] dark:group-hover:bg-transparent transition-colors"
               >
+                {/* Light-mode gradient fill: soft candy-blue → deep teal on hover.
+                    Two layers cross-fade so the whole gradient shifts, not just a solid color. */}
                 <span
-                  className="text-[11px] tracking-[0.35em] font-mono uppercase transition-colors
+                  aria-hidden
+                  className="absolute inset-0 dark:hidden transition-opacity duration-300 group-hover:opacity-0"
+                  style={{
+                    background:
+                      "linear-gradient(90deg, hsl(var(--teal-soft)) 0%, hsl(var(--teal-soft) / 0.75) 100%)",
+                  }}
+                />
+                <span
+                  aria-hidden
+                  className="absolute inset-0 dark:hidden opacity-0 transition-opacity duration-300 group-hover:opacity-100"
+                  style={{ background: BLUE_GRADIENT }}
+                />
+                <span
+                  className="relative text-[11px] tracking-[0.35em] font-mono uppercase transition-colors
                     text-[hsl(var(--teal-deep))] group-hover:text-white
                     dark:text-white dark:group-hover:text-white"
                 >
                   {t("mission.hero.cta")}
                 </span>
                 <ArrowUpRight
-                  className="h-4 w-4 transition-colors
+                  className="relative h-4 w-4 transition-colors
                     text-[hsl(var(--teal-deep))] group-hover:text-white
                     dark:text-white dark:group-hover:text-white"
                 />
               </span>
             </Link>
           </motion.div>
-        </div>
-
-        <div className="mt-24 md:mt-32 flex items-center gap-3 text-foreground/60 dark:text-white/70">
-          <span
-            className="inline-block h-2 w-2 rounded-full animate-pulse"
-            style={{ backgroundColor: "hsl(var(--teal-soft))" }}
-          />
-          <span className="text-[10px] tracking-[0.4em] uppercase font-mono">
-            {t("mission.hero.scroll")}
-          </span>
         </div>
       </div>
     </section>
@@ -235,22 +238,12 @@ const WhatWeDo = () => {
           whileInView={{ opacity: 1, y: 0 }}
           viewport={{ once: true, margin: "-80px" }}
           transition={{ duration: 0.7, ease: [0.22, 1, 0.36, 1] }}
-          className="flex items-baseline justify-between mb-10"
+          className="flex items-baseline justify-between mb-16"
         >
           <h2 className="font-display text-foreground text-4xl md:text-5xl tracking-[-0.02em]">
             {t("mission.what.title")}
           </h2>
         </motion.div>
-
-        <motion.p
-          initial={{ opacity: 0, y: 16 }}
-          whileInView={{ opacity: 1, y: 0 }}
-          viewport={{ once: true, margin: "-80px" }}
-          transition={{ duration: 0.7, delay: 0.1 }}
-          className="max-w-3xl text-foreground/75 text-base md:text-lg leading-relaxed mb-16"
-        >
-          {t("mission.what.intro")}
-        </motion.p>
 
         <div className="grid md:grid-cols-[1fr_1.2fr] gap-16 items-start">
           <motion.div
@@ -258,10 +251,13 @@ const WhatWeDo = () => {
             whileInView={{ opacity: 1, y: 0 }}
             viewport={{ once: true, margin: "-80px" }}
             transition={{ duration: 0.7, delay: 0.15 }}
-            className="md:sticky md:top-32"
+            className="md:sticky md:top-32 space-y-6 max-w-md"
           >
-            <p className="text-foreground/75 text-lg leading-relaxed max-w-md">
+            <p className="text-foreground/80 text-lg leading-relaxed">
               {t("mission.what.lead")}
+            </p>
+            <p className="text-foreground/65 text-base leading-relaxed">
+              {t("mission.what.intro")}
             </p>
           </motion.div>
 
