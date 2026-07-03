@@ -455,7 +455,13 @@ const LatestNews = () => {
   return (
     <section className="relative bg-[hsl(var(--paper-deep))] py-28 md:py-36 overflow-hidden">
       <div className="mx-auto max-w-7xl px-6 md:px-16">
-        <div className="flex items-baseline justify-between mb-12">
+        <motion.div
+          initial={{ opacity: 0, y: 20 }}
+          whileInView={{ opacity: 1, y: 0 }}
+          viewport={{ once: true, margin: "-80px" }}
+          transition={{ duration: 0.7, ease: [0.22, 1, 0.36, 1] }}
+          className="flex items-baseline justify-between mb-12"
+        >
           <h2 className="font-display text-foreground text-4xl md:text-5xl tracking-[-0.02em]">
             {t("mission.news.title")}
           </h2>
@@ -465,7 +471,7 @@ const LatestNews = () => {
           >
             {t("mission.news.subtitle")}
           </span>
-        </div>
+        </motion.div>
 
         <div className="grid md:grid-cols-3 gap-6">
           {NEWS.map((n, i) => (
