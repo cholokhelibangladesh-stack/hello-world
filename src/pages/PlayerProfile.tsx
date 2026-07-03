@@ -26,7 +26,7 @@ const PlayerProfile = () => {
   useEffect(() => {
     if (!authLoading && !user) { navigate({ to: "/auth" as any }); return; }
     if (user) {
-      supabase.from("videos").select("*").eq("user_id", user.id).order("created_at", { ascending: false })
+      supabase.from("videos").select("id, status, description, position_tags, trait_tags, video_url, created_at").eq("user_id", user.id).order("created_at", { ascending: false })
         .then(({ data }) => { setAllVideos((data || []) as VideoRecord[]); setVideosLoading(false); });
     }
   }, [user, authLoading]);
