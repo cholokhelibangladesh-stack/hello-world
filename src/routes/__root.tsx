@@ -110,6 +110,12 @@ function RootDocument({ children }: { children: React.ReactNode }) {
   return (
     <html lang="en">
       <head>
+        <style
+          dangerouslySetInnerHTML={{
+            __html:
+              "html{background:#030303;color-scheme:light dark}body{margin:0;background:#030303;color:#f5f7f8;overflow-x:hidden}",
+          }}
+        />
         <HeadContent />
       </head>
       <body>
