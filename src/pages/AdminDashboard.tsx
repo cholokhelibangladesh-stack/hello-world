@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
 import { motion } from "framer-motion";
-import { Shield, Users, Video, DollarSign, CheckCircle, XCircle, Clock, Loader2, Eye, AlertTriangle, MessageSquare, UserPlus, Send, User, Search, Filter, Ban, Power } from "lucide-react";
+import { Shield, Users, Video, DollarSign, CheckCircle, XCircle, Clock, Loader2, Eye, AlertTriangle, MessageSquare, UserPlus, Send, User, Search, Filter, Ban, Power, Mail, Trash2 } from "lucide-react";
 import ChatInterface from "@/components/ChatInterface";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
@@ -18,7 +18,8 @@ interface PlayerRow { user_id: string; full_name: string; is_banned?: boolean; s
 interface VideoRow { id: string; user_id: string; title: string | null; description: string | null; video_url: string | null; status: string; created_at: string; full_name?: string; }
 interface MessageRow { id: string; sender_id: string; receiver_id: string; content: string; flagged: boolean; flag_reason: string | null; created_at: string; sender_name?: string; receiver_name?: string; }
 interface ScoutRequestRow { id: string; scout_id: string; player_id: string; status: string; notes: string | null; admin_response: string | null; created_at: string; scout_name?: string; player_name?: string; }
-interface Stats { totalPlayers: number; totalScouts: number; activeScouts: number; pendingScouts: number; liveVideos: number; totalRevenue: number; flaggedMessages: number; pendingRequests: number; }
+interface ContactMessageRow { id: string; name: string; email: string; subject: string | null; message: string; is_read: boolean; created_at: string; }
+interface Stats { totalPlayers: number; totalScouts: number; activeScouts: number; pendingScouts: number; liveVideos: number; totalRevenue: number; flaggedMessages: number; pendingRequests: number; unreadContacts: number; }
 
 const AdminDashboard = () => {
   const { user, role, loading: authLoading } = useAuth();
@@ -27,6 +28,7 @@ const AdminDashboard = () => {
   const [videos, setVideos] = useState<VideoRow[]>([]);
   const [messages, setMessages] = useState<MessageRow[]>([]);
   const [scoutRequests, setScoutRequests] = useState<ScoutRequestRow[]>([]);
+  const [contactMessages, setContactMessages] = useState<ContactMessageRow[]>([]);
   const [stats, setStats] = useState<Stats | null>(null);
   const [loading, setLoading] = useState(true);
   const [feedbackInputs, setFeedbackInputs] = useState<Record<string, string>>({});
@@ -52,7 +54,7 @@ const AdminDashboard = () => {
 
   const fetchAll = async () => {
     setLoading(true);
-    const [scoutRes, videoRes, roleRes, paymentRes, msgRes, reqRes, settingsRes] = await Promise.all([
+    const [scoutRes, videoRes, roleRes, paymentRes, msgRes, reqRes, settingsRes, contactRes] = await Promise.all([
       supabase.from("scout_profiles").select("*").order("created_at", { ascending: false }),
       supabase.from("videos").select("*").order("created_at", { ascending: false }),
       supabase.from("user_roles").select("role, user_id"),
@@ -60,6 +62,7 @@ const AdminDashboard = () => {
       supabase.from("messages").select("*").order("created_at", { ascending: false }).limit(100),
       supabase.from("scout_requests").select("*").order("created_at", { ascending: false }),
       supabase.from("app_settings" as any).select("key, value"),
+      supabase.from("contact_messages" as any).select("*").order("created_at", { ascending: false }),
     ]);
 
     const scoutData = scoutRes.data || [];
@@ -101,6 +104,9 @@ const AdminDashboard = () => {
     setMessages(msgData.map((m) => ({ ...m, sender_name: profileMap.get(m.sender_id)?.name || "Unknown", receiver_name: profileMap.get(m.receiver_id)?.name || "Unknown" })));
     setScoutRequests(reqData.map((r) => ({ ...r, scout_name: profileMap.get(r.scout_id)?.name || "Unknown", player_name: profileMap.get(r.player_id)?.name || "Unknown" })));
 
+    const contactData = ((contactRes.data as unknown) as ContactMessageRow[]) || [];
+    setContactMessages(contactData);
+
     setStats({
       totalPlayers: roles.filter((r) => r.role === "player").length,
       totalScouts: roles.filter((r) => r.role === "scout").length,
@@ -110,8 +116,21 @@ const AdminDashboard = () => {
       totalRevenue: payments.filter((p) => p.status === "success").reduce((sum, p) => sum + Number(p.amount), 0),
       flaggedMessages: msgData.filter((m) => m.flagged).length,
       pendingRequests: reqData.filter((r) => r.status === "pending").length,
+      unreadContacts: contactData.filter((c) => !c.is_read).length,
     });
     setLoading(false);
+  };
+
+  const toggleContactRead = async (id: string, isRead: boolean) => {
+    const { error } = await supabase.from("contact_messages" as any).update({ is_read: !isRead } as any).eq("id", id);
+    if (error) toast({ title: "Error", description: error.message, variant: "destructive" });
+    else fetchAll();
+  };
+
+  const deleteContact = async (id: string) => {
+    const { error } = await supabase.from("contact_messages" as any).delete().eq("id", id);
+    if (error) toast({ title: "Error", description: error.message, variant: "destructive" });
+    else { toast({ title: "Message deleted" }); fetchAll(); }
   };
 
   const updateScoutStatus = async (scoutId: string, status: "active" | "rejected") => {
@@ -314,6 +333,7 @@ const AdminDashboard = () => {
                 <TabsTrigger value="safety" className="data-[state=active]:bg-primary data-[state=active]:text-primary-foreground text-xs whitespace-nowrap px-3">Safety {stats?.flaggedMessages ? `(${stats.flaggedMessages})` : ""}</TabsTrigger>
                 <TabsTrigger value="controls" className="data-[state=active]:bg-primary data-[state=active]:text-primary-foreground text-xs whitespace-nowrap px-3">Controls</TabsTrigger>
                 <TabsTrigger value="notices" className="data-[state=active]:bg-primary data-[state=active]:text-primary-foreground text-xs whitespace-nowrap px-3">Notices</TabsTrigger>
+                <TabsTrigger value="contact" className="data-[state=active]:bg-primary data-[state=active]:text-primary-foreground text-xs whitespace-nowrap px-3">Contact {stats?.unreadContacts ? `(${stats.unreadContacts})` : ""}</TabsTrigger>
                 <TabsTrigger value="profile" className="data-[state=active]:bg-primary data-[state=active]:text-primary-foreground text-xs whitespace-nowrap px-3">Profile</TabsTrigger>
               </TabsList>
             </div>
@@ -467,6 +487,55 @@ const AdminDashboard = () => {
             {/* Notices Tab */}
             <TabsContent value="notices">
               <AdminNoticeForm />
+            </TabsContent>
+
+            {/* Contact Messages Tab */}
+            <TabsContent value="contact" className="space-y-3">
+              <div className="bg-primary/5 border border-primary/20 rounded-2xl p-4 flex items-start gap-2">
+                <Mail className="h-5 w-5 text-primary shrink-0 mt-0.5" />
+                <p className="text-sm text-muted-foreground">
+                  Messages submitted through the public Contact Us form. Click the email address to reply directly from your mail client.
+                </p>
+              </div>
+              {contactMessages.length === 0 ? (
+                <p className="text-muted-foreground text-center py-12">No contact messages yet.</p>
+              ) : (
+                contactMessages.map((c) => (
+                  <div key={c.id} className={`bg-card border rounded-xl p-4 space-y-3 ${c.is_read ? "border-border" : "border-primary/40"}`}>
+                    <div className="flex items-start justify-between gap-3">
+                      <div className="flex-1 min-w-0">
+                        <div className="flex items-center gap-2 flex-wrap">
+                          <p className="font-semibold text-foreground truncate">{c.name}</p>
+                          {!c.is_read && <Badge className="bg-primary/20 text-primary border-primary/30 rounded-full text-[10px]">New</Badge>}
+                        </div>
+                        <a href={`mailto:${c.email}?subject=Re: ${encodeURIComponent(c.subject || "Your message to Cholo Kheli")}`}
+                          className="text-xs text-primary hover:underline break-all">
+                          {c.email}
+                        </a>
+                        <p className="text-[11px] text-muted-foreground mt-0.5">{new Date(c.created_at).toLocaleString()}</p>
+                      </div>
+                    </div>
+                    {c.subject && <p className="text-sm font-medium text-foreground">{c.subject}</p>}
+                    <p className="text-sm text-muted-foreground whitespace-pre-wrap">{c.message}</p>
+                    <div className="flex gap-2 flex-wrap">
+                      <Button size="sm" variant="outline" asChild
+                        className="rounded-full text-xs border-primary/40 text-primary hover:bg-primary/10">
+                        <a href={`mailto:${c.email}?subject=Re: ${encodeURIComponent(c.subject || "Your message to Cholo Kheli")}`}>
+                          <Send className="h-3.5 w-3.5 mr-1" /> Reply by email
+                        </a>
+                      </Button>
+                      <Button size="sm" variant="outline" onClick={() => toggleContactRead(c.id, c.is_read)}
+                        className="rounded-full text-xs border-border text-muted-foreground">
+                        <CheckCircle className="h-3.5 w-3.5 mr-1" /> Mark as {c.is_read ? "unread" : "read"}
+                      </Button>
+                      <Button size="sm" variant="outline" onClick={() => deleteContact(c.id)}
+                        className="rounded-full text-xs border-destructive/40 text-destructive hover:bg-destructive/10">
+                        <Trash2 className="h-3.5 w-3.5 mr-1" /> Delete
+                      </Button>
+                    </div>
+                  </div>
+                ))
+              )}
             </TabsContent>
 
             {/* Profile Tab */}
