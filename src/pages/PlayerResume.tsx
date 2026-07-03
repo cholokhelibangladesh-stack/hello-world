@@ -91,6 +91,7 @@ const PlayerResume = () => {
               <video
                 src={safeMediaUrl(video.video_url)}
                 controls
+                preload="metadata"
                 className="w-full aspect-video bg-secondary"
               />
               {video.description && (
