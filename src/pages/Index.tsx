@@ -8,7 +8,7 @@ import {
 import { Button } from "@/components/ui/button";
 import { useAuth } from "@/hooks/useAuth";
 import { supabase } from "@/integrations/supabase/client";
-import BangladeshMapTestimonials from "@/components/BangladeshMapTestimonials";
+import CurvedAthleteCarousel from "@/components/CurvedAthleteCarousel";
 import VideoHighlights from "@/components/VideoHighlights";
 import CholoKheliMark from "@/components/CholoKheliMark";
 import HeroMistCursor from "@/components/HeroMistCursor";
