@@ -675,7 +675,12 @@ const Index = () => {
           className="absolute inset-0 w-full h-full object-cover opacity-40" />
         <div className="absolute inset-0 pointer-events-none"
           style={{ background: "linear-gradient(to bottom, hsl(var(--ink) / 0.85), hsl(var(--ink) / 0.95))" }} />
-
+        {/* Top edge fade — hide image at seam so bridge (pure ink) meets pure ink */}
+        <div aria-hidden className="pointer-events-none absolute inset-x-0 top-0 h-56 z-[2]"
+          style={{ background: "linear-gradient(to bottom, hsl(var(--ink)) 0%, hsl(var(--ink) / 0.6) 55%, transparent 100%)" }} />
+        {/* Bottom edge fade — hide image at seam so section meets bridge cleanly */}
+        <div aria-hidden className="pointer-events-none absolute inset-x-0 bottom-0 h-56 z-[2]"
+          style={{ background: "linear-gradient(to top, hsl(var(--ink)) 0%, hsl(var(--ink) / 0.6) 55%, transparent 100%)" }} />
 
 
         {/* Animated grid */}
