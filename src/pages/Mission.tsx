@@ -245,26 +245,19 @@ const WhatWeDo = () => {
           </h2>
         </motion.div>
 
-        <motion.p
-          initial={{ opacity: 0, y: 16 }}
-          whileInView={{ opacity: 1, y: 0 }}
-          viewport={{ once: true, margin: "-80px" }}
-          transition={{ duration: 0.7, delay: 0.1 }}
-          className="max-w-3xl text-foreground/75 text-base md:text-lg leading-relaxed mb-16"
-        >
-          {t("mission.what.intro")}
-        </motion.p>
-
         <div className="grid md:grid-cols-[1fr_1.2fr] gap-16 items-start">
           <motion.div
             initial={{ opacity: 0, y: 16 }}
             whileInView={{ opacity: 1, y: 0 }}
             viewport={{ once: true, margin: "-80px" }}
             transition={{ duration: 0.7, delay: 0.15 }}
-            className="md:sticky md:top-32"
+            className="md:sticky md:top-32 space-y-6 max-w-md"
           >
-            <p className="text-foreground/75 text-lg leading-relaxed max-w-md">
+            <p className="text-foreground/80 text-lg leading-relaxed">
               {t("mission.what.lead")}
+            </p>
+            <p className="text-foreground/65 text-base leading-relaxed">
+              {t("mission.what.intro")}
             </p>
           </motion.div>
 
