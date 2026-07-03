@@ -742,16 +742,20 @@ const Index = () => {
             </div>
           </Reveal>
         </div>
+        {/* Bottom blend → next section (card) */}
+        <div aria-hidden className="pointer-events-none absolute inset-x-0 bottom-0 h-32 z-[2]"
+          style={{ background: "linear-gradient(to bottom, transparent 0%, hsl(var(--card) / 0.65) 55%, hsl(var(--card)) 100%)" }} />
       </section>
 
       {/* ══════════════════════════════════════════
           LIVE STATS BAR — moved below CTA phones
       ══════════════════════════════════════════ */}
-      <section className="py-16 border-t border-border relative overflow-hidden surface-card">
+      <section className="py-16 relative overflow-hidden surface-card">
         <img src={statsImg.url} alt="" aria-hidden loading="lazy" decoding="async"
           className="absolute inset-0 w-full h-full object-cover opacity-25" />
         <div className="absolute inset-0 pointer-events-none"
           style={{ background: "linear-gradient(to bottom, hsl(var(--background) / 0.92), hsl(var(--background) / 0.96))" }} />
+
         <div className="container">
           <div className="grid grid-cols-3 gap-4 sm:gap-8">
             {[
