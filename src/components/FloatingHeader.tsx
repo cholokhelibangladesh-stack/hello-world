@@ -60,8 +60,11 @@ const FloatingHeader = () => {
             aria-hidden
             className={`h-11 w-11 sm:h-12 sm:w-12 shrink-0 ${shadow} transition-transform group-hover:scale-105`}
             style={{
-              // Candy Blue on dark hero for pop; deep teal on light paper.
-              backgroundColor: onDark ? "#B2D5E5" : "hsl(var(--teal-deep))",
+              // Deep teal in light theme; Candy Blue on dark backgrounds
+              // (hero + dark theme) so it stays punchy against the video.
+              backgroundColor:
+                theme === "light" ? "hsl(var(--teal-deep))" : "#B2D5E5",
+
               WebkitMaskImage: `url(${logoAsset.url})`,
               maskImage: `url(${logoAsset.url})`,
               WebkitMaskRepeat: "no-repeat",
