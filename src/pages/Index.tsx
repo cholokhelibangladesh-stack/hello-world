@@ -658,7 +658,7 @@ const Index = () => {
       {/* ══════════════════════════════════════════
           MAP SECTION
       ══════════════════════════════════════════ */}
-      <BangladeshMapTestimonials />
+      <CurvedAthleteCarousel />
 
       {/* Physical gradient bridge: map (background) → CTA (ink) */}
       <div aria-hidden className="relative h-56 sm:h-72"
