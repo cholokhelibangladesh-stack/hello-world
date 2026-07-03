@@ -8,7 +8,7 @@ import {
 import { Button } from "@/components/ui/button";
 import { useAuth } from "@/hooks/useAuth";
 import { supabase } from "@/integrations/supabase/client";
-import BangladeshMapTestimonials from "@/components/BangladeshMapTestimonials";
+import CurvedAthleteCarousel from "@/components/CurvedAthleteCarousel";
 import VideoHighlights from "@/components/VideoHighlights";
 import CholoKheliMark from "@/components/CholoKheliMark";
 import HeroMistCursor from "@/components/HeroMistCursor";
@@ -658,7 +658,7 @@ const Index = () => {
       {/* ══════════════════════════════════════════
           MAP SECTION
       ══════════════════════════════════════════ */}
-      <BangladeshMapTestimonials />
+      <CurvedAthleteCarousel />
 
       {/* Physical gradient bridge: map (background) → CTA (ink) */}
       <div aria-hidden className="relative h-56 sm:h-72"
