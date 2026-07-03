@@ -15,16 +15,16 @@ export function renderErrorPage(): string {
         place-items: center;
         padding: 24px;
         font-family: Inter, ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
-        background: #dbe3e6;
-        color: #142629;
+        background: #030303;
+        color: #f5f7f8;
       }
       main { max-width: 480px; text-align: center; }
       h1 { margin: 0 0 12px; font-size: clamp(2rem, 7vw, 4.5rem); line-height: .92; letter-spacing: 0; }
-      p { margin: 0 0 24px; color: #4c6267; line-height: 1.6; }
+      p { margin: 0 0 24px; color: rgba(245, 247, 248, .72); line-height: 1.6; }
       .actions { display: flex; justify-content: center; gap: 12px; flex-wrap: wrap; }
       a, button {
         min-height: 44px;
-        border: 1px solid rgba(20, 38, 41, .18);
+        border: 1px solid rgba(245, 247, 248, .18);
         border-radius: 999px;
         padding: 0 18px;
         display: inline-flex;
@@ -35,8 +35,8 @@ export function renderErrorPage(): string {
         text-decoration: none;
         cursor: pointer;
       }
-      button { background: #143f46; color: #f6fbfb; }
-      a { color: #143f46; background: rgba(255,255,255,.45); }
+      button { background: #b2d5e5; color: #061114; }
+      a { color: #f5f7f8; background: rgba(255,255,255,.08); }
     </style>
   </head>
   <body>
