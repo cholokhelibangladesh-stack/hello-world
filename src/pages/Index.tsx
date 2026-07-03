@@ -356,10 +356,11 @@ const Index = () => {
       {/* ══════════════════════════════════════════
           SPORTS GRID — Hover to reveal
       ══════════════════════════════════════════ */}
-      <section className="relative pt-40 sm:pt-48 pb-20 sm:pb-28 surface-paper">
-        {/* Top blend ← hero video — long soft fade from near-black video into paper */}
-        <div aria-hidden className="pointer-events-none absolute inset-x-0 top-0 h-64 z-[1]"
-          style={{ background: "linear-gradient(to bottom, hsl(0 0% 3%) 0%, hsl(0 0% 3% / 0.85) 12%, hsl(198 25% 40% / 0.35) 45%, hsl(var(--paper) / 0.85) 78%, hsl(var(--paper)) 100%)" }} />
+      <section className="relative pt-32 sm:pt-40 pb-20 sm:pb-28 surface-paper">
+        {/* Top blend ← hero video — simple dark→transparent overlay so the paper below shows through cleanly (no mid-band tint) */}
+        <div aria-hidden className="pointer-events-none absolute inset-x-0 -top-1 h-40 z-[1]"
+          style={{ background: "linear-gradient(to bottom, hsl(0 0% 3%) 0%, hsl(0 0% 3% / 0.7) 25%, transparent 100%)" }} />
+
 
 
 
