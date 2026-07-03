@@ -385,7 +385,7 @@ export default function HeroScrollVideo({
       setBeat(0);
 
       // ─── frame tween (constant PLAYBACK_FPS) ──────────────────────
-      const animateFrameTo = (target: number, done?: () => void) => {
+      const animateFrameTo = (target: number, done?: () => void, settleMs = 0) => {
         animating = true;
         const delta = Math.abs(target - anim.f);
         const duration = Math.max(MIN_TRANSITION, delta / PLAYBACK_FPS);
@@ -399,8 +399,12 @@ export default function HeroScrollVideo({
 
           onUpdate: () => scheduleFrame(anim.f),
           onComplete: () => {
-            animating = false;
             done?.();
+            if (settleMs > 0) {
+              setTimeout(() => { animating = false; }, settleMs);
+            } else {
+              animating = false;
+            }
           },
         });
       };
