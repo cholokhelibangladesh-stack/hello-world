@@ -21,21 +21,22 @@ const CARDS: Card[] = [
   { src: a8, sport: "Cricket", caption: "Nets" },
 ];
 
-// Duplicate the deck so the ring is denser — more cards per arc means the
-// curve reads clearly and cards sit close together rather than sparse.
-const RING = [...CARDS, ...CARDS];
+// 12 slots around the ring — 30° apart — gives ~5 cards across the front
+// arc, close enough to nearly touch, with strong tilt at the edges.
+const RING = [...CARDS, ...CARDS.slice(0, 4)];
 
 /**
- * A looping 3D cylinder-style coverflow carousel. Cards are arranged
- * around a vertical axis; the entire ring rotates continuously so cards
- * curve toward and away from the viewer forever without ever stopping.
+ * Looping curved coverflow. Cards sit on a vertical cylinder that spins
+ * continuously; the front arc reads as a shallow bowl curving toward the
+ * viewer — center card faces forward, edge cards tilt inward.
  */
 export default function CurvedAthleteCarousel() {
   const N = RING.length;
-  const angleStep = 360 / N; // 22.5° with 16 slots — tight arc
-  const radius = 780;
-  const cardW = 280;
-  const cardH = 380;
+  const angleStep = 360 / N; // 30°
+  const cardW = 300;
+  const cardH = 400;
+  // Radius just above the touching threshold so cards sit shoulder-to-shoulder.
+  const radius = 570;
 
   return (
     <section className="relative overflow-hidden py-24 sm:py-32 bg-background">
@@ -65,9 +66,9 @@ export default function CurvedAthleteCarousel() {
       <div
         className="relative w-full carousel-stage"
         style={{
-          height: cardH + 120,
-          perspective: "1800px",
-          perspectiveOrigin: "50% 55%",
+          height: cardH + 140,
+          perspective: "1100px",
+          perspectiveOrigin: "50% 60%",
         }}
       >
         <div className="absolute inset-0 flex items-center justify-center">
