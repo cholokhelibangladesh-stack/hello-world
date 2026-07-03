@@ -208,7 +208,14 @@ export default function HeroScrollVideo({
   };
 
 
-  // ScrollTrigger driver.
+  // Gesture-driven, constant-speed driver.
+  //
+  // The hero pins itself at the top by locking body scroll while active.
+  // Every scroll gesture (wheel tick, trackpad flick, touch swipe, key)
+  // advances or retreats EXACTLY ONE step — a beat, or the final reveal.
+  // The frame animation between beats always plays at the same natural
+  // frame rate (PLAYBACK_FPS), so the video never fast-forwards or skips
+  // no matter how big the scroll input was.
   useEffect(() => {
     if (!ready) return;
     if (typeof window === "undefined") return;
@@ -217,178 +224,157 @@ export default function HeroScrollVideo({
     let cancelled = false;
 
     (async () => {
-      const [{ gsap }, { ScrollTrigger }] = await Promise.all([
+      const [{ gsap }, { Observer }] = await Promise.all([
         import("gsap"),
-        import("gsap/ScrollTrigger"),
+        import("gsap/Observer"),
       ]);
       if (cancelled) return;
-      gsap.registerPlugin(ScrollTrigger);
+      gsap.registerPlugin(Observer);
 
       const wrap = wrapRef.current;
-      const pin = pinRef.current;
-      if (!wrap || !pin) return;
+      if (!wrap) return;
 
-      // Draw first frame immediately.
-      scheduleFrame(BEATS[0].frame);
-
-      // Build the scroll → (frame, beat) segment map. Each PLAY segment gets
-      // a scroll share proportional to the number of frames it must cover,
-      // so playback runs at a constant, natural frame rate.
+      // ─── constants ────────────────────────────────────────────────
+      const PLAYBACK_FPS = 30;      // natural playback rate between beats
+      const MIN_TRANSITION = 0.35;  // seconds, floor for very short hops
+      const REVEAL_DURATION = 0.7;  // seconds, panel slide-in
+      const GESTURE_TOLERANCE = 10; // pixels — ignore micro-noise
       const N = BEATS.length;
-      const playDeltas: number[] = [];
-      let prev = 0;
-      for (const b of BEATS) {
-        playDeltas.push(Math.max(0, b.frame - prev));
-        prev = b.frame;
-      }
-      const totalPlay = playDeltas.reduce((a, b) => a + b, 0) || 1;
-      const totalHold = HOLD_SHARE * N;
-      const totalPlayShare = Math.max(0, 1 - totalHold - REVEAL_SHARE);
 
-      interface Seg {
-        kind: "play" | "hold" | "reveal";
-        start: number;
-        end: number;
-        from: number;
-        to: number;
-        beatIdx: number;
-      }
-      const segs: Seg[] = [];
-      let cursor = 0;
-      let fprev = 0;
-      for (let i = 0; i < N; i++) {
-        const playLen = (playDeltas[i] / totalPlay) * totalPlayShare;
-        segs.push({
-          kind: "play",
-          start: cursor,
-          end: cursor + playLen,
-          from: fprev,
-          to: BEATS[i].frame,
-          beatIdx: i,
+      // ─── mutable driver state ─────────────────────────────────────
+      const anim = { f: BEATS[0].frame, r: 0 };
+      let currentBeat = 0;
+      let animating = false;
+      let released = false;
+
+      // Paint the first frame.
+      scheduleFrame(anim.f);
+      beatRef.current = 0;
+      setBeat(0);
+
+      // ─── frame tween (constant PLAYBACK_FPS) ──────────────────────
+      const animateFrameTo = (target: number, done?: () => void) => {
+        animating = true;
+        const delta = Math.abs(target - anim.f);
+        const duration = Math.max(MIN_TRANSITION, delta / PLAYBACK_FPS);
+        gsap.to(anim, {
+          f: target,
+          duration,
+          ease: "power2.inOut",
+          overwrite: true,
+          onUpdate: () => scheduleFrame(anim.f),
+          onComplete: () => {
+            animating = false;
+            done?.();
+          },
         });
-        cursor += playLen;
-        segs.push({
-          kind: "hold",
-          start: cursor,
-          end: cursor + HOLD_SHARE,
-          from: BEATS[i].frame,
-          to: BEATS[i].frame,
-          beatIdx: i,
+      };
+
+      const animateRevealTo = (target: number, done?: () => void) => {
+        animating = true;
+        gsap.to(anim, {
+          r: target,
+          duration: REVEAL_DURATION,
+          ease: "power2.inOut",
+          overwrite: true,
+          onUpdate: () => {
+            const q = Math.round(anim.r * 50) / 50;
+            if (Math.abs(q - revealRef.current) > 1e-4) {
+              revealRef.current = q;
+              setRevealCTA(q);
+            }
+          },
+          onComplete: () => {
+            // Ensure exact final value.
+            revealRef.current = target;
+            setRevealCTA(target);
+            animating = false;
+            done?.();
+          },
         });
-        cursor += HOLD_SHARE;
-        fprev = BEATS[i].frame;
-      }
-      segs.push({
-        kind: "reveal",
-        start: cursor,
-        end: 1,
-        from: fprev,
-        to: FRAME_COUNT - 1,
-        beatIdx: N - 1,
+      };
+
+      // ─── one-step advance / retreat ───────────────────────────────
+      const goForward = () => {
+        if (animating || released) return;
+        if (currentBeat < N - 1) {
+          const next = currentBeat + 1;
+          // Panel text fades to next beat as the frame animates toward it.
+          if (beatRef.current !== next) {
+            beatRef.current = next;
+            setBeat(next);
+          }
+          animateFrameTo(BEATS[next].frame, () => {
+            currentBeat = next;
+          });
+        } else if (anim.r < 1) {
+          // Hide beat panels; slide reveal panel in.
+          if (beatRef.current !== -1) {
+            beatRef.current = -1;
+            setBeat(-1);
+          }
+          animateRevealTo(1, () => {
+            // After reveal completes, one more scroll releases the pin.
+          });
+        } else if (!released) {
+          // Release: allow the page to scroll past the hero normally.
+          released = true;
+          observer.disable();
+          document.documentElement.style.overflow = "";
+          document.body.style.overflow = "";
+        }
+      };
+
+      const goBackward = () => {
+        if (animating || released) return;
+        if (anim.r > 0) {
+          if (beatRef.current !== N - 1) {
+            beatRef.current = N - 1;
+            setBeat(N - 1);
+          }
+          animateRevealTo(0);
+        } else if (currentBeat > 0) {
+          const prev = currentBeat - 1;
+          if (beatRef.current !== prev) {
+            beatRef.current = prev;
+            setBeat(prev);
+          }
+          animateFrameTo(BEATS[prev].frame, () => {
+            currentBeat = prev;
+          });
+        }
+        // If already at first beat with no reveal, do nothing.
+      };
+
+      // ─── lock the page while the hero is active ───────────────────
+      const prevHtmlOverflow = document.documentElement.style.overflow;
+      const prevBodyOverflow = document.body.style.overflow;
+      document.documentElement.style.overflow = "hidden";
+      document.body.style.overflow = "hidden";
+      window.scrollTo(0, 0);
+
+      // ─── one-gesture-per-scroll interception ──────────────────────
+      // Observer coalesces wheel/touch/key into discrete up/down events,
+      // so a giant trackpad flick and a single wheel tick both count as
+      // exactly one gesture. Combined with the constant-rate tween above,
+      // this means the video plays at its natural speed on every scroll.
+      const observer = Observer.create({
+        target: window,
+        type: "wheel,touch,pointer,keyboard",
+        tolerance: GESTURE_TOLERANCE,
+        preventDefault: true,
+        wheelSpeed: 1,
+        onUp: () => goBackward(),   // user scrolled up (content moved down)
+        onDown: () => goForward(),  // user scrolled down (content moved up)
+        onPress: () => {},
       });
 
-      // Snap targets: 0 (top), the CENTER of every hold, and 1 (fully
-      // revealed). No matter how big or flingy the scroll, ScrollTrigger
-      // settles on the nearest of these — so every beat is always shown.
-      const snapPoints: number[] = [0];
-      for (const s of segs) {
-        if (s.kind === "hold") snapPoints.push((s.start + s.end) / 2);
-      }
-      snapPoints.push(1);
-
-      // Track the last settled snap point. Every new scroll gesture
-      // advances (or retreats) exactly ONE beat from here — regardless of
-      // how large the wheel/trackpad delta was. Guarantees the frame
-      // always lands on a text-reveal boundary.
-      let lastSettled = 0;
-      const EPS = 0.0005;
-
-      const ctx = gsap.context(() => {
-        ScrollTrigger.create({
-          trigger: wrap,
-          start: "top top",
-          end: () => "+=" + window.innerHeight * 14,
-          pin: pin,
-          pinSpacing: true,
-          // Lower scrub = the frame timeline reaches the target faster
-          // after the user stops scrolling, so the snap "click" feels
-          // immediate and deliberate rather than laggy.
-          scrub: 0.6,
-          anticipatePin: 1,
-          invalidateOnRefresh: true,
-          snap: {
-            snapTo: (value) => {
-              // Direction relative to the last committed beat.
-              if (value > lastSettled + EPS) {
-                // Scrolling forward: pick the NEXT snap point strictly
-                // greater than lastSettled — never skip ahead.
-                for (const p of snapPoints) {
-                  if (p > lastSettled + EPS) {
-                    lastSettled = p;
-                    return p;
-                  }
-                }
-              } else if (value < lastSettled - EPS) {
-                // Scrolling backward: pick the PREVIOUS snap point.
-                for (let i = snapPoints.length - 1; i >= 0; i--) {
-                  if (snapPoints[i] < lastSettled - EPS) {
-                    lastSettled = snapPoints[i];
-                    return snapPoints[i];
-                  }
-                }
-              }
-              return lastSettled;
-            },
-            duration: { min: 0.5, max: 0.9 },
-            delay: 0.05,
-            ease: "power3.inOut",
-            directional: false,
-          },
-          onRefresh: () => {
-            currentFrameRef.current = -1;
-            canvasSizeRef.current = { w: 0, h: 0 };
-            scheduleFrame(BEATS[0].frame);
-          },
-          onUpdate: (self) => {
-            const p = self.progress;
-            let seg = segs[segs.length - 1];
-            for (const s of segs) {
-              if (p <= s.end) {
-                seg = s;
-                break;
-              }
-            }
-            const span = Math.max(1e-6, seg.end - seg.start);
-            const local = Math.min(1, Math.max(0, (p - seg.start) / span));
-            const frame = seg.from + (seg.to - seg.from) * local;
-            scheduleFrame(frame);
-
-            // Only touch React state when the visible panel actually
-            // changes — otherwise every scroll tick would re-render the
-            // whole text stack for no visual difference.
-            let nextBeat = -1;
-            let nextReveal = 0;
-            if (seg.kind === "hold") nextBeat = seg.beatIdx;
-            else if (seg.kind === "reveal") nextReveal = local;
-
-            if (nextBeat !== beatRef.current) {
-              beatRef.current = nextBeat;
-              setBeat(nextBeat);
-            }
-            // Quantise reveal to ~2% steps so we don't rerender 60x/sec
-            // while the panel is sliding.
-            const quant = Math.round(nextReveal * 50) / 50;
-            if (Math.abs(quant - revealRef.current) > 1e-4) {
-              revealRef.current = quant;
-              setRevealCTA(quant);
-            }
-          },
-        });
-      }, pin);
-
-
-
-      cleanup = () => ctx.revert();
+      cleanup = () => {
+        observer.kill();
+        document.documentElement.style.overflow = prevHtmlOverflow;
+        document.body.style.overflow = prevBodyOverflow;
+        gsap.killTweensOf(anim);
+      };
     })();
 
     return () => {
@@ -398,15 +384,7 @@ export default function HeroScrollVideo({
         rafRef.current = null;
       }
       cleanup?.();
-      import("gsap/ScrollTrigger")
-        .then(({ ScrollTrigger }) => {
-          ScrollTrigger.getAll().forEach((t) => {
-            if (t.trigger === wrapRef.current) t.kill();
-          });
-        })
-        .catch(() => {});
     };
-
   }, [ready]);
 
   return (
