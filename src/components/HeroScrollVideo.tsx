@@ -362,6 +362,10 @@ export default function HeroScrollVideo({
 
     return () => {
       cancelled = true;
+      if (rafRef.current != null) {
+        cancelAnimationFrame(rafRef.current);
+        rafRef.current = null;
+      }
       cleanup?.();
       import("gsap/ScrollTrigger")
         .then(({ ScrollTrigger }) => {
@@ -371,6 +375,7 @@ export default function HeroScrollVideo({
         })
         .catch(() => {});
     };
+
   }, [ready]);
 
   return (
