@@ -33,11 +33,16 @@ const RING = [...CARDS, ...CARDS.slice(0, 4)];
  */
 export default function CurvedAthleteCarousel() {
   const N = RING.length;
-  const angleStep = 360 / N; // 30°
   const cardW = 300;
   const cardH = 400;
-  // Radius just above the touching threshold so cards sit shoulder-to-shoulder.
-  const radius = 570;
+
+  // Live-tunable curvature controls.
+  const [radius, setRadius] = useState(570);
+  const [angleSpan, setAngleSpan] = useState(360); // total ring span in deg
+  const [perspective, setPerspective] = useState(1100);
+  const [tilt, setTilt] = useState(60); // perspective-origin Y%
+
+  const angleStep = angleSpan / N;
 
   return (
     <section className="relative overflow-hidden py-24 sm:py-32 bg-background">
