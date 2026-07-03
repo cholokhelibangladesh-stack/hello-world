@@ -585,9 +585,10 @@ const Index = () => {
             </div>
           </div>
         </div>
-        {/* Bottom blend → next section (ink) */}
-        <div aria-hidden className="pointer-events-none absolute inset-x-0 bottom-0 h-32 z-[1]"
-          style={{ background: "linear-gradient(to bottom, transparent 0%, hsl(var(--ink) / 0.65) 55%, hsl(var(--ink)) 100%)" }} />
+        {/* Bottom blend → next section (ink) — long soft fade paper→ink */}
+        <div aria-hidden className="pointer-events-none absolute inset-x-0 bottom-0 h-64 z-[1]"
+          style={{ background: "linear-gradient(to bottom, transparent 0%, hsl(var(--paper-deep) / 0.5) 25%, hsl(var(--ink) / 0.65) 60%, hsl(var(--ink) / 0.92) 88%, hsl(var(--ink)) 100%)" }} />
+
       </section>
 
       {/* ══════════════════════════════════════════
