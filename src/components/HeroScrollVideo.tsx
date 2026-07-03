@@ -30,11 +30,11 @@ interface HeroScrollVideoProps {
  *  70  — basketball has dropped through the net (final beat)
  */
 
-const ATLAS_COLS = 8;
-const ATLAS_ROWS = 10;
-const FRAME_W = 1920;
-const FRAME_H = 1080;
-const FRAME_COUNT = 74;
+const ATLAS_COLS = 15;
+const ATLAS_ROWS = 20;
+const FRAME_W = 960;
+const FRAME_H = 540;
+const FRAME_COUNT = 295;
 
 
 
@@ -50,35 +50,35 @@ interface Beat {
 
 const BEATS: Beat[] = [
   {
-    frame: 2,
+    frame: 8,
     kind: "split",
     kicker: "BANGLADESH",
     titleA: "From every para,",
     titleB: "a nation of players.",
   },
   {
-    frame: 15,
+    frame: 60,
     kind: "center",
     kicker: "WELCOME TO",
     titleA: "Cholo Kheli.",
     body: "The home of Bangladeshi sport — where every talent is seen.",
   },
   {
-    frame: 27,
+    frame: 108,
     kind: "split",
     kicker: "CRICKET",
     titleA: "Every over,",
     titleB: "every opportunity.",
   },
   {
-    frame: 50,
+    frame: 199,
     kind: "left",
     kicker: "BASKETBALL",
     titleA: "Rise. Reach.",
     titleB: "Be recruited.",
   },
   {
-    frame: 70,
+    frame: 279,
     kind: "center",
     kicker: "EVERY ATHLETE",
     titleA: "Discovered on merit.",
