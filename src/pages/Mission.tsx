@@ -136,11 +136,17 @@ const History = () => {
   return (
     <section className="relative bg-[hsl(var(--paper))] py-28 md:py-36 overflow-hidden">
       <div className="mx-auto max-w-7xl px-6 md:px-16">
-        <div className="flex items-baseline justify-between mb-10">
+        <motion.div
+          initial={{ opacity: 0, y: 20 }}
+          whileInView={{ opacity: 1, y: 0 }}
+          viewport={{ once: true, margin: "-80px" }}
+          transition={{ duration: 0.7, ease: [0.22, 1, 0.36, 1] }}
+          className="flex items-baseline justify-between mb-10"
+        >
           <h2 className="font-display text-foreground text-4xl md:text-5xl tracking-[-0.02em]">
             {t("mission.history.title")}
           </h2>
-        </div>
+        </motion.div>
 
         <div className="relative mt-16">
           <div className="absolute left-0 right-0 top-1/2 h-px bg-foreground/10" />
