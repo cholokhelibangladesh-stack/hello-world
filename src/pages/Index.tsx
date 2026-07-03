@@ -356,10 +356,11 @@ const Index = () => {
       {/* ══════════════════════════════════════════
           SPORTS GRID — Hover to reveal
       ══════════════════════════════════════════ */}
-      <section className="relative pt-32 sm:pt-40 pb-20 sm:pb-28 surface-paper">
-        {/* Bottom blend → next section (also paper) — no-op color but keeps the seam invisible */}
-        <div aria-hidden className="pointer-events-none absolute inset-x-0 bottom-0 h-24 z-[1]"
-          style={{ background: "linear-gradient(to bottom, transparent 0%, hsl(var(--paper)) 100%)" }} />
+      <section className="relative pt-40 sm:pt-48 pb-20 sm:pb-28 surface-paper">
+        {/* Top blend ← hero video — long soft fade from near-black video into paper */}
+        <div aria-hidden className="pointer-events-none absolute inset-x-0 top-0 h-64 z-[1]"
+          style={{ background: "linear-gradient(to bottom, hsl(0 0% 3%) 0%, hsl(0 0% 3% / 0.85) 12%, hsl(198 25% 40% / 0.35) 45%, hsl(var(--paper) / 0.85) 78%, hsl(var(--paper)) 100%)" }} />
+
 
 
 
@@ -433,7 +434,8 @@ const Index = () => {
         <img src={stadiumImg.url} alt="" aria-hidden loading="lazy" decoding="async"
           className="absolute inset-0 w-full h-full object-cover opacity-[0.07]" />
         <div className="absolute inset-0 pointer-events-none"
-          style={{ background: "linear-gradient(to bottom, hsl(var(--paper-deep) / 0.96), hsl(var(--paper) / 0.98))" }} />
+          style={{ background: "linear-gradient(to bottom, hsl(var(--paper)) 0%, hsl(var(--paper) / 0.98) 30%, hsl(var(--paper-deep) / 0.85) 100%)" }} />
+
 
         <div className="container relative z-10">
           <Reveal className="text-center mb-16 sm:mb-24">
@@ -583,9 +585,10 @@ const Index = () => {
             </div>
           </div>
         </div>
-        {/* Bottom blend → next section (ink) */}
-        <div aria-hidden className="pointer-events-none absolute inset-x-0 bottom-0 h-32 z-[1]"
-          style={{ background: "linear-gradient(to bottom, transparent 0%, hsl(var(--ink) / 0.65) 55%, hsl(var(--ink)) 100%)" }} />
+        {/* Bottom blend → next section (ink) — long soft fade paper→ink */}
+        <div aria-hidden className="pointer-events-none absolute inset-x-0 bottom-0 h-64 z-[1]"
+          style={{ background: "linear-gradient(to bottom, transparent 0%, hsl(var(--paper-deep) / 0.5) 25%, hsl(var(--ink) / 0.65) 60%, hsl(var(--ink) / 0.92) 88%, hsl(var(--ink)) 100%)" }} />
+
       </section>
 
       {/* ══════════════════════════════════════════
@@ -644,9 +647,10 @@ const Index = () => {
             );
           })()}
         </div>
-        {/* Bottom blend → next section (default background under the map) */}
-        <div aria-hidden className="pointer-events-none absolute inset-x-0 bottom-0 h-32 z-[1]"
-          style={{ background: "linear-gradient(to bottom, transparent 0%, hsl(var(--background) / 0.65) 55%, hsl(var(--background)) 100%)" }} />
+        {/* Bottom blend → next section (default background under the map) — long soft ink→background */}
+        <div aria-hidden className="pointer-events-none absolute inset-x-0 bottom-0 h-64 z-[1]"
+          style={{ background: "linear-gradient(to bottom, transparent 0%, hsl(var(--ink) / 0.35) 25%, hsl(var(--background) / 0.55) 55%, hsl(var(--background) / 0.9) 82%, hsl(var(--background)) 100%)" }} />
+
       </section>
 
 
@@ -661,9 +665,10 @@ const Index = () => {
           CINEMATIC CTA
       ══════════════════════════════════════════ */}
       <section className="py-24 sm:py-36 relative overflow-hidden surface-ink">
-        {/* Top blend ← previous section (default background under map) */}
-        <div aria-hidden className="pointer-events-none absolute inset-x-0 top-0 h-32 z-[2]"
-          style={{ background: "linear-gradient(to top, transparent 0%, hsl(var(--ink) / 0.65) 45%, hsl(var(--background)) 100%)" }} />
+        {/* Top blend ← previous section (default background under map) — long soft background→ink */}
+        <div aria-hidden className="pointer-events-none absolute inset-x-0 top-0 h-64 z-[2]"
+          style={{ background: "linear-gradient(to top, transparent 0%, hsl(var(--ink) / 0.35) 25%, hsl(var(--background) / 0.55) 55%, hsl(var(--background) / 0.9) 82%, hsl(var(--background)) 100%)" }} />
+
         {/* Cinematic backdrop */}
         <img src={footballerImg.url} alt="" aria-hidden loading="lazy" decoding="async"
           className="absolute inset-0 w-full h-full object-cover opacity-40" />
@@ -742,9 +747,10 @@ const Index = () => {
             </div>
           </Reveal>
         </div>
-        {/* Bottom blend → next section (card) */}
-        <div aria-hidden className="pointer-events-none absolute inset-x-0 bottom-0 h-32 z-[2]"
-          style={{ background: "linear-gradient(to bottom, transparent 0%, hsl(var(--card) / 0.65) 55%, hsl(var(--card)) 100%)" }} />
+        {/* Bottom blend → next section (card) — long soft ink→card */}
+        <div aria-hidden className="pointer-events-none absolute inset-x-0 bottom-0 h-64 z-[2]"
+          style={{ background: "linear-gradient(to bottom, transparent 0%, hsl(var(--ink) / 0.35) 25%, hsl(var(--card) / 0.6) 60%, hsl(var(--card) / 0.92) 88%, hsl(var(--card)) 100%)" }} />
+
       </section>
 
       {/* ══════════════════════════════════════════
@@ -783,9 +789,10 @@ const Index = () => {
             ))}
           </div>
         </div>
-        {/* Bottom blend → footer (paper) */}
-        <div aria-hidden className="pointer-events-none absolute inset-x-0 bottom-0 h-24 z-[2]"
-          style={{ background: "linear-gradient(to bottom, transparent 0%, hsl(var(--paper) / 0.7) 55%, hsl(var(--paper)) 100%)" }} />
+        {/* Bottom blend → footer (paper) — soft card→paper */}
+        <div aria-hidden className="pointer-events-none absolute inset-x-0 bottom-0 h-40 z-[2]"
+          style={{ background: "linear-gradient(to bottom, transparent 0%, hsl(var(--paper) / 0.5) 40%, hsl(var(--paper) / 0.9) 80%, hsl(var(--paper)) 100%)" }} />
+
       </section>
 
 
