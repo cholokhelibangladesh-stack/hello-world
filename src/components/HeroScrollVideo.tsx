@@ -1,9 +1,10 @@
 import { useEffect, useRef, useState } from "react";
 import { Link } from "@tanstack/react-router";
-import { ArrowRight, ChevronDown } from "lucide-react";
+import { ArrowRight } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import CholoKheliMark from "@/components/CholoKheliMark";
 import heroVideo from "@/assets/hero-scroll.mp4.asset.json";
+import mistyField from "@/assets/footballer-motion.jpg.asset.json";
 
 interface HeroScrollVideoProps {
   tagline: string;
@@ -15,27 +16,84 @@ interface HeroScrollVideoProps {
   dashboardHref: string;
 }
 
-const STAGES = [
-  { kicker: "CHOLO KHELI", title: "Bangladesh, in motion.", body: "" },
-  { kicker: "Football", title: "From para to pitch.", body: "Every strike, every save — captured for scouts who're watching." },
-  { kicker: "Cricket", title: "Bat. Ball. Belief.", body: "Maktab grounds to national selection — a verified pathway to be seen." },
-  { kicker: "Every athlete", title: "Discovered on merit.", body: "Safe. Transparent. Built for the love of the game." },
+/**
+ * Scroll-scrubbed cinematic hero.
+ * The single video timeline is broken into 5 scroll "beats"; each beat
+ * plays a slice of video, then a text panel fades in over the paused frame.
+ * The 6th beat slides a misty football field up to reveal the CTAs.
+ */
+type BeatKind = "split" | "center" | "left";
+interface Beat {
+  /** Fraction of the video timeline where THIS beat's text sits (paused frame). */
+  videoAt: number;
+  kind: BeatKind;
+  kicker: string;
+  titleA: string;
+  titleB?: string;
+  body?: string;
+}
+
+const BEATS: Beat[] = [
+  // 0 — opening: football on screen, text on either side (not centered)
+  {
+    videoAt: 0.02,
+    kind: "split",
+    kicker: "BANGLADESH",
+    titleA: "From every para,",
+    titleB: "a nation of players.",
+    body: "",
+  },
+  // 1 — camera pulls back to reveal the stadium
+  {
+    videoAt: 0.28,
+    kind: "center",
+    kicker: "WELCOME TO",
+    titleA: "Cholo Kheli.",
+    body: "The home of Bangladeshi sport — where every talent is seen.",
+  },
+  // 2 — dive into stadium → cricket ball
+  {
+    videoAt: 0.52,
+    kind: "split",
+    kicker: "CRICKET",
+    titleA: "Every over,",
+    titleB: "every opportunity.",
+    body: "",
+  },
+  // 3 — cricket ball morphs to basketball, falling through rim
+  {
+    videoAt: 0.78,
+    kind: "left",
+    kicker: "BASKETBALL",
+    titleA: "Rise. Reach.",
+    titleB: "Be recruited.",
+    body: "",
+  },
+  // 4 — ball drops through the rim, final frame of the video
+  {
+    videoAt: 0.995,
+    kind: "center",
+    kicker: "EVERY ATHLETE",
+    titleA: "Discovered on merit.",
+    body: "",
+  },
 ];
 
 export default function HeroScrollVideo({
-  tagline,
   scrollLabel,
   joinLabel,
   scoutLabel,
   openDashboardLabel,
   isAuthed,
   dashboardHref,
+  tagline,
 }: HeroScrollVideoProps) {
   const wrapRef = useRef<HTMLDivElement>(null);
   const pinRef = useRef<HTMLDivElement>(null);
   const videoRef = useRef<HTMLVideoElement>(null);
-  const [stage, setStage] = useState(0);
-  const [showCTA, setShowCTA] = useState(false);
+  // -1 = between beats (text hidden while video is playing)
+  const [beat, setBeat] = useState(0);
+  const [revealCTA, setRevealCTA] = useState(0); // 0..1 progress of the field slide-up
 
   useEffect(() => {
     if (typeof window === "undefined") return;
@@ -61,42 +119,77 @@ export default function HeroScrollVideo({
         const duration = video.duration;
         if (!duration || Number.isNaN(duration)) return;
 
-        // Proxy object animated by GSAP; we set currentTime on tick.
+        // Beats live at these fractions of the video timeline. Between them,
+        // the video plays (scrubbed linearly). At each beat we PAUSE the video
+        // (a short "hold" window) and fade the text panel in.
+        //
+        // Timeline layout (scroll progress 0..1):
+        //   [play → beat0 hold] [play → beat1 hold] ... [play → beat4 hold]
+        //   [reveal misty field + CTAs]
+        //
+        // We give each of the 5 play+hold pairs equal share of the first 85%
+        // of scroll, then the last 15% is the field-reveal.
+        const N = BEATS.length; // 5
+        const REVEAL_START = 0.85;
+        const beatShare = REVEAL_START / N; // 0.17
+        const holdShare = beatShare * 0.35;  // ~35% of each pair is the "hold"
+
         const proxy = { t: 0 };
+        const setTime = () => {
+          try {
+            // requestVideoFrameCallback would be ideal but not universal;
+            // setting currentTime each tick is smooth enough with scrub.
+            video.currentTime = proxy.t;
+          } catch {}
+        };
 
         const ctx = gsap.context(() => {
-          const tween = gsap.to(proxy, {
-            t: duration - 0.05,
-            ease: "none",
-            paused: true,
-            onUpdate: () => {
-              try {
-                video.currentTime = proxy.t;
-              } catch {}
-            },
-          });
-
           ScrollTrigger.create({
             trigger: wrap,
             start: "top top",
-            end: () => "+=" + window.innerHeight * 4,
+            end: () => "+=" + window.innerHeight * 6,
             pin: pin,
             pinSpacing: true,
-            scrub: 1.2, // smoothing (in seconds) — this is what makes it silky
+            scrub: 1,
             anticipatePin: 1,
             invalidateOnRefresh: true,
             onUpdate: (self) => {
-              // Drive the tween by scroll progress (smooth thanks to scrub)
-              tween.progress(self.progress);
-
               const p = self.progress;
-              const s =
-                p < 0.22 ? 0 :
-                p < 0.48 ? 1 :
-                p < 0.75 ? 2 :
-                3;
-              setStage((prev) => (prev === s ? prev : s));
-              setShowCTA(p >= 0.94);
+
+              // ---- Video timeline mapping ----
+              if (p < REVEAL_START) {
+                const local = p / REVEAL_START; // 0..1 within the video section
+                const idx = Math.min(N - 1, Math.floor(local / (1 / N)));
+                const withinBeat = (local - idx / N) * N; // 0..1 within this beat
+                const playPortion = 1 - (holdShare / beatShare); // 0..0.65
+
+                // From previous beat's frame → this beat's frame during "play",
+                // then hold on this beat's frame.
+                const prevFrame = idx === 0 ? 0 : BEATS[idx - 1].videoAt;
+                const targetFrame = BEATS[idx].videoAt;
+
+                let frame: number;
+                let showText: boolean;
+                if (withinBeat <= playPortion) {
+                  const k = withinBeat / playPortion; // 0..1
+                  frame = prevFrame + (targetFrame - prevFrame) * k;
+                  showText = false;
+                } else {
+                  frame = targetFrame;
+                  showText = true;
+                }
+                proxy.t = frame * (duration - 0.05);
+                setTime();
+                setBeat(showText ? idx : -1);
+                setRevealCTA(0);
+              } else {
+                // Field slide-up section
+                proxy.t = duration - 0.05;
+                setTime();
+                setBeat(-1);
+                const r = (p - REVEAL_START) / (1 - REVEAL_START);
+                setRevealCTA(Math.min(1, Math.max(0, r)));
+              }
             },
           });
         }, pin);
@@ -116,12 +209,13 @@ export default function HeroScrollVideo({
     return () => {
       cancelled = true;
       cleanup?.();
-      // Extra safety: kill any lingering triggers scoped to this wrap
-      import("gsap/ScrollTrigger").then(({ ScrollTrigger }) => {
-        ScrollTrigger.getAll().forEach((t) => {
-          if (t.trigger === wrapRef.current) t.kill();
-        });
-      }).catch(() => {});
+      import("gsap/ScrollTrigger")
+        .then(({ ScrollTrigger }) => {
+          ScrollTrigger.getAll().forEach((t) => {
+            if (t.trigger === wrapRef.current) t.kill();
+          });
+        })
+        .catch(() => {});
     };
   }, []);
 
@@ -152,119 +246,215 @@ export default function HeroScrollVideo({
           className="absolute inset-0 pointer-events-none"
           style={{
             background:
-              "linear-gradient(to bottom, rgba(0,0,0,0.55) 0%, rgba(0,0,0,0.15) 45%, rgba(0,0,0,0.8) 100%)",
+              "linear-gradient(to bottom, rgba(0,0,0,0.55) 0%, rgba(0,0,0,0.15) 45%, rgba(0,0,0,0.85) 100%)",
           }}
         />
 
-        {/* Mark — always present, shrinks at final stage */}
+        {/* Mark */}
         <div
-          className="absolute top-8 left-1/2 -translate-x-1/2 z-10 transition-all duration-700 ease-out"
+          className="absolute top-6 left-1/2 -translate-x-1/2 z-20 transition-transform duration-700 ease-out"
           style={{
-            transform: `translateX(-50%) scale(${stage === 3 ? 0.55 : 1})`,
-            opacity: 1,
+            transform: `translateX(-50%) scale(${revealCTA > 0.4 ? 0.55 : 1})`,
           }}
         >
-          <CholoKheliMark
-            className="h-16 w-24 sm:h-20 sm:w-28 text-white drop-shadow-[0_4px_20px_rgba(0,0,0,0.6)]"
-            accent="hsl(188 60% 70%)"
-          />
+          <CholoKheliMark className="h-14 w-20 sm:h-16 sm:w-24 drop-shadow-[0_4px_20px_rgba(0,0,0,0.6)]" />
         </div>
 
-        {/* Rotating text stages */}
-        <div className="relative z-10 h-full flex items-center justify-center px-6">
-          <div className="w-full max-w-2xl text-center">
-            {STAGES.map((s, i) => (
+        {/* Text beats */}
+        <div className="absolute inset-0 z-10 pointer-events-none">
+          {BEATS.map((b, i) => {
+            const active = beat === i;
+            const baseClass =
+              "absolute inset-0 flex items-center px-6 sm:px-12 transition-all duration-700 ease-out";
+            const opacity = active ? 1 : 0;
+            const blur = active ? "blur(0px)" : "blur(6px)";
+            const translate = active ? "0px" : beat > i ? "-16px" : "16px";
+
+            if (b.kind === "split") {
+              return (
+                <div
+                  key={i}
+                  className={baseClass + " justify-between"}
+                  style={{ opacity, filter: blur, transform: `translateY(${translate})` }}
+                >
+                  <div className="max-w-[45%] text-left">
+                    <div className="text-[10px] sm:text-xs tracking-[0.4em] uppercase text-[hsl(188_60%_72%)] mb-3 font-medium">
+                      {b.kicker}
+                    </div>
+                    <h2 className="font-display text-3xl sm:text-5xl lg:text-6xl font-medium text-white tracking-[0.02em] leading-[1.05] drop-shadow-[0_4px_24px_rgba(0,0,0,0.7)]">
+                      {b.titleA}
+                    </h2>
+                  </div>
+                  <div className="max-w-[45%] text-right self-end mb-8 sm:mb-16">
+                    <h2 className="font-display text-3xl sm:text-5xl lg:text-6xl font-medium text-white tracking-[0.02em] leading-[1.05] drop-shadow-[0_4px_24px_rgba(0,0,0,0.7)]">
+                      {b.titleB}
+                    </h2>
+                  </div>
+                </div>
+              );
+            }
+
+            if (b.kind === "left") {
+              return (
+                <div
+                  key={i}
+                  className={baseClass + " justify-start"}
+                  style={{ opacity, filter: blur, transform: `translateY(${translate})` }}
+                >
+                  <div className="max-w-[52%] text-left">
+                    <div className="text-[10px] sm:text-xs tracking-[0.4em] uppercase text-[hsl(188_60%_72%)] mb-3 font-medium">
+                      {b.kicker}
+                    </div>
+                    <h2 className="font-display text-3xl sm:text-5xl lg:text-6xl font-medium text-white tracking-[0.02em] leading-[1.05] drop-shadow-[0_4px_24px_rgba(0,0,0,0.7)]">
+                      {b.titleA}
+                    </h2>
+                    {b.titleB && (
+                      <h2 className="font-display text-3xl sm:text-5xl lg:text-6xl font-medium text-white/90 tracking-[0.02em] leading-[1.05] mt-1 drop-shadow-[0_4px_24px_rgba(0,0,0,0.7)]">
+                        {b.titleB}
+                      </h2>
+                    )}
+                  </div>
+                </div>
+              );
+            }
+
+            // center
+            return (
               <div
                 key={i}
-                className="absolute inset-x-0 top-1/2 -translate-y-1/2 px-6 transition-all duration-700 ease-out"
-                style={{
-                  opacity: stage === i ? 1 : 0,
-                  transform: `translateY(${stage === i ? "-50%" : stage > i ? "-56%" : "-44%"})`,
-                  filter: stage === i ? "blur(0px)" : "blur(6px)",
-                  pointerEvents: stage === i ? "auto" : "none",
-                }}
+                className={baseClass + " justify-center"}
+                style={{ opacity, filter: blur, transform: `translateY(${translate})` }}
               >
-                <div className="text-[10px] sm:text-xs tracking-[0.4em] uppercase text-[hsl(188_60%_72%)] mb-4 font-medium">
-                  {s.kicker}
+                <div className="max-w-2xl text-center">
+                  <div className="text-[10px] sm:text-xs tracking-[0.4em] uppercase text-[hsl(188_60%_72%)] mb-4 font-medium">
+                    {b.kicker}
+                  </div>
+                  <h2 className="font-display text-4xl sm:text-6xl lg:text-7xl font-medium text-white tracking-[0.02em] leading-tight drop-shadow-[0_4px_24px_rgba(0,0,0,0.7)]">
+                    {b.titleA}
+                  </h2>
+                  {b.body && (
+                    <p className="mt-6 text-sm sm:text-base text-white/80 max-w-lg mx-auto leading-relaxed drop-shadow-[0_2px_8px_rgba(0,0,0,0.6)]">
+                      {b.body}
+                    </p>
+                  )}
                 </div>
-                <h2 className="font-display text-4xl sm:text-6xl lg:text-7xl font-medium text-white tracking-[0.02em] leading-tight drop-shadow-[0_4px_24px_rgba(0,0,0,0.7)]">
-                  {s.title}
-                </h2>
-                {s.body && (
-                  <p className="mt-6 text-sm sm:text-base text-white/80 max-w-lg mx-auto leading-relaxed drop-shadow-[0_2px_8px_rgba(0,0,0,0.6)]">
-                    {s.body}
-                  </p>
+              </div>
+            );
+          })}
+        </div>
+
+        {/* Misty football-field reveal panel — slides up over the final frame */}
+        <div
+          className="absolute inset-0 z-30"
+          style={{
+            transform: `translateY(${(1 - revealCTA) * 100}%)`,
+            transition: "transform 120ms linear",
+            pointerEvents: revealCTA > 0.9 ? "auto" : "none",
+          }}
+        >
+          <div className="relative w-full h-full">
+            <img
+              src={mistyField.url}
+              alt=""
+              className="absolute inset-0 w-full h-full object-cover"
+              draggable={false}
+            />
+            <div
+              className="absolute inset-0"
+              style={{
+                background:
+                  "linear-gradient(to bottom, rgba(0,0,0,0.35) 0%, rgba(0,0,0,0.55) 60%, rgba(0,0,0,0.85) 100%)",
+              }}
+            />
+            <div
+              className="relative z-10 h-full flex flex-col items-center justify-center px-6 text-center transition-all duration-700 ease-out"
+              style={{
+                opacity: revealCTA > 0.35 ? 1 : 0,
+                transform: `translateY(${revealCTA > 0.35 ? 0 : 24}px)`,
+              }}
+            >
+              <div className="text-[10px] sm:text-xs tracking-[0.4em] uppercase text-[hsl(188_60%_72%)] mb-4 font-medium">
+                YOUR MOVE
+              </div>
+              <h2 className="font-display text-4xl sm:text-6xl lg:text-7xl font-medium text-white tracking-[0.02em] leading-tight max-w-3xl">
+                Step onto the field.
+              </h2>
+              <p className="mt-6 text-sm sm:text-base text-white/80 max-w-lg leading-relaxed">
+                Join Cholo Kheli as a player to be discovered, or as a scout to discover the next generation.
+              </p>
+
+              <div className="mt-10 flex flex-col sm:flex-row gap-3">
+                {isAuthed ? (
+                  <Link to={dashboardHref as any}>
+                    <Button
+                      size="lg"
+                      className="font-medium text-base px-9 py-6 rounded-full"
+                      style={{
+                        background: "hsl(var(--teal-deep))",
+                        color: "hsl(var(--primary-foreground))",
+                      }}
+                    >
+                      {openDashboardLabel} <ArrowRight className="ml-2 h-4 w-4" />
+                    </Button>
+                  </Link>
+                ) : (
+                  <>
+                    <Link to="/auth">
+                      <Button
+                        size="lg"
+                        className="font-medium text-base px-9 py-6 rounded-full"
+                        style={{
+                          background: "hsl(var(--teal-deep))",
+                          color: "hsl(var(--primary-foreground))",
+                        }}
+                      >
+                        {joinLabel} <ArrowRight className="ml-2 h-4 w-4" />
+                      </Button>
+                    </Link>
+                    <Link to="/auth" search={{ role: "scout" }}>
+                      <Button
+                        size="lg"
+                        variant="outline"
+                        className="font-medium text-base px-9 py-6 rounded-full bg-white/5 backdrop-blur-sm hover:bg-white/15"
+                        style={{
+                          borderColor: "rgba(255,255,255,0.4)",
+                          color: "#ffffff",
+                        }}
+                      >
+                        {scoutLabel}
+                      </Button>
+                    </Link>
+                  </>
                 )}
               </div>
-            ))}
+            </div>
           </div>
         </div>
 
-        {/* CTAs — appear on final frame */}
+        {/* Scroll nudge — hidden once the reveal starts */}
         <div
-          className="absolute bottom-16 left-1/2 -translate-x-1/2 z-20 flex flex-col sm:flex-row gap-3 transition-all duration-700 ease-out"
-          style={{
-            opacity: showCTA ? 1 : 0,
-            transform: `translateX(-50%) translateY(${showCTA ? 0 : 24}px)`,
-            pointerEvents: showCTA ? "auto" : "none",
-          }}
+          className="absolute bottom-6 left-1/2 -translate-x-1/2 z-20 text-[9px] tracking-[0.35em] uppercase text-white/70 transition-opacity duration-500"
+          style={{ opacity: revealCTA > 0 ? 0 : 0.75 }}
         >
-          {isAuthed ? (
-            <Link to={dashboardHref as any}>
-              <Button
-                size="lg"
-                className="font-medium text-base px-9 py-6 rounded-full"
-                style={{ background: "hsl(var(--teal-deep))", color: "hsl(var(--primary-foreground))" }}
-              >
-                {openDashboardLabel} <ArrowRight className="ml-2 h-4 w-4" />
-              </Button>
-            </Link>
-          ) : (
-            <>
-              <Link to="/auth">
-                <Button
-                  size="lg"
-                  className="font-medium text-base px-9 py-6 rounded-full"
-                  style={{ background: "hsl(var(--teal-deep))", color: "hsl(var(--primary-foreground))" }}
-                >
-                  {joinLabel} <ArrowRight className="ml-2 h-4 w-4" />
-                </Button>
-              </Link>
-              <Link to="/auth" search={{ role: "scout" }}>
-                <Button
-                  size="lg"
-                  variant="outline"
-                  className="font-medium text-base px-9 py-6 rounded-full bg-white/5 backdrop-blur-sm hover:bg-white/15"
-                  style={{ borderColor: "rgba(255,255,255,0.4)", color: "#ffffff" }}
-                >
-                  {scoutLabel}
-                </Button>
-              </Link>
-            </>
-          )}
-        </div>
-
-        {/* Scroll nudge */}
-        <div
-          className="absolute bottom-8 left-1/2 -translate-x-1/2 z-10 flex flex-col items-center gap-1.5 transition-opacity duration-500"
-          style={{ opacity: showCTA ? 0 : 0.75 }}
-        >
-          <span className="text-[9px] tracking-[0.35em] uppercase text-white/70">{scrollLabel || "Scroll"}</span>
-          <ChevronDown className="h-4 w-4 text-white/70 animate-bounce" />
+          {scrollLabel || "Scroll"}
         </div>
 
         {/* Progress bar */}
-        <div className="absolute bottom-0 left-0 right-0 h-[2px] bg-white/10 z-10">
+        <div className="absolute bottom-0 left-0 right-0 h-[2px] bg-white/10 z-20">
           <div
-            className="h-full transition-[width] duration-300 ease-out"
+            className="h-full"
             style={{
-              width: `${((stage + (showCTA ? 1 : 0)) / 4) * 100}%`,
+              width: `${
+                (revealCTA > 0
+                  ? 0.85 + revealCTA * 0.15
+                  : Math.max(0, Math.min(1, (beat === -1 ? 0 : (beat + 1) / (BEATS.length + 1))))) * 100
+              }%`,
               background: "hsl(188 60% 70%)",
+              transition: "width 120ms linear",
             }}
           />
         </div>
 
-        {/* Silence unused prop lint */}
         <span className="sr-only">{tagline}</span>
       </div>
     </section>
