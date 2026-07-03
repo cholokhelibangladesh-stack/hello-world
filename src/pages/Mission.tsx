@@ -1,5 +1,5 @@
 import { motion } from "framer-motion";
-import { ArrowUpRight, Plus, Minus } from "lucide-react";
+import { ArrowUpRight, Plus, Minus, ShieldCheck, Users, TrendingUp } from "lucide-react";
 import { Link } from "@tanstack/react-router";
 import { useState } from "react";
 import { useLanguage } from "@/i18n/LanguageProvider";
@@ -287,7 +287,7 @@ const WhatWeDo = () => {
             whileInView={{ opacity: 1, x: 0 }}
             viewport={{ once: true, margin: "-80px" }}
             transition={{ duration: 0.9, delay: 0.15, ease: [0.16, 1, 0.3, 1] }}
-            className="md:sticky md:top-32 space-y-6 max-w-md"
+            className="md:sticky md:top-32 space-y-8 max-w-md"
           >
             <p className="text-foreground/80 text-lg leading-relaxed">
               {t("mission.what.lead")}
@@ -295,6 +295,69 @@ const WhatWeDo = () => {
             <p className="text-foreground/65 text-base leading-relaxed">
               {t("mission.what.intro")}
             </p>
+
+            {/* Signals — fills the left column while the accordion expands */}
+            <div className="relative rounded-2xl border border-foreground/10 bg-foreground/[0.02] p-6 space-y-5">
+              <div
+                className="absolute left-0 top-6 bottom-6 w-[2px] rounded-full"
+                style={{ background: BLUE_GRADIENT }}
+              />
+              {[
+                { Icon: ShieldCheck, title: t("mission.what.s1.title"), body: t("mission.what.s1.body") },
+                { Icon: Users, title: t("mission.what.s2.title"), body: t("mission.what.s2.body") },
+                { Icon: TrendingUp, title: t("mission.what.s3.title"), body: t("mission.what.s3.body") },
+              ].map(({ Icon, title, body }, i) => (
+                <motion.div
+                  key={title}
+                  initial={{ opacity: 0, y: 10 }}
+                  whileInView={{ opacity: 1, y: 0 }}
+                  viewport={{ once: true, margin: "-40px" }}
+                  transition={{ duration: 0.5, delay: 0.35 + i * 0.1, ease: [0.16, 1, 0.3, 1] }}
+                  className="flex items-start gap-4 pl-3"
+                >
+                  <div
+                    className="mt-0.5 h-9 w-9 shrink-0 rounded-full flex items-center justify-center"
+                    style={{ background: BLUE_GRADIENT_135 }}
+                  >
+                    <Icon className="h-4 w-4 text-white" strokeWidth={2.2} />
+                  </div>
+                  <div className="space-y-1">
+                    <h4 className="font-display text-foreground text-base tracking-tight">
+                      {title}
+                    </h4>
+                    <p className="text-foreground/65 text-sm leading-relaxed">
+                      {body}
+                    </p>
+                  </div>
+                </motion.div>
+              ))}
+            </div>
+
+            <motion.figure
+              initial={{ opacity: 0, y: 12 }}
+              whileInView={{ opacity: 1, y: 0 }}
+              viewport={{ once: true, margin: "-40px" }}
+              transition={{ duration: 0.6, delay: 0.55, ease: [0.16, 1, 0.3, 1] }}
+              className="relative pl-6"
+            >
+              <span
+                className="absolute left-0 top-0 font-display text-5xl leading-none"
+                style={{
+                  background: BLUE_GRADIENT,
+                  WebkitBackgroundClip: "text",
+                  WebkitTextFillColor: "transparent",
+                  backgroundClip: "text",
+                }}
+              >
+                “
+              </span>
+              <blockquote className="text-foreground/75 text-sm leading-relaxed italic">
+                {t("mission.what.pullquote")}
+              </blockquote>
+              <figcaption className="mt-2 text-foreground/50 text-xs uppercase tracking-[0.15em]">
+                {t("mission.what.pullquoteAttr")}
+              </figcaption>
+            </motion.figure>
           </motion.div>
 
           <div className="space-y-6">

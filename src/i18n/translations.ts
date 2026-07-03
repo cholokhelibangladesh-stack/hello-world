@@ -247,6 +247,19 @@ export const translations = {
     "mission.what.m4.value": "3",
     "mission.what.m4.label": "Sports live at kickoff",
 
+    "mission.what.s1.title": "Trust as infrastructure",
+    "mission.what.s1.body":
+      "Identity checks, role verification and audit logs are built in — not bolted on after a scandal.",
+    "mission.what.s2.title": "Built with the community",
+    "mission.what.s2.body":
+      "Shaped alongside coaches, district officials and players so it fits the way Bangladeshi sport actually works.",
+    "mission.what.s3.title": "Designed to scale",
+    "mission.what.s3.body":
+      "Starts with three sports and grows with every federation that plugs in — one shared pipeline, not fifty silos.",
+    "mission.what.pullquote":
+      "A player from Rangpur and a scout in Dhaka should be one verified click apart — that's the whole product.",
+    "mission.what.pullquoteAttr": "— The Cholo Kheli team",
+
 
 
     "mission.team.title": "Meet Our Team",
@@ -516,6 +529,19 @@ export const translations = {
     "mission.what.m3.label": "পাইপলাইনে মধ্যস্বত্বভোগী",
     "mission.what.m4.value": "৩",
     "mission.what.m4.label": "শুরুতেই সক্রিয় খেলা",
+
+    "mission.what.s1.title": "বিশ্বাসই মূল অবকাঠামো",
+    "mission.what.s1.body":
+      "পরিচয় যাচাই, ভূমিকা যাচাই ও অডিট লগ শুরু থেকেই তৈরি — কোনো কেলেঙ্কারির পর জোড়াতালি দিয়ে বসানো নয়।",
+    "mission.what.s2.title": "কমিউনিটির সঙ্গে গড়া",
+    "mission.what.s2.body":
+      "কোচ, জেলা কর্মকর্তা ও খেলোয়াড়দের সঙ্গে মিলে তৈরি — যেন বাংলাদেশের খেলাধুলার বাস্তবতার সঙ্গে মানানসই হয়।",
+    "mission.what.s3.title": "স্কেল করার জন্য তৈরি",
+    "mission.what.s3.body":
+      "তিনটি খেলা দিয়ে শুরু, প্রতিটি ফেডারেশন যুক্ত হলেই বড় হয় — একটাই পাইপলাইন, পঞ্চাশটি সাইলো নয়।",
+    "mission.what.pullquote":
+      "রংপুরের একজন খেলোয়াড় আর ঢাকার একজন স্কাউট — মাঝখানে শুধু একটাই যাচাইকৃত ক্লিক থাকা উচিত। এটাই পুরো প্রোডাক্ট।",
+    "mission.what.pullquoteAttr": "— চলো খেলি টিম",
 
 
 
