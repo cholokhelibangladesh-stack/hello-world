@@ -85,35 +85,38 @@ const Hero = () => {
               style={{ background: BLUE_GRADIENT }}
             >
               <span
-                className="flex items-center justify-between gap-6 rounded-[5px] px-6 py-3.5 min-w-[280px] transition-colors
-                  bg-[hsl(var(--teal-soft))] group-hover:bg-[hsl(var(--teal-deep))]
-                  dark:bg-[#0a1620] dark:group-hover:bg-transparent"
+                className="relative flex items-center justify-between gap-6 rounded-[5px] px-6 py-3.5 min-w-[280px] overflow-hidden dark:bg-[#0a1620] dark:group-hover:bg-transparent transition-colors"
               >
+                {/* Light-mode gradient fill: soft candy-blue → deep teal on hover.
+                    Two layers cross-fade so the whole gradient shifts, not just a solid color. */}
                 <span
-                  className="text-[11px] tracking-[0.35em] font-mono uppercase transition-colors
+                  aria-hidden
+                  className="absolute inset-0 dark:hidden transition-opacity duration-300 group-hover:opacity-0"
+                  style={{
+                    background:
+                      "linear-gradient(90deg, hsl(var(--teal-soft)) 0%, hsl(var(--teal-soft) / 0.75) 100%)",
+                  }}
+                />
+                <span
+                  aria-hidden
+                  className="absolute inset-0 dark:hidden opacity-0 transition-opacity duration-300 group-hover:opacity-100"
+                  style={{ background: BLUE_GRADIENT }}
+                />
+                <span
+                  className="relative text-[11px] tracking-[0.35em] font-mono uppercase transition-colors
                     text-[hsl(var(--teal-deep))] group-hover:text-white
                     dark:text-white dark:group-hover:text-white"
                 >
                   {t("mission.hero.cta")}
                 </span>
                 <ArrowUpRight
-                  className="h-4 w-4 transition-colors
+                  className="relative h-4 w-4 transition-colors
                     text-[hsl(var(--teal-deep))] group-hover:text-white
                     dark:text-white dark:group-hover:text-white"
                 />
               </span>
             </Link>
           </motion.div>
-        </div>
-
-        <div className="mt-24 md:mt-32 flex items-center gap-3 text-foreground/60 dark:text-white/70">
-          <span
-            className="inline-block h-2 w-2 rounded-full animate-pulse"
-            style={{ backgroundColor: "hsl(var(--teal-soft))" }}
-          />
-          <span className="text-[10px] tracking-[0.4em] uppercase font-mono">
-            {t("mission.hero.scroll")}
-          </span>
         </div>
       </div>
     </section>
