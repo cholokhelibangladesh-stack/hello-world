@@ -586,18 +586,19 @@ const Index = () => {
             </div>
           </div>
         </div>
-        {/* Bottom blend → next section (ink) — long soft fade paper→ink */}
-        <div aria-hidden className="pointer-events-none absolute inset-x-0 bottom-0 h-64 z-[1]"
-          style={{ background: "linear-gradient(to bottom, transparent 0%, hsl(var(--paper-deep) / 0.5) 25%, hsl(var(--ink) / 0.65) 60%, hsl(var(--ink) / 0.92) 88%, hsl(var(--ink)) 100%)" }} />
-
+        </div>
       </section>
 
       {/* ══════════════════════════════════════════
           VERIFIED SCOUTS
       ══════════════════════════════════════════ */}
       <section className="py-20 sm:py-28 relative overflow-hidden" style={{ background: "hsl(var(--ink))" }}>
+        {/* Top blend ← previous paper section — paper→transparent so ink shows through */}
+        <div aria-hidden className="pointer-events-none absolute inset-x-0 -top-1 h-48 z-[1]"
+          style={{ background: "linear-gradient(to bottom, hsl(var(--paper)) 0%, hsl(var(--paper) / 0.6) 40%, transparent 100%)" }} />
         <div className="absolute inset-0 pointer-events-none opacity-[0.04]"
           style={{ backgroundImage: "linear-gradient(hsl(var(--green)) 1px, transparent 1px), linear-gradient(90deg, hsl(var(--green)) 1px, transparent 1px)", backgroundSize: "80px 80px" }} />
+
 
         <div className="container relative z-10">
           <Reveal className="text-center mb-12">
