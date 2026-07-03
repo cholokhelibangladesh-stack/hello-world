@@ -85,35 +85,27 @@ const Hero = () => {
               style={{ background: BLUE_GRADIENT }}
             >
               <span
-                className="relative flex items-center justify-between gap-6 rounded-[5px] px-6 py-3.5 min-w-[280px] overflow-hidden dark:bg-[#0a1620] dark:group-hover:bg-transparent transition-colors"
+                className="relative flex items-center justify-between gap-6 rounded-[5px] px-6 py-3.5 min-w-[280px] overflow-hidden transition-colors dark:bg-[#0a1620] dark:group-hover:bg-transparent"
               >
-                {/* Light-mode gradient fill: soft candy-blue → deep teal on hover.
-                    Two layers cross-fade so the whole gradient shifts, not just a solid color. */}
+                {/* Light-mode gradient base — matches the after-hover look already */}
                 <span
                   aria-hidden
-                  className="absolute inset-0 dark:hidden transition-opacity duration-300 group-hover:opacity-0"
-                  style={{
-                    background:
-                      "linear-gradient(90deg, hsl(var(--teal-soft)) 0%, hsl(var(--teal-soft) / 0.55) 55%, hsl(var(--teal-deep) / 0.35) 100%)",
-                  }}
-                />
-                <span
-                  aria-hidden
-                  className="absolute inset-0 dark:hidden opacity-0 transition-opacity duration-300 group-hover:opacity-100"
+                  className="absolute inset-0 dark:hidden"
                   style={{ background: BLUE_GRADIENT }}
                 />
+                {/* Hover sheen — subtle horizontal wash that brightens the gradient on hover */}
                 <span
-                  className="relative text-[11px] tracking-[0.35em] font-mono uppercase transition-colors
-                    text-[hsl(var(--teal-deep))] group-hover:text-white
-                    dark:text-white dark:group-hover:text-white"
-                >
+                  aria-hidden
+                  className="pointer-events-none absolute inset-0 opacity-0 transition-opacity duration-300 group-hover:opacity-100"
+                  style={{
+                    background:
+                      "linear-gradient(90deg, transparent 0%, hsl(var(--teal-soft) / 0.55) 50%, transparent 100%)",
+                  }}
+                />
+                <span className="relative text-[11px] tracking-[0.35em] font-mono uppercase text-white">
                   {t("mission.hero.cta")}
                 </span>
-                <ArrowUpRight
-                  className="relative h-4 w-4 transition-colors
-                    text-[hsl(var(--teal-deep))] group-hover:text-white
-                    dark:text-white dark:group-hover:text-white"
-                />
+                <ArrowUpRight className="relative h-4 w-4 text-white transition-transform duration-300 group-hover:translate-x-0.5 group-hover:-translate-y-0.5" />
               </span>
             </Link>
           </motion.div>
@@ -139,11 +131,12 @@ const History = () => {
   return (
     <section className="relative bg-[hsl(var(--paper))] py-28 md:py-36 overflow-hidden">
       <div className="mx-auto max-w-7xl px-6 md:px-16">
+        {/* History title: slide in from the left with a subtle horizontal parallax */}
         <motion.div
-          initial={{ opacity: 0, y: 20 }}
-          whileInView={{ opacity: 1, y: 0 }}
+          initial={{ opacity: 0, x: -40 }}
+          whileInView={{ opacity: 1, x: 0 }}
           viewport={{ once: true, margin: "-80px" }}
-          transition={{ duration: 0.7, ease: [0.22, 1, 0.36, 1] }}
+          transition={{ duration: 0.9, ease: [0.16, 1, 0.3, 1] }}
           className="flex items-baseline justify-between mb-10"
         >
           <h2 className="font-display text-foreground text-4xl md:text-5xl tracking-[-0.02em]">
@@ -153,21 +146,50 @@ const History = () => {
 
         <div className="relative mt-16">
           <div className="absolute left-0 right-0 top-1/2 h-px bg-foreground/10" />
+          {/* Timeline line grows horizontally when in view */}
+          <motion.div
+            initial={{ scaleX: 0 }}
+            whileInView={{ scaleX: 1 }}
+            viewport={{ once: true, margin: "-100px" }}
+            transition={{ duration: 1.1, ease: [0.22, 1, 0.36, 1], delay: 0.2 }}
+            className="absolute left-0 top-1/2 h-px origin-left"
+            style={{ background: BLUE_GRADIENT, width: "100%" }}
+          />
+          {/* Progress overlay showing current active step */}
           <div
-            className="absolute left-0 top-1/2 h-px transition-all duration-500"
+            className="absolute left-0 top-1/2 h-[2px] transition-all duration-500 origin-left"
             style={{
               width: `${((active + 1) / HISTORY.length) * 100}%`,
               background: BLUE_GRADIENT,
+              filter: "drop-shadow(0 0 6px hsl(var(--teal-soft) / 0.6))",
             }}
           />
 
-          <div className="relative grid grid-cols-2 md:grid-cols-4 gap-6">
+          <motion.div
+            initial="hidden"
+            whileInView="show"
+            viewport={{ once: true, margin: "-80px" }}
+            variants={{
+              hidden: {},
+              show: { transition: { staggerChildren: 0.12, delayChildren: 0.3 } },
+            }}
+            className="relative grid grid-cols-2 md:grid-cols-4 gap-6"
+          >
             {HISTORY.map((h, i) => {
               const isActive = i === active;
               return (
-                <button
+                <motion.button
                   key={h.date}
                   onClick={() => setActive(i)}
+                  variants={{
+                    hidden: { opacity: 0, y: 14, scale: 0.9 },
+                    show: {
+                      opacity: 1,
+                      y: 0,
+                      scale: 1,
+                      transition: { duration: 0.55, ease: [0.22, 1, 0.36, 1] },
+                    },
+                  }}
                   className="group text-left flex flex-col items-start"
                 >
                   <div
@@ -197,10 +219,10 @@ const History = () => {
                   >
                     {h.date}
                   </div>
-                </button>
+                </motion.button>
               );
             })}
-          </div>
+          </motion.div>
         </div>
 
         <motion.p
@@ -228,16 +250,30 @@ const WhatWeDo = () => {
     { title: t("mission.what.t2"), body: t("mission.what.b2"), extra: t("mission.what.e2") },
     { title: t("mission.what.t3"), body: t("mission.what.b3"), extra: t("mission.what.e3") },
   ];
+  const PRINCIPLES = [
+    { title: t("mission.what.p1.title"), body: t("mission.what.p1.body") },
+    { title: t("mission.what.p2.title"), body: t("mission.what.p2.body") },
+    { title: t("mission.what.p3.title"), body: t("mission.what.p3.body") },
+    { title: t("mission.what.p4.title"), body: t("mission.what.p4.body") },
+  ];
+  const METRICS = [
+    { value: t("mission.what.m1.value"), label: t("mission.what.m1.label") },
+    { value: t("mission.what.m2.value"), label: t("mission.what.m2.label") },
+    { value: t("mission.what.m3.value"), label: t("mission.what.m3.label") },
+    { value: t("mission.what.m4.value"), label: t("mission.what.m4.label") },
+  ];
   const [active, setActive] = useState<number | null>(0);
+
 
   return (
     <section className="relative bg-[hsl(var(--paper-deep))] py-28 md:py-40 overflow-hidden">
       <div className="mx-auto max-w-7xl px-6 md:px-16">
+        {/* What We Do title: clip-path reveal from bottom, like a stage curtain rising */}
         <motion.div
-          initial={{ opacity: 0, y: 20 }}
-          whileInView={{ opacity: 1, y: 0 }}
+          initial={{ opacity: 0, clipPath: "inset(100% 0 0 0)" }}
+          whileInView={{ opacity: 1, clipPath: "inset(0% 0 0 0)" }}
           viewport={{ once: true, margin: "-80px" }}
-          transition={{ duration: 0.7, ease: [0.22, 1, 0.36, 1] }}
+          transition={{ duration: 1, ease: [0.16, 1, 0.3, 1] }}
           className="flex items-baseline justify-between mb-16"
         >
           <h2 className="font-display text-foreground text-4xl md:text-5xl tracking-[-0.02em]">
@@ -247,10 +283,10 @@ const WhatWeDo = () => {
 
         <div className="grid md:grid-cols-[1fr_1.2fr] gap-16 items-start">
           <motion.div
-            initial={{ opacity: 0, y: 16 }}
-            whileInView={{ opacity: 1, y: 0 }}
+            initial={{ opacity: 0, x: -30 }}
+            whileInView={{ opacity: 1, x: 0 }}
             viewport={{ once: true, margin: "-80px" }}
-            transition={{ duration: 0.7, delay: 0.15 }}
+            transition={{ duration: 0.9, delay: 0.15, ease: [0.16, 1, 0.3, 1] }}
             className="md:sticky md:top-32 space-y-6 max-w-md"
           >
             <p className="text-foreground/80 text-lg leading-relaxed">
@@ -267,10 +303,14 @@ const WhatWeDo = () => {
               return (
                 <motion.div
                   key={w.title}
-                  initial={{ opacity: 0, y: 18 }}
-                  whileInView={{ opacity: 1, y: 0 }}
+                  initial={{ opacity: 0, x: 60 }}
+                  whileInView={{ opacity: 1, x: 0 }}
                   viewport={{ once: true, margin: "-60px" }}
-                  transition={{ duration: 0.6, delay: 0.1 + i * 0.08, ease: [0.22, 1, 0.36, 1] }}
+                  transition={{
+                    duration: 0.7,
+                    delay: 0.15 + i * 0.12,
+                    ease: [0.16, 1, 0.3, 1],
+                  }}
                   className="relative border-t border-foreground/10 pt-8 pb-2"
                 >
                   <button
@@ -326,10 +366,130 @@ const WhatWeDo = () => {
           whileInView={{ opacity: 1, y: 0 }}
           viewport={{ once: true, margin: "-80px" }}
           transition={{ duration: 0.7, delay: 0.2 }}
-          className="mt-20 max-w-3xl text-foreground/70 text-base md:text-lg leading-relaxed"
+          className="mt-24 max-w-3xl text-foreground/70 text-base md:text-lg leading-relaxed"
         >
           {t("mission.what.outro")}
         </motion.p>
+
+        {/* Principles strip */}
+        <div className="mt-20 md:mt-28">
+          <motion.div
+            initial={{ opacity: 0, y: 12 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            viewport={{ once: true, margin: "-80px" }}
+            transition={{ duration: 0.6 }}
+            className="flex items-center gap-4 mb-10"
+          >
+            <span
+              className="h-px w-10"
+              style={{ background: BLUE_GRADIENT }}
+            />
+            <span
+              className="text-[10px] tracking-[0.4em] uppercase font-mono"
+              style={{ color: "hsl(var(--teal-deep))" }}
+            >
+              {t("mission.what.principles")}
+            </span>
+          </motion.div>
+
+          <motion.div
+            initial="hidden"
+            whileInView="show"
+            viewport={{ once: true, margin: "-80px" }}
+            variants={{
+              hidden: {},
+              show: { transition: { staggerChildren: 0.09 } },
+            }}
+            className="grid sm:grid-cols-2 lg:grid-cols-4 gap-5"
+          >
+            {PRINCIPLES.map((p) => (
+              <motion.div
+                key={p.title}
+                variants={{
+                  hidden: { opacity: 0, y: 20, rotate: -1 },
+                  show: {
+                    opacity: 1,
+                    y: 0,
+                    rotate: 0,
+                    transition: { duration: 0.6, ease: [0.22, 1, 0.36, 1] },
+                  },
+                }}
+                className="rounded-2xl border border-foreground/10 bg-foreground/[0.02] p-6 hover:border-foreground/25 transition-colors"
+              >
+                <div
+                  className="h-8 w-8 rounded-full mb-5"
+                  style={{ background: BLUE_GRADIENT_135 }}
+                />
+                <h4 className="font-display text-foreground text-lg mb-2 tracking-[-0.01em]">
+                  {p.title}
+                </h4>
+                <p className="text-foreground/65 text-sm leading-relaxed">{p.body}</p>
+              </motion.div>
+            ))}
+          </motion.div>
+        </div>
+
+        {/* Metrics strip */}
+        <div className="mt-16 md:mt-20">
+          <motion.div
+            initial={{ opacity: 0, y: 12 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            viewport={{ once: true, margin: "-80px" }}
+            transition={{ duration: 0.6 }}
+            className="flex items-center gap-4 mb-8"
+          >
+            <span
+              className="h-px w-10"
+              style={{ background: BLUE_GRADIENT }}
+            />
+            <span
+              className="text-[10px] tracking-[0.4em] uppercase font-mono"
+              style={{ color: "hsl(var(--teal-deep))" }}
+            >
+              {t("mission.what.metrics")}
+            </span>
+          </motion.div>
+
+          <motion.div
+            initial="hidden"
+            whileInView="show"
+            viewport={{ once: true, margin: "-80px" }}
+            variants={{
+              hidden: {},
+              show: { transition: { staggerChildren: 0.12, delayChildren: 0.1 } },
+            }}
+            className="grid grid-cols-2 lg:grid-cols-4 gap-px bg-foreground/10 rounded-2xl overflow-hidden border border-foreground/10"
+          >
+            {METRICS.map((m) => (
+              <motion.div
+                key={m.label}
+                variants={{
+                  hidden: { opacity: 0, y: 18 },
+                  show: {
+                    opacity: 1,
+                    y: 0,
+                    transition: { duration: 0.7, ease: [0.22, 1, 0.36, 1] },
+                  },
+                }}
+                className="bg-[hsl(var(--paper-deep))] p-6 md:p-8"
+              >
+                <div
+                  className="font-display text-4xl md:text-5xl tracking-[-0.02em] mb-2"
+                  style={{
+                    background: BLUE_GRADIENT_135,
+                    WebkitBackgroundClip: "text",
+                    WebkitTextFillColor: "transparent",
+                  }}
+                >
+                  {m.value}
+                </div>
+                <div className="text-foreground/60 text-xs leading-relaxed">
+                  {m.label}
+                </div>
+              </motion.div>
+            ))}
+          </motion.div>
+        </div>
       </div>
     </section>
   );
@@ -344,24 +504,43 @@ const Team = () => {
   return (
     <section className="relative bg-[hsl(var(--paper))] py-28 md:py-36 overflow-hidden">
       <div className="mx-auto max-w-7xl px-6 md:px-16">
-        <motion.div
-          initial={{ opacity: 0, y: 20 }}
-          whileInView={{ opacity: 1, y: 0 }}
+        {/* Team title: word-by-word rise, editorial feel */}
+        <motion.h2
+          initial="hidden"
+          whileInView="show"
           viewport={{ once: true, margin: "-80px" }}
-          transition={{ duration: 0.7, ease: [0.22, 1, 0.36, 1] }}
-          className="flex items-baseline justify-between mb-16"
+          variants={{
+            hidden: {},
+            show: { transition: { staggerChildren: 0.09 } },
+          }}
+          className="font-display text-foreground text-4xl md:text-6xl tracking-[-0.02em] mb-16 flex flex-wrap gap-x-4"
         >
-          <h2 className="font-display text-foreground text-4xl md:text-6xl tracking-[-0.02em]">
-            {t("mission.team.title")}
-          </h2>
-        </motion.div>
+          {t("mission.team.title").split(" ").map((word, i) => (
+            <motion.span
+              key={i}
+              variants={{
+                hidden: { opacity: 0, y: "100%" },
+                show: {
+                  opacity: 1,
+                  y: 0,
+                  transition: { duration: 0.7, ease: [0.16, 1, 0.3, 1] },
+                },
+              }}
+              className="inline-block overflow-hidden"
+              style={{ display: "inline-block" }}
+            >
+              {word}
+            </motion.span>
+          ))}
+        </motion.h2>
 
         <div className="grid md:grid-cols-[minmax(0,420px)_1fr] gap-12 md:gap-20 items-start">
+          {/* Portrait: scale + subtle rotate release, like a photo being placed on the page */}
           <motion.div
-            initial={{ opacity: 0, y: 24 }}
-            whileInView={{ opacity: 1, y: 0 }}
+            initial={{ opacity: 0, scale: 0.92, rotate: -2 }}
+            whileInView={{ opacity: 1, scale: 1, rotate: 0 }}
             viewport={{ once: true, margin: "-80px" }}
-            transition={{ duration: 0.8, delay: 0.1, ease: [0.22, 1, 0.36, 1] }}
+            transition={{ duration: 1, delay: 0.1, ease: [0.16, 1, 0.3, 1] }}
             className="relative rounded-md p-[1px]"
             style={{ background: BLUE_GRADIENT_135 }}
           >
@@ -387,15 +566,28 @@ const Team = () => {
             </div>
           </motion.div>
 
+          {/* Quote: staggered reveal — big mark rotates in, body slides from right, byline fades last */}
           <motion.div
-            initial={{ opacity: 0, y: 20 }}
-            whileInView={{ opacity: 1, y: 0 }}
+            initial="hidden"
+            whileInView="show"
             viewport={{ once: true, margin: "-80px" }}
-            transition={{ duration: 0.8, delay: 0.2, ease: [0.22, 1, 0.36, 1] }}
+            variants={{
+              hidden: {},
+              show: { transition: { staggerChildren: 0.15, delayChildren: 0.25 } },
+            }}
             className="pt-4"
           >
-            <div
-              className="text-6xl leading-none font-display mb-4"
+            <motion.div
+              variants={{
+                hidden: { opacity: 0, rotate: -12, scale: 0.6 },
+                show: {
+                  opacity: 1,
+                  rotate: 0,
+                  scale: 1,
+                  transition: { duration: 0.8, ease: [0.16, 1, 0.3, 1] },
+                },
+              }}
+              className="text-6xl leading-none font-display mb-4 inline-block origin-bottom-left"
               style={{
                 background: BLUE_GRADIENT_135,
                 WebkitBackgroundClip: "text",
@@ -403,17 +595,37 @@ const Team = () => {
               }}
             >
               &ldquo;
-            </div>
-            <p className="text-foreground text-2xl md:text-3xl leading-[1.35] font-display tracking-[-0.01em] max-w-2xl">
+            </motion.div>
+            <motion.p
+              variants={{
+                hidden: { opacity: 0, x: 30 },
+                show: {
+                  opacity: 1,
+                  x: 0,
+                  transition: { duration: 0.9, ease: [0.16, 1, 0.3, 1] },
+                },
+              }}
+              className="text-foreground text-2xl md:text-3xl leading-[1.35] font-display tracking-[-0.01em] max-w-2xl"
+            >
               {t("mission.team.quote")}
-            </p>
-            <div className="mt-8 flex items-center gap-4">
+            </motion.p>
+            <motion.div
+              variants={{
+                hidden: { opacity: 0, y: 10 },
+                show: {
+                  opacity: 1,
+                  y: 0,
+                  transition: { duration: 0.6 },
+                },
+              }}
+              className="mt-8 flex items-center gap-4"
+            >
               <div className="h-px w-10 bg-foreground/40" />
               <div>
                 <div className="text-foreground text-sm font-medium">Nahroor Rahman Khan</div>
                 <div className="text-foreground/50 text-xs mt-0.5">{t("mission.team.role")}</div>
               </div>
-            </div>
+            </motion.div>
           </motion.div>
         </div>
       </div>
@@ -451,32 +663,70 @@ const LatestNews = () => {
   return (
     <section className="relative bg-[hsl(var(--paper-deep))] py-28 md:py-36 overflow-hidden">
       <div className="mx-auto max-w-7xl px-6 md:px-16">
+        {/* News header: title scales in from a smaller size, subtitle underline draws in */}
         <motion.div
-          initial={{ opacity: 0, y: 20 }}
-          whileInView={{ opacity: 1, y: 0 }}
+          initial="hidden"
+          whileInView="show"
           viewport={{ once: true, margin: "-80px" }}
-          transition={{ duration: 0.7, ease: [0.22, 1, 0.36, 1] }}
+          variants={{
+            hidden: {},
+            show: { transition: { staggerChildren: 0.15 } },
+          }}
           className="flex items-baseline justify-between mb-12"
         >
-          <h2 className="font-display text-foreground text-4xl md:text-5xl tracking-[-0.02em]">
+          <motion.h2
+            variants={{
+              hidden: { opacity: 0, scale: 0.92, y: 10 },
+              show: {
+                opacity: 1,
+                scale: 1,
+                y: 0,
+                transition: { duration: 0.8, ease: [0.16, 1, 0.3, 1] },
+              },
+            }}
+            className="font-display text-foreground text-4xl md:text-5xl tracking-[-0.02em] origin-left"
+          >
             {t("mission.news.title")}
-          </h2>
-          <span
+          </motion.h2>
+          <motion.span
+            variants={{
+              hidden: { opacity: 0, x: 20 },
+              show: {
+                opacity: 1,
+                x: 0,
+                transition: { duration: 0.7 },
+              },
+            }}
             className="hidden md:inline-block text-[10px] tracking-[0.4em] font-mono uppercase"
             style={{ color: "hsl(var(--teal-deep))" }}
           >
             {t("mission.news.subtitle")}
-          </span>
+          </motion.span>
         </motion.div>
 
-        <div className="grid md:grid-cols-3 gap-6">
+        <motion.div
+          initial="hidden"
+          whileInView="show"
+          viewport={{ once: true, margin: "-100px" }}
+          variants={{
+            hidden: {},
+            show: { transition: { staggerChildren: 0.14, delayChildren: 0.15 } },
+          }}
+          className="grid md:grid-cols-3 gap-6"
+        >
           {NEWS.map((n, i) => (
             <motion.article
               key={i}
-              initial={{ opacity: 0, y: 16 }}
-              whileInView={{ opacity: 1, y: 0 }}
-              viewport={{ once: true, margin: "-100px" }}
-              transition={{ duration: 0.6, delay: i * 0.08 }}
+              variants={{
+                hidden: { opacity: 0, y: 40, rotate: i % 2 === 0 ? -1.5 : 1.5 },
+                show: {
+                  opacity: 1,
+                  y: 0,
+                  rotate: 0,
+                  transition: { duration: 0.75, ease: [0.16, 1, 0.3, 1] },
+                },
+              }}
+              whileHover={{ y: -4, transition: { duration: 0.25 } }}
               className="group relative rounded-2xl border border-foreground/10 bg-foreground/[0.03] p-6 hover:border-foreground/25 transition-colors"
             >
               <div className="flex items-center justify-between mb-6">
@@ -499,12 +749,12 @@ const LatestNews = () => {
               </h3>
               <p className="text-foreground/65 text-sm leading-relaxed">{n.body}</p>
               <div
-                className="mt-8 h-px w-full opacity-60"
+                className="mt-8 h-px w-full opacity-60 origin-left transition-transform duration-500 group-hover:scale-x-110"
                 style={{ background: BLUE_GRADIENT }}
               />
             </motion.article>
           ))}
-        </div>
+        </motion.div>
       </div>
     </section>
   );

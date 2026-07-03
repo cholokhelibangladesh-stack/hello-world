@@ -223,6 +223,31 @@ export const translations = {
     "mission.what.e3":
       "Parents receive plain-language notifications for every scout action, and federations get an exportable record — turning \"who picked whom, and why?\" into a question with an answer.",
 
+    "mission.what.principles": "Principles we build on",
+    "mission.what.p1.title": "Verified by default",
+    "mission.what.p1.body":
+      "Every scout, coach and federation account goes through identity + role verification before touching a player profile. No anonymous outreach, ever.",
+    "mission.what.p2.title": "Player-owned data",
+    "mission.what.p2.body":
+      "Athletes control what's visible, who can contact them, and can revoke access at any time. Their profile is a portable record, not a locked-in listing.",
+    "mission.what.p3.title": "Federation-grade audit trail",
+    "mission.what.p3.body":
+      "Every selection, message and shortlist is timestamped and exportable — so federations can defend fairness with evidence, not vibes.",
+    "mission.what.p4.title": "Nationwide from day one",
+    "mission.what.p4.body":
+      "Built for all 64 districts, not just the capital. Rural and district players show up in the same feed as urban academies — same weight, same visibility.",
+
+    "mission.what.metrics": "By the numbers",
+    "mission.what.m1.value": "64",
+    "mission.what.m1.label": "Districts covered at launch",
+    "mission.what.m2.value": "100%",
+    "mission.what.m2.label": "Verified scouts, no exceptions",
+    "mission.what.m3.value": "0",
+    "mission.what.m3.label": "Middlemen in the pipeline",
+    "mission.what.m4.value": "3",
+    "mission.what.m4.label": "Sports live at kickoff",
+
+
 
     "mission.team.title": "Meet Our Team",
     "mission.team.ceo": "Chief Executive Officer",
@@ -467,6 +492,31 @@ export const translations = {
       "প্রতিটি স্কাউট যাচাইকৃত, প্রতিটি যোগাযোগ নথিভুক্ত। নির্বাচন স্বচ্ছ পদ্ধতিতে হয় যাতে পরিবার ও ফেডারেশন ফলাফলে আস্থা রাখতে পারে।",
     "mission.what.e3":
       "অভিভাবকরা প্রতিটি স্কাউট কার্যক্রমের জন্য সহজ ভাষায় বিজ্ঞপ্তি পান, এবং ফেডারেশন একটি রপ্তানিযোগ্য রেকর্ড পায় — \"কে কাকে বাছাই করেছে, কেন?\" এই প্রশ্নের একটি স্পষ্ট উত্তর দাঁড়ায়।",
+
+    "mission.what.principles": "আমাদের মূলনীতি",
+    "mission.what.p1.title": "শুরু থেকেই যাচাইকৃত",
+    "mission.what.p1.body":
+      "প্রতিটি স্কাউট, কোচ ও ফেডারেশন অ্যাকাউন্ট খেলোয়াড়ের প্রোফাইল স্পর্শ করার আগেই পরিচয় ও ভূমিকা যাচাই করে। কোনো নামহীন যোগাযোগ নয়।",
+    "mission.what.p2.title": "খেলোয়াড়ের নিজের ডেটা",
+    "mission.what.p2.body":
+      "অ্যাথলেট নিয়ন্ত্রণ করেন কী দেখা যাবে, কে যোগাযোগ করতে পারবে, এবং যেকোনো সময় অ্যাক্সেস প্রত্যাহার করতে পারেন — প্রোফাইল একটি বহনযোগ্য রেকর্ড।",
+    "mission.what.p3.title": "ফেডারেশন-মানের অডিট ট্রেইল",
+    "mission.what.p3.body":
+      "প্রতিটি নির্বাচন, বার্তা ও শর্টলিস্ট টাইমস্ট্যাম্পসহ রপ্তানিযোগ্য — ফেডারেশন প্রমাণ দিয়ে ন্যায্যতা রক্ষা করতে পারে।",
+    "mission.what.p4.title": "প্রথম দিন থেকেই সারা দেশে",
+    "mission.what.p4.body":
+      "শুধু রাজধানী নয়, ৬৪টি জেলার জন্য তৈরি। গ্রাম ও জেলার খেলোয়াড়রা শহুরে একাডেমির সঙ্গে একই ফিডে থাকেন — সমান গুরুত্ব, সমান দৃশ্যমানতা।",
+
+    "mission.what.metrics": "সংখ্যায় আমরা",
+    "mission.what.m1.value": "৬৪",
+    "mission.what.m1.label": "লঞ্চে অন্তর্ভুক্ত জেলা",
+    "mission.what.m2.value": "১০০%",
+    "mission.what.m2.label": "যাচাইকৃত স্কাউট, ব্যতিক্রম নেই",
+    "mission.what.m3.value": "০",
+    "mission.what.m3.label": "পাইপলাইনে মধ্যস্বত্বভোগী",
+    "mission.what.m4.value": "৩",
+    "mission.what.m4.label": "শুরুতেই সক্রিয় খেলা",
+
 
 
     "mission.team.title": "আমাদের টিমের সাথে পরিচিত হোন",
