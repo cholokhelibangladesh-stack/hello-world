@@ -250,7 +250,20 @@ const WhatWeDo = () => {
     { title: t("mission.what.t2"), body: t("mission.what.b2"), extra: t("mission.what.e2") },
     { title: t("mission.what.t3"), body: t("mission.what.b3"), extra: t("mission.what.e3") },
   ];
+  const PRINCIPLES = [
+    { title: t("mission.what.p1.title"), body: t("mission.what.p1.body") },
+    { title: t("mission.what.p2.title"), body: t("mission.what.p2.body") },
+    { title: t("mission.what.p3.title"), body: t("mission.what.p3.body") },
+    { title: t("mission.what.p4.title"), body: t("mission.what.p4.body") },
+  ];
+  const METRICS = [
+    { value: t("mission.what.m1.value"), label: t("mission.what.m1.label") },
+    { value: t("mission.what.m2.value"), label: t("mission.what.m2.label") },
+    { value: t("mission.what.m3.value"), label: t("mission.what.m3.label") },
+    { value: t("mission.what.m4.value"), label: t("mission.what.m4.label") },
+  ];
   const [active, setActive] = useState<number | null>(0);
+
 
   return (
     <section className="relative bg-[hsl(var(--paper-deep))] py-28 md:py-40 overflow-hidden">
