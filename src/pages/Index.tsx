@@ -309,11 +309,6 @@ const Index = () => {
   const [verifiedScouts, setVerifiedScouts] = useState<ScoutProfile[]>(FALLBACK_SCOUTS);
   const [scoutIndex, setScoutIndex] = useState(0);
 
-  const heroRef = useRef<HTMLDivElement>(null);
-  const { scrollYProgress } = useScroll({ target: heroRef, offset: ["start start", "end start"] });
-  const heroOpacity = useTransform(scrollYProgress, [0, 0.7], [1, 0]);
-  const videoY      = useTransform(scrollYProgress, [0, 1], ["0%", "18%"]);
-  const videoScale  = useTransform(scrollYProgress, [0, 0.7], [1, 1.06]);
 
   useEffect(() => {
     const isPlaceholder = !import.meta.env.VITE_SUPABASE_URL;
