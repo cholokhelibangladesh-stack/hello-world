@@ -139,16 +139,28 @@ export default function HeroScrollVideo({
       (url, i) =>
         new Promise<void>((resolve) => {
           const img = new Image();
-          img.decoding = "async";
+          // sync decode so the FIRST drawImage of a large atlas doesn't
+          // stall the main thread mid-animation (was causing a visible
+          // freeze when playback first crossed into atlas 1)
+          img.decoding = "sync";
           img.src = url;
-          img.onload = () => {
+          const finish = () => {
             imgs[i] = img;
             atlasImgsRef.current[i] = img;
             resolve();
           };
+          img.onload = () => {
+            // Force full decode before we mark the atlas ready.
+            if (typeof img.decode === "function") {
+              img.decode().then(finish).catch(finish);
+            } else {
+              finish();
+            }
+          };
           img.onerror = () => resolve();
         })
     );
+
     Promise.all(loads).then(() => {
       if (!cancelled) setReady(true);
     });
