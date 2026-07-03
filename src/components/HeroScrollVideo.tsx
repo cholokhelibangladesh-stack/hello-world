@@ -212,7 +212,7 @@ export default function HeroScrollVideo({
       if (!wrap || !pin) return;
 
       // Draw first frame immediately.
-      drawFrame(BEATS[0].frame);
+      scheduleFrame(BEATS[0].frame);
 
       // Build the scroll → (frame, beat) segment map. Each PLAY segment gets
       // a scroll share proportional to the number of frames it must cover,
@@ -283,17 +283,20 @@ export default function HeroScrollVideo({
         ScrollTrigger.create({
           trigger: wrap,
           start: "top top",
-          // Long distance = ~1 scroll pixel per frame update = silky.
-          end: () => "+=" + window.innerHeight * 7,
+          // Much longer scroll distance — one wheel/trackpad tick advances a
+          // small fraction of a beat instead of blowing through the whole
+          // section. This is the main scroll-sensitivity dial.
+          end: () => "+=" + window.innerHeight * 14,
           pin: pin,
           pinSpacing: true,
-          // Higher scrub value = smoother catch-up on big scrolls.
-          scrub: 1.1,
+          // Higher scrub = the frame timeline lazily eases toward scroll
+          // position, so a flick spreads its work across ~1.4s of animation
+          // frames instead of one giant jank.
+          scrub: 1.4,
           anticipatePin: 1,
           invalidateOnRefresh: true,
           snap: {
             snapTo: (value) => {
-              // Pick the nearest beat/reveal snap point.
               let best = snapPoints[0];
               let bestDist = Math.abs(value - best);
               for (const p of snapPoints) {
@@ -305,16 +308,15 @@ export default function HeroScrollVideo({
               }
               return best;
             },
-            // Duration adapts to how far we need to travel — always smooth.
-            duration: { min: 0.35, max: 0.9 },
-            delay: 0.08,
+            duration: { min: 0.4, max: 1.1 },
+            delay: 0.12,
             ease: "power2.inOut",
             directional: false,
           },
           onRefresh: () => {
-            // Force canvas resize + redraw on layout changes.
             currentFrameRef.current = -1;
-            drawFrame(BEATS[0].frame);
+            canvasSizeRef.current = { w: 0, h: 0 };
+            scheduleFrame(BEATS[0].frame);
           },
           onUpdate: (self) => {
             const p = self.progress;
@@ -328,21 +330,31 @@ export default function HeroScrollVideo({
             const span = Math.max(1e-6, seg.end - seg.start);
             const local = Math.min(1, Math.max(0, (p - seg.start) / span));
             const frame = seg.from + (seg.to - seg.from) * local;
-            drawFrame(frame);
+            scheduleFrame(frame);
 
-            if (seg.kind === "play") {
-              setBeat(-1);
-              setRevealCTA(0);
-            } else if (seg.kind === "hold") {
-              setBeat(seg.beatIdx);
-              setRevealCTA(0);
-            } else {
-              setBeat(-1);
-              setRevealCTA(local);
+            // Only touch React state when the visible panel actually
+            // changes — otherwise every scroll tick would re-render the
+            // whole text stack for no visual difference.
+            let nextBeat = -1;
+            let nextReveal = 0;
+            if (seg.kind === "hold") nextBeat = seg.beatIdx;
+            else if (seg.kind === "reveal") nextReveal = local;
+
+            if (nextBeat !== beatRef.current) {
+              beatRef.current = nextBeat;
+              setBeat(nextBeat);
+            }
+            // Quantise reveal to ~2% steps so we don't rerender 60x/sec
+            // while the panel is sliding.
+            const quant = Math.round(nextReveal * 50) / 50;
+            if (Math.abs(quant - revealRef.current) > 1e-4) {
+              revealRef.current = quant;
+              setRevealCTA(quant);
             }
           },
         });
       }, pin);
+
 
 
       cleanup = () => ctx.revert();
