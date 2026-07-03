@@ -360,7 +360,7 @@ export default function HeroScrollVideo({
       // this means the video plays at its natural speed on every scroll.
       const observer = Observer.create({
         target: window,
-        type: "wheel,touch,pointer,keyboard",
+        type: "wheel,touch,pointer",
         tolerance: GESTURE_TOLERANCE,
         preventDefault: true,
         wheelSpeed: 1,
