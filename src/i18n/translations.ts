@@ -203,15 +203,26 @@ export const translations = {
     "mission.what.title": "What We Do",
     "mission.what.lead":
       "A single stack that turns raw talent into recognised opportunity — built for players, scouts, and the federations that back them.",
+    "mission.what.intro":
+      "Cholo Kheli sits between three groups that rarely find each other in time: the athlete in a district town with real skill, the scout with limited hours and no map of the country, and the federation that needs a credible pipeline to trust. We compress that distance into a single, verified feed.",
+    "mission.what.outro":
+      "Every module below is designed to move a talented player one step closer to the field they belong on — without the middlemen, guesswork, or paperwork that today's system quietly runs on.",
     "mission.what.t1": "Scout Discovery",
     "mission.what.b1":
       "Verified scouts explore a searchable index of players filtered by sport, district, position and highlight quality — no gatekeepers, no middlemen.",
+    "mission.what.e1":
+      "Scouts save shortlists, request additional footage, and see a live timeline of every interaction with a player, so their outreach is measured and their time protected.",
     "mission.what.t2": "Player Profiles",
     "mission.what.b2":
       "Athletes build a single, credible profile: verified stats, curated highlight reels, a resume that follows them wherever the game takes them.",
+    "mission.what.e2":
+      "Profiles carry coach endorsements, match logs, and a portable ID that stays with the athlete across academies, clubs, and national trials — no restart every season.",
     "mission.what.t3": "Safe Selections",
     "mission.what.b3":
       "Every scout is vetted, every contact is logged. Selections happen inside a transparent audit trail, so families and federations can trust the outcome.",
+    "mission.what.e3":
+      "Parents receive plain-language notifications for every scout action, and federations get an exportable record — turning \"who picked whom, and why?\" into a question with an answer.",
+
 
     "mission.team.title": "Meet Our Team",
     "mission.team.ceo": "Chief Executive Officer",
