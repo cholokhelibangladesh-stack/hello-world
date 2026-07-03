@@ -238,7 +238,7 @@ const WhatWeDo = () => {
           whileInView={{ opacity: 1, y: 0 }}
           viewport={{ once: true, margin: "-80px" }}
           transition={{ duration: 0.7, ease: [0.22, 1, 0.36, 1] }}
-          className="flex items-baseline justify-between mb-10"
+          className="flex items-baseline justify-between mb-16"
         >
           <h2 className="font-display text-foreground text-4xl md:text-5xl tracking-[-0.02em]">
             {t("mission.what.title")}
