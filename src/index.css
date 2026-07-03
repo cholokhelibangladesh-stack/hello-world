@@ -35,9 +35,17 @@
   --color-sidebar-border: hsl(var(--sidebar-border));
   --color-sidebar-ring: hsl(var(--sidebar-ring));
   --radius: 0.75rem;
-  /* Givonic ≈ Manrope (geometric humanist), Aeonik ≈ Inter Tight (neo-grotesque), SF ≈ system stack */
-  --font-sans: 'Inter Tight', -apple-system, BlinkMacSystemFont, 'SF Pro Text', 'Manrope', sans-serif;
-  --font-display: 'Manrope', -apple-system, 'SF Pro Display', 'Inter Tight', sans-serif;
+  /* Font stacks. The named brands (Helvetica, San Francisco) resolve to
+     system fonts when installed on the user's device; open-source web
+     substitutes ship as fallbacks so the site looks consistent everywhere.
+     Aeonik & Givonic are proprietary — Space Grotesk and Onest are the
+     closest permissively-licensed lookalikes. */
+  --font-helvetica: 'Helvetica Neue', Helvetica, 'Inter Variable', Inter, Arial, sans-serif;
+  --font-sf: -apple-system, BlinkMacSystemFont, 'SF Pro Display', 'SF Pro Text', 'Inter Variable', Inter, sans-serif;
+  --font-aeonik: 'Aeonik', 'Space Grotesk Variable', 'Space Grotesk', 'Inter Variable', sans-serif;
+  --font-givonic: 'Givonic', 'Onest Variable', 'Onest', 'Manrope Variable', sans-serif;
+  --font-sans: var(--font-helvetica);
+  --font-display: var(--font-aeonik);
 }
 
 
