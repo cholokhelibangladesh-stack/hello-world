@@ -647,9 +647,10 @@ const Index = () => {
             );
           })()}
         </div>
-        {/* Bottom blend → next section (default background under the map) */}
-        <div aria-hidden className="pointer-events-none absolute inset-x-0 bottom-0 h-32 z-[1]"
-          style={{ background: "linear-gradient(to bottom, transparent 0%, hsl(var(--background) / 0.65) 55%, hsl(var(--background)) 100%)" }} />
+        {/* Bottom blend → next section (default background under the map) — long soft ink→background */}
+        <div aria-hidden className="pointer-events-none absolute inset-x-0 bottom-0 h-64 z-[1]"
+          style={{ background: "linear-gradient(to bottom, transparent 0%, hsl(var(--ink) / 0.35) 25%, hsl(var(--background) / 0.55) 55%, hsl(var(--background) / 0.9) 82%, hsl(var(--background)) 100%)" }} />
+
       </section>
 
 
