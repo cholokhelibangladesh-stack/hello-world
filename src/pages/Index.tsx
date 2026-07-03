@@ -357,6 +357,10 @@ const Index = () => {
           SPORTS GRID — Hover to reveal
       ══════════════════════════════════════════ */}
       <section className="relative pt-32 sm:pt-40 pb-20 sm:pb-28 surface-paper">
+        {/* Bottom blend → next section (also paper) — no-op color but keeps the seam invisible */}
+        <div aria-hidden className="pointer-events-none absolute inset-x-0 bottom-0 h-24 z-[1]"
+          style={{ background: "linear-gradient(to bottom, transparent 0%, hsl(var(--paper)) 100%)" }} />
+
 
 
         <div className="container">
@@ -424,7 +428,7 @@ const Index = () => {
       {/* ══════════════════════════════════════════
           HOW IT WORKS — 3 STEPS
       ══════════════════════════════════════════ */}
-      <section className="py-20 sm:py-32 border-t border-border overflow-hidden relative surface-paper">
+      <section className="py-20 sm:py-32 overflow-hidden relative surface-paper">
         {/* Subtle cinematic backdrop */}
         <img src={stadiumImg.url} alt="" aria-hidden loading="lazy" decoding="async"
           className="absolute inset-0 w-full h-full object-cover opacity-[0.07]" />
@@ -579,14 +583,18 @@ const Index = () => {
             </div>
           </div>
         </div>
+        {/* Bottom blend → next section (ink) */}
+        <div aria-hidden className="pointer-events-none absolute inset-x-0 bottom-0 h-32 z-[1]"
+          style={{ background: "linear-gradient(to bottom, transparent 0%, hsl(var(--ink) / 0.65) 55%, hsl(var(--ink)) 100%)" }} />
       </section>
 
       {/* ══════════════════════════════════════════
           VERIFIED SCOUTS
       ══════════════════════════════════════════ */}
-      <section className="py-20 sm:py-28 border-t border-border relative overflow-hidden" style={{ background: "hsl(var(--ink))" }}>
+      <section className="py-20 sm:py-28 relative overflow-hidden" style={{ background: "hsl(var(--ink))" }}>
         <div className="absolute inset-0 pointer-events-none opacity-[0.04]"
           style={{ backgroundImage: "linear-gradient(hsl(var(--green)) 1px, transparent 1px), linear-gradient(90deg, hsl(var(--green)) 1px, transparent 1px)", backgroundSize: "80px 80px" }} />
+
         <div className="container relative z-10">
           <Reveal className="text-center mb-12">
             <span className="inline-block text-xs font-bold tracking-[0.2em] uppercase mb-4 px-4 py-1.5 rounded-full"
@@ -636,7 +644,11 @@ const Index = () => {
             );
           })()}
         </div>
+        {/* Bottom blend → next section (default background under the map) */}
+        <div aria-hidden className="pointer-events-none absolute inset-x-0 bottom-0 h-32 z-[1]"
+          style={{ background: "linear-gradient(to bottom, transparent 0%, hsl(var(--background) / 0.65) 55%, hsl(var(--background)) 100%)" }} />
       </section>
+
 
 
       {/* ══════════════════════════════════════════
@@ -648,14 +660,18 @@ const Index = () => {
       {/* ══════════════════════════════════════════
           CINEMATIC CTA
       ══════════════════════════════════════════ */}
-      <section className="py-24 sm:py-36 border-t border-border relative overflow-hidden surface-ink">
+      <section className="py-24 sm:py-36 relative overflow-hidden surface-ink">
+        {/* Top blend ← previous section (default background under map) */}
+        <div aria-hidden className="pointer-events-none absolute inset-x-0 top-0 h-32 z-[2]"
+          style={{ background: "linear-gradient(to top, transparent 0%, hsl(var(--ink) / 0.65) 45%, hsl(var(--background)) 100%)" }} />
         {/* Cinematic backdrop */}
         <img src={footballerImg.url} alt="" aria-hidden loading="lazy" decoding="async"
           className="absolute inset-0 w-full h-full object-cover opacity-40" />
         <div className="absolute inset-0 pointer-events-none"
           style={{ background: "linear-gradient(to bottom, hsl(var(--ink) / 0.85), hsl(var(--ink) / 0.95))" }} />
-        <div className="absolute inset-x-0 top-0 h-px accent-line" />
-        <div className="absolute inset-x-0 bottom-0 h-px accent-line" />
+
+
+
         {/* Animated grid */}
         <div className="absolute inset-0 pointer-events-none opacity-[0.035]"
           style={{ backgroundImage: "linear-gradient(hsl(var(--green)) 1px, transparent 1px), linear-gradient(90deg, hsl(var(--green)) 1px, transparent 1px)", backgroundSize: "60px 60px" }} />
@@ -726,16 +742,20 @@ const Index = () => {
             </div>
           </Reveal>
         </div>
+        {/* Bottom blend → next section (card) */}
+        <div aria-hidden className="pointer-events-none absolute inset-x-0 bottom-0 h-32 z-[2]"
+          style={{ background: "linear-gradient(to bottom, transparent 0%, hsl(var(--card) / 0.65) 55%, hsl(var(--card)) 100%)" }} />
       </section>
 
       {/* ══════════════════════════════════════════
           LIVE STATS BAR — moved below CTA phones
       ══════════════════════════════════════════ */}
-      <section className="py-16 border-t border-border relative overflow-hidden surface-card">
+      <section className="py-16 relative overflow-hidden surface-card">
         <img src={statsImg.url} alt="" aria-hidden loading="lazy" decoding="async"
           className="absolute inset-0 w-full h-full object-cover opacity-25" />
         <div className="absolute inset-0 pointer-events-none"
           style={{ background: "linear-gradient(to bottom, hsl(var(--background) / 0.92), hsl(var(--background) / 0.96))" }} />
+
         <div className="container">
           <div className="grid grid-cols-3 gap-4 sm:gap-8">
             {[
@@ -763,13 +783,17 @@ const Index = () => {
             ))}
           </div>
         </div>
+        {/* Bottom blend → footer (paper) */}
+        <div aria-hidden className="pointer-events-none absolute inset-x-0 bottom-0 h-24 z-[2]"
+          style={{ background: "linear-gradient(to bottom, transparent 0%, hsl(var(--paper) / 0.7) 55%, hsl(var(--paper)) 100%)" }} />
       </section>
 
 
       {/* ══════════════════════════════════════════
           FOOTER SOCIAL
       ══════════════════════════════════════════ */}
-      <section className="py-16 border-t border-border surface-paper">
+      <section className="py-16 surface-paper">
+
         <div className="container text-center">
           <Reveal>
             <p className="text-xs tracking-[0.2em] uppercase text-muted-foreground mb-6">{T.followJourney}</p>
