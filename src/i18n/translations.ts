@@ -223,6 +223,31 @@ export const translations = {
     "mission.what.e3":
       "Parents receive plain-language notifications for every scout action, and federations get an exportable record — turning \"who picked whom, and why?\" into a question with an answer.",
 
+    "mission.what.principles": "Principles we build on",
+    "mission.what.p1.title": "Verified by default",
+    "mission.what.p1.body":
+      "Every scout, coach and federation account goes through identity + role verification before touching a player profile. No anonymous outreach, ever.",
+    "mission.what.p2.title": "Player-owned data",
+    "mission.what.p2.body":
+      "Athletes control what's visible, who can contact them, and can revoke access at any time. Their profile is a portable record, not a locked-in listing.",
+    "mission.what.p3.title": "Federation-grade audit trail",
+    "mission.what.p3.body":
+      "Every selection, message and shortlist is timestamped and exportable — so federations can defend fairness with evidence, not vibes.",
+    "mission.what.p4.title": "Nationwide from day one",
+    "mission.what.p4.body":
+      "Built for all 64 districts, not just the capital. Rural and district players show up in the same feed as urban academies — same weight, same visibility.",
+
+    "mission.what.metrics": "By the numbers",
+    "mission.what.m1.value": "64",
+    "mission.what.m1.label": "Districts covered at launch",
+    "mission.what.m2.value": "100%",
+    "mission.what.m2.label": "Verified scouts, no exceptions",
+    "mission.what.m3.value": "0",
+    "mission.what.m3.label": "Middlemen in the pipeline",
+    "mission.what.m4.value": "3",
+    "mission.what.m4.label": "Sports live at kickoff",
+
+
 
     "mission.team.title": "Meet Our Team",
     "mission.team.ceo": "Chief Executive Officer",
