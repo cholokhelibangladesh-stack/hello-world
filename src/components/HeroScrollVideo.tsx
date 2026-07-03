@@ -309,58 +309,58 @@ export default function HeroScrollVideo({
       };
 
       // ─── one-step advance / retreat ───────────────────────────────
+      // Text and sharp still ONLY appear once playback stops on the beat's
+      // dedicated frame. During the between-beat animation, all overlays
+      // are hidden so the viewer sees clean video.
       const goForward = () => {
         if (animating || released) return;
-        // Hide the AI-sharp overlay for the beat we're leaving.
+        // Hide overlays for the beat we're leaving.
         setSettledBeat(-1);
+        if (beatRef.current !== -1) {
+          beatRef.current = -1;
+          setBeat(-1);
+        }
         if (currentBeat < N - 1) {
           const next = currentBeat + 1;
-          if (beatRef.current !== next) {
-            beatRef.current = next;
-            setBeat(next);
-          }
           animateFrameTo(BEATS[next].frame, () => {
             currentBeat = next;
-            // Video has settled on this beat — reveal the crisp still.
+            beatRef.current = next;
+            setBeat(next);
             setSettledBeat(next);
           });
         } else if (anim.r < 1) {
-          if (beatRef.current !== -1) {
-            beatRef.current = -1;
-            setBeat(-1);
-          }
           animateRevealTo(1);
-        } else if (!released) {
-          released = true;
-          observer.disable();
-          document.documentElement.style.overflow = "";
-          document.body.style.overflow = "";
         }
+        // If reveal is already 1, do nothing — user must scroll back up to
+        // rewind through the whole animation (see goBackward).
       };
 
       const goBackward = () => {
         if (animating || released) return;
         setSettledBeat(-1);
+        if (beatRef.current !== -1) {
+          beatRef.current = -1;
+          setBeat(-1);
+        }
         if (anim.r > 0) {
-          if (beatRef.current !== N - 1) {
+          // Slide the reveal panel back down and restore the last beat.
+          animateRevealTo(0, () => {
             beatRef.current = N - 1;
             setBeat(N - 1);
-          }
-          animateRevealTo(0, () => {
             setSettledBeat(N - 1);
           });
         } else if (currentBeat > 0) {
           const prev = currentBeat - 1;
-          if (beatRef.current !== prev) {
-            beatRef.current = prev;
-            setBeat(prev);
-          }
           animateFrameTo(BEATS[prev].frame, () => {
             currentBeat = prev;
+            beatRef.current = prev;
+            setBeat(prev);
             setSettledBeat(prev);
           });
         } else {
-          // Already at first beat — snap the sharp overlay back on.
+          // Already at first beat — snap overlays back on.
+          beatRef.current = 0;
+          setBeat(0);
           setSettledBeat(0);
         }
       };
