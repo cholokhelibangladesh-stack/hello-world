@@ -187,7 +187,7 @@ const ProfileTab = ({ showVideos, onDeleteVideo, deletingVideoId }: ProfileTabPr
             <div className="relative">
               <div className="w-20 h-20 sm:w-24 sm:h-24 rounded-full bg-card border-4 border-card overflow-hidden shadow-lg">
                 {profile.avatar_url ? (
-                  <img src={safeMediaUrl(profile.avatar_url)} alt="Avatar" className="w-full h-full object-cover" />
+                  <img src={safeMediaUrl(profile.avatar_url)} alt="Avatar" loading="lazy" decoding="async" className="w-full h-full object-cover" />
                 ) : (
                   <div className="w-full h-full flex items-center justify-center bg-secondary">
                     <User className="h-8 w-8 sm:h-10 sm:w-10 text-muted-foreground" />
