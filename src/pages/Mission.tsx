@@ -18,16 +18,18 @@ const BLUE_GRADIENT_135 = "linear-gradient(135deg, hsl(var(--teal-deep)) 0%, hsl
 const Hero = () => {
   const { t } = useLanguage();
   return (
-    <section className="relative min-h-[100vh] w-full overflow-hidden bg-[#0a1620]">
+    <section className="relative min-h-[100vh] w-full overflow-hidden bg-[hsl(var(--paper))] dark:bg-[#0a1620]">
       <div
-        className="pointer-events-none absolute inset-0 opacity-[0.06]"
+        className="pointer-events-none absolute inset-0 opacity-[0.06] dark:opacity-[0.06]"
         style={{
           backgroundImage:
-            "linear-gradient(to right, #ffffff 1px, transparent 1px)",
+            "linear-gradient(to right, currentColor 1px, transparent 1px)",
           backgroundSize: "16.6667% 100%",
         }}
       />
 
+      {/* Video lives on the right; a theme-aware gradient masks the left so the
+          title sits on a clean white (light) / deep-teal (dark) background. */}
       <div className="absolute inset-0">
         <video
           src={heroVideo.url}
@@ -38,8 +40,17 @@ const Hero = () => {
           playsInline
           className="h-full w-full object-cover object-right opacity-90"
         />
+        {/* Light mode gradient — white on the left fading to reveal video */}
         <div
-          className="absolute inset-0"
+          className="absolute inset-0 dark:hidden"
+          style={{
+            background:
+              "linear-gradient(90deg, hsl(var(--paper)) 0%, hsl(var(--paper) / 0.92) 35%, hsl(var(--paper) / 0.15) 65%, transparent 100%)",
+          }}
+        />
+        {/* Dark mode gradient — deep teal on the left */}
+        <div
+          className="absolute inset-0 hidden dark:block"
           style={{
             background:
               "linear-gradient(90deg, #0a1620 0%, rgba(10,22,32,0.85) 35%, rgba(10,22,32,0.15) 65%, transparent 100%)",
@@ -52,7 +63,7 @@ const Hero = () => {
           initial={{ opacity: 0, y: 24 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.9, ease: [0.22, 1, 0.36, 1] }}
-          className="font-display text-white text-[52px] leading-[1.02] sm:text-[76px] md:text-[104px] md:leading-[0.96] tracking-[-0.02em] font-medium max-w-[10ch] drop-shadow-[0_2px_18px_rgba(0,0,0,0.55)]"
+          className="font-display text-foreground text-[52px] leading-[1.02] sm:text-[76px] md:text-[104px] md:leading-[0.96] tracking-[-0.02em] font-medium max-w-[10ch] dark:drop-shadow-[0_2px_18px_rgba(0,0,0,0.55)]"
         >
           {t("mission.hero.title")}
         </motion.h1>
@@ -64,7 +75,8 @@ const Hero = () => {
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.9, delay: 0.2 }}
           >
-            <p className="text-white/90 text-sm md:text-[15px] leading-relaxed max-w-md drop-shadow-[0_2px_10px_rgba(0,0,0,0.55)]">
+            {/* Small copy sits over the video panel on the right — keep it white in both themes */}
+            <p className="text-white text-sm md:text-[15px] leading-relaxed max-w-md drop-shadow-[0_2px_10px_rgba(0,0,0,0.65)]">
               {t("mission.hero.body")}
             </p>
             <Link
@@ -82,7 +94,7 @@ const Hero = () => {
           </motion.div>
         </div>
 
-        <div className="mt-24 md:mt-32 flex items-center gap-3 text-white/70">
+        <div className="mt-24 md:mt-32 flex items-center gap-3 text-foreground/60 dark:text-white/70">
           <span
             className="inline-block h-2 w-2 rounded-full animate-pulse"
             style={{ backgroundColor: "hsl(var(--teal-soft))" }}
