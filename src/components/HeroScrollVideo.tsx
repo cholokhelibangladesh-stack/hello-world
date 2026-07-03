@@ -18,13 +18,24 @@ interface HeroScrollVideoProps {
 
 /**
  * Scroll-scrubbed cinematic hero.
- * The single video timeline is broken into 5 scroll "beats"; each beat
- * plays a slice of video, then a text panel fades in over the paused frame.
- * The 6th beat slides a misty football field up to reveal the CTAs.
+ *
+ * Video is 14.72s @ 25fps. Scene keyframes (measured from the source):
+ *   0.4s  — football on misty field (opening)
+ *   3.5s  — camera pulled back to reveal the Cholo Kheli stadium
+ *   5.5s  — dive into stadium → cricket ball resting in the arena
+ *  10.0s  — ball has transformed to a basketball, hovering above the rim
+ *  13.5s  — basketball has dropped through the net (final beat)
+ *
+ * Each beat is a "play + hold" pair. The play portion of a beat gets a
+ * scroll share proportional to how many seconds of video it must cover,
+ * so playback speed is constant (natural, no frame skipping). The hold
+ * portion is a fixed slice where the video is pinned on that beat's
+ * frame and the text panel fades in. A final REVEAL beat slides the
+ * misty football-field panel up over the last frame.
  */
 type BeatKind = "split" | "center" | "left";
 interface Beat {
-  /** Fraction of the video timeline where THIS beat's text sits (paused frame). */
+  /** Exact video time in seconds where this beat lands and holds. */
   videoAt: number;
   kind: BeatKind;
   kicker: string;
@@ -34,50 +45,52 @@ interface Beat {
 }
 
 const BEATS: Beat[] = [
-  // 0 — opening: football on screen, text on either side (not centered)
+  // 0 — opening: football on misty field, text on either side (not centered)
   {
-    videoAt: 0.02,
+    videoAt: 0.4,
     kind: "split",
     kicker: "BANGLADESH",
     titleA: "From every para,",
     titleB: "a nation of players.",
-    body: "",
   },
   // 1 — camera pulls back to reveal the stadium
   {
-    videoAt: 0.28,
+    videoAt: 3.5,
     kind: "center",
     kicker: "WELCOME TO",
     titleA: "Cholo Kheli.",
     body: "The home of Bangladeshi sport — where every talent is seen.",
   },
-  // 2 — dive into stadium → cricket ball
+  // 2 — dive into stadium → cricket ball, text on either side
   {
-    videoAt: 0.52,
+    videoAt: 5.5,
     kind: "split",
     kicker: "CRICKET",
     titleA: "Every over,",
     titleB: "every opportunity.",
-    body: "",
   },
-  // 3 — cricket ball morphs to basketball, falling through rim
+  // 3 — ball is now a basketball hovering above the rim, text on the left
   {
-    videoAt: 0.78,
+    videoAt: 10.0,
     kind: "left",
     kicker: "BASKETBALL",
     titleA: "Rise. Reach.",
     titleB: "Be recruited.",
-    body: "",
   },
-  // 4 — ball drops through the rim, final frame of the video
+  // 4 — basketball has dropped through the rim (final frame)
   {
-    videoAt: 0.995,
+    videoAt: 13.5,
     kind: "center",
     kicker: "EVERY ATHLETE",
     titleA: "Discovered on merit.",
-    body: "",
   },
 ];
+
+/** Fixed scroll share reserved for each beat's "hold" (text fade-in). */
+const HOLD_SHARE = 0.06;
+/** Scroll share reserved at the end for the misty-field reveal panel. */
+const REVEAL_SHARE = 0.14;
+
 
 export default function HeroScrollVideo({
   scrollLabel,
