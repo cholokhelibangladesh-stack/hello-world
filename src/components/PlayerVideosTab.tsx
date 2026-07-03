@@ -358,7 +358,7 @@ const PlayerVideosTab = () => {
 
               <div className="aspect-video bg-secondary">
                 {selectedVideo.video_url ? (
-                  <video src={safeMediaUrl(selectedVideo.video_url)} className="w-full h-full object-cover" controls autoPlay muted />
+                  <video src={safeMediaUrl(selectedVideo.video_url)} className="w-full h-full object-cover" controls autoPlay muted preload="metadata" />
                 ) : (
                   <div className="w-full h-full flex items-center justify-center">
                     <Play className="h-12 w-12 text-muted-foreground" />
