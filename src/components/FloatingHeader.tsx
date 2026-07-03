@@ -60,7 +60,8 @@ const FloatingHeader = () => {
             aria-hidden
             className={`h-11 w-11 sm:h-12 sm:w-12 shrink-0 ${shadow} transition-transform group-hover:scale-105`}
             style={{
-              backgroundColor: "#B2D5E5", // Candy Blue — pops on the dark hero
+              // Candy Blue on dark hero for pop; deep teal on light paper.
+              backgroundColor: onDark ? "#B2D5E5" : "hsl(var(--teal-deep))",
               WebkitMaskImage: `url(${logoAsset.url})`,
               maskImage: `url(${logoAsset.url})`,
               WebkitMaskRepeat: "no-repeat",
@@ -71,6 +72,7 @@ const FloatingHeader = () => {
               maskSize: "contain",
             }}
           />
+
           <span className={`font-display text-lg sm:text-xl tracking-[0.04em] ${fg} font-semibold ${wordmarkShadow}`}>
             CHOLO <span className="font-bold">KHELI</span>
           </span>
