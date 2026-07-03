@@ -748,11 +748,11 @@ const Index = () => {
             </div>
           </Reveal>
         </div>
-        {/* Bottom blend → next section (card) — long soft ink→card */}
-        <div aria-hidden className="pointer-events-none absolute inset-x-0 bottom-0 h-64 z-[2]"
-          style={{ background: "linear-gradient(to bottom, transparent 0%, hsl(var(--ink) / 0.35) 25%, hsl(var(--card) / 0.6) 60%, hsl(var(--card) / 0.92) 88%, hsl(var(--card)) 100%)" }} />
-
       </section>
+
+      {/* Physical gradient bridge: CTA (ink) → stats (background overlay on card) */}
+      <div aria-hidden className="relative h-32 sm:h-40"
+        style={{ background: "linear-gradient(to bottom, hsl(var(--ink)) 0%, hsl(var(--background)) 100%)" }} />
 
       {/* ══════════════════════════════════════════
           LIVE STATS BAR — moved below CTA phones
@@ -790,17 +790,17 @@ const Index = () => {
             ))}
           </div>
         </div>
-        {/* Bottom blend → footer (paper) — soft card→paper */}
-        <div aria-hidden className="pointer-events-none absolute inset-x-0 bottom-0 h-40 z-[2]"
-          style={{ background: "linear-gradient(to bottom, transparent 0%, hsl(var(--paper) / 0.5) 40%, hsl(var(--paper) / 0.9) 80%, hsl(var(--paper)) 100%)" }} />
-
       </section>
 
+      {/* Physical gradient bridge: stats (background) → footer (paper) */}
+      <div aria-hidden className="relative h-20 sm:h-24"
+        style={{ background: "linear-gradient(to bottom, hsl(var(--background)) 0%, hsl(var(--paper)) 100%)" }} />
 
       {/* ══════════════════════════════════════════
           FOOTER SOCIAL
       ══════════════════════════════════════════ */}
       <section className="py-16 surface-paper">
+
 
         <div className="container text-center">
           <Reveal>
