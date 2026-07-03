@@ -21,18 +21,21 @@ const CARDS: Card[] = [
   { src: a8, sport: "Cricket", caption: "Nets" },
 ];
 
+// Duplicate the deck so the ring is denser — more cards per arc means the
+// curve reads clearly and cards sit close together rather than sparse.
+const RING = [...CARDS, ...CARDS];
+
 /**
  * A looping 3D cylinder-style coverflow carousel. Cards are arranged
  * around a vertical axis; the entire ring rotates continuously so cards
  * curve toward and away from the viewer forever without ever stopping.
  */
 export default function CurvedAthleteCarousel() {
-  const N = CARDS.length;
-  const angleStep = 360 / N;
-  // Radius chosen so ~3 cards face front at once with generous spacing.
-  const radius = 620;
-  const cardW = 300;
-  const cardH = 420;
+  const N = RING.length;
+  const angleStep = 360 / N; // 22.5° with 16 slots — tight arc
+  const radius = 780;
+  const cardW = 280;
+  const cardH = 380;
 
   return (
     <section className="relative overflow-hidden py-24 sm:py-32 bg-background">
