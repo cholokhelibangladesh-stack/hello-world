@@ -276,8 +276,9 @@ export default function HeroScrollVideo({
         gsap.to(anim, {
           f: target,
           duration,
-          ease: "power2.inOut",
+          ease: "none",
           overwrite: true,
+
           onUpdate: () => scheduleFrame(anim.f),
           onComplete: () => {
             animating = false;
