@@ -182,6 +182,57 @@ export const translations = {
     "safe.contact.legal": "Legal",
     "safe.contact.support": "Support",
     "safe.contact.helpline": "Helpline",
+
+    // About / Mission page
+    "mission.hero.title": "We Digitise Bangladesh Sports.",
+    "mission.hero.body":
+      "Cholo Kheli connects Bangladesh's grassroots talent with verified scouts through a safe, transparent platform — turning raw ability into recognised opportunity.",
+    "mission.hero.cta": "Try it now",
+    "mission.hero.scroll": "Scroll for more",
+
+    "mission.history.title": "Our History",
+    "mission.history.d1": "Feb 13, 2026",
+    "mission.history.b1": "The idea was established — a platform to bring Bangladesh's grassroots athletes into the same conversation as verified scouts.",
+    "mission.history.d2": "Mar 8, 2026",
+    "mission.history.b2": "The concept was validated by a tech CEO whose feedback gave us the conviction to keep building.",
+    "mission.history.d3": "Mar 26, 2026",
+    "mission.history.b3": "We ran a nationwide survey that proved real, measurable demand for a trusted scouting product.",
+    "mission.history.d4": "Jul 10, 2026",
+    "mission.history.b4": "Official start of Cholo Kheli — the team, the mission, the platform, live.",
+
+    "mission.what.title": "What We Do",
+    "mission.what.lead":
+      "A single stack that turns raw talent into recognised opportunity — built for players, scouts, and the federations that back them.",
+    "mission.what.t1": "Scout Discovery",
+    "mission.what.b1":
+      "Verified scouts explore a searchable index of players filtered by sport, district, position and highlight quality — no gatekeepers, no middlemen.",
+    "mission.what.t2": "Player Profiles",
+    "mission.what.b2":
+      "Athletes build a single, credible profile: verified stats, curated highlight reels, a resume that follows them wherever the game takes them.",
+    "mission.what.t3": "Safe Selections",
+    "mission.what.b3":
+      "Every scout is vetted, every contact is logged. Selections happen inside a transparent audit trail, so families and federations can trust the outcome.",
+
+    "mission.team.title": "Meet Our Team",
+    "mission.team.ceo": "Chief Executive Officer",
+    "mission.team.quote":
+      "Cholo Kheli isn't just a product — it's the digital infrastructure Bangladeshi sport has been waiting for. Every athlete in this country deserves a fair shot at being seen, and we're here to make sure they get one.",
+    "mission.team.role": "CEO, Cholo Kheli · CEO, NRK Group",
+
+    "mission.news.title": "Latest News",
+    "mission.news.subtitle": "Updates from the field",
+    "mission.news.n1.tag": "Launch",
+    "mission.news.n1.date": "Jul 10, 2026",
+    "mission.news.n1.title": "Cholo Kheli officially goes live across Bangladesh",
+    "mission.news.n1.body": "Our platform opens to players and verified scouts nationwide — bringing safe, transparent scouting to every district.",
+    "mission.news.n2.tag": "Product",
+    "mission.news.n2.date": "Jun 22, 2026",
+    "mission.news.n2.title": "New player profiles roll out with verified stats",
+    "mission.news.n2.body": "Athletes can now showcase verified performance data and curated highlight reels — a credible digital resume for every player.",
+    "mission.news.n3.tag": "Community",
+    "mission.news.n3.date": "May 30, 2026",
+    "mission.news.n3.title": "Nationwide survey confirms demand for grassroots scouting",
+    "mission.news.n3.body": "Responses from across the country prove families and coaches want a safer, more transparent path from local grounds to national opportunity.",
   },
 
   bn: {
