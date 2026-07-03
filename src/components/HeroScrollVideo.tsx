@@ -116,25 +116,38 @@ export default function HeroScrollVideo({
   const [revealCTA, setRevealCTA] = useState(0);
   const [ready, setReady] = useState(false);
 
-  // Preload the atlas.
+  // Preload both atlases in parallel.
   useEffect(() => {
     if (typeof window === "undefined") return;
-    const img = new Image();
-    img.decoding = "async";
-    img.src = atlas.url;
-    img.onload = () => {
-      atlasImgRef.current = img;
-      setReady(true);
-    };
+    let cancelled = false;
+    const imgs: HTMLImageElement[] = [];
+    const loads = ATLAS_URLS.map(
+      (url, i) =>
+        new Promise<void>((resolve) => {
+          const img = new Image();
+          img.decoding = "async";
+          img.src = url;
+          img.onload = () => {
+            imgs[i] = img;
+            atlasImgsRef.current[i] = img;
+            resolve();
+          };
+          img.onerror = () => resolve();
+        })
+    );
+    Promise.all(loads).then(() => {
+      if (!cancelled) setReady(true);
+    });
     return () => {
-      img.onload = null;
+      cancelled = true;
     };
   }, []);
 
   // Actual canvas paint — called at most once per animation frame.
   const paintFrame = (f: number) => {
     const canvas = canvasRef.current;
-    const img = atlasImgRef.current;
+    const atlasIdx = Math.min(ATLAS_URLS.length - 1, Math.floor(f / FRAMES_PER_ATLAS));
+    const img = atlasImgsRef.current[atlasIdx];
     if (!canvas || !img) return;
     if (currentFrameRef.current === f) return;
     currentFrameRef.current = f;
@@ -156,8 +169,9 @@ export default function HeroScrollVideo({
       ctx.imageSmoothingQuality = "high";
     }
 
-    const col = f % ATLAS_COLS;
-    const row = Math.floor(f / ATLAS_COLS);
+    const localIdx = f - atlasIdx * FRAMES_PER_ATLAS;
+    const col = localIdx % ATLAS_COLS;
+    const row = Math.floor(localIdx / ATLAS_COLS);
     const sx = col * FRAME_W;
     const sy = row * FRAME_H;
 
