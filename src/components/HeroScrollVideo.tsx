@@ -261,9 +261,8 @@ export default function HeroScrollVideo({
       if (!wrap) return;
 
       // ─── constants ────────────────────────────────────────────────
-      const PLAYBACK_FPS = 30;      // natural playback rate for short hops
+      const PLAYBACK_FPS = 30;      // natural playback rate between beats
       const MIN_TRANSITION = 0.35;  // seconds, floor for very short hops
-      const MAX_TRANSITION = 1.2;   // seconds, cap so long hops don't drag
       const REVEAL_DURATION = 0.7;  // seconds, panel slide-in
       const GESTURE_TOLERANCE = 10; // pixels — ignore micro-noise
       const N = BEATS.length;
@@ -281,17 +280,12 @@ export default function HeroScrollVideo({
       beatRef.current = 0;
       setBeat(0);
 
-      // ─── frame tween ─────────────────────────────────────────────
-      // Duration scales with distance but is capped so a long hop
-      // (e.g. cricket → basketball, 91 frames) never feels like it
-      // stalls on the morph frames.
+      // ─── frame tween (constant PLAYBACK_FPS) ──────────────────────
       const animateFrameTo = (target: number, done?: () => void) => {
         animating = true;
         const delta = Math.abs(target - anim.f);
-        const duration = Math.min(
-          MAX_TRANSITION,
-          Math.max(MIN_TRANSITION, delta / PLAYBACK_FPS)
-        );
+        const duration = Math.max(MIN_TRANSITION, delta / PLAYBACK_FPS);
+
 
         gsap.to(anim, {
           f: target,
