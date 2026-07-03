@@ -260,6 +260,8 @@ export default function HeroScrollVideo({
       let currentBeat = 0;
       let animating = false;
       let released = false;
+      let observer: { disable: () => void; enable: () => void; kill: () => void } | null = null;
+
 
       // Paint the first frame.
       scheduleFrame(anim.f);
