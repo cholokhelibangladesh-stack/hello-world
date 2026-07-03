@@ -3,7 +3,7 @@ import { Link } from "@tanstack/react-router";
 import { ArrowRight } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import CholoKheliMark from "@/components/CholoKheliMark";
-import heroVideo from "@/assets/hero-scroll.mp4.asset.json";
+import atlas from "@/assets/hero-atlas.jpg.asset.json";
 import mistyField from "@/assets/footballer-motion.jpg.asset.json";
 
 interface HeroScrollVideoProps {
@@ -17,26 +17,28 @@ interface HeroScrollVideoProps {
 }
 
 /**
- * Scroll-scrubbed cinematic hero.
+ * Scroll-scrubbed cinematic hero, driven by a sprite atlas of 74 frames
+ * (10 cols × 8 rows, 480×270 per frame). Each scroll pixel advances the
+ * frame index deterministically — no video decoder, no seek jank, every
+ * frame lands exactly where intended.
  *
- * Video is 14.72s @ 25fps. Scene keyframes (measured from the source):
- *   0.4s  — football on misty field (opening)
- *   3.5s  — camera pulled back to reveal the Cholo Kheli stadium
- *   5.5s  — dive into stadium → cricket ball resting in the arena
- *  10.0s  — ball has transformed to a basketball, hovering above the rim
- *  13.5s  — basketball has dropped through the net (final beat)
- *
- * Each beat is a "play + hold" pair. The play portion of a beat gets a
- * scroll share proportional to how many seconds of video it must cover,
- * so playback speed is constant (natural, no frame skipping). The hold
- * portion is a fixed slice where the video is pinned on that beat's
- * frame and the text panel fades in. A final REVEAL beat slides the
- * misty football-field panel up over the last frame.
+ * Beats (frame indices in the atlas):
+ *   2  — football on misty field (opening)
+ *  15  — camera pulled back, Cholo Kheli stadium fully revealed
+ *  27  — dive into stadium, cricket ball resting in the arena
+ *  50  — basketball hovering above the rim
+ *  70  — basketball has dropped through the net (final beat)
  */
+
+const ATLAS_COLS = 10;
+const ATLAS_ROWS = 8;
+const FRAME_W = 480;
+const FRAME_H = 270;
+const FRAME_COUNT = 74;
+
 type BeatKind = "split" | "center" | "left";
 interface Beat {
-  /** Exact video time in seconds where this beat lands and holds. */
-  videoAt: number;
+  frame: number;
   kind: BeatKind;
   kicker: string;
   titleA: string;
@@ -45,52 +47,44 @@ interface Beat {
 }
 
 const BEATS: Beat[] = [
-  // 0 — opening: football on misty field, text on either side (not centered)
   {
-    videoAt: 0.4,
+    frame: 2,
     kind: "split",
     kicker: "BANGLADESH",
     titleA: "From every para,",
     titleB: "a nation of players.",
   },
-  // 1 — camera pulls back to reveal the stadium
   {
-    videoAt: 3.5,
+    frame: 15,
     kind: "center",
     kicker: "WELCOME TO",
     titleA: "Cholo Kheli.",
     body: "The home of Bangladeshi sport — where every talent is seen.",
   },
-  // 2 — dive into stadium → cricket ball, text on either side
   {
-    videoAt: 5.5,
+    frame: 27,
     kind: "split",
     kicker: "CRICKET",
     titleA: "Every over,",
     titleB: "every opportunity.",
   },
-  // 3 — ball is now a basketball hovering above the rim, text on the left
   {
-    videoAt: 10.0,
+    frame: 50,
     kind: "left",
     kicker: "BASKETBALL",
     titleA: "Rise. Reach.",
     titleB: "Be recruited.",
   },
-  // 4 — basketball has dropped through the rim (final frame)
   {
-    videoAt: 13.5,
+    frame: 70,
     kind: "center",
     kicker: "EVERY ATHLETE",
     titleA: "Discovered on merit.",
   },
 ];
 
-/** Fixed scroll share reserved for each beat's "hold" (text fade-in). */
 const HOLD_SHARE = 0.06;
-/** Scroll share reserved at the end for the misty-field reveal panel. */
 const REVEAL_SHARE = 0.14;
-
 
 export default function HeroScrollVideo({
   scrollLabel,
@@ -103,12 +97,76 @@ export default function HeroScrollVideo({
 }: HeroScrollVideoProps) {
   const wrapRef = useRef<HTMLDivElement>(null);
   const pinRef = useRef<HTMLDivElement>(null);
-  const videoRef = useRef<HTMLVideoElement>(null);
-  // -1 = between beats (text hidden while video is playing)
-  const [beat, setBeat] = useState(0);
-  const [revealCTA, setRevealCTA] = useState(0); // 0..1 progress of the field slide-up
+  const canvasRef = useRef<HTMLCanvasElement>(null);
+  const atlasImgRef = useRef<HTMLImageElement | null>(null);
+  const currentFrameRef = useRef<number>(-1);
+  const [beat, setBeat] = useState<number>(0);
+  const [revealCTA, setRevealCTA] = useState(0);
+  const [ready, setReady] = useState(false);
 
+  // Preload the atlas.
   useEffect(() => {
+    if (typeof window === "undefined") return;
+    const img = new Image();
+    img.decoding = "async";
+    img.src = atlas.url;
+    img.onload = () => {
+      atlasImgRef.current = img;
+      setReady(true);
+    };
+    return () => {
+      img.onload = null;
+    };
+  }, []);
+
+  // Draw a specific frame into the canvas, letterboxed to cover.
+  const drawFrame = (frame: number) => {
+    const canvas = canvasRef.current;
+    const img = atlasImgRef.current;
+    if (!canvas || !img) return;
+    const f = Math.max(0, Math.min(FRAME_COUNT - 1, Math.round(frame)));
+    if (currentFrameRef.current === f) return;
+    currentFrameRef.current = f;
+    const ctx = canvas.getContext("2d");
+    if (!ctx) return;
+
+    // Size canvas to viewport (accounting for DPR) once per resize.
+    const dpr = Math.min(2, window.devicePixelRatio || 1);
+    const cw = canvas.clientWidth;
+    const ch = canvas.clientHeight;
+    if (canvas.width !== Math.floor(cw * dpr) || canvas.height !== Math.floor(ch * dpr)) {
+      canvas.width = Math.floor(cw * dpr);
+      canvas.height = Math.floor(ch * dpr);
+    }
+
+    const col = f % ATLAS_COLS;
+    const row = Math.floor(f / ATLAS_COLS);
+    const sx = col * FRAME_W;
+    const sy = row * FRAME_H;
+
+    // object-fit: cover math
+    const targetW = canvas.width;
+    const targetH = canvas.height;
+    const srcAspect = FRAME_W / FRAME_H;
+    const dstAspect = targetW / targetH;
+    let dw: number, dh: number, dx: number, dy: number;
+    if (dstAspect > srcAspect) {
+      dw = targetW;
+      dh = targetW / srcAspect;
+      dx = 0;
+      dy = (targetH - dh) / 2;
+    } else {
+      dh = targetH;
+      dw = targetH * srcAspect;
+      dy = 0;
+      dx = (targetW - dw) / 2;
+    }
+    ctx.drawImage(img, sx, sy, FRAME_W, FRAME_H, dx, dy, dw, dh);
+  };
+
+  // ScrollTrigger driver.
+  useEffect(() => {
+    if (!ready) return;
     if (typeof window === "undefined") return;
 
     let cleanup: (() => void) | null = null;
@@ -122,147 +180,114 @@ export default function HeroScrollVideo({
       if (cancelled) return;
       gsap.registerPlugin(ScrollTrigger);
 
-      const video = videoRef.current;
       const wrap = wrapRef.current;
       const pin = pinRef.current;
-      if (!video || !wrap || !pin) return;
+      if (!wrap || !pin) return;
 
-      const start = () => {
-        if (cancelled) return;
-        const duration = video.duration;
-        if (!duration || Number.isNaN(duration)) return;
+      // Draw first frame immediately.
+      drawFrame(BEATS[0].frame);
 
-        // ---- Build the scroll → (video time, beat) mapping ----
-        //
-        // Timeline layout across scroll progress 0..1:
-        //   [play 0 → beat0.t] [hold beat0] [play beat0 → beat1] [hold beat1] ...
-        //   [play beat3 → beat4] [hold beat4] [reveal panel]
-        //
-        // Each PLAY segment gets a scroll share proportional to its Δt (video
-        // seconds), so playback runs at natural constant speed — no frame is
-        // skipped or slowed. Each HOLD gets a fixed HOLD_SHARE. The final
-        // REVEAL_SHARE is the field slide-up.
-        const N = BEATS.length;
-        const playDeltas: number[] = [];
-        let prev = 0;
-        for (const b of BEATS) {
-          playDeltas.push(Math.max(0, Math.min(duration, b.videoAt) - prev));
-          prev = b.videoAt;
-        }
-        const totalPlayTime = playDeltas.reduce((a, b) => a + b, 0) || 1;
-        const totalHoldShare = HOLD_SHARE * N;
-        const totalPlayShare = Math.max(0, 1 - totalHoldShare - REVEAL_SHARE);
-
-        // Absolute scroll-progress boundaries for each segment.
-        // segments alternate play, hold, play, hold, ..., reveal.
-        interface Seg {
-          kind: "play" | "hold" | "reveal";
-          start: number;
-          end: number;
-          from: number; // video time at seg.start
-          to: number;   // video time at seg.end
-          beatIdx: number;
-        }
-        const segs: Seg[] = [];
-        let cursor = 0;
-        let vprev = 0;
-        for (let i = 0; i < N; i++) {
-          const playLen = (playDeltas[i] / totalPlayTime) * totalPlayShare;
-          segs.push({
-            kind: "play",
-            start: cursor,
-            end: cursor + playLen,
-            from: vprev,
-            to: BEATS[i].videoAt,
-            beatIdx: i,
-          });
-          cursor += playLen;
-          segs.push({
-            kind: "hold",
-            start: cursor,
-            end: cursor + HOLD_SHARE,
-            from: BEATS[i].videoAt,
-            to: BEATS[i].videoAt,
-            beatIdx: i,
-          });
-          cursor += HOLD_SHARE;
-          vprev = BEATS[i].videoAt;
-        }
-        segs.push({
-          kind: "reveal",
-          start: cursor,
-          end: 1,
-          from: vprev,
-          to: Math.min(duration - 0.05, vprev + 1.0),
-          beatIdx: N - 1,
-        });
-
-        const proxy = { t: 0 };
-        const setTime = () => {
-          try {
-            video.currentTime = proxy.t;
-          } catch {}
-        };
-
-        const ctx = gsap.context(() => {
-          ScrollTrigger.create({
-            trigger: wrap,
-            start: "top top",
-            // Long scroll distance keeps the scrub smooth and gives each
-            // video second enough pixels to update without frame skipping.
-            end: () => "+=" + window.innerHeight * 7,
-            pin: pin,
-            pinSpacing: true,
-            scrub: 1,
-            anticipatePin: 1,
-            invalidateOnRefresh: true,
-            onUpdate: (self) => {
-              const p = self.progress;
-
-              // Find current segment (linear scan — segs is tiny).
-              let seg = segs[segs.length - 1];
-              for (const s of segs) {
-                if (p <= s.end) {
-                  seg = s;
-                  break;
-                }
-              }
-              const span = Math.max(1e-6, seg.end - seg.start);
-              const local = Math.min(1, Math.max(0, (p - seg.start) / span));
-
-              if (seg.kind === "play") {
-                proxy.t = seg.from + (seg.to - seg.from) * local;
-                setTime();
-                setBeat(-1);
-                setRevealCTA(0);
-              } else if (seg.kind === "hold") {
-                proxy.t = seg.to;
-                setTime();
-                setBeat(seg.beatIdx);
-                setRevealCTA(0);
-              } else {
-                // Reveal: keep playing out the tail of the video underneath
-                // while the misty-field panel slides up on top.
-                proxy.t = seg.from + (seg.to - seg.from) * local;
-                setTime();
-                setBeat(-1);
-                setRevealCTA(local);
-              }
-            },
-          });
-        }, pin);
-
-        cleanup = () => ctx.revert();
-      };
-
-
-      if (video.readyState >= 1 && video.duration) {
-        start();
-      } else {
-        const onMeta = () => start();
-        video.addEventListener("loadedmetadata", onMeta, { once: true });
-        cleanup = () => video.removeEventListener("loadedmetadata", onMeta);
+      // Build the scroll → (frame, beat) segment map. Each PLAY segment gets
+      // a scroll share proportional to the number of frames it must cover,
+      // so playback runs at a constant, natural frame rate.
+      const N = BEATS.length;
+      const playDeltas: number[] = [];
+      let prev = 0;
+      for (const b of BEATS) {
+        playDeltas.push(Math.max(0, b.frame - prev));
+        prev = b.frame;
       }
+      const totalPlay = playDeltas.reduce((a, b) => a + b, 0) || 1;
+      const totalHold = HOLD_SHARE * N;
+      const totalPlayShare = Math.max(0, 1 - totalHold - REVEAL_SHARE);
+
+      interface Seg {
+        kind: "play" | "hold" | "reveal";
+        start: number;
+        end: number;
+        from: number;
+        to: number;
+        beatIdx: number;
+      }
+      const segs: Seg[] = [];
+      let cursor = 0;
+      let fprev = 0;
+      for (let i = 0; i < N; i++) {
+        const playLen = (playDeltas[i] / totalPlay) * totalPlayShare;
+        segs.push({
+          kind: "play",
+          start: cursor,
+          end: cursor + playLen,
+          from: fprev,
+          to: BEATS[i].frame,
+          beatIdx: i,
+        });
+        cursor += playLen;
+        segs.push({
+          kind: "hold",
+          start: cursor,
+          end: cursor + HOLD_SHARE,
+          from: BEATS[i].frame,
+          to: BEATS[i].frame,
+          beatIdx: i,
+        });
+        cursor += HOLD_SHARE;
+        fprev = BEATS[i].frame;
+      }
+      segs.push({
+        kind: "reveal",
+        start: cursor,
+        end: 1,
+        from: fprev,
+        to: FRAME_COUNT - 1,
+        beatIdx: N - 1,
+      });
+
+      const ctx = gsap.context(() => {
+        ScrollTrigger.create({
+          trigger: wrap,
+          start: "top top",
+          // Long distance = ~1 scroll pixel per frame update = silky.
+          end: () => "+=" + window.innerHeight * 7,
+          pin: pin,
+          pinSpacing: true,
+          scrub: 0.6,
+          anticipatePin: 1,
+          invalidateOnRefresh: true,
+          onRefresh: () => {
+            // Force canvas resize + redraw on layout changes.
+            currentFrameRef.current = -1;
+            drawFrame(BEATS[0].frame);
+          },
+          onUpdate: (self) => {
+            const p = self.progress;
+            let seg = segs[segs.length - 1];
+            for (const s of segs) {
+              if (p <= s.end) {
+                seg = s;
+                break;
+              }
+            }
+            const span = Math.max(1e-6, seg.end - seg.start);
+            const local = Math.min(1, Math.max(0, (p - seg.start) / span));
+            const frame = seg.from + (seg.to - seg.from) * local;
+            drawFrame(frame);
+
+            if (seg.kind === "play") {
+              setBeat(-1);
+              setRevealCTA(0);
+            } else if (seg.kind === "hold") {
+              setBeat(seg.beatIdx);
+              setRevealCTA(0);
+            } else {
+              setBeat(-1);
+              setRevealCTA(local);
+            }
+          },
+        });
+      }, pin);
+
+      cleanup = () => ctx.revert();
     })();
 
     return () => {
@@ -276,28 +301,15 @@ export default function HeroScrollVideo({
         })
         .catch(() => {});
     };
-  }, []);
+  }, [ready]);
 
   return (
-    <section
-      ref={wrapRef}
-      className="relative w-full"
-      style={{ background: "hsl(0 0% 3%)" }}
-    >
-      <div
-        ref={pinRef}
-        className="relative w-full h-[100svh] overflow-hidden"
-      >
-        {/* Video */}
-        <video
-          ref={videoRef}
-          src={heroVideo.url}
-          muted
-          playsInline
-          preload="auto"
-          disablePictureInPicture
-          className="absolute inset-0 w-full h-full object-cover"
-          style={{ willChange: "transform" }}
+    <section ref={wrapRef} className="relative w-full" style={{ background: "hsl(0 0% 3%)" }}>
+      <div ref={pinRef} className="relative w-full h-[100svh] overflow-hidden">
+        <canvas
+          ref={canvasRef}
+          className="absolute inset-0 w-full h-full block"
+          style={{ background: "hsl(0 0% 3%)" }}
         />
 
         {/* Cinematic gradient overlay */}
@@ -312,9 +324,7 @@ export default function HeroScrollVideo({
         {/* Mark */}
         <div
           className="absolute top-6 left-1/2 -translate-x-1/2 z-20 transition-transform duration-700 ease-out"
-          style={{
-            transform: `translateX(-50%) scale(${revealCTA > 0.4 ? 0.55 : 1})`,
-          }}
+          style={{ transform: `translateX(-50%) scale(${revealCTA > 0.4 ? 0.55 : 1})` }}
         >
           <CholoKheliMark className="h-14 w-20 sm:h-16 sm:w-24 drop-shadow-[0_4px_20px_rgba(0,0,0,0.6)]" />
         </div>
@@ -377,7 +387,6 @@ export default function HeroScrollVideo({
               );
             }
 
-            // center
             return (
               <div
                 key={i}
@@ -402,7 +411,7 @@ export default function HeroScrollVideo({
           })}
         </div>
 
-        {/* Misty football-field reveal panel — slides up over the final frame */}
+        {/* Misty football-field reveal panel */}
         <div
           className="absolute inset-0 z-30"
           style={{
@@ -490,7 +499,7 @@ export default function HeroScrollVideo({
           </div>
         </div>
 
-        {/* Scroll nudge — hidden once the reveal starts */}
+        {/* Scroll nudge */}
         <div
           className="absolute bottom-6 left-1/2 -translate-x-1/2 z-20 text-[9px] tracking-[0.35em] uppercase text-white/70 transition-opacity duration-500"
           style={{ opacity: revealCTA > 0 ? 0 : 0.75 }}
