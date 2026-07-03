@@ -802,33 +802,6 @@ const Index = () => {
         </div>
       </section>
 
-      {/* Physical gradient bridge: stats (background) → footer (paper) */}
-      <div aria-hidden className="relative h-40 sm:h-48"
-        style={{ background: "linear-gradient(to bottom, hsl(var(--background)) 0%, hsl(var(--paper)) 100%)" }} />
-
-      {/* ══════════════════════════════════════════
-          FOOTER SOCIAL
-      ══════════════════════════════════════════ */}
-      <section className="py-16 surface-paper">
-
-
-        <div className="container text-center">
-          <Reveal>
-            <p className="text-xs tracking-[0.2em] uppercase text-muted-foreground mb-6">{T.followJourney}</p>
-            <div className="flex justify-center gap-5">
-              {socialLinks.map(({ Icon, label, href, color }) => (
-                <motion.a key={label} href={href} target="_blank" rel="noopener noreferrer"
-                  whileHover={{ scale: 1.2, y: -4 }} transition={{ type: "spring", stiffness: 400 }}
-                  className={`text-muted-foreground transition-colors duration-200 ${color}`}
-                  aria-label={label}>
-                  <Icon className="h-5 w-5" />
-                </motion.a>
-              ))}
-            </div>
-            <p className="text-xs text-muted-foreground/40 mt-8">© 2026 Cholo Kheli — Let&apos;s Play</p>
-          </Reveal>
-        </div>
-      </section>
     </div>
   );
 };

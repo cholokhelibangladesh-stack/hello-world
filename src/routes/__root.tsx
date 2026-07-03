@@ -9,6 +9,7 @@ import { Toaster as Sonner } from "@/components/ui/sonner";
 import { AuthProvider } from "@/hooks/useAuth";
 import { ThemeProvider } from "@/hooks/useTheme";
 import FloatingHeader from "@/components/FloatingHeader";
+import SiteFooter from "@/components/SiteFooter";
 import { AppErrorBoundary } from "@/components/AppErrorBoundary";
 import CookieConsentBanner from "@/components/CookieConsentBanner";
 import { LanguageProvider } from "@/i18n/LanguageProvider";
@@ -97,6 +98,7 @@ function AppShell() {
             <Sonner />
             <FloatingHeader />
             <Outlet />
+            <SiteFooter />
             <CookieConsentBanner />
           </TooltipProvider>
         </AuthProvider>
