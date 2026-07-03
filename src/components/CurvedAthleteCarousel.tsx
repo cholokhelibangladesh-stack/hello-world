@@ -21,18 +21,21 @@ const CARDS: Card[] = [
   { src: a8, sport: "Cricket", caption: "Nets" },
 ];
 
+// Duplicate the deck so the ring is denser — more cards per arc means the
+// curve reads clearly and cards sit close together rather than sparse.
+const RING = [...CARDS, ...CARDS];
+
 /**
  * A looping 3D cylinder-style coverflow carousel. Cards are arranged
  * around a vertical axis; the entire ring rotates continuously so cards
  * curve toward and away from the viewer forever without ever stopping.
  */
 export default function CurvedAthleteCarousel() {
-  const N = CARDS.length;
-  const angleStep = 360 / N;
-  // Radius chosen so ~3 cards face front at once with generous spacing.
-  const radius = 620;
-  const cardW = 300;
-  const cardH = 420;
+  const N = RING.length;
+  const angleStep = 360 / N; // 22.5° with 16 slots — tight arc
+  const radius = 780;
+  const cardW = 280;
+  const cardH = 380;
 
   return (
     <section className="relative overflow-hidden py-24 sm:py-32 bg-background">
@@ -76,7 +79,7 @@ export default function CurvedAthleteCarousel() {
               height: 0,
             }}
           >
-            {CARDS.map((c, i) => (
+            {RING.map((c, i) => (
               <div
                 key={i}
                 className="absolute rounded-2xl overflow-hidden shadow-[0_30px_60px_-20px_rgba(0,0,0,0.55)] ring-1 ring-white/10"
@@ -108,7 +111,7 @@ export default function CurvedAthleteCarousel() {
                 />
                 <div className="absolute bottom-4 left-4 right-4 text-white">
                   <div className="text-[10px] tracking-[0.35em] uppercase text-white/70 mb-1">
-                    #{String(i + 1).padStart(2, "0")}
+                    #{String((i % CARDS.length) + 1).padStart(2, "0")}
                   </div>
                   <div className="font-display text-lg leading-tight">{c.sport}</div>
                   <div className="text-xs text-white/75">{c.caption}</div>
