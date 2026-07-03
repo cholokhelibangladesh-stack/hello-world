@@ -6,6 +6,16 @@ import CholoKheliMark from "@/components/CholoKheliMark";
 import atlas0 from "@/assets/hero-atlas-0.jpg.asset.json";
 import atlas1 from "@/assets/hero-atlas-1.jpg.asset.json";
 import mistyField from "@/assets/hero-field-reveal.jpg.asset.json";
+import sharpBeat0 from "@/assets/hero-beat-008.jpg.asset.json";
+import sharpBeat1 from "@/assets/hero-beat-060.jpg.asset.json";
+import sharpBeat2 from "@/assets/hero-beat-108.jpg.asset.json";
+import sharpBeat3 from "@/assets/hero-beat-199.jpg.asset.json";
+import sharpBeat4 from "@/assets/hero-beat-279.jpg.asset.json";
+
+// AI-enhanced sharp still for each beat. Overlaid on top of the canvas
+// when the animation settles on that beat, then hidden again the moment
+// the next scroll gesture starts playback.
+const SHARP_BEATS = [sharpBeat0.url, sharpBeat1.url, sharpBeat2.url, sharpBeat3.url, sharpBeat4.url];
 
 interface HeroScrollVideoProps {
   tagline: string;
@@ -115,6 +125,10 @@ export default function HeroScrollVideo({
   const [beat, setBeat] = useState<number>(0);
   const [revealCTA, setRevealCTA] = useState(0);
   const [ready, setReady] = useState(false);
+  // Which beat's AI-enhanced still is currently visible on top of the
+  // canvas. -1 while the video is animating between beats or while the
+  // reveal panel is open.
+  const [settledBeat, setSettledBeat] = useState<number>(0);
 
   // Preload both atlases in parallel.
   useEffect(() => {
@@ -297,27 +311,26 @@ export default function HeroScrollVideo({
       // ─── one-step advance / retreat ───────────────────────────────
       const goForward = () => {
         if (animating || released) return;
+        // Hide the AI-sharp overlay for the beat we're leaving.
+        setSettledBeat(-1);
         if (currentBeat < N - 1) {
           const next = currentBeat + 1;
-          // Panel text fades to next beat as the frame animates toward it.
           if (beatRef.current !== next) {
             beatRef.current = next;
             setBeat(next);
           }
           animateFrameTo(BEATS[next].frame, () => {
             currentBeat = next;
+            // Video has settled on this beat — reveal the crisp still.
+            setSettledBeat(next);
           });
         } else if (anim.r < 1) {
-          // Hide beat panels; slide reveal panel in.
           if (beatRef.current !== -1) {
             beatRef.current = -1;
             setBeat(-1);
           }
-          animateRevealTo(1, () => {
-            // After reveal completes, one more scroll releases the pin.
-          });
+          animateRevealTo(1);
         } else if (!released) {
-          // Release: allow the page to scroll past the hero normally.
           released = true;
           observer.disable();
           document.documentElement.style.overflow = "";
@@ -327,12 +340,15 @@ export default function HeroScrollVideo({
 
       const goBackward = () => {
         if (animating || released) return;
+        setSettledBeat(-1);
         if (anim.r > 0) {
           if (beatRef.current !== N - 1) {
             beatRef.current = N - 1;
             setBeat(N - 1);
           }
-          animateRevealTo(0);
+          animateRevealTo(0, () => {
+            setSettledBeat(N - 1);
+          });
         } else if (currentBeat > 0) {
           const prev = currentBeat - 1;
           if (beatRef.current !== prev) {
@@ -341,9 +357,12 @@ export default function HeroScrollVideo({
           }
           animateFrameTo(BEATS[prev].frame, () => {
             currentBeat = prev;
+            setSettledBeat(prev);
           });
+        } else {
+          // Already at first beat — snap the sharp overlay back on.
+          setSettledBeat(0);
         }
-        // If already at first beat with no reveal, do nothing.
       };
 
       // ─── lock the page while the hero is active ───────────────────
@@ -395,6 +414,24 @@ export default function HeroScrollVideo({
           className="absolute inset-0 w-full h-full block"
           style={{ background: "hsl(0 0% 3%)" }}
         />
+
+        {/* AI-enhanced sharp stills, one per beat. Fade in the instant the
+            video settles on a beat; fade out again the moment the next
+            gesture starts playback. Sits above the canvas but below the
+            gradient/text so the beat text remains legible. */}
+        {SHARP_BEATS.map((url, i) => (
+          <img
+            key={i}
+            src={url}
+            alt=""
+            aria-hidden="true"
+            draggable={false}
+            className="absolute inset-0 w-full h-full object-cover pointer-events-none transition-opacity duration-300 ease-out"
+            style={{ opacity: settledBeat === i ? 1 : 0 }}
+          />
+        ))}
+
+
 
         {/* Cinematic gradient overlay */}
         <div
