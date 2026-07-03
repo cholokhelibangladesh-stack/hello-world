@@ -18,12 +18,12 @@ const BLUE_GRADIENT_135 = "linear-gradient(135deg, hsl(var(--teal-deep)) 0%, hsl
 const Hero = () => {
   const { t } = useLanguage();
   return (
-    <section className="relative min-h-[100vh] w-full overflow-hidden bg-[hsl(var(--paper-deep))]">
+    <section className="relative min-h-[100vh] w-full overflow-hidden bg-[#0a1620]">
       <div
         className="pointer-events-none absolute inset-0 opacity-[0.06]"
         style={{
           backgroundImage:
-            "linear-gradient(to right, hsl(var(--foreground)) 1px, transparent 1px)",
+            "linear-gradient(to right, #ffffff 1px, transparent 1px)",
           backgroundSize: "16.6667% 100%",
         }}
       />
@@ -36,14 +36,13 @@ const Hero = () => {
           loop
           muted
           playsInline
-          className="h-full w-full object-cover object-right opacity-90 dark:opacity-90"
+          className="h-full w-full object-cover object-right opacity-90"
         />
-        {/* Fade the video into the page background so it feels seamless in both modes */}
         <div
           className="absolute inset-0"
           style={{
             background:
-              "linear-gradient(90deg, hsl(var(--paper-deep)) 0%, hsl(var(--paper-deep) / 0.85) 35%, hsl(var(--paper-deep) / 0.15) 65%, transparent 100%)",
+              "linear-gradient(90deg, #0a1620 0%, rgba(10,22,32,0.85) 35%, rgba(10,22,32,0.15) 65%, transparent 100%)",
           }}
         />
       </div>
@@ -53,7 +52,7 @@ const Hero = () => {
           initial={{ opacity: 0, y: 24 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.9, ease: [0.22, 1, 0.36, 1] }}
-          className="font-display text-foreground text-[52px] leading-[1.02] sm:text-[76px] md:text-[104px] md:leading-[0.96] tracking-[-0.02em] font-medium max-w-[10ch]"
+          className="font-display text-white text-[52px] leading-[1.02] sm:text-[76px] md:text-[104px] md:leading-[0.96] tracking-[-0.02em] font-medium max-w-[10ch] drop-shadow-[0_2px_18px_rgba(0,0,0,0.55)]"
         >
           {t("mission.hero.title")}
         </motion.h1>
@@ -65,7 +64,7 @@ const Hero = () => {
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.9, delay: 0.2 }}
           >
-            <p className="text-foreground/75 text-sm md:text-[15px] leading-relaxed max-w-md">
+            <p className="text-white/90 text-sm md:text-[15px] leading-relaxed max-w-md drop-shadow-[0_2px_10px_rgba(0,0,0,0.55)]">
               {t("mission.hero.body")}
             </p>
             <Link
@@ -73,17 +72,17 @@ const Hero = () => {
               className="group mt-6 inline-flex items-center gap-3 rounded-md p-[1px]"
               style={{ background: BLUE_GRADIENT }}
             >
-              <span className="flex items-center justify-between gap-6 rounded-[5px] bg-[hsl(var(--paper-deep))] px-6 py-3.5 min-w-[280px] transition-colors group-hover:bg-transparent">
-                <span className="text-[11px] tracking-[0.35em] font-mono uppercase text-foreground">
+              <span className="flex items-center justify-between gap-6 rounded-[5px] bg-[#0a1620] px-6 py-3.5 min-w-[280px] transition-colors group-hover:bg-transparent">
+                <span className="text-[11px] tracking-[0.35em] font-mono uppercase text-white">
                   {t("mission.hero.cta")}
                 </span>
-                <ArrowUpRight className="h-4 w-4 text-foreground" />
+                <ArrowUpRight className="h-4 w-4 text-white" />
               </span>
             </Link>
           </motion.div>
         </div>
 
-        <div className="mt-24 md:mt-32 flex items-center gap-3 text-foreground/60">
+        <div className="mt-24 md:mt-32 flex items-center gap-3 text-white/70">
           <span
             className="inline-block h-2 w-2 rounded-full animate-pulse"
             style={{ backgroundColor: "hsl(var(--teal-soft))" }}
