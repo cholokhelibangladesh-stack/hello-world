@@ -79,7 +79,7 @@ export default function CurvedAthleteCarousel() {
               height: 0,
             }}
           >
-            {CARDS.map((c, i) => (
+            {RING.map((c, i) => (
               <div
                 key={i}
                 className="absolute rounded-2xl overflow-hidden shadow-[0_30px_60px_-20px_rgba(0,0,0,0.55)] ring-1 ring-white/10"
