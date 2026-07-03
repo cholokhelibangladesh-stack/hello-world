@@ -663,32 +663,70 @@ const LatestNews = () => {
   return (
     <section className="relative bg-[hsl(var(--paper-deep))] py-28 md:py-36 overflow-hidden">
       <div className="mx-auto max-w-7xl px-6 md:px-16">
+        {/* News header: title scales in from a smaller size, subtitle underline draws in */}
         <motion.div
-          initial={{ opacity: 0, y: 20 }}
-          whileInView={{ opacity: 1, y: 0 }}
+          initial="hidden"
+          whileInView="show"
           viewport={{ once: true, margin: "-80px" }}
-          transition={{ duration: 0.7, ease: [0.22, 1, 0.36, 1] }}
+          variants={{
+            hidden: {},
+            show: { transition: { staggerChildren: 0.15 } },
+          }}
           className="flex items-baseline justify-between mb-12"
         >
-          <h2 className="font-display text-foreground text-4xl md:text-5xl tracking-[-0.02em]">
+          <motion.h2
+            variants={{
+              hidden: { opacity: 0, scale: 0.92, y: 10 },
+              show: {
+                opacity: 1,
+                scale: 1,
+                y: 0,
+                transition: { duration: 0.8, ease: [0.16, 1, 0.3, 1] },
+              },
+            }}
+            className="font-display text-foreground text-4xl md:text-5xl tracking-[-0.02em] origin-left"
+          >
             {t("mission.news.title")}
-          </h2>
-          <span
+          </motion.h2>
+          <motion.span
+            variants={{
+              hidden: { opacity: 0, x: 20 },
+              show: {
+                opacity: 1,
+                x: 0,
+                transition: { duration: 0.7 },
+              },
+            }}
             className="hidden md:inline-block text-[10px] tracking-[0.4em] font-mono uppercase"
             style={{ color: "hsl(var(--teal-deep))" }}
           >
             {t("mission.news.subtitle")}
-          </span>
+          </motion.span>
         </motion.div>
 
-        <div className="grid md:grid-cols-3 gap-6">
+        <motion.div
+          initial="hidden"
+          whileInView="show"
+          viewport={{ once: true, margin: "-100px" }}
+          variants={{
+            hidden: {},
+            show: { transition: { staggerChildren: 0.14, delayChildren: 0.15 } },
+          }}
+          className="grid md:grid-cols-3 gap-6"
+        >
           {NEWS.map((n, i) => (
             <motion.article
               key={i}
-              initial={{ opacity: 0, y: 16 }}
-              whileInView={{ opacity: 1, y: 0 }}
-              viewport={{ once: true, margin: "-100px" }}
-              transition={{ duration: 0.6, delay: i * 0.08 }}
+              variants={{
+                hidden: { opacity: 0, y: 40, rotate: i % 2 === 0 ? -1.5 : 1.5 },
+                show: {
+                  opacity: 1,
+                  y: 0,
+                  rotate: 0,
+                  transition: { duration: 0.75, ease: [0.16, 1, 0.3, 1] },
+                },
+              }}
+              whileHover={{ y: -4, transition: { duration: 0.25 } }}
               className="group relative rounded-2xl border border-foreground/10 bg-foreground/[0.03] p-6 hover:border-foreground/25 transition-colors"
             >
               <div className="flex items-center justify-between mb-6">
@@ -711,12 +749,12 @@ const LatestNews = () => {
               </h3>
               <p className="text-foreground/65 text-sm leading-relaxed">{n.body}</p>
               <div
-                className="mt-8 h-px w-full opacity-60"
+                className="mt-8 h-px w-full opacity-60 origin-left transition-transform duration-500 group-hover:scale-x-110"
                 style={{ background: BLUE_GRADIENT }}
               />
             </motion.article>
           ))}
-        </div>
+        </motion.div>
       </div>
     </section>
   );
