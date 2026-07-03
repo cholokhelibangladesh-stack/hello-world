@@ -268,11 +268,12 @@ const WhatWeDo = () => {
   return (
     <section className="relative bg-[hsl(var(--paper-deep))] py-28 md:py-40 overflow-hidden">
       <div className="mx-auto max-w-7xl px-6 md:px-16">
+        {/* What We Do title: clip-path reveal from bottom, like a stage curtain rising */}
         <motion.div
-          initial={{ opacity: 0, y: 20 }}
-          whileInView={{ opacity: 1, y: 0 }}
+          initial={{ opacity: 0, clipPath: "inset(100% 0 0 0)" }}
+          whileInView={{ opacity: 1, clipPath: "inset(0% 0 0 0)" }}
           viewport={{ once: true, margin: "-80px" }}
-          transition={{ duration: 0.7, ease: [0.22, 1, 0.36, 1] }}
+          transition={{ duration: 1, ease: [0.16, 1, 0.3, 1] }}
           className="flex items-baseline justify-between mb-16"
         >
           <h2 className="font-display text-foreground text-4xl md:text-5xl tracking-[-0.02em]">
@@ -282,10 +283,10 @@ const WhatWeDo = () => {
 
         <div className="grid md:grid-cols-[1fr_1.2fr] gap-16 items-start">
           <motion.div
-            initial={{ opacity: 0, y: 16 }}
-            whileInView={{ opacity: 1, y: 0 }}
+            initial={{ opacity: 0, x: -30 }}
+            whileInView={{ opacity: 1, x: 0 }}
             viewport={{ once: true, margin: "-80px" }}
-            transition={{ duration: 0.7, delay: 0.15 }}
+            transition={{ duration: 0.9, delay: 0.15, ease: [0.16, 1, 0.3, 1] }}
             className="md:sticky md:top-32 space-y-6 max-w-md"
           >
             <p className="text-foreground/80 text-lg leading-relaxed">
@@ -302,10 +303,14 @@ const WhatWeDo = () => {
               return (
                 <motion.div
                   key={w.title}
-                  initial={{ opacity: 0, y: 18 }}
-                  whileInView={{ opacity: 1, y: 0 }}
+                  initial={{ opacity: 0, x: 60 }}
+                  whileInView={{ opacity: 1, x: 0 }}
                   viewport={{ once: true, margin: "-60px" }}
-                  transition={{ duration: 0.6, delay: 0.1 + i * 0.08, ease: [0.22, 1, 0.36, 1] }}
+                  transition={{
+                    duration: 0.7,
+                    delay: 0.15 + i * 0.12,
+                    ease: [0.16, 1, 0.3, 1],
+                  }}
                   className="relative border-t border-foreground/10 pt-8 pb-2"
                 >
                   <button
@@ -361,10 +366,130 @@ const WhatWeDo = () => {
           whileInView={{ opacity: 1, y: 0 }}
           viewport={{ once: true, margin: "-80px" }}
           transition={{ duration: 0.7, delay: 0.2 }}
-          className="mt-20 max-w-3xl text-foreground/70 text-base md:text-lg leading-relaxed"
+          className="mt-24 max-w-3xl text-foreground/70 text-base md:text-lg leading-relaxed"
         >
           {t("mission.what.outro")}
         </motion.p>
+
+        {/* Principles strip */}
+        <div className="mt-20 md:mt-28">
+          <motion.div
+            initial={{ opacity: 0, y: 12 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            viewport={{ once: true, margin: "-80px" }}
+            transition={{ duration: 0.6 }}
+            className="flex items-center gap-4 mb-10"
+          >
+            <span
+              className="h-px w-10"
+              style={{ background: BLUE_GRADIENT }}
+            />
+            <span
+              className="text-[10px] tracking-[0.4em] uppercase font-mono"
+              style={{ color: "hsl(var(--teal-deep))" }}
+            >
+              {t("mission.what.principles")}
+            </span>
+          </motion.div>
+
+          <motion.div
+            initial="hidden"
+            whileInView="show"
+            viewport={{ once: true, margin: "-80px" }}
+            variants={{
+              hidden: {},
+              show: { transition: { staggerChildren: 0.09 } },
+            }}
+            className="grid sm:grid-cols-2 lg:grid-cols-4 gap-5"
+          >
+            {PRINCIPLES.map((p) => (
+              <motion.div
+                key={p.title}
+                variants={{
+                  hidden: { opacity: 0, y: 20, rotate: -1 },
+                  show: {
+                    opacity: 1,
+                    y: 0,
+                    rotate: 0,
+                    transition: { duration: 0.6, ease: [0.22, 1, 0.36, 1] },
+                  },
+                }}
+                className="rounded-2xl border border-foreground/10 bg-foreground/[0.02] p-6 hover:border-foreground/25 transition-colors"
+              >
+                <div
+                  className="h-8 w-8 rounded-full mb-5"
+                  style={{ background: BLUE_GRADIENT_135 }}
+                />
+                <h4 className="font-display text-foreground text-lg mb-2 tracking-[-0.01em]">
+                  {p.title}
+                </h4>
+                <p className="text-foreground/65 text-sm leading-relaxed">{p.body}</p>
+              </motion.div>
+            ))}
+          </motion.div>
+        </div>
+
+        {/* Metrics strip */}
+        <div className="mt-16 md:mt-20">
+          <motion.div
+            initial={{ opacity: 0, y: 12 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            viewport={{ once: true, margin: "-80px" }}
+            transition={{ duration: 0.6 }}
+            className="flex items-center gap-4 mb-8"
+          >
+            <span
+              className="h-px w-10"
+              style={{ background: BLUE_GRADIENT }}
+            />
+            <span
+              className="text-[10px] tracking-[0.4em] uppercase font-mono"
+              style={{ color: "hsl(var(--teal-deep))" }}
+            >
+              {t("mission.what.metrics")}
+            </span>
+          </motion.div>
+
+          <motion.div
+            initial="hidden"
+            whileInView="show"
+            viewport={{ once: true, margin: "-80px" }}
+            variants={{
+              hidden: {},
+              show: { transition: { staggerChildren: 0.12, delayChildren: 0.1 } },
+            }}
+            className="grid grid-cols-2 lg:grid-cols-4 gap-px bg-foreground/10 rounded-2xl overflow-hidden border border-foreground/10"
+          >
+            {METRICS.map((m) => (
+              <motion.div
+                key={m.label}
+                variants={{
+                  hidden: { opacity: 0, y: 18 },
+                  show: {
+                    opacity: 1,
+                    y: 0,
+                    transition: { duration: 0.7, ease: [0.22, 1, 0.36, 1] },
+                  },
+                }}
+                className="bg-[hsl(var(--paper-deep))] p-6 md:p-8"
+              >
+                <div
+                  className="font-display text-4xl md:text-5xl tracking-[-0.02em] mb-2"
+                  style={{
+                    background: BLUE_GRADIENT_135,
+                    WebkitBackgroundClip: "text",
+                    WebkitTextFillColor: "transparent",
+                  }}
+                >
+                  {m.value}
+                </div>
+                <div className="text-foreground/60 text-xs leading-relaxed">
+                  {m.label}
+                </div>
+              </motion.div>
+            ))}
+          </motion.div>
+        </div>
       </div>
     </section>
   );
