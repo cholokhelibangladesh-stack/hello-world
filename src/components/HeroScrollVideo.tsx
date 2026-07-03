@@ -529,27 +529,30 @@ export default function HeroScrollVideo({
               );
             }
 
+            // "center" kind — left-anchored hero title with SF Pro,
+            // sized big so it stays legible over the busy midground.
             return (
               <div
                 key={i}
-                className={baseClass + " justify-center"}
+                className={baseClass + " justify-start"}
                 style={{ opacity, filter: blur, transform: `translateY(${translate})` }}
               >
-                <div className="max-w-2xl text-center">
-                  <div className="text-[10px] sm:text-xs tracking-[0.4em] uppercase text-[hsl(188_60%_72%)] mb-4 font-medium">
+                <div className="max-w-[62%] sm:max-w-[55%] text-left">
+                  <div className="font-sf text-[11px] sm:text-sm tracking-[0.42em] uppercase text-[hsl(188_80%_78%)] mb-4 font-semibold drop-shadow-[0_2px_10px_rgba(0,0,0,0.9)]">
                     {b.kicker}
                   </div>
-                  <h2 className="font-display text-4xl sm:text-6xl lg:text-7xl font-medium text-white tracking-[0.02em] leading-tight drop-shadow-[0_4px_24px_rgba(0,0,0,0.7)]">
+                  <h2 className="font-sf text-5xl sm:text-7xl lg:text-8xl font-black text-white tracking-[-0.01em] leading-[0.95] drop-shadow-[0_6px_28px_rgba(0,0,0,0.9)]">
                     {b.titleA}
                   </h2>
                   {b.body && (
-                    <p className="mt-6 text-sm sm:text-base text-white/80 max-w-lg mx-auto leading-relaxed drop-shadow-[0_2px_8px_rgba(0,0,0,0.6)]">
+                    <p className="mt-6 font-sf text-base sm:text-lg text-white/90 max-w-md leading-relaxed drop-shadow-[0_2px_10px_rgba(0,0,0,0.8)]">
                       {b.body}
                     </p>
                   )}
                 </div>
               </div>
             );
+
           })}
         </div>
 
