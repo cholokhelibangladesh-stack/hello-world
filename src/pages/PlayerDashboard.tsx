@@ -108,7 +108,7 @@ const PlayerDashboard = () => {
   const loadUserData = async (userId: string) => {
     const [profileRes, videosRes, docsRes] = await Promise.all([
       supabase.from("profiles").select("sport").eq("user_id", userId).maybeSingle(),
-      supabase.from("videos").select("*").eq("user_id", userId).order("created_at", { ascending: false }),
+      supabase.from("videos").select("id, status, description, position_tags, trait_tags, video_url, created_at").eq("user_id", userId).order("created_at", { ascending: false }),
       supabase.from("documents").select("url").eq("user_id", userId).eq("type", "birth_certificate").maybeSingle(),
     ]);
 
