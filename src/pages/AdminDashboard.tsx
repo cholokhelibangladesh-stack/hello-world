@@ -333,6 +333,7 @@ const AdminDashboard = () => {
                 <TabsTrigger value="safety" className="data-[state=active]:bg-primary data-[state=active]:text-primary-foreground text-xs whitespace-nowrap px-3">Safety {stats?.flaggedMessages ? `(${stats.flaggedMessages})` : ""}</TabsTrigger>
                 <TabsTrigger value="controls" className="data-[state=active]:bg-primary data-[state=active]:text-primary-foreground text-xs whitespace-nowrap px-3">Controls</TabsTrigger>
                 <TabsTrigger value="notices" className="data-[state=active]:bg-primary data-[state=active]:text-primary-foreground text-xs whitespace-nowrap px-3">Notices</TabsTrigger>
+                <TabsTrigger value="contact" className="data-[state=active]:bg-primary data-[state=active]:text-primary-foreground text-xs whitespace-nowrap px-3">Contact {stats?.unreadContacts ? `(${stats.unreadContacts})` : ""}</TabsTrigger>
                 <TabsTrigger value="profile" className="data-[state=active]:bg-primary data-[state=active]:text-primary-foreground text-xs whitespace-nowrap px-3">Profile</TabsTrigger>
               </TabsList>
             </div>
