@@ -247,6 +247,19 @@ export const translations = {
     "mission.what.m4.value": "3",
     "mission.what.m4.label": "Sports live at kickoff",
 
+    "mission.what.s1.title": "Trust as infrastructure",
+    "mission.what.s1.body":
+      "Identity checks, role verification and audit logs are built in — not bolted on after a scandal.",
+    "mission.what.s2.title": "Built with the community",
+    "mission.what.s2.body":
+      "Shaped alongside coaches, district officials and players so it fits the way Bangladeshi sport actually works.",
+    "mission.what.s3.title": "Designed to scale",
+    "mission.what.s3.body":
+      "Starts with three sports and grows with every federation that plugs in — one shared pipeline, not fifty silos.",
+    "mission.what.pullquote":
+      "A player from Rangpur and a scout in Dhaka should be one verified click apart — that's the whole product.",
+    "mission.what.pullquoteAttr": "— The Cholo Kheli team",
+
 
 
     "mission.team.title": "Meet Our Team",
