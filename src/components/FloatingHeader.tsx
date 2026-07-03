@@ -56,14 +56,21 @@ const FloatingHeader = () => {
           aria-label={t("nav.home")}
           className="pointer-events-auto flex items-center gap-2.5 group shrink-0"
         >
-          <img
-            src={logoAsset.url}
-            alt=""
-            className={`h-8 w-8 sm:h-9 sm:w-9 object-contain ${shadow} transition-transform group-hover:scale-105`}
-          />
-          <span className={`font-display text-base sm:text-lg tracking-[0.04em] ${fg} font-semibold ${wordmarkShadow}`}>
-            CHOLO <span className="font-bold">KHELI</span>
+          <span
+            className={`inline-flex items-center gap-2.5 rounded-full transition-colors ${
+              onDark ? "bg-black/40 ring-1 ring-white/20 backdrop-blur-md px-3 py-1.5" : ""
+            }`}
+          >
+            <img
+              src={logoAsset.url}
+              alt=""
+              className={`h-10 w-10 sm:h-12 sm:w-12 object-contain ${shadow} transition-transform group-hover:scale-105`}
+            />
+            <span className={`font-display text-lg sm:text-xl tracking-[0.04em] ${fg} font-semibold ${wordmarkShadow}`}>
+              CHOLO <span className="font-bold">KHELI</span>
+            </span>
           </span>
+
         </Link>
 
         {/* RIGHT: Language + Notification + Menu (uniform across all sizes) */}
