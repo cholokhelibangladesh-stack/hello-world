@@ -368,6 +368,7 @@ export default function HeroScrollVideo({
       const MIN_TRANSITION = 0.35;  // seconds, floor for very short hops
       const REVEAL_DURATION = 0.7;  // seconds, panel slide-in
       const GESTURE_TOLERANCE = 10; // pixels — ignore micro-noise
+      const TEXT_SETTLE_MS = 380;   // hold input until beat text finishes appearing
       const N = BEATS.length;
 
       // ─── mutable driver state ─────────────────────────────────────
