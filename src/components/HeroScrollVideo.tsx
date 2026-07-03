@@ -2,7 +2,7 @@ import { useEffect, useRef, useState } from "react";
 import { Link } from "@tanstack/react-router";
 import { ArrowRight } from "lucide-react";
 import { Button } from "@/components/ui/button";
-import CholoKheliMark from "@/components/CholoKheliMark";
+
 import atlas0 from "@/assets/hero-atlas-0.jpg.asset.json";
 import atlas1 from "@/assets/hero-atlas-1.jpg.asset.json";
 import mistyField from "@/assets/hero-field-reveal.jpg.asset.json";
@@ -395,12 +395,31 @@ export default function HeroScrollVideo({
         onPress: () => {},
       });
 
+      // ─── re-engage when user scrolls back to the top ──────────────
+      // After the reveal panel is showing, the pin is released and the
+      // page scrolls normally. If the user scrolls back up to the very
+      // top of the page and keeps scrolling up, re-lock the pin and let
+      // them rewind through the animation.
+      const onReengageWheel = (e: WheelEvent) => {
+        if (!released) return;
+        if (e.deltaY < 0 && window.scrollY <= 0) {
+          released = false;
+          document.documentElement.style.overflow = "hidden";
+          document.body.style.overflow = "hidden";
+          window.scrollTo(0, 0);
+          observer?.enable();
+        }
+      };
+      window.addEventListener("wheel", onReengageWheel, { passive: true });
+
       cleanup = () => {
         observer?.kill();
+        window.removeEventListener("wheel", onReengageWheel);
         document.documentElement.style.overflow = prevHtmlOverflow;
         document.body.style.overflow = prevBodyOverflow;
         gsap.killTweensOf(anim);
       };
+
 
     })();
 
@@ -450,20 +469,13 @@ export default function HeroScrollVideo({
           }}
         />
 
-        {/* Mark */}
-        <div
-          className="absolute top-6 left-1/2 -translate-x-1/2 z-20 transition-transform duration-700 ease-out"
-          style={{ transform: `translateX(-50%) scale(${revealCTA > 0.4 ? 0.55 : 1})` }}
-        >
-          <CholoKheliMark className="h-14 w-20 sm:h-16 sm:w-24 drop-shadow-[0_4px_20px_rgba(0,0,0,0.6)]" />
-        </div>
-
         {/* Text beats */}
         <div className="absolute inset-0 z-10 pointer-events-none">
           {BEATS.map((b, i) => {
             const active = beat === i;
             const baseClass =
-              "absolute inset-0 flex items-center px-6 sm:px-12 transition-all duration-700 ease-out";
+              "absolute inset-0 flex items-center px-6 sm:px-12 transition-all duration-300 ease-out";
+
             const opacity = active ? 1 : 0;
             const blur = active ? "blur(0px)" : "blur(6px)";
             const translate = active ? "0px" : beat > i ? "-16px" : "16px";
