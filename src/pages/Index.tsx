@@ -747,9 +747,10 @@ const Index = () => {
             </div>
           </Reveal>
         </div>
-        {/* Bottom blend → next section (card) */}
-        <div aria-hidden className="pointer-events-none absolute inset-x-0 bottom-0 h-32 z-[2]"
-          style={{ background: "linear-gradient(to bottom, transparent 0%, hsl(var(--card) / 0.65) 55%, hsl(var(--card)) 100%)" }} />
+        {/* Bottom blend → next section (card) — long soft ink→card */}
+        <div aria-hidden className="pointer-events-none absolute inset-x-0 bottom-0 h-64 z-[2]"
+          style={{ background: "linear-gradient(to bottom, transparent 0%, hsl(var(--ink) / 0.35) 25%, hsl(var(--card) / 0.6) 60%, hsl(var(--card) / 0.92) 88%, hsl(var(--card)) 100%)" }} />
+
       </section>
 
       {/* ══════════════════════════════════════════
