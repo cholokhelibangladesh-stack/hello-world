@@ -85,9 +85,14 @@ const Hero = () => {
               style={{ background: BLUE_GRADIENT }}
             >
               <span
-                className="relative flex items-center justify-between gap-6 rounded-[5px] px-6 py-3.5 min-w-[280px] overflow-hidden dark:bg-[#0a1620] dark:group-hover:bg-transparent transition-colors"
-                style={{ background: BLUE_GRADIENT }}
+                className="relative flex items-center justify-between gap-6 rounded-[5px] px-6 py-3.5 min-w-[280px] overflow-hidden transition-colors dark:bg-[#0a1620] dark:group-hover:bg-transparent"
               >
+                {/* Light-mode gradient base — matches the after-hover look already */}
+                <span
+                  aria-hidden
+                  className="absolute inset-0 dark:hidden"
+                  style={{ background: BLUE_GRADIENT }}
+                />
                 {/* Hover sheen — subtle horizontal wash that brightens the gradient on hover */}
                 <span
                   aria-hidden
