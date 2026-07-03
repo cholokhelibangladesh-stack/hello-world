@@ -104,7 +104,7 @@ const AdminDashboard = () => {
     setMessages(msgData.map((m) => ({ ...m, sender_name: profileMap.get(m.sender_id)?.name || "Unknown", receiver_name: profileMap.get(m.receiver_id)?.name || "Unknown" })));
     setScoutRequests(reqData.map((r) => ({ ...r, scout_name: profileMap.get(r.scout_id)?.name || "Unknown", player_name: profileMap.get(r.player_id)?.name || "Unknown" })));
 
-    const contactData = (contactRes.data || []) as ContactMessageRow[];
+    const contactData = ((contactRes.data as unknown) as ContactMessageRow[]) || [];
     setContactMessages(contactData);
 
     setStats({
