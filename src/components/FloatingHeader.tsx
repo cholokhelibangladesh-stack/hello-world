@@ -118,7 +118,7 @@ const FloatingHeader = () => {
 
       {/* Dropdown panel — contains nav links + (if signed in) dashboard & sign out */}
       {open && (
-        <div className={`pointer-events-auto ml-auto mr-4 sm:mr-6 lg:mr-8 mt-3 w-[min(20rem,calc(100vw-2rem))] rounded-2xl ${onDark ? "bg-black/55" : "bg-white/85"} backdrop-blur-xl ring-1 ${ring} shadow-lg shadow-black/20 p-2`}>
+        <div className={`pointer-events-auto ml-auto mr-4 sm:mr-6 lg:mr-8 mt-3 w-[min(20rem,calc(100vw-2rem))] rounded-2xl ${theme === "dark" ? "bg-[hsl(var(--paper-deep)/0.9)] text-foreground ring-foreground/15" : "bg-white/85 text-foreground ring-foreground/10"} backdrop-blur-xl ring-1 shadow-lg shadow-black/20 p-2`}>
           {navLinks.map((l) => (
             <Link
               key={l.to}
