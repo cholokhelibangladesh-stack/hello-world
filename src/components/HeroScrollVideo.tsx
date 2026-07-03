@@ -4,7 +4,7 @@ import { ArrowRight } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import CholoKheliMark from "@/components/CholoKheliMark";
 import atlas from "@/assets/hero-atlas.jpg.asset.json";
-import mistyField from "@/assets/footballer-motion.jpg.asset.json";
+import mistyField from "@/assets/hero-field-reveal.jpg.asset.json";
 
 interface HeroScrollVideoProps {
   tagline: string;
