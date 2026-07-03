@@ -434,7 +434,8 @@ const Index = () => {
         <img src={stadiumImg.url} alt="" aria-hidden loading="lazy" decoding="async"
           className="absolute inset-0 w-full h-full object-cover opacity-[0.07]" />
         <div className="absolute inset-0 pointer-events-none"
-          style={{ background: "linear-gradient(to bottom, hsl(var(--paper-deep) / 0.96), hsl(var(--paper) / 0.98))" }} />
+          style={{ background: "linear-gradient(to bottom, hsl(var(--paper)) 0%, hsl(var(--paper) / 0.98) 30%, hsl(var(--paper-deep) / 0.85) 100%)" }} />
+
 
         <div className="container relative z-10">
           <Reveal className="text-center mb-16 sm:mb-24">
