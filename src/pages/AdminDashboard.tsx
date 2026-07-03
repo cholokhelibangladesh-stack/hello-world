@@ -54,7 +54,7 @@ const AdminDashboard = () => {
 
   const fetchAll = async () => {
     setLoading(true);
-    const [scoutRes, videoRes, roleRes, paymentRes, msgRes, reqRes, settingsRes] = await Promise.all([
+    const [scoutRes, videoRes, roleRes, paymentRes, msgRes, reqRes, settingsRes, contactRes] = await Promise.all([
       supabase.from("scout_profiles").select("*").order("created_at", { ascending: false }),
       supabase.from("videos").select("*").order("created_at", { ascending: false }),
       supabase.from("user_roles").select("role, user_id"),
@@ -62,6 +62,7 @@ const AdminDashboard = () => {
       supabase.from("messages").select("*").order("created_at", { ascending: false }).limit(100),
       supabase.from("scout_requests").select("*").order("created_at", { ascending: false }),
       supabase.from("app_settings" as any).select("key, value"),
+      supabase.from("contact_messages" as any).select("*").order("created_at", { ascending: false }),
     ]);
 
     const scoutData = scoutRes.data || [];
@@ -103,6 +104,9 @@ const AdminDashboard = () => {
     setMessages(msgData.map((m) => ({ ...m, sender_name: profileMap.get(m.sender_id)?.name || "Unknown", receiver_name: profileMap.get(m.receiver_id)?.name || "Unknown" })));
     setScoutRequests(reqData.map((r) => ({ ...r, scout_name: profileMap.get(r.scout_id)?.name || "Unknown", player_name: profileMap.get(r.player_id)?.name || "Unknown" })));
 
+    const contactData = (contactRes.data || []) as ContactMessageRow[];
+    setContactMessages(contactData);
+
     setStats({
       totalPlayers: roles.filter((r) => r.role === "player").length,
       totalScouts: roles.filter((r) => r.role === "scout").length,
@@ -112,8 +116,21 @@ const AdminDashboard = () => {
       totalRevenue: payments.filter((p) => p.status === "success").reduce((sum, p) => sum + Number(p.amount), 0),
       flaggedMessages: msgData.filter((m) => m.flagged).length,
       pendingRequests: reqData.filter((r) => r.status === "pending").length,
+      unreadContacts: contactData.filter((c) => !c.is_read).length,
     });
     setLoading(false);
+  };
+
+  const toggleContactRead = async (id: string, isRead: boolean) => {
+    const { error } = await supabase.from("contact_messages" as any).update({ is_read: !isRead } as any).eq("id", id);
+    if (error) toast({ title: "Error", description: error.message, variant: "destructive" });
+    else fetchAll();
+  };
+
+  const deleteContact = async (id: string) => {
+    const { error } = await supabase.from("contact_messages" as any).delete().eq("id", id);
+    if (error) toast({ title: "Error", description: error.message, variant: "destructive" });
+    else { toast({ title: "Message deleted" }); fetchAll(); }
   };
 
   const updateScoutStatus = async (scoutId: string, status: "active" | "rejected") => {
