@@ -153,7 +153,7 @@ const ScoutExplore = () => {
               <div className="flex items-center gap-3 p-4 border-b border-border">
                 <div className="w-9 h-9 rounded-full bg-secondary overflow-hidden border border-border">
                   {selectedPlayer.avatar_url ? (
-                    <img src={safeMediaUrl(selectedPlayer.avatar_url)} alt="" className="w-full h-full object-cover" />
+                    <img src={safeMediaUrl(selectedPlayer.avatar_url)} alt="" loading="lazy" decoding="async" className="w-full h-full object-cover" />
                   ) : (
                     <div className="w-full h-full flex items-center justify-center text-muted-foreground text-xs font-bold">{selectedPlayer.full_name.charAt(0)}</div>
                   )}
