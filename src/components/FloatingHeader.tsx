@@ -56,14 +56,25 @@ const FloatingHeader = () => {
           aria-label={t("nav.home")}
           className="pointer-events-auto flex items-center gap-2.5 group shrink-0"
         >
-          <img
-            src={logoAsset.url}
-            alt=""
-            className={`h-11 w-11 sm:h-12 sm:w-12 object-contain ${shadow} transition-transform group-hover:scale-105`}
+          <span
+            aria-hidden
+            className={`h-11 w-11 sm:h-12 sm:w-12 shrink-0 ${shadow} transition-transform group-hover:scale-105`}
+            style={{
+              backgroundColor: "#B2D5E5", // Candy Blue — pops on the dark hero
+              WebkitMaskImage: `url(${logoAsset.url})`,
+              maskImage: `url(${logoAsset.url})`,
+              WebkitMaskRepeat: "no-repeat",
+              maskRepeat: "no-repeat",
+              WebkitMaskPosition: "center",
+              maskPosition: "center",
+              WebkitMaskSize: "contain",
+              maskSize: "contain",
+            }}
           />
           <span className={`font-display text-lg sm:text-xl tracking-[0.04em] ${fg} font-semibold ${wordmarkShadow}`}>
             CHOLO <span className="font-bold">KHELI</span>
           </span>
+
 
 
         </Link>
