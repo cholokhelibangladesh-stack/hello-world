@@ -260,6 +260,8 @@ export default function HeroScrollVideo({
       let currentBeat = 0;
       let animating = false;
       let released = false;
+      let observer: { disable: () => void; enable: () => void; kill: () => void } | null = null;
+
 
       // Paint the first frame.
       scheduleFrame(anim.f);
@@ -329,11 +331,16 @@ export default function HeroScrollVideo({
             setSettledBeat(next);
           });
         } else if (anim.r < 1) {
-          animateRevealTo(1);
+          animateRevealTo(1, () => {
+            // Release the pin — allow the rest of the page to scroll.
+            released = true;
+            observer?.disable();
+            document.documentElement.style.overflow = prevHtmlOverflow;
+            document.body.style.overflow = prevBodyOverflow;
+          });
         }
-        // If reveal is already 1, do nothing — user must scroll back up to
-        // rewind through the whole animation (see goBackward).
       };
+
 
       const goBackward = () => {
         if (animating || released) return;
@@ -377,7 +384,7 @@ export default function HeroScrollVideo({
       // so a giant trackpad flick and a single wheel tick both count as
       // exactly one gesture. Combined with the constant-rate tween above,
       // this means the video plays at its natural speed on every scroll.
-      const observer = Observer.create({
+      observer = Observer.create({
         target: window,
         type: "wheel,touch,pointer",
         tolerance: GESTURE_TOLERANCE,
@@ -389,11 +396,12 @@ export default function HeroScrollVideo({
       });
 
       cleanup = () => {
-        observer.kill();
+        observer?.kill();
         document.documentElement.style.overflow = prevHtmlOverflow;
         document.body.style.overflow = prevBodyOverflow;
         gsap.killTweensOf(anim);
       };
+
     })();
 
     return () => {
