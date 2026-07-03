@@ -116,7 +116,9 @@ const ScoutExplore = () => {
                   onClick={() => setSelectedPlayer(player)}
                 >
                   {player.video_url ? (
-                    <video src={safeMediaUrl(player.video_url)} className="w-full h-full object-cover" muted />
+                    <div className="w-full h-full flex items-center justify-center bg-secondary">
+                      <Play className="h-8 w-8 text-muted-foreground" />
+                    </div>
                   ) : (
                     <div className="w-full h-full flex items-center justify-center">
                       <Play className="h-8 w-8 text-muted-foreground" />
