@@ -276,7 +276,7 @@ const ScoutCarouselCard = React.forwardRef<HTMLDivElement, { scout: ScoutProfile
         <div className="w-14 h-14 rounded-full overflow-hidden border-2 flex items-center justify-center"
           style={{ borderColor: "hsl(var(--green) / 0.4)", background: "hsl(var(--green) / 0.15)" }}>
           {scout.avatar_url ? (
-            <img src={safeMediaUrl(scout.avatar_url)} alt={scout.full_name} className="w-full h-full object-cover" />
+            <img src={safeMediaUrl(scout.avatar_url)} alt={scout.full_name} loading="lazy" decoding="async" className="w-full h-full object-cover" />
           ) : (
             <span className="font-display text-xl text-white">{scout.full_name.charAt(0).toUpperCase()}</span>
           )}
