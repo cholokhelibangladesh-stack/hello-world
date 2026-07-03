@@ -767,6 +767,11 @@ const Index = () => {
           className="absolute inset-0 w-full h-full object-cover opacity-25" />
         <div className="absolute inset-0 pointer-events-none"
           style={{ background: "linear-gradient(to bottom, hsl(var(--background) / 0.92), hsl(var(--background) / 0.96))" }} />
+        {/* Top/bottom edge fades — hide image at seams */}
+        <div aria-hidden className="pointer-events-none absolute inset-x-0 top-0 h-40 z-[2]"
+          style={{ background: "linear-gradient(to bottom, hsl(var(--background)) 0%, transparent 100%)" }} />
+        <div aria-hidden className="pointer-events-none absolute inset-x-0 bottom-0 h-40 z-[2]"
+          style={{ background: "linear-gradient(to top, hsl(var(--background)) 0%, transparent 100%)" }} />
 
         <div className="container">
           <div className="grid grid-cols-3 gap-4 sm:gap-8">
