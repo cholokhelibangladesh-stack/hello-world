@@ -108,7 +108,7 @@ function AppShell() {
 
 function RootDocument({ children }: { children: React.ReactNode }) {
   return (
-    <html lang="en">
+    <html lang="en" style={{ backgroundColor: "#030303" }}>
       <head>
         <style
           dangerouslySetInnerHTML={{
@@ -118,7 +118,7 @@ function RootDocument({ children }: { children: React.ReactNode }) {
         />
         <HeadContent />
       </head>
-      <body>
+      <body style={{ margin: 0, backgroundColor: "#030303", color: "#f5f7f8", overflowX: "hidden" }}>
         {children}
         <Scripts />
       </body>
