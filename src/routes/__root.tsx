@@ -108,17 +108,23 @@ function AppShell() {
 
 function RootDocument({ children }: { children: React.ReactNode }) {
   return (
-    <html lang="en" style={{ backgroundColor: "#030303" }}>
+    <html lang="en">
       <head>
+        <script
+          dangerouslySetInnerHTML={{
+            __html:
+              "(function(){try{var t=localStorage.getItem('theme');if(t==='dark')document.documentElement.classList.add('dark');}catch(e){}})();",
+          }}
+        />
         <style
           dangerouslySetInnerHTML={{
             __html:
-              "html{background:#030303;color-scheme:light dark}body{margin:0;background:#030303;color:#f5f7f8;overflow-x:hidden}",
+              "html{background:#d6dee2;color-scheme:light}html.dark{background:#030303;color-scheme:dark}body{margin:0;background:inherit;color:hsl(var(--foreground));overflow-x:hidden}",
           }}
         />
         <HeadContent />
       </head>
-      <body style={{ margin: 0, backgroundColor: "#030303", color: "#f5f7f8", overflowX: "hidden" }}>
+      <body>
         {children}
         <Scripts />
       </body>
