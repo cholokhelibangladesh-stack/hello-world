@@ -72,7 +72,7 @@ const ReelItem = ({
         <div className="flex items-center gap-2 mb-2">
           <div className="w-8 h-8 rounded-full bg-white/20 overflow-hidden border border-white/30 pointer-events-none">
             {video.avatar_url ? (
-              <img src={safeMediaUrl(video.avatar_url)} alt="" className="w-full h-full object-cover" />
+              <img src={safeMediaUrl(video.avatar_url)} alt="" loading="lazy" decoding="async" className="w-full h-full object-cover" />
             ) : (
               <div className="w-full h-full flex items-center justify-center text-white text-xs font-bold">
                 {video.full_name.charAt(0)}
