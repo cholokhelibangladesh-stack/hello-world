@@ -215,33 +215,62 @@ const History = () => {
 const WhatWeDo = () => {
   const { t } = useLanguage();
   const WHAT = [
-    { title: t("mission.what.t1"), body: t("mission.what.b1") },
-    { title: t("mission.what.t2"), body: t("mission.what.b2") },
-    { title: t("mission.what.t3"), body: t("mission.what.b3") },
+    { title: t("mission.what.t1"), body: t("mission.what.b1"), extra: t("mission.what.e1") },
+    { title: t("mission.what.t2"), body: t("mission.what.b2"), extra: t("mission.what.e2") },
+    { title: t("mission.what.t3"), body: t("mission.what.b3"), extra: t("mission.what.e3") },
   ];
   const [active, setActive] = useState<number | null>(0);
 
   return (
     <section className="relative bg-[hsl(var(--paper-deep))] py-28 md:py-40 overflow-hidden">
       <div className="mx-auto max-w-7xl px-6 md:px-16">
-        <div className="flex items-baseline justify-between mb-16">
+        <motion.div
+          initial={{ opacity: 0, y: 20 }}
+          whileInView={{ opacity: 1, y: 0 }}
+          viewport={{ once: true, margin: "-80px" }}
+          transition={{ duration: 0.7, ease: [0.22, 1, 0.36, 1] }}
+          className="flex items-baseline justify-between mb-10"
+        >
           <h2 className="font-display text-foreground text-4xl md:text-5xl tracking-[-0.02em]">
             {t("mission.what.title")}
           </h2>
-        </div>
+        </motion.div>
+
+        <motion.p
+          initial={{ opacity: 0, y: 16 }}
+          whileInView={{ opacity: 1, y: 0 }}
+          viewport={{ once: true, margin: "-80px" }}
+          transition={{ duration: 0.7, delay: 0.1 }}
+          className="max-w-3xl text-foreground/75 text-base md:text-lg leading-relaxed mb-16"
+        >
+          {t("mission.what.intro")}
+        </motion.p>
 
         <div className="grid md:grid-cols-[1fr_1.2fr] gap-16 items-start">
-          <div className="md:sticky md:top-32">
+          <motion.div
+            initial={{ opacity: 0, y: 16 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            viewport={{ once: true, margin: "-80px" }}
+            transition={{ duration: 0.7, delay: 0.15 }}
+            className="md:sticky md:top-32"
+          >
             <p className="text-foreground/75 text-lg leading-relaxed max-w-md">
               {t("mission.what.lead")}
             </p>
-          </div>
+          </motion.div>
 
           <div className="space-y-6">
             {WHAT.map((w, i) => {
               const isOpen = i === active;
               return (
-                <div key={w.title} className="relative border-t border-foreground/10 pt-8 pb-2">
+                <motion.div
+                  key={w.title}
+                  initial={{ opacity: 0, y: 18 }}
+                  whileInView={{ opacity: 1, y: 0 }}
+                  viewport={{ once: true, margin: "-60px" }}
+                  transition={{ duration: 0.6, delay: 0.1 + i * 0.08, ease: [0.22, 1, 0.36, 1] }}
+                  className="relative border-t border-foreground/10 pt-8 pb-2"
+                >
                   <button
                     type="button"
                     onClick={() => setActive(isOpen ? null : i)}
@@ -274,19 +303,31 @@ const WhatWeDo = () => {
                     </div>
                   </button>
                   {isOpen && (
-                    <motion.p
+                    <motion.div
                       initial={{ opacity: 0, y: 8 }}
                       animate={{ opacity: 1, y: 0 }}
-                      className="mt-6 max-w-xl text-foreground/75 leading-relaxed"
+                      transition={{ duration: 0.45, ease: [0.22, 1, 0.36, 1] }}
+                      className="mt-6 max-w-xl space-y-4"
                     >
-                      {w.body}
-                    </motion.p>
+                      <p className="text-foreground/80 leading-relaxed">{w.body}</p>
+                      <p className="text-foreground/60 text-sm leading-relaxed">{w.extra}</p>
+                    </motion.div>
                   )}
-                </div>
+                </motion.div>
               );
             })}
           </div>
         </div>
+
+        <motion.p
+          initial={{ opacity: 0, y: 16 }}
+          whileInView={{ opacity: 1, y: 0 }}
+          viewport={{ once: true, margin: "-80px" }}
+          transition={{ duration: 0.7, delay: 0.2 }}
+          className="mt-20 max-w-3xl text-foreground/70 text-base md:text-lg leading-relaxed"
+        >
+          {t("mission.what.outro")}
+        </motion.p>
       </div>
     </section>
   );
