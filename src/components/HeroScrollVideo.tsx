@@ -486,7 +486,7 @@ export default function HeroScrollVideo({
             beatRef.current = prev;
             setBeat(prev);
             setSettledBeat(prev);
-          });
+          }, TEXT_SETTLE_MS);
         } else {
           // Already at first beat — snap overlays back on.
           beatRef.current = 0;
