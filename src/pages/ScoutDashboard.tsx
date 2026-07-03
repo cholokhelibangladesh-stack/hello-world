@@ -180,7 +180,9 @@ const ScoutDashboard = () => {
                           onClick={() => setSelectedPlayer(player)}
                         >
                           {player.video_url ? (
-                            <video src={safeMediaUrl(player.video_url)} className="w-full h-full object-cover" muted />
+                            <div className="w-full h-full flex items-center justify-center bg-secondary">
+                              <Play className="h-8 w-8 text-muted-foreground" />
+                            </div>
                           ) : (
                             <div className="w-full h-full flex items-center justify-center">
                               <Play className="h-8 w-8 text-muted-foreground" />
@@ -214,7 +216,7 @@ const ScoutDashboard = () => {
                           <div className="flex items-center gap-3 p-4 border-b border-border">
                             <div className="w-9 h-9 rounded-full bg-secondary overflow-hidden border border-border">
                               {selectedPlayer.avatar_url ? (
-                                <img src={safeMediaUrl(selectedPlayer.avatar_url)} alt="" className="w-full h-full object-cover" />
+                                <img src={safeMediaUrl(selectedPlayer.avatar_url)} alt="" loading="lazy" decoding="async" className="w-full h-full object-cover" />
                               ) : (
                                 <div className="w-full h-full flex items-center justify-center text-muted-foreground text-xs font-bold">{selectedPlayer.full_name.charAt(0)}</div>
                               )}
@@ -230,7 +232,7 @@ const ScoutDashboard = () => {
                           </div>
                           <div className="aspect-video bg-secondary">
                             {selectedPlayer.video_url ? (
-                              <video src={safeMediaUrl(selectedPlayer.video_url)} className="w-full h-full object-cover" controls autoPlay muted />
+                              <video src={safeMediaUrl(selectedPlayer.video_url)} className="w-full h-full object-cover" controls autoPlay muted preload="metadata" />
                             ) : (
                               <div className="w-full h-full flex items-center justify-center"><Play className="h-12 w-12 text-muted-foreground" /></div>
                             )}
@@ -278,7 +280,7 @@ const ScoutDashboard = () => {
                             <p className="text-xs text-muted-foreground uppercase tracking-wider font-semibold">Player Details (Forwarded by Admin)</p>
                             <div className="flex items-center gap-4">
                               {r.player_details.avatar_url && (
-                                <img src={safeMediaUrl(r.player_details.avatar_url)} alt="" className="w-14 h-14 rounded-full object-cover border-2 border-border" />
+                                <img src={safeMediaUrl(r.player_details.avatar_url)} alt="" loading="lazy" decoding="async" className="w-14 h-14 rounded-full object-cover border-2 border-border" />
                               )}
                               <div>
                                 <p className="font-semibold text-foreground">{r.player_details.player_name || r.player_name}</p>

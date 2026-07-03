@@ -107,7 +107,7 @@ const ScoutSelections = () => {
                           <p className="text-xs text-muted-foreground uppercase tracking-wider font-semibold">Player Details (Forwarded by Admin)</p>
                           <div className="flex items-center gap-4">
                             {r.player_details.avatar_url && (
-                              <img src={safeMediaUrl(r.player_details.avatar_url)} alt="" className="w-14 h-14 rounded-full object-cover border-2 border-border" />
+                              <img src={safeMediaUrl(r.player_details.avatar_url)} alt="" loading="lazy" decoding="async" className="w-14 h-14 rounded-full object-cover border-2 border-border" />
                             )}
                             <div>
                               <p className="font-semibold text-foreground">{r.player_details.player_name || r.player_name}</p>

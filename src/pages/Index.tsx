@@ -276,7 +276,7 @@ const ScoutCarouselCard = React.forwardRef<HTMLDivElement, { scout: ScoutProfile
         <div className="w-14 h-14 rounded-full overflow-hidden border-2 flex items-center justify-center"
           style={{ borderColor: "hsl(var(--green) / 0.4)", background: "hsl(var(--green) / 0.15)" }}>
           {scout.avatar_url ? (
-            <img src={safeMediaUrl(scout.avatar_url)} alt={scout.full_name} className="w-full h-full object-cover" />
+            <img src={safeMediaUrl(scout.avatar_url)} alt={scout.full_name} loading="lazy" decoding="async" className="w-full h-full object-cover" />
           ) : (
             <span className="font-display text-xl text-white">{scout.full_name.charAt(0).toUpperCase()}</span>
           )}
@@ -581,7 +581,7 @@ const Index = () => {
       ══════════════════════════════════════════ */}
       <section className="py-20 sm:py-32 border-t border-border overflow-hidden relative surface-paper">
         {/* Subtle cinematic backdrop */}
-        <img src={stadiumImg.url} alt="" aria-hidden
+        <img src={stadiumImg.url} alt="" aria-hidden loading="lazy" decoding="async"
           className="absolute inset-0 w-full h-full object-cover opacity-[0.07]" />
         <div className="absolute inset-0 pointer-events-none"
           style={{ background: "linear-gradient(to bottom, hsl(var(--paper-deep) / 0.96), hsl(var(--paper) / 0.98))" }} />
@@ -805,7 +805,7 @@ const Index = () => {
       ══════════════════════════════════════════ */}
       <section className="py-24 sm:py-36 border-t border-border relative overflow-hidden surface-ink">
         {/* Cinematic backdrop */}
-        <img src={footballerImg.url} alt="" aria-hidden
+        <img src={footballerImg.url} alt="" aria-hidden loading="lazy" decoding="async"
           className="absolute inset-0 w-full h-full object-cover opacity-40" />
         <div className="absolute inset-0 pointer-events-none"
           style={{ background: "linear-gradient(to bottom, hsl(var(--ink) / 0.85), hsl(var(--ink) / 0.95))" }} />
@@ -887,7 +887,7 @@ const Index = () => {
           LIVE STATS BAR — moved below CTA phones
       ══════════════════════════════════════════ */}
       <section className="py-16 border-t border-border relative overflow-hidden surface-card">
-        <img src={statsImg.url} alt="" aria-hidden
+        <img src={statsImg.url} alt="" aria-hidden loading="lazy" decoding="async"
           className="absolute inset-0 w-full h-full object-cover opacity-25" />
         <div className="absolute inset-0 pointer-events-none"
           style={{ background: "linear-gradient(to bottom, hsl(var(--background) / 0.92), hsl(var(--background) / 0.96))" }} />

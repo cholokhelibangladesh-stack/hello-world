@@ -182,7 +182,7 @@ const ChatInterface = React.forwardRef<HTMLDivElement, Props>(({ adminView = fal
                 <button key={u.id} onClick={() => setSelectedUser(u)}
                   className={`w-full flex items-center gap-2.5 p-3 hover:bg-secondary/50 transition-colors text-left border-b border-border/50 ${selectedUser?.id === u.id ? "bg-primary/5 border-l-2 border-l-primary" : ""}`}>
                   <div className="w-8 h-8 rounded-full bg-secondary border border-border flex items-center justify-center shrink-0 overflow-hidden">
-                    {u.avatar ? <img src={safeMediaUrl(u.avatar)} alt="" className="w-full h-full object-cover" /> : <User className="h-4 w-4 text-muted-foreground" />}
+                    {u.avatar ? <img src={safeMediaUrl(u.avatar)} alt="" loading="lazy" decoding="async" className="w-full h-full object-cover" /> : <User className="h-4 w-4 text-muted-foreground" />}
                   </div>
                   <div className="flex-1 min-w-0">
                     <p className="text-xs font-medium text-foreground truncate">{u.name}</p>
@@ -199,7 +199,7 @@ const ChatInterface = React.forwardRef<HTMLDivElement, Props>(({ adminView = fal
             <>
               <div className="p-3 border-b border-border flex items-center gap-2.5 bg-card/50">
                 <div className="w-8 h-8 rounded-full bg-secondary border border-border flex items-center justify-center overflow-hidden">
-                  {selectedUser.avatar ? <img src={safeMediaUrl(selectedUser.avatar)} alt="" className="w-full h-full object-cover" /> : <User className="h-4 w-4 text-muted-foreground" />}
+                  {selectedUser.avatar ? <img src={safeMediaUrl(selectedUser.avatar)} alt="" loading="lazy" decoding="async" className="w-full h-full object-cover" /> : <User className="h-4 w-4 text-muted-foreground" />}
                 </div>
                 <div>
                   <p className="text-sm font-semibold text-foreground">{selectedUser.name}</p>
@@ -214,7 +214,7 @@ const ChatInterface = React.forwardRef<HTMLDivElement, Props>(({ adminView = fal
                     <motion.div key={m.id} initial={{ opacity: 0, y: 8 }} animate={{ opacity: 1, y: 0 }}
                       className={`flex gap-2 ${m.flagged ? "bg-accent/5 rounded-xl p-1.5 border border-accent/20" : ""}`}>
                       <div className="w-6 h-6 rounded-full bg-secondary border border-border flex items-center justify-center shrink-0 mt-0.5 overflow-hidden">
-                        {m.sender_avatar ? <img src={safeMediaUrl(m.sender_avatar)} alt="" className="w-full h-full object-cover" /> : <User className="h-3 w-3 text-muted-foreground" />}
+                        {m.sender_avatar ? <img src={safeMediaUrl(m.sender_avatar)} alt="" loading="lazy" decoding="async" className="w-full h-full object-cover" /> : <User className="h-3 w-3 text-muted-foreground" />}
                       </div>
                       <div className="flex-1 min-w-0">
                         <div className="flex items-center gap-1.5 mb-0.5">
@@ -279,7 +279,7 @@ const ChatInterface = React.forwardRef<HTMLDivElement, Props>(({ adminView = fal
                 <motion.div key={m.id} initial={{ opacity: 0, y: 8, scale: 0.95 }} animate={{ opacity: 1, y: 0, scale: 1 }} transition={{ duration: 0.2 }}
                   className={`flex gap-2 ${isOwn ? "flex-row-reverse" : ""}`}>
                   <div className={`w-7 h-7 rounded-full flex items-center justify-center shrink-0 mt-auto overflow-hidden border ${isOwn ? "bg-primary/20 border-primary/30" : "bg-secondary border-border"}`}>
-                    {m.sender_avatar ? <img src={safeMediaUrl(m.sender_avatar)} alt="" className="w-full h-full object-cover" /> : <User className={`h-3.5 w-3.5 ${isOwn ? "text-primary" : "text-muted-foreground"}`} />}
+                    {m.sender_avatar ? <img src={safeMediaUrl(m.sender_avatar)} alt="" loading="lazy" decoding="async" className="w-full h-full object-cover" /> : <User className={`h-3.5 w-3.5 ${isOwn ? "text-primary" : "text-muted-foreground"}`} />}
                   </div>
                   <div className={`max-w-[70%] flex flex-col gap-0.5 ${isOwn ? "items-end" : "items-start"}`}>
                     {!isOwn && <span className="text-[10px] text-muted-foreground px-1">{m.sender_name}</span>}
