@@ -28,6 +28,7 @@ const AdminDashboard = () => {
   const [videos, setVideos] = useState<VideoRow[]>([]);
   const [messages, setMessages] = useState<MessageRow[]>([]);
   const [scoutRequests, setScoutRequests] = useState<ScoutRequestRow[]>([]);
+  const [contactMessages, setContactMessages] = useState<ContactMessageRow[]>([]);
   const [stats, setStats] = useState<Stats | null>(null);
   const [loading, setLoading] = useState(true);
   const [feedbackInputs, setFeedbackInputs] = useState<Record<string, string>>({});
