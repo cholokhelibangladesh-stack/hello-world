@@ -193,6 +193,38 @@ export default function HeroScrollVideo({
   }, []);
 
 
+  // ─── perf instrumentation ─────────────────────────────────────────
+  // Enable by adding `?perf=1` to the URL (or setting window.__heroPerf
+  // = true in the console). Logs per-frame draw cost and rolling FPS,
+  // and flags long frames (>32ms). Also emits a summary when playback
+  // crosses the atlas-1 boundary (frame 156) so we can confirm the
+  // preloading fix on real devices.
+  const perfRef = useRef<{
+    lastPaintTs: number;
+    lastLogTs: number;
+    frameCount: number;
+    maxDrawMs: number;
+    crossedAtlas1: boolean;
+  }>({
+    lastPaintTs: 0,
+    lastLogTs: 0,
+    frameCount: 0,
+    maxDrawMs: 0,
+    crossedAtlas1: false,
+  });
+  const perfEnabledRef = useRef<boolean>(false);
+  useEffect(() => {
+    if (typeof window === "undefined") return;
+    const params = new URLSearchParams(window.location.search);
+    perfEnabledRef.current =
+      params.get("perf") === "1" ||
+      (window as unknown as { __heroPerf?: boolean }).__heroPerf === true;
+    if (perfEnabledRef.current) {
+      // eslint-disable-next-line no-console
+      console.info("[HeroScrollVideo] perf logging enabled");
+    }
+  }, []);
+
   // Actual canvas paint — called at most once per animation frame.
   const paintFrame = (f: number) => {
     const canvas = canvasRef.current;
@@ -200,6 +232,7 @@ export default function HeroScrollVideo({
     const img = atlasImgsRef.current[atlasIdx];
     if (!canvas || !img) return;
     if (currentFrameRef.current === f) return;
+    const prevFrame = currentFrameRef.current;
     currentFrameRef.current = f;
     const ctx = canvas.getContext("2d", { alpha: false });
     if (!ctx) return;
@@ -240,8 +273,54 @@ export default function HeroScrollVideo({
       dy = 0;
       dx = (targetW - dw) / 2;
     }
-    ctx.drawImage(img, sx, sy, FRAME_W, FRAME_H, dx, dy, dw, dh);
+
+    if (perfEnabledRef.current) {
+      const t0 = performance.now();
+      ctx.drawImage(img, sx, sy, FRAME_W, FRAME_H, dx, dy, dw, dh);
+      const drawMs = performance.now() - t0;
+
+      const p = perfRef.current;
+      const now = performance.now();
+      const gap = p.lastPaintTs === 0 ? 0 : now - p.lastPaintTs;
+      p.lastPaintTs = now;
+      p.frameCount += 1;
+      if (drawMs > p.maxDrawMs) p.maxDrawMs = drawMs;
+
+      // Flag any janky frame immediately.
+      if (drawMs > 16 || gap > 32) {
+        // eslint-disable-next-line no-console
+        console.warn(
+          `[HeroScrollVideo] slow frame f=${f} (prev=${prevFrame}) atlas=${atlasIdx} draw=${drawMs.toFixed(1)}ms gap=${gap.toFixed(1)}ms`
+        );
+      }
+
+      // Special call-out when we cross into atlas 1 for the first time
+      // (frame 156). This was the historical stall point.
+      if (!p.crossedAtlas1 && f >= FRAMES_PER_ATLAS) {
+        p.crossedAtlas1 = true;
+        // eslint-disable-next-line no-console
+        console.info(
+          `[HeroScrollVideo] crossed atlas-1 boundary at f=${f} draw=${drawMs.toFixed(1)}ms gap=${gap.toFixed(1)}ms`
+        );
+      }
+
+      // Rolling FPS summary every second.
+      if (p.lastLogTs === 0) p.lastLogTs = now;
+      if (now - p.lastLogTs >= 1000) {
+        const fps = (p.frameCount * 1000) / (now - p.lastLogTs);
+        // eslint-disable-next-line no-console
+        console.info(
+          `[HeroScrollVideo] fps=${fps.toFixed(1)} frames=${p.frameCount} maxDraw=${p.maxDrawMs.toFixed(1)}ms`
+        );
+        p.lastLogTs = now;
+        p.frameCount = 0;
+        p.maxDrawMs = 0;
+      }
+    } else {
+      ctx.drawImage(img, sx, sy, FRAME_W, FRAME_H, dx, dy, dw, dh);
+    }
   };
+
 
   // Coalesce multiple frame requests within the same animation frame into
   // a single draw. This is the key jank-reduction on low-end devices —
