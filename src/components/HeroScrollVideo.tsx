@@ -30,11 +30,12 @@ interface HeroScrollVideoProps {
  *  70  — basketball has dropped through the net (final beat)
  */
 
-const ATLAS_COLS = 10;
-const ATLAS_ROWS = 8;
-const FRAME_W = 960;
-const FRAME_H = 540;
+const ATLAS_COLS = 8;
+const ATLAS_ROWS = 10;
+const FRAME_W = 1920;
+const FRAME_H = 1080;
 const FRAME_COUNT = 74;
+
 
 
 type BeatKind = "split" | "center" | "left";
