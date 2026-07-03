@@ -311,27 +311,26 @@ export default function HeroScrollVideo({
       // ─── one-step advance / retreat ───────────────────────────────
       const goForward = () => {
         if (animating || released) return;
+        // Hide the AI-sharp overlay for the beat we're leaving.
+        setSettledBeat(-1);
         if (currentBeat < N - 1) {
           const next = currentBeat + 1;
-          // Panel text fades to next beat as the frame animates toward it.
           if (beatRef.current !== next) {
             beatRef.current = next;
             setBeat(next);
           }
           animateFrameTo(BEATS[next].frame, () => {
             currentBeat = next;
+            // Video has settled on this beat — reveal the crisp still.
+            setSettledBeat(next);
           });
         } else if (anim.r < 1) {
-          // Hide beat panels; slide reveal panel in.
           if (beatRef.current !== -1) {
             beatRef.current = -1;
             setBeat(-1);
           }
-          animateRevealTo(1, () => {
-            // After reveal completes, one more scroll releases the pin.
-          });
+          animateRevealTo(1);
         } else if (!released) {
-          // Release: allow the page to scroll past the hero normally.
           released = true;
           observer.disable();
           document.documentElement.style.overflow = "";
@@ -341,12 +340,15 @@ export default function HeroScrollVideo({
 
       const goBackward = () => {
         if (animating || released) return;
+        setSettledBeat(-1);
         if (anim.r > 0) {
           if (beatRef.current !== N - 1) {
             beatRef.current = N - 1;
             setBeat(N - 1);
           }
-          animateRevealTo(0);
+          animateRevealTo(0, () => {
+            setSettledBeat(N - 1);
+          });
         } else if (currentBeat > 0) {
           const prev = currentBeat - 1;
           if (beatRef.current !== prev) {
@@ -355,9 +357,12 @@ export default function HeroScrollVideo({
           }
           animateFrameTo(BEATS[prev].frame, () => {
             currentBeat = prev;
+            setSettledBeat(prev);
           });
+        } else {
+          // Already at first beat — snap the sharp overlay back on.
+          setSettledBeat(0);
         }
-        // If already at first beat with no reveal, do nothing.
       };
 
       // ─── lock the page while the hero is active ───────────────────
