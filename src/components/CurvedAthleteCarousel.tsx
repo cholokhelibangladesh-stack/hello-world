@@ -36,8 +36,9 @@ export default function CurvedAthleteCarousel() {
   const cardW = 300;
   const cardH = 400;
 
-  const radius = 570;
-  const angleStep = 360 / N;
+  const radius = 620;
+  const angleStep = 36; // 10 slots × 36° = tighter inward curl on the front arc
+
 
 
   return (
@@ -69,7 +70,7 @@ export default function CurvedAthleteCarousel() {
         className="relative w-full carousel-stage"
         style={{
           height: cardH + 140,
-          perspective: "1100px",
+          perspective: "900px",
           perspectiveOrigin: "50% 60%",
         }}
       >
