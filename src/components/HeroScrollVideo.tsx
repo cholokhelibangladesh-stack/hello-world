@@ -31,11 +31,13 @@ interface HeroScrollVideoProps {
  *  70  — basketball has dropped through the net (final beat)
  */
 
-const ATLAS_COLS = 15;
-const ATLAS_ROWS = 20;
-const FRAME_W = 960;
-const FRAME_H = 540;
+const ATLAS_COLS = 12;
+const ATLAS_ROWS = 13;
+const FRAME_W = 1280;
+const FRAME_H = 720;
 const FRAME_COUNT = 295;
+const FRAMES_PER_ATLAS = ATLAS_COLS * ATLAS_ROWS; // 156
+const ATLAS_URLS = [atlas0.url, atlas1.url];
 
 
 
