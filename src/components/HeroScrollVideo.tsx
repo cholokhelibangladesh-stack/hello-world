@@ -296,38 +296,52 @@ export default function HeroScrollVideo({
       }
       snapPoints.push(1);
 
+      // Track the last settled snap point. Every new scroll gesture
+      // advances (or retreats) exactly ONE beat from here — regardless of
+      // how large the wheel/trackpad delta was. Guarantees the frame
+      // always lands on a text-reveal boundary.
+      let lastSettled = 0;
+      const EPS = 0.0005;
+
       const ctx = gsap.context(() => {
         ScrollTrigger.create({
           trigger: wrap,
           start: "top top",
-          // Much longer scroll distance — one wheel/trackpad tick advances a
-          // small fraction of a beat instead of blowing through the whole
-          // section. This is the main scroll-sensitivity dial.
           end: () => "+=" + window.innerHeight * 14,
           pin: pin,
           pinSpacing: true,
-          // Higher scrub = the frame timeline lazily eases toward scroll
-          // position, so a flick spreads its work across ~1.4s of animation
-          // frames instead of one giant jank.
-          scrub: 1.4,
+          // Lower scrub = the frame timeline reaches the target faster
+          // after the user stops scrolling, so the snap "click" feels
+          // immediate and deliberate rather than laggy.
+          scrub: 0.6,
           anticipatePin: 1,
           invalidateOnRefresh: true,
           snap: {
             snapTo: (value) => {
-              let best = snapPoints[0];
-              let bestDist = Math.abs(value - best);
-              for (const p of snapPoints) {
-                const d = Math.abs(value - p);
-                if (d < bestDist) {
-                  best = p;
-                  bestDist = d;
+              // Direction relative to the last committed beat.
+              if (value > lastSettled + EPS) {
+                // Scrolling forward: pick the NEXT snap point strictly
+                // greater than lastSettled — never skip ahead.
+                for (const p of snapPoints) {
+                  if (p > lastSettled + EPS) {
+                    lastSettled = p;
+                    return p;
+                  }
+                }
+              } else if (value < lastSettled - EPS) {
+                // Scrolling backward: pick the PREVIOUS snap point.
+                for (let i = snapPoints.length - 1; i >= 0; i--) {
+                  if (snapPoints[i] < lastSettled - EPS) {
+                    lastSettled = snapPoints[i];
+                    return snapPoints[i];
+                  }
                 }
               }
-              return best;
+              return lastSettled;
             },
-            duration: { min: 0.4, max: 1.1 },
-            delay: 0.12,
-            ease: "power2.inOut",
+            duration: { min: 0.5, max: 0.9 },
+            delay: 0.05,
+            ease: "power3.inOut",
             directional: false,
           },
           onRefresh: () => {
