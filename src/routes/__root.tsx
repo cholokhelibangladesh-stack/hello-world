@@ -1,4 +1,5 @@
-import { Outlet, createRootRouteWithContext, HeadContent, Scripts } from "@tanstack/react-router";
+import { Outlet, createRootRouteWithContext, HeadContent, Scripts, useRouter } from "@tanstack/react-router";
+import { useEffect } from "react";
 
 
 import type { QueryClient } from "@tanstack/react-query";
@@ -11,7 +12,47 @@ import FloatingHeader from "@/components/FloatingHeader";
 import { AppErrorBoundary } from "@/components/AppErrorBoundary";
 import CookieConsentBanner from "@/components/CookieConsentBanner";
 import { LanguageProvider } from "@/i18n/LanguageProvider";
+import { reportError } from "@/lib/errors";
 import appCss from "@/index.css?url";
+
+function RootRouteError({ error, reset }: { error: Error; reset: () => void }) {
+  const router = useRouter();
+
+  useEffect(() => {
+    reportError(error, { boundary: "root_route" });
+  }, [error]);
+
+  return (
+    <RootDocument>
+      <div role="alert" className="min-h-screen flex items-center justify-center bg-background px-6 text-foreground">
+        <div className="max-w-md w-full text-center space-y-4">
+          <h1 className="text-3xl font-semibold tracking-tight">This page couldn't load</h1>
+          <p className="text-muted-foreground">
+            We hit an unexpected problem loading Cholo Kheli. Please try again.
+          </p>
+          <div className="flex flex-wrap items-center justify-center gap-3">
+            <button
+              type="button"
+              onClick={() => {
+                router.invalidate();
+                reset();
+              }}
+              className="inline-flex min-h-11 items-center justify-center rounded-full bg-primary px-5 text-sm font-semibold text-primary-foreground transition hover:opacity-90"
+            >
+              Try again
+            </button>
+            <a
+              href="/"
+              className="inline-flex min-h-11 items-center justify-center rounded-full border border-border px-5 text-sm font-semibold text-foreground transition hover:bg-muted"
+            >
+              Go home
+            </a>
+          </div>
+        </div>
+      </div>
+    </RootDocument>
+  );
+}
 
 export const Route = createRootRouteWithContext<{ queryClient: QueryClient }>()({
   head: () => ({
@@ -20,6 +61,10 @@ export const Route = createRootRouteWithContext<{ queryClient: QueryClient }>()(
       { name: "viewport", content: "width=device-width, initial-scale=1" },
       { title: "Cholo Kheli — Bangladesh Sports, Digitised" },
       { name: "description", content: "Cholo Kheli connects Bangladesh's grassroots talent with verified scouts. Safe, transparent, beautifully simple." },
+      { property: "og:title", content: "Cholo Kheli — Bangladesh Sports, Digitised" },
+      { property: "og:description", content: "Cholo Kheli connects Bangladesh's grassroots talent with verified scouts. Safe, transparent, beautifully simple." },
+      { property: "og:type", content: "website" },
+      { name: "twitter:card", content: "summary_large_image" },
     ],
     links: [
       { rel: "preconnect", href: "https://fonts.googleapis.com" },
@@ -28,6 +73,7 @@ export const Route = createRootRouteWithContext<{ queryClient: QueryClient }>()(
       { rel: "stylesheet", href: appCss },
     ],
   }),
+  errorComponent: RootRouteError,
   component: RootComponent,
 });
 
