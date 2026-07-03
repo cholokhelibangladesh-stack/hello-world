@@ -245,6 +245,15 @@ export default function HeroScrollVideo({
         beatIdx: N - 1,
       });
 
+      // Snap targets: 0 (top), the CENTER of every hold, and 1 (fully
+      // revealed). No matter how big or flingy the scroll, ScrollTrigger
+      // settles on the nearest of these — so every beat is always shown.
+      const snapPoints: number[] = [0];
+      for (const s of segs) {
+        if (s.kind === "hold") snapPoints.push((s.start + s.end) / 2);
+      }
+      snapPoints.push(1);
+
       const ctx = gsap.context(() => {
         ScrollTrigger.create({
           trigger: wrap,
@@ -253,9 +262,30 @@ export default function HeroScrollVideo({
           end: () => "+=" + window.innerHeight * 7,
           pin: pin,
           pinSpacing: true,
-          scrub: 0.6,
+          // Higher scrub value = smoother catch-up on big scrolls.
+          scrub: 1.1,
           anticipatePin: 1,
           invalidateOnRefresh: true,
+          snap: {
+            snapTo: (value) => {
+              // Pick the nearest beat/reveal snap point.
+              let best = snapPoints[0];
+              let bestDist = Math.abs(value - best);
+              for (const p of snapPoints) {
+                const d = Math.abs(value - p);
+                if (d < bestDist) {
+                  best = p;
+                  bestDist = d;
+                }
+              }
+              return best;
+            },
+            // Duration adapts to how far we need to travel — always smooth.
+            duration: { min: 0.35, max: 0.9 },
+            delay: 0.08,
+            ease: "power2.inOut",
+            directional: false,
+          },
           onRefresh: () => {
             // Force canvas resize + redraw on layout changes.
             currentFrameRef.current = -1;
@@ -288,6 +318,7 @@ export default function HeroScrollVideo({
           },
         });
       }, pin);
+
 
       cleanup = () => ctx.revert();
     })();
