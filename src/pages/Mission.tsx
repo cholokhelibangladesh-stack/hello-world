@@ -504,24 +504,43 @@ const Team = () => {
   return (
     <section className="relative bg-[hsl(var(--paper))] py-28 md:py-36 overflow-hidden">
       <div className="mx-auto max-w-7xl px-6 md:px-16">
-        <motion.div
-          initial={{ opacity: 0, y: 20 }}
-          whileInView={{ opacity: 1, y: 0 }}
+        {/* Team title: word-by-word rise, editorial feel */}
+        <motion.h2
+          initial="hidden"
+          whileInView="show"
           viewport={{ once: true, margin: "-80px" }}
-          transition={{ duration: 0.7, ease: [0.22, 1, 0.36, 1] }}
-          className="flex items-baseline justify-between mb-16"
+          variants={{
+            hidden: {},
+            show: { transition: { staggerChildren: 0.09 } },
+          }}
+          className="font-display text-foreground text-4xl md:text-6xl tracking-[-0.02em] mb-16 flex flex-wrap gap-x-4"
         >
-          <h2 className="font-display text-foreground text-4xl md:text-6xl tracking-[-0.02em]">
-            {t("mission.team.title")}
-          </h2>
-        </motion.div>
+          {t("mission.team.title").split(" ").map((word, i) => (
+            <motion.span
+              key={i}
+              variants={{
+                hidden: { opacity: 0, y: "100%" },
+                show: {
+                  opacity: 1,
+                  y: 0,
+                  transition: { duration: 0.7, ease: [0.16, 1, 0.3, 1] },
+                },
+              }}
+              className="inline-block overflow-hidden"
+              style={{ display: "inline-block" }}
+            >
+              {word}
+            </motion.span>
+          ))}
+        </motion.h2>
 
         <div className="grid md:grid-cols-[minmax(0,420px)_1fr] gap-12 md:gap-20 items-start">
+          {/* Portrait: scale + subtle rotate release, like a photo being placed on the page */}
           <motion.div
-            initial={{ opacity: 0, y: 24 }}
-            whileInView={{ opacity: 1, y: 0 }}
+            initial={{ opacity: 0, scale: 0.92, rotate: -2 }}
+            whileInView={{ opacity: 1, scale: 1, rotate: 0 }}
             viewport={{ once: true, margin: "-80px" }}
-            transition={{ duration: 0.8, delay: 0.1, ease: [0.22, 1, 0.36, 1] }}
+            transition={{ duration: 1, delay: 0.1, ease: [0.16, 1, 0.3, 1] }}
             className="relative rounded-md p-[1px]"
             style={{ background: BLUE_GRADIENT_135 }}
           >
@@ -547,15 +566,28 @@ const Team = () => {
             </div>
           </motion.div>
 
+          {/* Quote: staggered reveal — big mark rotates in, body slides from right, byline fades last */}
           <motion.div
-            initial={{ opacity: 0, y: 20 }}
-            whileInView={{ opacity: 1, y: 0 }}
+            initial="hidden"
+            whileInView="show"
             viewport={{ once: true, margin: "-80px" }}
-            transition={{ duration: 0.8, delay: 0.2, ease: [0.22, 1, 0.36, 1] }}
+            variants={{
+              hidden: {},
+              show: { transition: { staggerChildren: 0.15, delayChildren: 0.25 } },
+            }}
             className="pt-4"
           >
-            <div
-              className="text-6xl leading-none font-display mb-4"
+            <motion.div
+              variants={{
+                hidden: { opacity: 0, rotate: -12, scale: 0.6 },
+                show: {
+                  opacity: 1,
+                  rotate: 0,
+                  scale: 1,
+                  transition: { duration: 0.8, ease: [0.16, 1, 0.3, 1] },
+                },
+              }}
+              className="text-6xl leading-none font-display mb-4 inline-block origin-bottom-left"
               style={{
                 background: BLUE_GRADIENT_135,
                 WebkitBackgroundClip: "text",
@@ -563,17 +595,37 @@ const Team = () => {
               }}
             >
               &ldquo;
-            </div>
-            <p className="text-foreground text-2xl md:text-3xl leading-[1.35] font-display tracking-[-0.01em] max-w-2xl">
+            </motion.div>
+            <motion.p
+              variants={{
+                hidden: { opacity: 0, x: 30 },
+                show: {
+                  opacity: 1,
+                  x: 0,
+                  transition: { duration: 0.9, ease: [0.16, 1, 0.3, 1] },
+                },
+              }}
+              className="text-foreground text-2xl md:text-3xl leading-[1.35] font-display tracking-[-0.01em] max-w-2xl"
+            >
               {t("mission.team.quote")}
-            </p>
-            <div className="mt-8 flex items-center gap-4">
+            </motion.p>
+            <motion.div
+              variants={{
+                hidden: { opacity: 0, y: 10 },
+                show: {
+                  opacity: 1,
+                  y: 0,
+                  transition: { duration: 0.6 },
+                },
+              }}
+              className="mt-8 flex items-center gap-4"
+            >
               <div className="h-px w-10 bg-foreground/40" />
               <div>
                 <div className="text-foreground text-sm font-medium">Nahroor Rahman Khan</div>
                 <div className="text-foreground/50 text-xs mt-0.5">{t("mission.team.role")}</div>
               </div>
-            </div>
+            </motion.div>
           </motion.div>
         </div>
       </div>
