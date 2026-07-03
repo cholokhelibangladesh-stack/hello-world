@@ -428,7 +428,7 @@ const Index = () => {
       {/* ══════════════════════════════════════════
           HOW IT WORKS — 3 STEPS
       ══════════════════════════════════════════ */}
-      <section className="py-20 sm:py-32 border-t border-border overflow-hidden relative surface-paper">
+      <section className="py-20 sm:py-32 overflow-hidden relative surface-paper">
         {/* Subtle cinematic backdrop */}
         <img src={stadiumImg.url} alt="" aria-hidden loading="lazy" decoding="async"
           className="absolute inset-0 w-full h-full object-cover opacity-[0.07]" />
