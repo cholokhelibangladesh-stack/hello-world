@@ -1,5 +1,5 @@
 import { motion } from "framer-motion";
-import { ArrowUpRight, Plus, Minus } from "lucide-react";
+import { ArrowUpRight, Plus, Minus, ShieldCheck, Users, TrendingUp } from "lucide-react";
 import { Link } from "@tanstack/react-router";
 import { useState } from "react";
 import { useLanguage } from "@/i18n/LanguageProvider";
