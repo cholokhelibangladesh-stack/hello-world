@@ -357,16 +357,7 @@ const Index = () => {
           SPORTS GRID — Hover to reveal
       ══════════════════════════════════════════ */}
       <section className="relative pt-32 sm:pt-40 pb-20 sm:pb-28 surface-paper">
-        {/* Seamless blend from the hero's dark reveal panel into the paper
-            surface below — a soft top gradient that swallows the boundary. */}
-        <div
-          aria-hidden
-          className="pointer-events-none absolute inset-x-0 -top-24 h-40"
-          style={{
-            background:
-              "linear-gradient(to bottom, hsl(0 0% 3%) 0%, hsl(0 0% 3% / 0.85) 25%, hsl(var(--background) / 0.6) 70%, hsl(var(--background)) 100%)",
-          }}
-        />
+
 
         <div className="container">
           <Reveal className="text-center mb-12 sm:mb-16">
