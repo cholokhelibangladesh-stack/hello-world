@@ -452,7 +452,7 @@ export default function HeroScrollVideo({
             beatRef.current = next;
             setBeat(next);
             setSettledBeat(next);
-          });
+          }, TEXT_SETTLE_MS);
         } else if (anim.r < 1) {
           animateRevealTo(1, () => {
             // Release the pin — allow the rest of the page to scroll.
