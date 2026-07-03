@@ -131,11 +131,12 @@ const History = () => {
   return (
     <section className="relative bg-[hsl(var(--paper))] py-28 md:py-36 overflow-hidden">
       <div className="mx-auto max-w-7xl px-6 md:px-16">
+        {/* History title: slide in from the left with a subtle horizontal parallax */}
         <motion.div
-          initial={{ opacity: 0, y: 20 }}
-          whileInView={{ opacity: 1, y: 0 }}
+          initial={{ opacity: 0, x: -40 }}
+          whileInView={{ opacity: 1, x: 0 }}
           viewport={{ once: true, margin: "-80px" }}
-          transition={{ duration: 0.7, ease: [0.22, 1, 0.36, 1] }}
+          transition={{ duration: 0.9, ease: [0.16, 1, 0.3, 1] }}
           className="flex items-baseline justify-between mb-10"
         >
           <h2 className="font-display text-foreground text-4xl md:text-5xl tracking-[-0.02em]">
@@ -145,21 +146,50 @@ const History = () => {
 
         <div className="relative mt-16">
           <div className="absolute left-0 right-0 top-1/2 h-px bg-foreground/10" />
+          {/* Timeline line grows horizontally when in view */}
+          <motion.div
+            initial={{ scaleX: 0 }}
+            whileInView={{ scaleX: 1 }}
+            viewport={{ once: true, margin: "-100px" }}
+            transition={{ duration: 1.1, ease: [0.22, 1, 0.36, 1], delay: 0.2 }}
+            className="absolute left-0 top-1/2 h-px origin-left"
+            style={{ background: BLUE_GRADIENT, width: "100%" }}
+          />
+          {/* Progress overlay showing current active step */}
           <div
-            className="absolute left-0 top-1/2 h-px transition-all duration-500"
+            className="absolute left-0 top-1/2 h-[2px] transition-all duration-500 origin-left"
             style={{
               width: `${((active + 1) / HISTORY.length) * 100}%`,
               background: BLUE_GRADIENT,
+              filter: "drop-shadow(0 0 6px hsl(var(--teal-soft) / 0.6))",
             }}
           />
 
-          <div className="relative grid grid-cols-2 md:grid-cols-4 gap-6">
+          <motion.div
+            initial="hidden"
+            whileInView="show"
+            viewport={{ once: true, margin: "-80px" }}
+            variants={{
+              hidden: {},
+              show: { transition: { staggerChildren: 0.12, delayChildren: 0.3 } },
+            }}
+            className="relative grid grid-cols-2 md:grid-cols-4 gap-6"
+          >
             {HISTORY.map((h, i) => {
               const isActive = i === active;
               return (
-                <button
+                <motion.button
                   key={h.date}
                   onClick={() => setActive(i)}
+                  variants={{
+                    hidden: { opacity: 0, y: 14, scale: 0.9 },
+                    show: {
+                      opacity: 1,
+                      y: 0,
+                      scale: 1,
+                      transition: { duration: 0.55, ease: [0.22, 1, 0.36, 1] },
+                    },
+                  }}
                   className="group text-left flex flex-col items-start"
                 >
                   <div
@@ -189,10 +219,10 @@ const History = () => {
                   >
                     {h.date}
                   </div>
-                </button>
+                </motion.button>
               );
             })}
-          </div>
+          </motion.div>
         </div>
 
         <motion.p
