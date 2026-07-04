@@ -472,7 +472,7 @@ const AdminDashboard = () => {
 
             {/* Scouts Tab */}
             <TabsContent value="scouts" className="space-y-3">
-              <SearchFilterBar search={scoutSearch} setSearch={setScoutSearch} filter={scoutFilter} setFilter={setScoutFilter} placeholder="Search scouts..."
+              <SearchFilterBar testKey="scouts" search={scoutSearch} setSearch={setScoutSearch} filter={scoutFilter} setFilter={setScoutFilter} placeholder="Search scouts by name, email, or username..."
                 sort={scoutSort} setSort={setScoutSort}
                 filters={[{ value: "pending", label: "Pending" }, { value: "active", label: "Active" }, { value: "rejected", label: "Rejected" }]} />
               {filteredScouts.length === 0 ? <p className="text-muted-foreground text-center py-12">No scouts found.</p> : filteredScouts.map((s) => (
@@ -526,7 +526,7 @@ const AdminDashboard = () => {
 
             {/* Videos Tab */}
             <TabsContent value="videos" className="space-y-3">
-              <SearchFilterBar search={videoSearch} setSearch={setVideoSearch} filter={videoFilter} setFilter={setVideoFilter} placeholder="Search videos..."
+              <SearchFilterBar testKey="videos" search={videoSearch} setSearch={setVideoSearch} filter={videoFilter} setFilter={setVideoFilter} placeholder="Search videos by uploader name, email, or username..."
                 sort={videoSort} setSort={setVideoSort}
                 filters={[{ value: "pending_payment", label: "Pending" }, { value: "live", label: "Live" }, { value: "rejected", label: "Rejected" }, { value: "draft", label: "Draft" }]} />
               {filteredVideos.length === 0 ? <p className="text-muted-foreground text-center py-12">No videos found.</p> : filteredVideos.map((v) => (
@@ -553,7 +553,7 @@ const AdminDashboard = () => {
 
             {/* Scout Requests Tab */}
             <TabsContent value="requests" className="space-y-3">
-              <SearchFilterBar search={requestSearch} setSearch={setRequestSearch} filter={requestFilter} setFilter={setRequestFilter} placeholder="Search requests..."
+              <SearchFilterBar testKey="requests" search={requestSearch} setSearch={setRequestSearch} filter={requestFilter} setFilter={setRequestFilter} placeholder="Search requests by scout or player name, email, or username..."
                 sort={requestSort} setSort={setRequestSort}
                 filters={[{ value: "pending", label: "Pending" }, { value: "approved", label: "Approved" }, { value: "rejected", label: "Rejected" }]} />
               {filteredRequests.length === 0 ? <p className="text-muted-foreground text-center py-12">No requests found.</p> : filteredRequests.map((r) => (
