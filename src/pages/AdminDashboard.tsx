@@ -381,16 +381,24 @@ const AdminDashboard = () => {
     { value: "target_desc", label: "Account Z–A" },
   ];
 
-  const SearchFilterBar = ({ search, setSearch, filter, setFilter, filters, placeholder, sort, setSort }: { search: string; setSearch: (v: string) => void; filter: string; setFilter: (v: string) => void; filters: { value: string; label: string }[]; placeholder: string; sort?: string; setSort?: (v: string) => void }) => (
-    <div className="flex flex-col sm:flex-row gap-2 mb-4">
+  const SearchFilterBar = ({ search, setSearch, filter, setFilter, filters, placeholder, sort, setSort, testKey }: { search: string; setSearch: (v: string) => void; filter: string; setFilter: (v: string) => void; filters: { value: string; label: string }[]; placeholder: string; sort?: string; setSort?: (v: string) => void; testKey: string }) => (
+    <div className="flex flex-col sm:flex-row gap-2 mb-4" data-testid={`mod-filterbar-${testKey}`}>
       <div className="relative flex-1">
         <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
-        <Input placeholder={placeholder} className="pl-10 bg-secondary border-border rounded-xl text-sm" value={search} onChange={(e) => setSearch(e.target.value)} />
+        <Input
+          placeholder={placeholder}
+          className="pl-10 bg-secondary border-border rounded-xl text-sm"
+          value={search}
+          onChange={(e) => setSearch(e.target.value)}
+          data-testid={`mod-search-${testKey}`}
+          aria-label={`Search ${testKey} by name, email, or username`}
+        />
       </div>
       <div className="flex gap-1.5 flex-wrap items-center">
         {filters.map((f) => (
           <Button key={f.value} size="sm" variant="outline"
             onClick={() => setFilter(filter === f.value ? "all" : f.value)}
+            data-testid={`mod-filter-${testKey}-${f.value}`}
             className={`text-xs rounded-full border-border ${filter === f.value ? "border-primary text-primary bg-primary/10" : "text-muted-foreground"}`}>
             <Filter className="h-3 w-3 mr-1" /> {f.label}
           </Button>
@@ -400,6 +408,7 @@ const AdminDashboard = () => {
             aria-label="Sort"
             value={sort}
             onChange={(e) => setSort(e.target.value)}
+            data-testid={`mod-sort-${testKey}`}
             className="h-8 rounded-full border border-border bg-secondary text-xs px-3 text-muted-foreground focus:outline-none focus:ring-2 focus:ring-ring"
           >
             {SORT_OPTIONS.map((o) => (
