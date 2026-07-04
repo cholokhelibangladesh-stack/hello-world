@@ -868,7 +868,7 @@ const PlayerDashboard = () => {
             </TabsContent>
 
             <TabsContent value="profile">
-              <ProfileTab showVideos={allVideos} onDeleteVideo={handleDeleteVideo} deletingVideoId={deletingVideoId} />
+              <ProfileTab showVideos={allVideos} onDeleteVideo={handleDeleteVideo} deletingVideoId={deletingVideoId} stats={playerStats} />
             </TabsContent>
           </Tabs>
         </motion.div>
