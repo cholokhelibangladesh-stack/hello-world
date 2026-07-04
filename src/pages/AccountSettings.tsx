@@ -50,10 +50,12 @@ const AccountSettings = () => {
     const value = newUsername.trim().toLowerCase();
     if (!user) return;
     if (value === currentUsername.toLowerCase()) {
+      setChecking(false);
       setAvailability("same");
       return;
     }
     if (!USERNAME_RE.test(value)) {
+      setChecking(false);
       setAvailability("invalid");
       return;
     }
