@@ -76,7 +76,10 @@ export default function CurvedAthleteCarousel() {
           perspectiveOrigin: "50% 60%",
         }}
       >
-        <div className="absolute inset-0 flex items-center justify-center">
+        <div
+          className="absolute inset-0 flex items-center justify-center"
+          style={{ transformStyle: "preserve-3d" }}
+        >
           <div
             className="relative carousel-ring"
             style={{
