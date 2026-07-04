@@ -288,14 +288,15 @@ const ScoutCarouselCard = React.forwardRef<HTMLDivElement, { scout: ScoutProfile
         </div>
       </div>
 
-      <p className="relative text-xl sm:text-2xl lg:text-[26px] leading-relaxed text-white/95 font-light tracking-tight my-8">
+      <p className="relative text-sm sm:text-xl lg:text-[26px] leading-relaxed text-white/95 font-light tracking-tight my-4 sm:my-8 line-clamp-6 sm:line-clamp-none break-words">
         "{scout.bio ?? defaultBio}"
       </p>
 
-      <div className="relative">
-        <p className="text-base font-semibold text-white">{scout.full_name}</p>
-        {scout.organization && <p className="text-sm text-white/55 mt-0.5">{scout.organization}</p>}
+      <div className="relative min-w-0">
+        <p className="text-sm sm:text-base font-semibold text-white truncate">{scout.full_name}</p>
+        {scout.organization && <p className="text-xs sm:text-sm text-white/55 mt-0.5 truncate">{scout.organization}</p>}
       </div>
+
     </motion.div>
   );
 });
