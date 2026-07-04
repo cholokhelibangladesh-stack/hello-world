@@ -1,11 +1,11 @@
 import { useEffect, useState } from "react";
 import { Link, useNavigate, useRouterState } from "@tanstack/react-router";
-import { LogOut, Menu, X, Sun, Moon, LayoutDashboard } from "lucide-react";
+import { LogOut, Menu, X, Sun, Moon, LayoutDashboard, Languages } from "lucide-react";
 import { useAuth } from "@/hooks/useAuth";
 import { useTheme } from "@/hooks/useTheme";
 import NotificationBell from "@/components/NotificationBell";
-import LanguageSwitcher from "@/components/LanguageSwitcher";
 import { useLanguage } from "@/i18n/LanguageProvider";
+
 import logoAsset from "@/assets/cholo-kheli-mark.png.asset.json";
 
 // Routes whose hero image is dark — icons stay white while at the top of these
