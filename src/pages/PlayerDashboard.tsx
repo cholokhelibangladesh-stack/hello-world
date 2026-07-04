@@ -537,6 +537,17 @@ const PlayerDashboard = () => {
   const liveVideos = allVideos.filter((v) => v.status === "live");
   const pendingVideos = allVideos.filter((v) => v.status === "pending_payment");
 
+  const playerStats = allVideos.reduce(
+    (acc, v: any) => ({
+      likes: acc.likes + (v.like_count ?? 0),
+      views: acc.views + (v.view_count ?? 0),
+      shares: acc.shares + (v.share_count ?? 0),
+      watchMinutes: acc.watchMinutes + Math.floor((v.total_watch_ms ?? 0) / 60000),
+      videos: acc.videos + 1,
+    }),
+    { likes: 0, views: 0, shares: 0, watchMinutes: 0, videos: 0 },
+  );
+
   return (
     <div className="min-h-screen pt-16 pb-20 md:pb-8">
       <div className="container max-w-4xl">
