@@ -326,10 +326,18 @@ const AdminDashboard = () => {
     return arr;
   };
 
+  // Case-insensitive substring match across a bundle of fields (name/email/username/etc.)
+  const matchAny = (needle: string, hay: (string | null | undefined)[]): boolean => {
+    if (!needle) return true;
+    const q = needle.trim().toLowerCase();
+    if (!q) return true;
+    return hay.some((v) => (v || "").toLowerCase().includes(q));
+  };
+
   // Filtered + sorted data
   const filteredScouts = applySort(
     scouts.filter((s) => {
-      const matchSearch = !scoutSearch || s.full_name?.toLowerCase().includes(scoutSearch.toLowerCase()) || s.organization?.toLowerCase().includes(scoutSearch.toLowerCase());
+      const matchSearch = matchAny(scoutSearch, [s.full_name, s.organization, s.username, s.email]);
       const matchFilter = scoutFilter === "all" || s.verification_status === scoutFilter;
       return matchSearch && matchFilter;
     }),
@@ -338,7 +346,7 @@ const AdminDashboard = () => {
 
   const filteredVideos = applySort(
     videos.filter((v) => {
-      const matchSearch = !videoSearch || v.full_name?.toLowerCase().includes(videoSearch.toLowerCase()) || v.description?.toLowerCase().includes(videoSearch.toLowerCase());
+      const matchSearch = matchAny(videoSearch, [v.full_name, v.description, v.username, v.email]);
       const matchFilter = videoFilter === "all" || v.status === videoFilter;
       return matchSearch && matchFilter;
     }),
@@ -347,7 +355,9 @@ const AdminDashboard = () => {
 
   const filteredRequests = applySort(
     scoutRequests.filter((r) => {
-      const matchSearch = !requestSearch || r.scout_name?.toLowerCase().includes(requestSearch.toLowerCase()) || r.player_name?.toLowerCase().includes(requestSearch.toLowerCase());
+      const matchSearch = matchAny(requestSearch, [
+        r.scout_name, r.player_name, r.scout_username, r.player_username, r.scout_email, r.player_email,
+      ]);
       const matchFilter = requestFilter === "all" || r.status === requestFilter;
       return matchSearch && matchFilter;
     }),
