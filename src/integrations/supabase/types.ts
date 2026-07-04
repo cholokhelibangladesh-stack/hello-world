@@ -464,6 +464,8 @@ export type Database = {
           id: string
           like_count: number
           position_tags: string[]
+          ranking_score: number
+          score_updated_at: string | null
           share_count: number
           status: string
           title: string
@@ -481,6 +483,8 @@ export type Database = {
           id?: string
           like_count?: number
           position_tags?: string[]
+          ranking_score?: number
+          score_updated_at?: string | null
           share_count?: number
           status?: string
           title?: string
@@ -498,6 +502,8 @@ export type Database = {
           id?: string
           like_count?: number
           position_tags?: string[]
+          ranking_score?: number
+          score_updated_at?: string | null
           share_count?: number
           status?: string
           title?: string
@@ -525,6 +531,7 @@ export type Database = {
           description: string
           full_name: string
           id: string
+          is_test_slot: boolean
           like_count: number
           liked_by_me: boolean
           position_tags: string[]
@@ -544,6 +551,7 @@ export type Database = {
         }
         Returns: boolean
       }
+      refresh_video_scores: { Args: never; Returns: undefined }
     }
     Enums: {
       app_role: "player" | "scout" | "admin"
