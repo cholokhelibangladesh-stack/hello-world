@@ -1,0 +1,4 @@
+{
+  "error": "new row for relation \"profiles\" violates check constraint \"profiles_username_format\"",
+  "code": "23514"
+}
