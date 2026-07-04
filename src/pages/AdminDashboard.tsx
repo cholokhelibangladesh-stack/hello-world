@@ -56,18 +56,19 @@ const AdminDashboard = () => {
   const [feedbackInputs, setFeedbackInputs] = useState<Record<string, string>>({});
   const [uploadsHalted, setUploadsHalted] = useState(false);
   const [haltLoading, setHaltLoading] = useState(false);
-  // Search & filter states
-  const [scoutSearch, setScoutSearch] = useState("");
-  const [scoutFilter, setScoutFilter] = useState<string>("all");
-  const [scoutSort, setScoutSort] = useState<string>("date_desc");
-  const [videoSearch, setVideoSearch] = useState("");
-  const [videoFilter, setVideoFilter] = useState<string>("all");
-  const [videoSort, setVideoSort] = useState<string>("date_desc");
-  const [requestSearch, setRequestSearch] = useState("");
-  const [requestFilter, setRequestFilter] = useState<string>("all");
-  const [requestSort, setRequestSort] = useState<string>("date_desc");
-  const [messageSearch, setMessageSearch] = useState("");
-  const [messageFilter, setMessageFilter] = useState<string>("all");
+  // Search & filter states — persisted across reloads via localStorage
+  const [scoutSearch, setScoutSearch] = usePersistedString("scoutSearch", "");
+  const [scoutFilter, setScoutFilter] = usePersistedString("scoutFilter", "all");
+  const [scoutSort, setScoutSort] = usePersistedString("scoutSort", "date_desc");
+  const [videoSearch, setVideoSearch] = usePersistedString("videoSearch", "");
+  const [videoFilter, setVideoFilter] = usePersistedString("videoFilter", "all");
+  const [videoSort, setVideoSort] = usePersistedString("videoSort", "date_desc");
+  const [requestSearch, setRequestSearch] = usePersistedString("requestSearch", "");
+  const [requestFilter, setRequestFilter] = usePersistedString("requestFilter", "all");
+  const [requestSort, setRequestSort] = usePersistedString("requestSort", "date_desc");
+  const [messageSearch, setMessageSearch] = usePersistedString("messageSearch", "");
+  const [messageFilter, setMessageFilter] = usePersistedString("messageFilter", "all");
+  const [activeTab, setActiveTab] = usePersistedString("activeTab", "scouts");
   const navigate = useNavigate();
   const { toast } = useToast();
 
