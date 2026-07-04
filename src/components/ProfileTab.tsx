@@ -274,7 +274,7 @@ const ProfileTab = ({ showVideos, onDeleteVideo, deletingVideoId, stats }: Profi
               animate={{ opacity: 1, scale: 1 }}
               transition={{ delay: 0.08 + idx * 0.04 }}
               whileHover={{ y: -3 }}
-              className={`relative overflow-hidden rounded-2xl border border-white/10 bg-gradient-to-br ${s.color} backdrop-blur-xl p-4 ring-1 ${s.ring} shadow-lg`}
+              className={`glass-card relative overflow-hidden rounded-2xl border border-white/10 bg-gradient-to-br ${s.color} backdrop-blur-xl p-4 ring-1 ${s.ring} shadow-lg`}
             >
               <div className="absolute -top-8 -right-8 w-24 h-24 rounded-full bg-white/5 blur-2xl pointer-events-none" />
               <div className="relative flex items-center justify-between">
