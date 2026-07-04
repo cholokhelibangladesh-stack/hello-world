@@ -588,13 +588,13 @@ const Index = () => {
       </section>
 
       {/* Physical gradient bridge: how-it-works (paper-deep) → verified scouts (ink) */}
-      <div aria-hidden className="relative h-56 sm:h-72"
+      <div aria-hidden className="relative h-16 sm:h-24"
         style={{ background: "linear-gradient(to bottom, hsl(var(--paper-deep)) 0%, hsl(var(--ink)) 100%)" }} />
 
       {/* ══════════════════════════════════════════
           VERIFIED SCOUTS
       ══════════════════════════════════════════ */}
-      <section className="py-20 sm:py-28 relative overflow-hidden" style={{ background: "hsl(var(--ink))" }}>
+      <section className="py-16 sm:py-20 relative overflow-hidden" style={{ background: "hsl(var(--ink))" }}>
         <div className="absolute inset-0 pointer-events-none opacity-[0.04]"
           style={{ backgroundImage: "linear-gradient(hsl(var(--green)) 1px, transparent 1px), linear-gradient(90deg, hsl(var(--green)) 1px, transparent 1px)", backgroundSize: "80px 80px" }} />
 
@@ -651,7 +651,7 @@ const Index = () => {
       </section>
 
       {/* Physical gradient bridge: scouts (ink) → map (background) */}
-      <div aria-hidden className="relative h-56 sm:h-72"
+      <div aria-hidden className="relative h-16 sm:h-24"
         style={{ background: "linear-gradient(to bottom, hsl(var(--ink)) 0%, hsl(var(--background)) 100%)" }} />
 
       {/* ══════════════════════════════════════════
@@ -660,13 +660,13 @@ const Index = () => {
       <CurvedAthleteCarousel />
 
       {/* Physical gradient bridge: map (background) → CTA (ink) */}
-      <div aria-hidden className="relative h-56 sm:h-72"
+      <div aria-hidden className="relative h-16 sm:h-24"
         style={{ background: "linear-gradient(to bottom, hsl(var(--background)) 0%, hsl(var(--ink)) 100%)" }} />
 
       {/* ══════════════════════════════════════════
           CINEMATIC CTA
       ══════════════════════════════════════════ */}
-      <section className="py-24 sm:py-36 relative overflow-hidden surface-ink">
+      <section className="py-16 sm:py-24 relative overflow-hidden surface-ink">
 
 
         {/* Cinematic backdrop */}
@@ -675,10 +675,10 @@ const Index = () => {
         <div className="absolute inset-0 pointer-events-none"
           style={{ background: "linear-gradient(to bottom, hsl(var(--ink) / 0.85), hsl(var(--ink) / 0.95))" }} />
         {/* Top edge fade — hide image at seam so bridge (pure ink) meets pure ink */}
-        <div aria-hidden className="pointer-events-none absolute inset-x-0 top-0 h-56 z-[2]"
+        <div aria-hidden className="pointer-events-none absolute inset-x-0 top-0 h-20 z-[2]"
           style={{ background: "linear-gradient(to bottom, hsl(var(--ink)) 0%, hsl(var(--ink) / 0.6) 55%, transparent 100%)" }} />
         {/* Bottom edge fade — hide image at seam so section meets bridge cleanly */}
-        <div aria-hidden className="pointer-events-none absolute inset-x-0 bottom-0 h-56 z-[2]"
+        <div aria-hidden className="pointer-events-none absolute inset-x-0 bottom-0 h-20 z-[2]"
           style={{ background: "linear-gradient(to top, hsl(var(--ink)) 0%, hsl(var(--ink) / 0.6) 55%, transparent 100%)" }} />
 
 
@@ -690,7 +690,7 @@ const Index = () => {
           <Reveal>
             <div className="max-w-5xl mx-auto">
               {/* Two vertical phones, tilted in 3D, slide in from sides */}
-              <div className="relative mx-auto flex justify-center items-start gap-6 sm:gap-10 lg:gap-16 pb-16 [perspective:1800px]">
+              <div className="relative mx-auto flex justify-center items-start gap-6 sm:gap-10 lg:gap-16 pb-10 [perspective:1800px]">
                 {/* Left phone — slides in from left */}
                 <motion.div
                   initial={{ opacity: 0, x: -220, rotateY: -12, rotate: 0 }}
@@ -755,7 +755,7 @@ const Index = () => {
       </section>
 
       {/* Physical gradient bridge: CTA (ink) → stats (background overlay on card) */}
-      <div aria-hidden className="relative h-56 sm:h-72"
+      <div aria-hidden className="relative h-16 sm:h-24"
         style={{ background: "linear-gradient(to bottom, hsl(var(--ink)) 0%, hsl(var(--background)) 100%)" }} />
 
       {/* ══════════════════════════════════════════
