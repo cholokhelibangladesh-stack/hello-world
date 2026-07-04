@@ -118,16 +118,17 @@ def evaluate_expectation(role, expect, payload):
 async def main():
     async with async_playwright() as pw:
         browser = await pw.chromium.launch(headless=True)
-        context = await browser.new_context(viewport={"width": 1280, "height": 900})
-        page = await context.new_page()
-        page.on("pageerror", lambda err: print(f"  [pageerror] {err}"))
 
         for acc in ACCOUNTS:
             print(f"\n== {acc['role']} ({acc['email']}) ==")
-            await sign_out(page, context)
+            context = await browser.new_context(viewport={"width": 1280, "height": 900})
+            page = await context.new_page()
+            page.on("pageerror", lambda err: print(f"  [pageerror] {err}"))
+
             signed = await sign_in(page, acc["email"], acc["password"])
             if not signed:
                 record(f"{acc['role']}:signin", False, "no supabase session in localStorage")
+                await context.close()
                 continue
             record(f"{acc['role']}:signin", True)
 
@@ -135,6 +136,8 @@ async def main():
             (OUT / f"feed_{acc['role']}.json").write_text(json.dumps(payload, indent=2, default=str))
             ok, detail = evaluate_expectation(acc["role"], acc["expect"], payload)
             record(f"{acc['role']}:get_ranked_feed", ok, detail)
+
+            await context.close()
 
         await browser.close()
 
