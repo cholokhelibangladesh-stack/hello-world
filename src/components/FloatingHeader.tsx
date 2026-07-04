@@ -158,9 +158,22 @@ const FloatingHeader = () => {
             </Link>
           ))}
           <button
+            onClick={() => { toggleLang(); }}
+            className="w-full flex items-center gap-2 px-4 py-2.5 rounded-xl text-sm font-medium text-foreground/75 hover:text-foreground hover:bg-foreground/5 transition-colors"
+          >
+            <Languages className="h-4 w-4" />
+            <span>{t("nav.language")}</span>
+            <span className="ml-auto text-xs text-foreground/60">
+              <span className={lang === "en" ? "text-foreground font-semibold" : ""}>EN</span>
+              <span className="opacity-50 mx-1">/</span>
+              <span className={lang === "bn" ? "text-foreground font-semibold" : ""}>বাং</span>
+            </span>
+          </button>
+          <button
             onClick={() => { toggleTheme(); setOpen(false); }}
             className="w-full flex items-center gap-2 px-4 py-2.5 rounded-xl text-sm font-medium text-foreground/75 hover:text-foreground hover:bg-foreground/5 transition-colors"
           >
+
             {theme === "dark" ? <Sun className="h-4 w-4" /> : <Moon className="h-4 w-4" />}
             {theme === "dark" ? t("nav.lightMode") : t("nav.darkMode")}
           </button>
