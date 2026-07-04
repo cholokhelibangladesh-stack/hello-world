@@ -304,51 +304,63 @@
   }
 
   /* ============================================================
-     Apple-style glass card system
-     Subtle entrance + hover, GPU-friendly, respects reduced motion
+     Apple-style glass card system — unified tokens
+     GPU-friendly: opacity + translate only, no filter-in-keyframes
+     Hover gated to real pointers; blur tuned down on mobile
      ============================================================ */
-  .apple-glass {
-    background: color-mix(in oklab, hsl(var(--card)) 55%, transparent);
-    -webkit-backdrop-filter: blur(20px) saturate(140%);
-    backdrop-filter: blur(20px) saturate(140%);
-    border: 1px solid hsl(var(--border) / 0.6);
-    box-shadow:
+  :root {
+    --glass-bg: color-mix(in oklab, hsl(var(--card)) 55%, transparent);
+    --glass-border: hsl(var(--border) / 0.6);
+    --glass-blur: 20px;
+    --glass-sat: 140%;
+    --glass-shadow:
       0 10px 30px -18px rgba(0, 0, 0, 0.5),
       inset 0 1px 0 rgba(255, 255, 255, 0.04);
+    --glass-shadow-hover:
+      0 24px 48px -24px rgba(0, 0, 0, 0.55),
+      0 0 0 1px hsl(var(--primary) / 0.18),
+      inset 0 1px 0 rgba(255, 255, 255, 0.06);
+    --ease-apple: cubic-bezier(0.22, 1, 0.36, 1);
+  }
+
+  .apple-glass {
+    background: var(--glass-bg);
+    backdrop-filter: blur(var(--glass-blur)) saturate(var(--glass-sat));
+    border: 1px solid var(--glass-border);
+    box-shadow: var(--glass-shadow);
   }
 
   .glass-card {
     transition:
-      translate 380ms cubic-bezier(0.22, 1, 0.36, 1),
-      scale 380ms cubic-bezier(0.22, 1, 0.36, 1),
-      box-shadow 380ms cubic-bezier(0.22, 1, 0.36, 1),
-      border-color 380ms ease,
-      background-color 380ms ease;
-    will-change: translate;
+      translate 320ms var(--ease-apple),
+      box-shadow 320ms var(--ease-apple),
+      border-color 320ms ease;
+    /* Skip offscreen paint/composite work */
+    content-visibility: auto;
+    contain-intrinsic-size: auto 200px;
   }
-  .glass-card:hover {
-    translate: 0 -2px;
-    border-color: hsl(var(--primary) / 0.35);
-    box-shadow:
-      0 24px 48px -24px rgba(0, 0, 0, 0.55),
-      0 0 0 1px hsl(var(--primary) / 0.18),
-      inset 0 1px 0 rgba(255, 255, 255, 0.06);
+  /* will-change only for real pointer devices, and only while interacting */
+  @media (hover: hover) and (pointer: fine) {
+    .glass-card:hover {
+      will-change: translate;
+      translate: 0 -2px;
+      border-color: hsl(var(--primary) / 0.35);
+      box-shadow: var(--glass-shadow-hover);
+    }
+    .glass-card:active {
+      translate: 0 -1px;
+      transition-duration: 140ms;
+    }
   }
-  .glass-card:active {
-    translate: 0 -1px;
-    scale: 0.997;
-    transition-duration: 140ms;
-  }
-
 
   @media (prefers-reduced-motion: no-preference) {
     @keyframes glass-in {
-      from { opacity: 0; transform: translateY(10px) scale(0.985); filter: blur(2px); }
-      to   { opacity: 1; transform: none; filter: blur(0); }
+      from { opacity: 0; translate: 0 8px; }
+      to   { opacity: 1; translate: 0 0; }
     }
     .glass-card,
     .glass-stagger > * {
-      animation: glass-in 560ms cubic-bezier(0.22, 1, 0.36, 1) both;
+      animation: glass-in 440ms var(--ease-apple) both;
     }
     .glass-stagger > *:nth-child(1)  { animation-delay: 0ms; }
     .glass-stagger > *:nth-child(2)  { animation-delay: 40ms; }
@@ -365,11 +377,36 @@
 
   @media (prefers-reduced-motion: reduce) {
     .glass-card,
-    .glass-stagger > * { animation: none !important; }
+    .glass-stagger > *,
+    .animate-fade-in,
+    .animate-float,
+    .animate-float-delayed,
+    .animate-pulse-glow,
+    .shimmer,
+    .scan-line { animation: none !important; }
     .glass-card { transition: none !important; }
     .glass-card:hover,
     .glass-card:active { translate: 0 0 !important; scale: 1 !important; }
+    * { scroll-behavior: auto !important; }
   }
+
+  /* Mobile: cheaper glass (blur is very GPU-heavy on phones) */
+  @media (max-width: 640px) {
+    :root {
+      --glass-blur: 12px;
+      --glass-sat: 120%;
+    }
+    /* Disable decorative floats and heavy pulses on small screens */
+    .animate-float,
+    .animate-float-delayed,
+    .animate-pulse-glow { animation: none !important; }
+  }
+
+  /* Tablet-only tweaks: keep glass but soften shadows */
+  @media (min-width: 641px) and (max-width: 1024px) {
+    :root { --glass-blur: 16px; }
+  }
+
 
 
 
