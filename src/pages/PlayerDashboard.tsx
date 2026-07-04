@@ -74,8 +74,7 @@ const PlayerDashboard = () => {
   const [deletingVideoId, setDeletingVideoId] = useState<string | null>(null);
   const [showNewUpload, setShowNewUpload] = useState(false);
   const [uploadsHalted, setUploadsHalted] = useState(false);
-  const [birthCertUrl, setBirthCertUrl] = useState<string | null>(null);
-  const [birthCertUploading, setBirthCertUploading] = useState(false);
+  const [savingSport, setSavingSport] = useState(false);
   const [savingSport, setSavingSport] = useState(false);
   const [activeTab, setActiveTab] = useState(() => {
     if (typeof window === "undefined") return "upload";
