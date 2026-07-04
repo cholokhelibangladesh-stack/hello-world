@@ -161,6 +161,20 @@ const PlayerDashboard = () => {
   const toggleTag = (tag: string, list: string[], setter: (v: string[]) => void) => {
     setter(list.includes(tag) ? list.filter((t) => t !== tag) : [...list, tag]);
   };
+  const [customPosition, setCustomPosition] = useState("");
+  const [customTrait, setCustomTrait] = useState("");
+  const addCustomTag = (raw: string, list: string[], setter: (v: string[]) => void, clear: () => void) => {
+    const cleaned = raw.trim().replace(/\s+/g, " ").slice(0, 40);
+    if (!cleaned) return;
+    if (!list.some((t) => t.toLowerCase() === cleaned.toLowerCase())) {
+      setter([...list, cleaned]);
+    }
+    clear();
+  };
+  const removeTag = (tag: string, list: string[], setter: (v: string[]) => void) => {
+    setter(list.filter((t) => t !== tag));
+  };
+
 
   const handleSportChange = async (newSport: "football" | "cricket" | "basketball") => {
     if (!user || newSport === sport) return;
