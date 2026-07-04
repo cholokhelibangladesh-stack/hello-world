@@ -30,9 +30,10 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
       .select("role")
       .eq("user_id", userId)
       .maybeSingle();
-    setRole((data?.role as AppRole) ?? null);
+    const nextRole = (data?.role as AppRole) ?? null;
+    setRole(nextRole);
 
-    if (data?.role === "scout") {
+    if (nextRole === "scout") {
       const { data: sp } = await supabase
         .from("scout_profiles")
         .select("verification_status")
@@ -40,6 +41,7 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
         .maybeSingle();
       setScoutStatus((sp?.verification_status as any) ?? null);
     }
+    setLoading(false);
   };
 
   useEffect(() => {
@@ -48,12 +50,14 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
         setSession(session);
         setUser(session?.user ?? null);
         if (session?.user) {
+          // Keep loading=true until role is resolved to avoid a
+          // brief `user && !role` window that would trip ProtectedRoute.
           setTimeout(() => fetchRole(session.user.id), 0);
         } else {
           setRole(null);
           setScoutStatus(null);
+          setLoading(false);
         }
-        setLoading(false);
       }
     );
 
@@ -62,8 +66,9 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
       setUser(session?.user ?? null);
       if (session?.user) {
         fetchRole(session.user.id);
+      } else {
+        setLoading(false);
       }
-      setLoading(false);
     });
 
     return () => subscription.unsubscribe();

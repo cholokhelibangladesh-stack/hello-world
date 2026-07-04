@@ -1,0 +1,4 @@
+{
+  "error": "duplicate key value violates unique constraint \"profiles_username_lower_key\"",
+  "code": "23505"
+}
