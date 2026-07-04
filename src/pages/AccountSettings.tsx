@@ -314,9 +314,8 @@ const AccountSettings = () => {
                 id="new-username"
                 data-testid="settings-username-input"
                 value={newUsername}
-                onChange={(e) => setNewUsername(e.target.value.toLowerCase())}
+                onChange={(e) => setNewUsername(e.target.value)}
                 placeholder="your_handle"
-                maxLength={24}
                 autoCapitalize="none"
                 autoCorrect="off"
                 spellCheck={false}
