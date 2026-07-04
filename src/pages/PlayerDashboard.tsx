@@ -760,20 +760,18 @@ const PlayerDashboard = () => {
 
                       {/* Save details */}
                       {!videoId && videoFile && (
-                        <div className="space-y-2">
-                          {!birthCertUrl && (
-                            <p className="text-xs text-destructive text-center">{t("player.uploadBCFirst" as any)}</p>
-                          )}
+                        <motion.div initial={{ opacity: 0, y: 6 }} animate={{ opacity: 1, y: 0 }}>
                           <Button
                             onClick={handleUpload}
-                            disabled={uploading || !birthCertUrl}
-                            className="w-full bg-primary text-primary-foreground font-bold hover:bg-primary/90 disabled:opacity-50"
+                            disabled={uploading}
+                            className="w-full bg-gradient-to-r from-primary to-primary/80 text-primary-foreground font-bold hover:from-primary/90 hover:to-primary/70 shadow-lg shadow-primary/30 rounded-xl h-11"
                           >
                             {uploading ? <Loader2 className="h-4 w-4 animate-spin mr-2" /> : <Upload className="h-4 w-4 mr-2" />}
                             {t("player.saveDetails" as any)}
                           </Button>
-                        </div>
+                        </motion.div>
                       )}
+
 
                       {/* Payment */}
                       {videoId && !paymentDone && (
