@@ -64,6 +64,8 @@ const Auth = () => {
 
   const [formEmail, setFormEmail] = useState("");
   const [formName, setFormName] = useState("");
+  const [formUsername, setFormUsername] = useState("");
+  const [usernameStatus, setUsernameStatus] = useState<"idle" | "checking" | "ok" | "taken" | "invalid">("idle");
   const [formPhone, setFormPhone] = useState("");
   const [formGender, setFormGender] = useState("");
   const [formPassword, setFormPassword] = useState("");
