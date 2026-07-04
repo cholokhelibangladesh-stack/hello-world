@@ -1,0 +1,25 @@
+{
+  "select_alerts": {
+    "rows": 0,
+    "error": null
+  },
+  "select_audit": {
+    "rows": 0,
+    "error": null
+  },
+  "update_alerts": {
+    "error": null,
+    "status": 204
+  },
+  "delete_alerts": {
+    "error": null
+  },
+  "rpc_audit": {
+    "rows": 0,
+    "error": "permission denied for function get_username_audit"
+  },
+  "rpc_emails": {
+    "rows": 0,
+    "error": "forbidden"
+  }
+}

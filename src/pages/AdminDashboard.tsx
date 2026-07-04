@@ -21,7 +21,8 @@ interface VideoRow { id: string; user_id: string; title: string | null; descript
 interface MessageRow { id: string; sender_id: string; receiver_id: string; content: string; flagged: boolean; flag_reason: string | null; created_at: string; sender_name?: string; receiver_name?: string; }
 interface ScoutRequestRow { id: string; scout_id: string; player_id: string; status: string; notes: string | null; admin_response: string | null; created_at: string; scout_name?: string; player_name?: string; scout_username?: string | null; player_username?: string | null; scout_email?: string | null; player_email?: string | null; }
 interface ContactMessageRow { id: string; name: string; email: string; subject: string | null; message: string; is_read: boolean; created_at: string; }
-interface Stats { totalPlayers: number; totalScouts: number; activeScouts: number; pendingScouts: number; liveVideos: number; totalRevenue: number; flaggedMessages: number; pendingRequests: number; unreadContacts: number; }
+interface ModerationAlertRow { id: string; kind: "scout_request" | "video" | "scout"; target_id: string; target_user_id: string | null; status: "new" | "resolved"; created_at: string; resolved_at: string | null; resolved_by: string | null; target_name?: string; target_email?: string | null; }
+interface Stats { totalPlayers: number; totalScouts: number; activeScouts: number; pendingScouts: number; liveVideos: number; totalRevenue: number; flaggedMessages: number; pendingRequests: number; unreadContacts: number; openAlerts: number; }
 
 // Persisted state for the moderation queue: filter/sort/search choices survive reloads.
 const MOD_STORAGE_PREFIX = "adminMod:";
@@ -105,6 +106,7 @@ const AdminDashboard = () => {
   const [scoutRequests, setScoutRequests] = useState<ScoutRequestRow[]>([]);
   const [contactMessages, setContactMessages] = useState<ContactMessageRow[]>([]);
   const [stats, setStats] = useState<Stats | null>(null);
+  const [alerts, setAlerts] = useState<ModerationAlertRow[]>([]);
   const [loading, setLoading] = useState(true);
   const [feedbackInputs, setFeedbackInputs] = useState<Record<string, string>>({});
   const [uploadsHalted, setUploadsHalted] = useState(false);
@@ -133,7 +135,7 @@ const AdminDashboard = () => {
 
   const fetchAll = async () => {
     setLoading(true);
-    const [scoutRes, videoRes, roleRes, paymentRes, msgRes, reqRes, settingsRes, contactRes] = await Promise.all([
+    const [scoutRes, videoRes, roleRes, paymentRes, msgRes, reqRes, settingsRes, contactRes, alertRes] = await Promise.all([
       supabase.from("scout_profiles").select("*").order("created_at", { ascending: false }),
       supabase.from("videos").select("*").order("created_at", { ascending: false }),
       supabase.from("user_roles").select("role, user_id"),
@@ -142,6 +144,7 @@ const AdminDashboard = () => {
       supabase.from("scout_requests").select("*").order("created_at", { ascending: false }),
       supabase.from("app_settings" as any).select("key, value"),
       supabase.from("contact_messages" as any).select("*").order("created_at", { ascending: false }),
+      supabase.from("moderation_alerts" as any).select("*").order("created_at", { ascending: false }).limit(200),
     ]);
 
     const scoutData = scoutRes.data || [];
@@ -217,6 +220,14 @@ const AdminDashboard = () => {
     const contactData = ((contactRes.data as unknown) as ContactMessageRow[]) || [];
     setContactMessages(contactData);
 
+    const alertRows = ((alertRes.data as unknown) as ModerationAlertRow[]) || [];
+    const enrichedAlerts = alertRows.map((a) => ({
+      ...a,
+      target_name: (a.target_user_id && profileMap.get(a.target_user_id)?.name) || "Unknown",
+      target_email: (a.target_user_id && emailMap.get(a.target_user_id)) || null,
+    }));
+    setAlerts(enrichedAlerts);
+
     setStats({
       totalPlayers: roles.filter((r) => r.role === "player").length,
       totalScouts: roles.filter((r) => r.role === "scout").length,
@@ -227,8 +238,27 @@ const AdminDashboard = () => {
       flaggedMessages: msgData.filter((m) => m.flagged).length,
       pendingRequests: reqData.filter((r) => r.status === "pending").length,
       unreadContacts: contactData.filter((c) => !c.is_read).length,
+      openAlerts: enrichedAlerts.filter((a) => a.status === "new").length,
     });
     setLoading(false);
+  };
+
+  const resolveAlert = async (id: string) => {
+    const { error } = await supabase
+      .from("moderation_alerts" as any)
+      .update({ status: "resolved", resolved_at: new Date().toISOString(), resolved_by: user?.id } as any)
+      .eq("id", id);
+    if (error) toast({ title: "Error", description: error.message, variant: "destructive" });
+    else { toast({ title: "Alert resolved" }); fetchAll(); }
+  };
+
+  const reopenAlert = async (id: string) => {
+    const { error } = await supabase
+      .from("moderation_alerts" as any)
+      .update({ status: "new", resolved_at: null, resolved_by: null } as any)
+      .eq("id", id);
+    if (error) toast({ title: "Error", description: error.message, variant: "destructive" });
+    else fetchAll();
   };
 
   const toggleContactRead = async (id: string, isRead: boolean) => {
@@ -466,6 +496,7 @@ const AdminDashboard = () => {
             {/* Mobile: horizontally scrollable tab row */}
             <div className="overflow-x-auto -mx-4 px-4 sm:mx-0 sm:px-0">
               <TabsList className="bg-card border border-border flex w-max sm:w-full sm:flex-wrap min-w-full">
+                <TabsTrigger value="alerts" className="data-[state=active]:bg-primary data-[state=active]:text-primary-foreground text-xs whitespace-nowrap px-3" data-testid="tab-alerts">Inbox {stats?.openAlerts ? `(${stats.openAlerts})` : ""}</TabsTrigger>
                 <TabsTrigger value="scouts" className="data-[state=active]:bg-primary data-[state=active]:text-primary-foreground text-xs whitespace-nowrap px-3">Scouts {stats?.pendingScouts ? `(${stats.pendingScouts})` : ""}</TabsTrigger>
                 <TabsTrigger value="players" className="data-[state=active]:bg-primary data-[state=active]:text-primary-foreground text-xs whitespace-nowrap px-3">Players</TabsTrigger>
                 <TabsTrigger value="videos" className="data-[state=active]:bg-primary data-[state=active]:text-primary-foreground text-xs whitespace-nowrap px-3">Videos</TabsTrigger>
@@ -478,6 +509,63 @@ const AdminDashboard = () => {
                 <TabsTrigger value="audit" className="data-[state=active]:bg-primary data-[state=active]:text-primary-foreground text-xs whitespace-nowrap px-3" data-testid="tab-audit">Usernames</TabsTrigger>
               </TabsList>
             </div>
+
+            {/* Moderation Alerts Inbox */}
+            <TabsContent value="alerts" className="space-y-3">
+              <div className="bg-primary/5 border border-primary/20 rounded-2xl p-4 flex items-start gap-2">
+                <AlertTriangle className="h-5 w-5 text-primary shrink-0 mt-0.5" />
+                <p className="text-sm text-muted-foreground">
+                  New scout requests, videos, and scout signups that need review. Mark items resolved once you've actioned them.
+                </p>
+              </div>
+              {alerts.filter((a) => a.status === "new").length === 0 ? (
+                <p className="text-muted-foreground text-center py-12" data-testid="alerts-empty-new">No open alerts.</p>
+              ) : (
+                alerts.filter((a) => a.status === "new").map((a) => (
+                  <div key={a.id} data-testid="alert-row" data-alert-id={a.id} data-alert-kind={a.kind} data-alert-status={a.status}
+                    className="apple-glass glass-card rounded-xl p-4 flex items-center justify-between gap-3">
+                    <div className="flex-1 min-w-0">
+                      <div className="flex items-center gap-2 flex-wrap">
+                        <Badge className="rounded-full bg-primary/20 text-primary border-primary/30 text-[10px] uppercase">
+                          {a.kind === "scout_request" ? "Request" : a.kind === "video" ? "Video" : "Scout"}
+                        </Badge>
+                        <p className="font-semibold text-foreground truncate">{a.target_name}</p>
+                      </div>
+                      {a.target_email && <p className="text-[11px] text-muted-foreground truncate">{a.target_email}</p>}
+                      <p className="text-[11px] text-muted-foreground">{new Date(a.created_at).toLocaleString()}</p>
+                    </div>
+                    <Button size="sm" onClick={() => resolveAlert(a.id)} data-testid="alert-resolve"
+                      className="bg-primary text-primary-foreground hover:bg-primary/90 rounded-full text-xs shrink-0">
+                      <CheckCircle className="h-3.5 w-3.5 mr-1" /> Mark resolved
+                    </Button>
+                  </div>
+                ))
+              )}
+              {alerts.some((a) => a.status === "resolved") && (
+                <details className="pt-2">
+                  <summary className="text-xs text-muted-foreground cursor-pointer hover:text-foreground" data-testid="alerts-resolved-toggle">
+                    Recently resolved ({alerts.filter((a) => a.status === "resolved").length})
+                  </summary>
+                  <div className="space-y-2 mt-2">
+                    {alerts.filter((a) => a.status === "resolved").slice(0, 30).map((a) => (
+                      <div key={a.id} data-testid="alert-row" data-alert-id={a.id} data-alert-kind={a.kind} data-alert-status={a.status}
+                        className="bg-secondary/50 border border-border rounded-xl p-3 flex items-center justify-between gap-3">
+                        <div className="flex-1 min-w-0">
+                          <p className="text-xs font-medium text-muted-foreground truncate">
+                            <span className="uppercase mr-2">{a.kind}</span>{a.target_name}
+                          </p>
+                          <p className="text-[10px] text-muted-foreground">Resolved {a.resolved_at ? new Date(a.resolved_at).toLocaleString() : ""}</p>
+                        </div>
+                        <Button size="sm" variant="outline" onClick={() => reopenAlert(a.id)} data-testid="alert-reopen"
+                          className="rounded-full text-xs border-border text-muted-foreground shrink-0">
+                          Reopen
+                        </Button>
+                      </div>
+                    ))}
+                  </div>
+                </details>
+              )}
+            </TabsContent>
 
             {/* Scouts Tab */}
             <TabsContent value="scouts" className="space-y-3">
