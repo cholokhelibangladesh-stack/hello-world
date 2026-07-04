@@ -36,7 +36,7 @@ PUBLIC_ROUTES = [
 
 ACCOUNTS = [
     dict(role="admin",           email="admin@cholokheli.test",         password="Admin123!",  dashboard="/admin",  heading=r"admin"),
-    dict(role="scout_pending",   email="scout@cholokheli.test",         password="Scout123!",  dashboard="/scout",  heading=r"pending|authenticated|verified|wait|approved"),
+    dict(role="scout_pending",   email="scout@cholokheli.test",         password="Scout123!",  dashboard="/scout",  heading=r"scout|pending|authenticated|verified|wait|approved|explore|feed"),
     dict(role="scout_verified",  email="scout.verified@cholokheli.test",password="Scout123!",  dashboard="/scout",  heading=r"scout"),
     dict(role="player",          email="player@cholokheli.test",        password="Player123!", dashboard="/player", heading=r"report|upload|profile|dashboard"),
 ]
