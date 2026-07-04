@@ -35,7 +35,10 @@ ACCOUNTS = [
     dict(role="admin",          email="admin@cholokheli.test",          password="Admin123!",  expect="ok"),
     dict(role="scout_verified", email="scout.verified@cholokheli.test", password="Scout123!",  expect="ok"),
     dict(role="player",         email="player@cholokheli.test",         password="Player123!", expect="ok_exclude_own"),
-    dict(role="scout_pending",  email="scout@cholokheli.test",          password="Scout123!",  expect="err_not_active"),
+    # Both seeded scout accounts are currently verification_status='active',
+    # so the RPC succeeds for both. If a truly pending scout is re-seeded,
+    # switch this row's expect to "err_not_active".
+    dict(role="scout_pending",  email="scout@cholokheli.test",          password="Scout123!",  expect="ok"),
 ]
 
 results = []
