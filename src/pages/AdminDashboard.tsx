@@ -302,7 +302,7 @@ const AdminDashboard = () => {
           </div>
 
           {stats && (
-            <div className="grid grid-cols-3 sm:grid-cols-6 gap-2 sm:gap-3 mb-5">
+            <div className="glass-stagger grid grid-cols-3 sm:grid-cols-6 gap-2 sm:gap-3 mb-5">
               {[
                 { label: "Players", value: stats.totalPlayers, icon: Users },
                 { label: "Scouts", value: `${stats.activeScouts}/${stats.totalScouts}`, icon: Shield },
@@ -311,7 +311,7 @@ const AdminDashboard = () => {
                 { label: "Flagged", value: stats.flaggedMessages, icon: AlertTriangle },
                 { label: "Requests", value: stats.pendingRequests, icon: UserPlus },
               ].map((s) => (
-                <div key={s.label} className="bg-card border border-border rounded-xl p-3">
+                <div key={s.label} className="apple-glass glass-card rounded-xl p-3">
                   <div className="flex items-center gap-1.5 mb-1">
                     <s.icon className="h-3.5 w-3.5 text-primary shrink-0" />
                     <span className="text-[9px] sm:text-[10px] text-muted-foreground uppercase tracking-wider truncate">{s.label}</span>
@@ -343,7 +343,7 @@ const AdminDashboard = () => {
               <SearchFilterBar search={scoutSearch} setSearch={setScoutSearch} filter={scoutFilter} setFilter={setScoutFilter} placeholder="Search scouts..."
                 filters={[{ value: "pending", label: "Pending" }, { value: "active", label: "Active" }, { value: "rejected", label: "Rejected" }]} />
               {filteredScouts.length === 0 ? <p className="text-muted-foreground text-center py-12">No scouts found.</p> : filteredScouts.map((s) => (
-                <div key={s.id} className="bg-card border border-border rounded-xl p-4 space-y-3">
+                <div key={s.id} className="apple-glass glass-card rounded-xl p-4 space-y-3">
                   <div className="flex items-start justify-between gap-3">
                     <div className="flex-1 min-w-0">
                       <p className={`font-semibold truncate ${s.is_banned ? "line-through text-muted-foreground" : "text-foreground"}`}>{s.full_name}</p>
@@ -377,7 +377,7 @@ const AdminDashboard = () => {
             <TabsContent value="players" className="space-y-3">
               <p className="text-xs text-muted-foreground mb-2">{players.length} registered players</p>
               {players.length === 0 ? <p className="text-muted-foreground text-center py-12">No players found.</p> : players.map((p) => (
-                <div key={p.user_id} className="bg-card border border-border rounded-xl p-4 flex items-center justify-between gap-3">
+                <div key={p.user_id} className="apple-glass glass-card rounded-xl p-4 flex items-center justify-between gap-3">
                   <div className="flex-1 min-w-0">
                     <p className={`font-semibold truncate ${p.is_banned ? "line-through text-muted-foreground" : "text-foreground"}`}>{p.full_name}</p>
                     <p className="text-xs text-muted-foreground">{p.sport || "No sport"}</p>
@@ -396,7 +396,7 @@ const AdminDashboard = () => {
               <SearchFilterBar search={videoSearch} setSearch={setVideoSearch} filter={videoFilter} setFilter={setVideoFilter} placeholder="Search videos..."
                 filters={[{ value: "pending_payment", label: "Pending" }, { value: "live", label: "Live" }, { value: "rejected", label: "Rejected" }, { value: "draft", label: "Draft" }]} />
               {filteredVideos.length === 0 ? <p className="text-muted-foreground text-center py-12">No videos found.</p> : filteredVideos.map((v) => (
-                <div key={v.id} className="bg-card border border-border rounded-xl p-4 space-y-3">
+                <div key={v.id} className="apple-glass glass-card rounded-xl p-4 space-y-3">
                   <div className="flex items-start justify-between gap-3">
                     <div className="flex-1 min-w-0">
                       <p className="font-semibold text-foreground truncate">{v.full_name}</p>
@@ -422,7 +422,7 @@ const AdminDashboard = () => {
               <SearchFilterBar search={requestSearch} setSearch={setRequestSearch} filter={requestFilter} setFilter={setRequestFilter} placeholder="Search requests..."
                 filters={[{ value: "pending", label: "Pending" }, { value: "approved", label: "Approved" }, { value: "rejected", label: "Rejected" }]} />
               {filteredRequests.length === 0 ? <p className="text-muted-foreground text-center py-12">No requests found.</p> : filteredRequests.map((r) => (
-                <div key={r.id} className="bg-card border border-border rounded-xl p-4 space-y-3">
+                <div key={r.id} className="apple-glass glass-card rounded-xl p-4 space-y-3">
                   <div className="space-y-1">
                     <div className="flex items-start justify-between gap-2">
                       <p className="font-semibold text-sm text-foreground leading-tight">
@@ -459,7 +459,7 @@ const AdminDashboard = () => {
 
             {/* Controls Tab */}
             <TabsContent value="controls" className="space-y-4">
-              <div className="bg-card border border-border rounded-2xl p-6 space-y-4">
+              <div className="apple-glass glass-card rounded-2xl p-6 space-y-4">
                 <div className="flex items-center gap-3 mb-2">
                   <Power className="h-5 w-5 text-primary" />
                   <h2 className="font-display text-xl text-foreground">PLATFORM CONTROLS</h2>
