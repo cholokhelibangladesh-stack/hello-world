@@ -113,22 +113,53 @@ const AdminDashboard = () => {
       ...playerUserIds,
     ])];
 
-    let profileMap = new Map<string, { name: string; is_banned: boolean; sport?: string | null }>();
+    let profileMap = new Map<string, { name: string; username: string | null; is_banned: boolean; sport?: string | null }>();
     if (allUserIds.length > 0) {
-      const { data: profiles } = await supabase.from("profiles").select("user_id, full_name, is_banned, sport").in("user_id", allUserIds);
-      (profiles || []).forEach((p) => profileMap.set(p.user_id, { name: p.full_name, is_banned: (p as any).is_banned || false, sport: (p as any).sport }));
+      const { data: profiles } = await supabase.from("profiles").select("user_id, full_name, username, is_banned, sport").in("user_id", allUserIds);
+      (profiles || []).forEach((p) => profileMap.set(p.user_id, {
+        name: p.full_name,
+        username: (p as any).username ?? null,
+        is_banned: (p as any).is_banned || false,
+        sport: (p as any).sport,
+      }));
     }
 
-    setScouts(scoutData.map((s) => ({ ...s, full_name: profileMap.get(s.user_id)?.name || "Unknown", is_banned: (s as any).is_banned || false })));
+    // Admin-only helper: pull emails so the moderation search can match by email too.
+    const emailMap = new Map<string, string>();
+    const { data: emailRows } = await supabase.rpc("get_admin_user_emails" as any);
+    ((emailRows as any[]) || []).forEach((r) => emailMap.set(r.user_id, r.email));
+
+    setScouts(scoutData.map((s) => ({
+      ...s,
+      full_name: profileMap.get(s.user_id)?.name || "Unknown",
+      username: profileMap.get(s.user_id)?.username ?? null,
+      email: emailMap.get(s.user_id) ?? null,
+      is_banned: (s as any).is_banned || false,
+    })));
     setPlayers(playerUserIds.map((uid) => ({
       user_id: uid,
       full_name: profileMap.get(uid)?.name || "Unknown",
+      username: profileMap.get(uid)?.username ?? null,
+      email: emailMap.get(uid) ?? null,
       is_banned: profileMap.get(uid)?.is_banned || false,
       sport: profileMap.get(uid)?.sport,
     })));
-    setVideos(videoData.map((v) => ({ ...v, full_name: profileMap.get(v.user_id)?.name || "Unknown" })));
+    setVideos(videoData.map((v) => ({
+      ...v,
+      full_name: profileMap.get(v.user_id)?.name || "Unknown",
+      username: profileMap.get(v.user_id)?.username ?? null,
+      email: emailMap.get(v.user_id) ?? null,
+    })));
     setMessages(msgData.map((m) => ({ ...m, sender_name: profileMap.get(m.sender_id)?.name || "Unknown", receiver_name: profileMap.get(m.receiver_id)?.name || "Unknown" })));
-    setScoutRequests(reqData.map((r) => ({ ...r, scout_name: profileMap.get(r.scout_id)?.name || "Unknown", player_name: profileMap.get(r.player_id)?.name || "Unknown" })));
+    setScoutRequests(reqData.map((r) => ({
+      ...r,
+      scout_name: profileMap.get(r.scout_id)?.name || "Unknown",
+      player_name: profileMap.get(r.player_id)?.name || "Unknown",
+      scout_username: profileMap.get(r.scout_id)?.username ?? null,
+      player_username: profileMap.get(r.player_id)?.username ?? null,
+      scout_email: emailMap.get(r.scout_id) ?? null,
+      player_email: emailMap.get(r.player_id) ?? null,
+    })));
 
     const contactData = ((contactRes.data as unknown) as ContactMessageRow[]) || [];
     setContactMessages(contactData);
