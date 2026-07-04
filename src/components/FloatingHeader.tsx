@@ -19,7 +19,7 @@ const HERO_SCROLL_ROUTES = new Set<string>(["/mission"]);
 const FloatingHeader = () => {
   const { user, role, loading, signOut } = useAuth();
   const { theme, toggleTheme } = useTheme();
-  const { t } = useLanguage();
+  const { t, lang, toggleLang } = useLanguage();
   const navigate = useNavigate();
   const [busy, setBusy] = useState(false);
   const [open, setOpen] = useState(false);
