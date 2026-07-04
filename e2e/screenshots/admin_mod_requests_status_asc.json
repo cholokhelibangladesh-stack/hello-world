@@ -1,0 +1,16 @@
+{
+  "statuses": [
+    "approved",
+    "approved",
+    "approved",
+    "rejected",
+    "rejected"
+  ],
+  "ranks": [
+    2,
+    2,
+    2,
+    3,
+    3
+  ]
+}
