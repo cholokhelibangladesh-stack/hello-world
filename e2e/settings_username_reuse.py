@@ -59,8 +59,15 @@ async def type_username(page, value):
     await inp.press("Delete")
     if value:
         await inp.type(value, delay=15)
-    # allow debounced availability check to run
-    await page.wait_for_timeout(650)
+    # wait for debounced availability check to finish (status stops showing "Checking…")
+    try:
+        await page.wait_for_function(
+            "() => { const el = document.querySelector('[data-testid=settings-username-status]');"
+            " return el && !el.innerText.toLowerCase().includes('checking'); }",
+            timeout=5000,
+        )
+    except Exception:
+        pass
 
 
 async def status_text(page):
