@@ -608,14 +608,14 @@ const PlayerDashboard = () => {
           </div>
 
           <Tabs value={activeTab} onValueChange={handleTabChange} className="space-y-4 sm:space-y-6" onTouchStart={handleTouchStart} onTouchEnd={handleTouchEnd}>
-            <TabsList className="bg-card border border-border w-full grid grid-cols-3">
-              <TabsTrigger value="upload" className="data-[state=active]:bg-primary data-[state=active]:text-primary-foreground text-xs sm:text-sm">
+            <TabsList className="bg-card/40 backdrop-blur-xl border border-white/10 w-full grid grid-cols-3 rounded-2xl h-11 p-1 shadow-lg">
+              <TabsTrigger value="upload" className="rounded-xl data-[state=active]:bg-gradient-to-br data-[state=active]:from-primary data-[state=active]:to-primary/80 data-[state=active]:text-primary-foreground data-[state=active]:shadow-md data-[state=active]:shadow-primary/30 text-xs sm:text-sm transition-all">
                 <Upload className="h-3.5 w-3.5 sm:mr-1.5 shrink-0" /> <span className="hidden sm:inline">{t("player.tab.uploadFull" as any)}</span><span className="sm:hidden ml-1">{t("player.tab.upload" as any)}</span>
               </TabsTrigger>
-              <TabsTrigger value="explore" className="data-[state=active]:bg-primary data-[state=active]:text-primary-foreground text-xs sm:text-sm">
+              <TabsTrigger value="explore" className="rounded-xl data-[state=active]:bg-gradient-to-br data-[state=active]:from-primary data-[state=active]:to-primary/80 data-[state=active]:text-primary-foreground data-[state=active]:shadow-md data-[state=active]:shadow-primary/30 text-xs sm:text-sm transition-all">
                 <Eye className="h-3.5 w-3.5 sm:mr-1.5 shrink-0" /> <span className="hidden sm:inline">{t("player.tab.exploreFull" as any)}</span><span className="sm:hidden ml-1">{t("player.tab.explore" as any)}</span>
               </TabsTrigger>
-              <TabsTrigger value="profile" className="data-[state=active]:bg-primary data-[state=active]:text-primary-foreground text-xs sm:text-sm">
+              <TabsTrigger value="profile" className="rounded-xl data-[state=active]:bg-gradient-to-br data-[state=active]:from-primary data-[state=active]:to-primary/80 data-[state=active]:text-primary-foreground data-[state=active]:shadow-md data-[state=active]:shadow-primary/30 text-xs sm:text-sm transition-all">
                 <User className="h-3.5 w-3.5 sm:mr-1.5 shrink-0" /> <span className="hidden sm:inline">{t("player.tab.profileFull" as any)}</span><span className="sm:hidden ml-1">{t("player.tab.profile" as any)}</span>
               </TabsTrigger>
             </TabsList>
