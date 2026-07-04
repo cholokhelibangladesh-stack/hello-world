@@ -368,6 +368,33 @@ export type Database = {
         }
         Relationships: []
       }
+      username_audit: {
+        Row: {
+          changed_at: string
+          changed_by: string | null
+          id: string
+          new_username: string | null
+          old_username: string | null
+          user_id: string
+        }
+        Insert: {
+          changed_at?: string
+          changed_by?: string | null
+          id?: string
+          new_username?: string | null
+          old_username?: string | null
+          user_id: string
+        }
+        Update: {
+          changed_at?: string
+          changed_by?: string | null
+          id?: string
+          new_username?: string | null
+          old_username?: string | null
+          user_id?: string
+        }
+        Relationships: []
+      }
       video_events: {
         Row: {
           completed: boolean
@@ -534,6 +561,17 @@ export type Database = {
           user_id: string
         }[]
       }
+      get_my_sessions: {
+        Args: never
+        Returns: {
+          created_at: string
+          id: string
+          ip: string
+          is_current: boolean
+          updated_at: string
+          user_agent: string
+        }[]
+      }
       get_ranked_feed: {
         Args: { _limit?: number; _offset?: number; _sport?: string }
         Returns: {
@@ -554,6 +592,19 @@ export type Database = {
           view_count: number
         }[]
       }
+      get_username_audit: {
+        Args: { _limit?: number }
+        Returns: {
+          changed_at: string
+          changed_by: string
+          changed_by_email: string
+          id: string
+          new_username: string
+          old_username: string
+          user_email: string
+          user_id: string
+        }[]
+      }
       has_role: {
         Args: {
           _role: Database["public"]["Enums"]["app_role"]
@@ -562,6 +613,7 @@ export type Database = {
         Returns: boolean
       }
       refresh_video_scores: { Args: never; Returns: undefined }
+      revoke_my_session: { Args: { _session_id: string }; Returns: boolean }
     }
     Enums: {
       app_role: "player" | "scout" | "admin"

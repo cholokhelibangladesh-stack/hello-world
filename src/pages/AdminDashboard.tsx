@@ -13,6 +13,7 @@ import { useToast } from "@/hooks/use-toast";
 import ProfileTab from "@/components/ProfileTab";
 import AdminNoticeForm from "@/components/AdminNoticeForm";
 import AdminStatsPanel from "@/components/AdminStatsPanel";
+import UsernameAuditTab from "@/components/UsernameAuditTab";
 
 interface ScoutRow { id: string; user_id: string; organization: string | null; verification_status: string; created_at: string; full_name?: string; username?: string | null; email?: string | null; is_banned?: boolean; }
 interface PlayerRow { user_id: string; full_name: string; username?: string | null; email?: string | null; is_banned?: boolean; sport?: string | null; }
@@ -474,6 +475,7 @@ const AdminDashboard = () => {
                 <TabsTrigger value="notices" className="data-[state=active]:bg-primary data-[state=active]:text-primary-foreground text-xs whitespace-nowrap px-3">Notices</TabsTrigger>
                 <TabsTrigger value="contact" className="data-[state=active]:bg-primary data-[state=active]:text-primary-foreground text-xs whitespace-nowrap px-3">Contact {stats?.unreadContacts ? `(${stats.unreadContacts})` : ""}</TabsTrigger>
                 <TabsTrigger value="profile" className="data-[state=active]:bg-primary data-[state=active]:text-primary-foreground text-xs whitespace-nowrap px-3">Profile</TabsTrigger>
+                <TabsTrigger value="audit" className="data-[state=active]:bg-primary data-[state=active]:text-primary-foreground text-xs whitespace-nowrap px-3" data-testid="tab-audit">Usernames</TabsTrigger>
               </TabsList>
             </div>
 
@@ -683,6 +685,11 @@ const AdminDashboard = () => {
             {/* Profile Tab */}
             <TabsContent value="profile">
               <ProfileTab />
+            </TabsContent>
+
+            {/* Username Audit Tab */}
+            <TabsContent value="audit">
+              <UsernameAuditTab />
             </TabsContent>
           </Tabs>
         </motion.div>

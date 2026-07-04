@@ -1,6 +1,9 @@
-import { useEffect, useState } from "react";
+import { useEffect, useMemo, useState, useCallback } from "react";
 import { motion } from "framer-motion";
-import { Loader2, Lock, Mail, AtSign, ShieldCheck, Save } from "lucide-react";
+import {
+  Loader2, Lock, Mail, AtSign, ShieldCheck, Save, KeyRound, Monitor,
+  Eye, EyeOff, LogOut,
+} from "lucide-react";
 import { Link, useNavigate } from "@tanstack/react-router";
 import { useAuth } from "@/hooks/useAuth";
 import { supabase } from "@/integrations/supabase/client";
@@ -10,7 +13,28 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Badge } from "@/components/ui/badge";
 
-const USERNAME_RE = /^[a-z0-9_]{3,24}$/;
+// ---- Username validation with granular error messages ---------------------
+type UsernameCheck =
+  | { ok: true }
+  | { ok: false; code:
+      | "empty" | "too_short" | "too_long" | "uppercase"
+      | "leading_digit_underscore" | "invalid_chars"; message: string };
+
+const validateUsernameDetail = (raw: string): UsernameCheck => {
+  const value = raw.trim();
+  if (!value) return { ok: false, code: "empty", message: "Username is required." };
+  if (value.length < 3)
+    return { ok: false, code: "too_short", message: "Too short — usernames must be at least 3 characters." };
+  if (value.length > 24)
+    return { ok: false, code: "too_long", message: "Too long — usernames must be 24 characters or fewer." };
+  if (/[A-Z]/.test(value))
+    return { ok: false, code: "uppercase", message: "No uppercase letters — usernames are lowercase only." };
+  if (/^[0-9_]/.test(value))
+    return { ok: false, code: "leading_digit_underscore", message: "Must start with a lowercase letter (a–z)." };
+  if (!/^[a-z0-9_]+$/.test(value))
+    return { ok: false, code: "invalid_chars", message: "Only lowercase letters, digits, and underscore (_) are allowed." };
+  return { ok: true };
+};
 
 const AccountSettings = () => {
   const { user, role, loading: authLoading } = useAuth();
@@ -23,8 +47,50 @@ const AccountSettings = () => {
   const [newUsername, setNewUsername] = useState<string>("");
   const [checking, setChecking] = useState(false);
   const [availability, setAvailability] = useState<
-    "idle" | "available" | "taken" | "invalid" | "same"
+    "idle" | "available" | "taken" | "same"
   >("idle");
+  const validity = useMemo(() => validateUsernameDetail(newUsername), [newUsername]);
+
+  // ---- Password change state ---------------------------------------------
+  const [pwCurrent, setPwCurrent] = useState("");
+  const [pwNew, setPwNew] = useState("");
+  const [pwConfirm, setPwConfirm] = useState("");
+  const [pwShow, setPwShow] = useState(false);
+  const [pwSaving, setPwSaving] = useState(false);
+  const [pwStatus, setPwStatus] = useState<
+    { kind: "idle" } | { kind: "error"; message: string } | { kind: "success"; message: string }
+  >({ kind: "idle" });
+
+  const pwValidation = useMemo(() => {
+    if (!pwNew) return { ok: false, message: "" };
+    if (pwNew.length < 8)
+      return { ok: false, message: "New password must be at least 8 characters." };
+    if (!/[A-Za-z]/.test(pwNew) || !/[0-9]/.test(pwNew))
+      return { ok: false, message: "New password must include a letter and a number." };
+    if (pwConfirm && pwConfirm !== pwNew)
+      return { ok: false, message: "Confirmation does not match the new password." };
+    return { ok: true, message: "Looks good." };
+  }, [pwNew, pwConfirm]);
+
+  // ---- Sessions state -----------------------------------------------------
+  type SessionRow = {
+    id: string; created_at: string; updated_at: string;
+    user_agent: string | null; ip: string | null; is_current: boolean;
+  };
+  const [sessions, setSessions] = useState<SessionRow[]>([]);
+  const [sessionsLoading, setSessionsLoading] = useState(false);
+  const [revoking, setRevoking] = useState<string | null>(null);
+
+  const loadSessions = useCallback(async () => {
+    setSessionsLoading(true);
+    const { data, error } = await (supabase.rpc as any)("get_my_sessions");
+    setSessionsLoading(false);
+    if (error) {
+      toast({ title: "Could not load sessions", description: error.message, variant: "destructive" });
+      return;
+    }
+    setSessions(((data as SessionRow[]) || []));
+  }, [toast]);
 
   useEffect(() => {
     if (!authLoading && !user) {
@@ -43,7 +109,8 @@ const AccountSettings = () => {
         setNewUsername(u);
         setLoading(false);
       });
-  }, [user, authLoading]);
+    loadSessions();
+  }, [user, authLoading, loadSessions, navigate]);
 
   // Debounced availability check
   useEffect(() => {
@@ -54,9 +121,9 @@ const AccountSettings = () => {
       setAvailability("same");
       return;
     }
-    if (!USERNAME_RE.test(value)) {
+    if (!validity.ok) {
       setChecking(false);
-      setAvailability("invalid");
+      setAvailability("idle");
       return;
     }
     setChecking(true);
@@ -71,12 +138,9 @@ const AccountSettings = () => {
       if (cancelled) return;
       setChecking(false);
       setAvailability(data ? "taken" : "available");
-    }, 400);
-    return () => {
-      cancelled = true;
-      clearTimeout(t);
-    };
-  }, [newUsername, currentUsername, user]);
+    }, 350);
+    return () => { cancelled = true; clearTimeout(t); };
+  }, [newUsername, currentUsername, user, validity.ok]);
 
   const handleSave = async () => {
     if (!user) return;
@@ -85,12 +149,9 @@ const AccountSettings = () => {
       toast({ title: "No changes to save" });
       return;
     }
-    if (!USERNAME_RE.test(value)) {
-      toast({
-        title: "Invalid username",
-        description: "3–24 chars, lowercase letters, digits, or underscore.",
-        variant: "destructive",
-      });
+    const v = validateUsernameDetail(value);
+    if (!v.ok) {
+      toast({ title: "Invalid username", description: v.message, variant: "destructive" });
       return;
     }
     setSaving(true);
@@ -115,6 +176,56 @@ const AccountSettings = () => {
     setCurrentUsername(value);
   };
 
+  const handlePasswordChange = async () => {
+    if (!user?.email) return;
+    setPwStatus({ kind: "idle" });
+    if (!pwCurrent) {
+      setPwStatus({ kind: "error", message: "Enter your current password to continue." });
+      return;
+    }
+    if (!pwValidation.ok) {
+      setPwStatus({ kind: "error", message: pwValidation.message || "New password is invalid." });
+      return;
+    }
+    if (pwNew === pwCurrent) {
+      setPwStatus({ kind: "error", message: "New password must differ from your current password." });
+      return;
+    }
+    setPwSaving(true);
+    // Verify current password by re-authenticating
+    const { error: signErr } = await supabase.auth.signInWithPassword({
+      email: user.email,
+      password: pwCurrent,
+    });
+    if (signErr) {
+      setPwSaving(false);
+      setPwStatus({ kind: "error", message: "Current password is incorrect." });
+      return;
+    }
+    const { error: updErr } = await supabase.auth.updateUser({ password: pwNew });
+    setPwSaving(false);
+    if (updErr) {
+      setPwStatus({ kind: "error", message: updErr.message });
+      return;
+    }
+    setPwStatus({ kind: "success", message: "Password updated successfully." });
+    setPwCurrent(""); setPwNew(""); setPwConfirm("");
+    toast({ title: "Password updated" });
+    loadSessions();
+  };
+
+  const handleRevokeSession = async (sid: string) => {
+    setRevoking(sid);
+    const { error } = await (supabase.rpc as any)("revoke_my_session", { _session_id: sid });
+    setRevoking(null);
+    if (error) {
+      toast({ title: "Could not revoke session", description: error.message, variant: "destructive" });
+      return;
+    }
+    toast({ title: "Session revoked" });
+    loadSessions();
+  };
+
   if (authLoading || loading) {
     return (
       <div className="min-h-screen flex items-center justify-center">
@@ -124,6 +235,9 @@ const AccountSettings = () => {
   }
 
   const profileHref = role === "scout" ? "/scout/profile" : "/player/profile";
+  const saveDisabled =
+    saving || checking || availability === "taken" ||
+    availability === "same" || !validity.ok;
 
   return (
     <div className="min-h-screen pt-16 pb-24">
@@ -190,7 +304,8 @@ const AccountSettings = () => {
             <div>
               <h2 className="text-lg font-semibold">Change username</h2>
               <p className="text-xs text-muted-foreground">
-                Choose a handle 3–24 chars (lowercase letters, digits, underscore).
+                3–24 characters. Start with a lowercase letter; then lowercase letters,
+                digits, or underscore.
               </p>
             </div>
             <div className="space-y-2">
@@ -199,40 +314,47 @@ const AccountSettings = () => {
                 id="new-username"
                 data-testid="settings-username-input"
                 value={newUsername}
-                onChange={(e) => setNewUsername(e.target.value.toLowerCase())}
+                onChange={(e) => setNewUsername(e.target.value)}
                 placeholder="your_handle"
-                maxLength={24}
                 autoCapitalize="none"
                 autoCorrect="off"
                 spellCheck={false}
+                aria-invalid={!validity.ok && newUsername.length > 0}
+                aria-describedby="settings-username-status"
                 className="bg-background/60 border-white/10 rounded-xl"
               />
-              <div className="min-h-[1.25rem] text-xs" data-testid="settings-username-status">
+              <div
+                id="settings-username-status"
+                className="min-h-[1.25rem] text-xs"
+                data-testid="settings-username-status"
+                data-status={
+                  checking ? "checking"
+                    : availability === "same" ? "same"
+                    : !validity.ok ? validity.code
+                    : availability
+                }
+              >
                 {checking && <span className="text-muted-foreground">Checking availability…</span>}
                 {!checking && availability === "same" && (
                   <span className="text-muted-foreground">This is your current username.</span>
                 )}
-                {!checking && availability === "invalid" && (
-                  <span className="text-destructive">Invalid format.</span>
+                {!checking && availability !== "same" && !validity.ok && newUsername.length > 0 && (
+                  <span className="text-destructive">{validity.message}</span>
                 )}
-                {!checking && availability === "taken" && (
-                  <span className="text-destructive">Already taken.</span>
+                {!checking && availability === "taken" && validity.ok && (
+                  <span className="text-destructive">
+                    That username is already taken. Please choose another.
+                  </span>
                 )}
-                {!checking && availability === "available" && (
-                  <span className="text-emerald-400">Available.</span>
+                {!checking && availability === "available" && validity.ok && (
+                  <span className="text-emerald-400">Available — you can save this handle.</span>
                 )}
               </div>
             </div>
             <div className="flex gap-2">
               <Button
                 onClick={handleSave}
-                disabled={
-                  saving ||
-                  checking ||
-                  availability === "taken" ||
-                  availability === "invalid" ||
-                  availability === "same"
-                }
+                disabled={saveDisabled}
                 data-testid="settings-username-save"
                 className="rounded-xl"
               >
@@ -247,6 +369,172 @@ const AccountSettings = () => {
               >
                 Reset
               </Button>
+            </div>
+          </div>
+
+          {/* Change password card */}
+          <div
+            className="rounded-2xl border border-white/10 bg-secondary/40 backdrop-blur-sm p-5 space-y-4"
+            data-testid="settings-password-card"
+          >
+            <div className="flex items-center gap-2">
+              <KeyRound className="h-4 w-4 text-primary" />
+              <h2 className="text-lg font-semibold">Change password</h2>
+            </div>
+            <p className="text-xs text-muted-foreground">
+              Enter your current password, then choose a new one. You will stay signed in on
+              this device.
+            </p>
+
+            <div className="space-y-2">
+              <Label htmlFor="pw-current">Current password</Label>
+              <div className="relative">
+                <Input
+                  id="pw-current"
+                  data-testid="pw-current"
+                  type={pwShow ? "text" : "password"}
+                  value={pwCurrent}
+                  onChange={(e) => setPwCurrent(e.target.value)}
+                  autoComplete="current-password"
+                  className="bg-background/60 border-white/10 rounded-xl pr-10"
+                />
+                <button
+                  type="button"
+                  onClick={() => setPwShow((s) => !s)}
+                  className="absolute right-2 top-1/2 -translate-y-1/2 text-muted-foreground hover:text-foreground"
+                  aria-label={pwShow ? "Hide password" : "Show password"}
+                >
+                  {pwShow ? <EyeOff className="h-4 w-4" /> : <Eye className="h-4 w-4" />}
+                </button>
+              </div>
+            </div>
+
+            <div className="space-y-2">
+              <Label htmlFor="pw-new">New password</Label>
+              <Input
+                id="pw-new"
+                data-testid="pw-new"
+                type={pwShow ? "text" : "password"}
+                value={pwNew}
+                onChange={(e) => setPwNew(e.target.value)}
+                autoComplete="new-password"
+                className="bg-background/60 border-white/10 rounded-xl"
+              />
+              <p className="text-xs text-muted-foreground">
+                At least 8 characters, including a letter and a number.
+              </p>
+            </div>
+
+            <div className="space-y-2">
+              <Label htmlFor="pw-confirm">Confirm new password</Label>
+              <Input
+                id="pw-confirm"
+                data-testid="pw-confirm"
+                type={pwShow ? "text" : "password"}
+                value={pwConfirm}
+                onChange={(e) => setPwConfirm(e.target.value)}
+                autoComplete="new-password"
+                className="bg-background/60 border-white/10 rounded-xl"
+              />
+            </div>
+
+            <div
+              className="min-h-[1.25rem] text-xs"
+              data-testid="pw-status"
+              data-status={pwStatus.kind}
+            >
+              {pwStatus.kind === "error" && (
+                <span className="text-destructive">{pwStatus.message}</span>
+              )}
+              {pwStatus.kind === "success" && (
+                <span className="text-emerald-400">{pwStatus.message}</span>
+              )}
+              {pwStatus.kind === "idle" && pwNew.length > 0 && !pwValidation.ok && (
+                <span className="text-destructive">{pwValidation.message}</span>
+              )}
+              {pwStatus.kind === "idle" && pwNew.length > 0 && pwValidation.ok && (
+                <span className="text-emerald-400">{pwValidation.message}</span>
+              )}
+            </div>
+
+            <Button
+              onClick={handlePasswordChange}
+              disabled={pwSaving || !pwCurrent || !pwValidation.ok}
+              data-testid="pw-save"
+              className="rounded-xl"
+            >
+              {pwSaving ? <Loader2 className="h-4 w-4 animate-spin mr-2" /> : <KeyRound className="h-4 w-4 mr-2" />}
+              Update password
+            </Button>
+          </div>
+
+          {/* Sessions & devices card */}
+          <div
+            className="rounded-2xl border border-white/10 bg-secondary/40 backdrop-blur-sm p-5 space-y-4"
+            data-testid="settings-sessions-card"
+          >
+            <div className="flex items-center justify-between gap-2">
+              <div className="flex items-center gap-2">
+                <Monitor className="h-4 w-4 text-primary" />
+                <h2 className="text-lg font-semibold">Sessions & devices</h2>
+              </div>
+              <Button
+                variant="ghost"
+                size="sm"
+                onClick={loadSessions}
+                data-testid="sessions-refresh"
+                disabled={sessionsLoading}
+                className="text-xs rounded-lg"
+              >
+                {sessionsLoading ? <Loader2 className="h-3.5 w-3.5 animate-spin" /> : "Refresh"}
+              </Button>
+            </div>
+            <p className="text-xs text-muted-foreground">
+              Active logins for your account. Revoke any session you don’t recognize.
+            </p>
+
+            <div className="space-y-2" data-testid="sessions-list">
+              {sessions.length === 0 && !sessionsLoading && (
+                <p className="text-sm text-muted-foreground text-center py-6">
+                  No active sessions found.
+                </p>
+              )}
+              {sessions.map((s) => (
+                <div
+                  key={s.id}
+                  data-testid="session-row"
+                  data-session-id={s.id}
+                  data-is-current={String(s.is_current)}
+                  className="flex items-start justify-between gap-3 rounded-xl border border-white/10 bg-background/60 px-3 py-2"
+                >
+                  <div className="min-w-0 flex-1">
+                    <p className="text-sm text-foreground truncate">
+                      {s.user_agent || "Unknown device"}
+                      {s.is_current && (
+                        <Badge className="ml-2 bg-primary/20 text-primary border-primary/30 rounded-full text-[10px]">
+                          This device
+                        </Badge>
+                      )}
+                    </p>
+                    <p className="text-xs text-muted-foreground truncate">
+                      {s.ip || "unknown ip"} • last active{" "}
+                      {s.updated_at ? new Date(s.updated_at).toLocaleString() : "—"}
+                    </p>
+                  </div>
+                  <Button
+                    size="sm"
+                    variant="outline"
+                    onClick={() => handleRevokeSession(s.id)}
+                    disabled={revoking === s.id}
+                    data-testid={`session-revoke-${s.id}`}
+                    className="rounded-lg text-xs"
+                  >
+                    {revoking === s.id
+                      ? <Loader2 className="h-3.5 w-3.5 animate-spin" />
+                      : <><LogOut className="h-3.5 w-3.5 mr-1" /> Revoke</>}
+                  </Button>
+                </div>
+              ))}
             </div>
           </div>
 
