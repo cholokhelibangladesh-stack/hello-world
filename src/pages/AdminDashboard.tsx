@@ -135,7 +135,7 @@ const AdminDashboard = () => {
 
   const fetchAll = async () => {
     setLoading(true);
-    const [scoutRes, videoRes, roleRes, paymentRes, msgRes, reqRes, settingsRes, contactRes] = await Promise.all([
+    const [scoutRes, videoRes, roleRes, paymentRes, msgRes, reqRes, settingsRes, contactRes, alertRes] = await Promise.all([
       supabase.from("scout_profiles").select("*").order("created_at", { ascending: false }),
       supabase.from("videos").select("*").order("created_at", { ascending: false }),
       supabase.from("user_roles").select("role, user_id"),
@@ -144,6 +144,7 @@ const AdminDashboard = () => {
       supabase.from("scout_requests").select("*").order("created_at", { ascending: false }),
       supabase.from("app_settings" as any).select("key, value"),
       supabase.from("contact_messages" as any).select("*").order("created_at", { ascending: false }),
+      supabase.from("moderation_alerts" as any).select("*").order("created_at", { ascending: false }).limit(200),
     ]);
 
     const scoutData = scoutRes.data || [];
