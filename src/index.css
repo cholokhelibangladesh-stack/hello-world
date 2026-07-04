@@ -368,8 +368,9 @@
     .glass-stagger > * { animation: none !important; }
     .glass-card { transition: none !important; }
     .glass-card:hover,
-    .glass-card:active { transform: none !important; }
+    .glass-card:active { translate: 0 0 !important; scale: 1 !important; }
   }
+
 
 
 /* Ocultar badge "Made with Lovable" */
