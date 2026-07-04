@@ -323,6 +323,10 @@ const AdminDashboard = () => {
             </div>
           )}
 
+          <div className="mb-5">
+            <AdminStatsPanel />
+          </div>
+
           <Tabs defaultValue="scouts" className="space-y-4">
             {/* Mobile: horizontally scrollable tab row */}
             <div className="overflow-x-auto -mx-4 px-4 sm:mx-0 sm:px-0">
