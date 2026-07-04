@@ -270,10 +270,11 @@ const Auth = () => {
       const phone = localStorage.getItem("pendingPhone") || "";
       const gender = localStorage.getItem("pendingGender") || "";
       const name = localStorage.getItem("pendingName") || "";
+      const username = localStorage.getItem("pendingUsername") || "";
 
       try {
         await supabase.functions.invoke("handle-signup-role", {
-          body: { role: pendingRole, sport, phone, gender, full_name: name },
+          body: { role: pendingRole, sport, phone, gender, full_name: name, username },
         });
       } catch {}
 
