@@ -102,7 +102,7 @@ async def set_search(page, tab, value):
 
 
 async def open_tab(page, name):
-    await page.get_by_role("tab", name=lambda t: t and name.lower() in t.lower()).first.click()
+    await page.locator(f'button[role="tab"]:has-text("{name}")').first.click()
     await page.wait_for_timeout(200)
 
 
