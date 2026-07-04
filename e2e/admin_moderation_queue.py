@@ -28,7 +28,7 @@ ADMIN_EMAIL  = "admin@cholokheli.test"
 ADMIN_PASS   = "Admin123!"
 PLAYER_EMAIL = "player@cholokheli.test"
 PLAYER_PASS  = "Player123!"
-SCOUT_EMAIL  = "scout_verified@cholokheli.test"
+SCOUT_EMAIL  = "scout.verified@cholokheli.test"
 SCOUT_PASS   = "Scout123!"
 
 PLAYER_ID = "b232d1a4-7745-4af8-b03a-00603728c3f7"
