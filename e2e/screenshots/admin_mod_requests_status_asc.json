@@ -3,6 +3,8 @@
     "approved",
     "approved",
     "approved",
+    "approved",
+    "rejected",
     "rejected",
     "rejected"
   ],
@@ -10,6 +12,8 @@
     2,
     2,
     2,
+    2,
+    3,
     3,
     3
   ]
