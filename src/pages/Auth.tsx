@@ -468,6 +468,33 @@ const Auth = () => {
                 />
               </div>
             )}
+            {!isLogin && (
+              <div>
+                <Label htmlFor="username" className="text-sm text-muted-foreground">Username</Label>
+                <Input
+                  id="username"
+                  placeholder="e.g. neymar_11"
+                  required
+                  autoComplete="off"
+                  className="bg-secondary border-border mt-1"
+                  value={formUsername}
+                  onChange={(e) => setFormUsername(e.target.value.toLowerCase().replace(/[^a-z0-9_]/g, ""))}
+                  maxLength={24}
+                />
+                {formUsername && (
+                  <p className={`text-xs mt-1 ${
+                    usernameStatus === "ok" ? "text-primary" :
+                    usernameStatus === "taken" || usernameStatus === "invalid" ? "text-destructive" :
+                    "text-muted-foreground"
+                  }`}>
+                    {usernameStatus === "checking" && "Checking availability…"}
+                    {usernameStatus === "ok" && "✓ Available"}
+                    {usernameStatus === "taken" && "This username is already taken"}
+                    {usernameStatus === "invalid" && "3–24 chars: lowercase letters, numbers, underscore"}
+                  </p>
+                )}
+              </div>
+            )}
             <div>
               <Label htmlFor="email" className="text-sm text-muted-foreground">{t("auth.email")}</Label>
               <Input
