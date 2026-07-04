@@ -118,17 +118,27 @@ def evaluate_expectation(role, expect, payload):
 async def main():
     async with async_playwright() as pw:
         browser = await pw.chromium.launch(headless=True)
+        context = await browser.new_context(viewport={"width": 1280, "height": 900})
+        page = await context.new_page()
+        page.on("pageerror", lambda err: print(f"  [pageerror] {err}"))
+
+        # Prime the app once so the first sign-in isn't racing initial hydration.
+        await page.goto(BASE + "/", wait_until="domcontentloaded")
+        await page.wait_for_timeout(1000)
 
         for acc in ACCOUNTS:
             print(f"\n== {acc['role']} ({acc['email']}) ==")
-            context = await browser.new_context(viewport={"width": 1280, "height": 900})
-            page = await context.new_page()
-            page.on("pageerror", lambda err: print(f"  [pageerror] {err}"))
-
-            signed = await sign_in(page, acc["email"], acc["password"])
+            await sign_out(page, context)
+            signed = False
+            for attempt in range(3):
+                signed = await sign_in(page, acc["email"], acc["password"])
+                if signed:
+                    break
+                await sign_out(page, context)
+                await page.wait_for_timeout(1000)
             if not signed:
-                record(f"{acc['role']}:signin", False, "no supabase session in localStorage")
-                await context.close()
+                await page.screenshot(path=str(OUT / f"feed_{acc['role']}_signin_fail.png"))
+                record(f"{acc['role']}:signin", False, "no supabase session in localStorage after 3 attempts")
                 continue
             record(f"{acc['role']}:signin", True)
 
@@ -136,8 +146,6 @@ async def main():
             (OUT / f"feed_{acc['role']}.json").write_text(json.dumps(payload, indent=2, default=str))
             ok, detail = evaluate_expectation(acc["role"], acc["expect"], payload)
             record(f"{acc['role']}:get_ranked_feed", ok, detail)
-
-            await context.close()
 
         await browser.close()
 
