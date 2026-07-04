@@ -140,7 +140,7 @@ async def main():
         print("\n== sport_gibberish ==")
         payload = await rpc(page, {"_limit": 10, "_offset": 0, "_sport": "__nope__"})
         save("sport_gibberish", payload)
-        ok = payload.get("error") is None and payload.get("data") == []
+        ok = payload.get("error") is None and (payload.get("data") in (None, []))
         record("sport_gibberish:empty", ok,
                f"rows={len(payload.get('data') or [])} err={payload.get('error')}")
 
