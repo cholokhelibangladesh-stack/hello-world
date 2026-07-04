@@ -251,24 +251,55 @@ const AdminDashboard = () => {
     setFeedbackInputs((prev) => ({ ...prev, [reqId]: "" }));
   };
 
-  // Filtered data
-  const filteredScouts = scouts.filter((s) => {
-    const matchSearch = !scoutSearch || s.full_name?.toLowerCase().includes(scoutSearch.toLowerCase()) || s.organization?.toLowerCase().includes(scoutSearch.toLowerCase());
-    const matchFilter = scoutFilter === "all" || s.verification_status === scoutFilter;
-    return matchSearch && matchFilter;
-  });
+  // Sort helpers
+  const sortByDate = (a: any, b: any, dir: "asc" | "desc") => {
+    const da = new Date(a.created_at).getTime();
+    const db = new Date(b.created_at).getTime();
+    return dir === "asc" ? da - db : db - da;
+  };
+  const sortByStr = (a: string, b: string, dir: "asc" | "desc") =>
+    dir === "asc" ? (a || "").localeCompare(b || "") : (b || "").localeCompare(a || "");
+  const statusRank: Record<string, number> = { pending: 0, pending_payment: 0, draft: 1, live: 2, approved: 2, active: 2, rejected: 3 };
+  const sortByStatus = (a: string, b: string, dir: "asc" | "desc") => {
+    const ra = statusRank[a] ?? 99; const rb = statusRank[b] ?? 99;
+    return dir === "asc" ? ra - rb : rb - ra;
+  };
+  const applySort = <T extends any>(rows: T[], sort: string, statusKey: keyof T, targetKey: keyof T): T[] => {
+    const [field, dir] = sort.split("_") as [string, "asc" | "desc"];
+    const arr = [...rows];
+    if (field === "date") arr.sort((a: any, b: any) => sortByDate(a, b, dir));
+    else if (field === "status") arr.sort((a: any, b: any) => sortByStatus(a[statusKey], b[statusKey], dir) || sortByDate(a, b, "desc"));
+    else if (field === "target") arr.sort((a: any, b: any) => sortByStr(a[targetKey], b[targetKey], dir) || sortByDate(a, b, "desc"));
+    return arr;
+  };
 
-  const filteredVideos = videos.filter((v) => {
-    const matchSearch = !videoSearch || v.full_name?.toLowerCase().includes(videoSearch.toLowerCase()) || v.description?.toLowerCase().includes(videoSearch.toLowerCase());
-    const matchFilter = videoFilter === "all" || v.status === videoFilter;
-    return matchSearch && matchFilter;
-  });
+  // Filtered + sorted data
+  const filteredScouts = applySort(
+    scouts.filter((s) => {
+      const matchSearch = !scoutSearch || s.full_name?.toLowerCase().includes(scoutSearch.toLowerCase()) || s.organization?.toLowerCase().includes(scoutSearch.toLowerCase());
+      const matchFilter = scoutFilter === "all" || s.verification_status === scoutFilter;
+      return matchSearch && matchFilter;
+    }),
+    scoutSort, "verification_status" as any, "full_name" as any,
+  );
 
-  const filteredRequests = scoutRequests.filter((r) => {
-    const matchSearch = !requestSearch || r.scout_name?.toLowerCase().includes(requestSearch.toLowerCase()) || r.player_name?.toLowerCase().includes(requestSearch.toLowerCase());
-    const matchFilter = requestFilter === "all" || r.status === requestFilter;
-    return matchSearch && matchFilter;
-  });
+  const filteredVideos = applySort(
+    videos.filter((v) => {
+      const matchSearch = !videoSearch || v.full_name?.toLowerCase().includes(videoSearch.toLowerCase()) || v.description?.toLowerCase().includes(videoSearch.toLowerCase());
+      const matchFilter = videoFilter === "all" || v.status === videoFilter;
+      return matchSearch && matchFilter;
+    }),
+    videoSort, "status" as any, "full_name" as any,
+  );
+
+  const filteredRequests = applySort(
+    scoutRequests.filter((r) => {
+      const matchSearch = !requestSearch || r.scout_name?.toLowerCase().includes(requestSearch.toLowerCase()) || r.player_name?.toLowerCase().includes(requestSearch.toLowerCase());
+      const matchFilter = requestFilter === "all" || r.status === requestFilter;
+      return matchSearch && matchFilter;
+    }),
+    requestSort, "status" as any, "player_name" as any,
+  );
 
   const filteredMessages = messages.filter((m) => {
     const matchSearch = !messageSearch || m.sender_name?.toLowerCase().includes(messageSearch.toLowerCase()) || m.receiver_name?.toLowerCase().includes(messageSearch.toLowerCase()) || m.content.toLowerCase().includes(messageSearch.toLowerCase());
@@ -278,13 +309,22 @@ const AdminDashboard = () => {
 
   if (authLoading || loading) return <div className="min-h-screen flex items-center justify-center"><Loader2 className="h-8 w-8 animate-spin text-primary" /></div>;
 
-  const SearchFilterBar = ({ search, setSearch, filter, setFilter, filters, placeholder }: { search: string; setSearch: (v: string) => void; filter: string; setFilter: (v: string) => void; filters: { value: string; label: string }[]; placeholder: string }) => (
+  const SORT_OPTIONS = [
+    { value: "date_desc", label: "Newest first" },
+    { value: "date_asc", label: "Oldest first" },
+    { value: "status_asc", label: "Status (pending first)" },
+    { value: "status_desc", label: "Status (resolved first)" },
+    { value: "target_asc", label: "Account A–Z" },
+    { value: "target_desc", label: "Account Z–A" },
+  ];
+
+  const SearchFilterBar = ({ search, setSearch, filter, setFilter, filters, placeholder, sort, setSort }: { search: string; setSearch: (v: string) => void; filter: string; setFilter: (v: string) => void; filters: { value: string; label: string }[]; placeholder: string; sort?: string; setSort?: (v: string) => void }) => (
     <div className="flex flex-col sm:flex-row gap-2 mb-4">
       <div className="relative flex-1">
         <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
         <Input placeholder={placeholder} className="pl-10 bg-secondary border-border rounded-xl text-sm" value={search} onChange={(e) => setSearch(e.target.value)} />
       </div>
-      <div className="flex gap-1.5 flex-wrap">
+      <div className="flex gap-1.5 flex-wrap items-center">
         {filters.map((f) => (
           <Button key={f.value} size="sm" variant="outline"
             onClick={() => setFilter(filter === f.value ? "all" : f.value)}
@@ -292,6 +332,18 @@ const AdminDashboard = () => {
             <Filter className="h-3 w-3 mr-1" /> {f.label}
           </Button>
         ))}
+        {setSort && (
+          <select
+            aria-label="Sort"
+            value={sort}
+            onChange={(e) => setSort(e.target.value)}
+            className="h-8 rounded-full border border-border bg-secondary text-xs px-3 text-muted-foreground focus:outline-none focus:ring-2 focus:ring-ring"
+          >
+            {SORT_OPTIONS.map((o) => (
+              <option key={o.value} value={o.value}>{o.label}</option>
+            ))}
+          </select>
+        )}
       </div>
     </div>
   );
