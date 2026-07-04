@@ -209,6 +209,7 @@ const Auth = () => {
           localStorage.setItem("pendingPhone", formPhone);
           localStorage.setItem("pendingGender", formGender);
           localStorage.setItem("pendingName", formName);
+          localStorage.setItem("pendingUsername", formUsername.trim().toLowerCase());
 
           // Stash birth certificate (base64) for upload once authenticated
           if (birthCertFile) {
