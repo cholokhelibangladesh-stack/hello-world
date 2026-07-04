@@ -37,7 +37,9 @@ export default function CurvedAthleteCarousel() {
   const cardH = 400;
 
   const radius = 620;
-  const angleStep = 36; // 10 slots × 36° = tighter inward curl on the front arc
+  // 360° evenly divided across every card so the ring closes cleanly with
+  // no overlap at the seam and the front arc reads as a smooth bowl.
+  const angleStep = 360 / RING.length;
 
 
 
