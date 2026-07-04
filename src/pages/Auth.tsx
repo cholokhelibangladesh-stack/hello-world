@@ -105,6 +105,20 @@ const Auth = () => {
     }
   }, [user, userRole, navigate]);
 
+  // Debounced username availability check
+  useEffect(() => {
+    if (isLogin) return;
+    const u = formUsername.trim().toLowerCase();
+    if (!u) { setUsernameStatus("idle"); return; }
+    if (!/^[a-z0-9_]{3,24}$/.test(u)) { setUsernameStatus("invalid"); return; }
+    setUsernameStatus("checking");
+    const h = setTimeout(async () => {
+      const { data } = await supabase.from("profiles").select("user_id").ilike("username" as any, u).maybeSingle();
+      setUsernameStatus(data ? "taken" : "ok");
+    }, 350);
+    return () => clearTimeout(h);
+  }, [formUsername, isLogin]);
+
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!isLogin) {
