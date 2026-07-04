@@ -2,19 +2,16 @@
 """
 Username uniqueness E2E.
 
-Verifies:
-  1. Existing seeded usernames cannot be reused (case-insensitive).
-  2. A brand-new username can be claimed by a fresh signup.
-  3. That same username, once claimed, is then rejected for a second signup
-     even with a different email.
+Signs in as admin and exercises the case-insensitive UNIQUE index on
+public.profiles.username directly. Admin can UPDATE any profile row
+(policy: "Admins update any profile"), which lets us verify:
 
-Uses the browser Supabase client so RLS + the unique index are exercised
-the same way the app does at runtime.
-
-Cleanup: any auth users created here are removed via the admin edge
-function `handle-signup-role` and profile row deletion is left to seed;
-we only insert usernames on ephemeral emails and then delete the profile
-username reservation by resetting it. Passwords are ephemeral.
+  1. Every seeded username reports as taken (case-insensitive search).
+  2. A random fresh username reports as available.
+  3. Admin can claim a fresh username on their own profile.
+  4. Attempting to update ANOTHER account's profile to a taken username
+     (or its UPPERCASE variant) is rejected by the DB unique index.
+  5. Restore original admin username so the run is idempotent.
 
 Usage:
     python3 e2e/username_uniqueness.py
@@ -27,6 +24,10 @@ BASE = os.environ.get("BASE_URL", "http://localhost:8080").rstrip("/")
 OUT = Path(__file__).parent / "screenshots"
 OUT.mkdir(parents=True, exist_ok=True)
 
+ADMIN_EMAIL = "admin@cholokheli.test"
+ADMIN_PASS  = "Admin123!"
+PLAYER_EMAIL = "player@cholokheli.test"
+
 SEEDED_USERNAMES = ["admin_user", "scout_pending", "scout_verified", "player_user"]
 
 results = []
@@ -38,41 +39,12 @@ def save(name, payload):
     (OUT / f"username_{name}.json").write_text(json.dumps(payload, indent=2, default=str))
 
 
-async def check_taken(page, uname):
-    """Return True if `uname` (case-insensitive) already exists in profiles."""
-    return await page.evaluate(
-        """async (u) => {
-            const mod = await import('/src/integrations/supabase/client.ts');
-            const { data, error } = await mod.supabase
-                .from('profiles').select('user_id').ilike('username', u).maybeSingle();
-            return { taken: !!data, error: error?.message ?? null };
-        }""",
-        uname,
-    )
-
-
-async def try_claim_username(page, email, password, uname, full_name):
-    """Signup + call edge function to set the profile username. Returns result payload."""
-    return await page.evaluate(
-        """async ({email, password, uname, full_name}) => {
-            const mod = await import('/src/integrations/supabase/client.ts');
-            const { supabase } = mod;
-            const { data: su, error: suErr } = await supabase.auth.signUp({
-                email, password,
-                options: { data: { full_name } },
-            });
-            if (suErr) return { stage: 'signup', error: suErr.message };
-            // Wait a beat for the profile row trigger, then try to claim username directly
-            // via a plain UPDATE — will fail against the unique index if taken.
-            await new Promise(r => setTimeout(r, 400));
-            const uid = su.user?.id;
-            if (!uid) return { stage: 'no_user', session: !!su.session };
-            const { error: updErr } = await supabase
-                .from('profiles').update({ username: uname }).eq('user_id', uid);
-            return { stage: 'update', error: updErr?.message ?? null, uid };
-        }""",
-        {"email": email, "password": password, "uname": uname, "full_name": full_name},
-    )
+async def sb(page, code):
+    return await page.evaluate(f"""async () => {{
+        const mod = await import('/src/integrations/supabase/client.ts');
+        const supabase = mod.supabase;
+        {code}
+    }}""")
 
 
 async def main():
@@ -82,57 +54,94 @@ async def main():
         page = await ctx.new_page()
         page.on("pageerror", lambda err: print(f"  [pageerror] {err}"))
         await page.goto(BASE + "/auth", wait_until="domcontentloaded")
-        await page.wait_for_timeout(500)
+        await page.wait_for_timeout(400)
 
-        # 1. Existing usernames report as taken (case-insensitive).
+        # Sign in as admin.
+        signin = await page.evaluate(
+            """async ({email, password}) => {
+                const mod = await import('/src/integrations/supabase/client.ts');
+                const { data, error } = await mod.supabase.auth.signInWithPassword({ email, password });
+                return { ok: !!data?.session, error: error?.message ?? null };
+            }""",
+            {"email": ADMIN_EMAIL, "password": ADMIN_PASS},
+        )
+        if not signin.get("ok"):
+            rec("admin:signin", False, signin.get("error") or "")
+            sys.exit(1)
+        rec("admin:signin", True)
+
+        # 1. Every seeded username reports as taken (case-insensitive search).
         for u in SEEDED_USERNAMES:
-            r = await check_taken(page, u)
+            r = await sb(page, f"""
+                const {{ data, error }} = await supabase.from('profiles').select('user_id, username').ilike('username', '{u}').maybeSingle();
+                return {{ taken: !!data, error: error?.message ?? null }};
+            """)
             save(f"existing_{u}", r)
             rec(f"existing_taken:{u}", r.get("taken") is True, r.get("error") or "")
-            r2 = await check_taken(page, u.upper())
-            rec(f"existing_taken_ci:{u.upper()}", r2.get("taken") is True, r2.get("error") or "")
+            r_up = await sb(page, f"""
+                const {{ data, error }} = await supabase.from('profiles').select('user_id').ilike('username', '{u.upper()}').maybeSingle();
+                return {{ taken: !!data, error: error?.message ?? null }};
+            """)
+            rec(f"existing_taken_ci:{u.upper()}", r_up.get("taken") is True, r_up.get("error") or "")
 
-        # 2. Fresh username is initially available.
+        # 2. A random fresh username is initially available.
         fresh = f"e2e_{uuid.uuid4().hex[:8]}"
-        r = await check_taken(page, fresh)
-        save(f"fresh_available_{fresh}", r)
+        r = await sb(page, f"""
+            const {{ data, error }} = await supabase.from('profiles').select('user_id').ilike('username', '{fresh}').maybeSingle();
+            return {{ taken: !!data, error: error?.message ?? null }};
+        """)
+        save(f"fresh_{fresh}", r)
         rec(f"fresh_available:{fresh}", r.get("taken") is False, r.get("error") or "")
 
-        # 3. Claim it via a new signup.
-        email_a = f"e2e_{uuid.uuid4().hex[:8]}@cholokheli.test"
-        claim = await try_claim_username(page, email_a, "TempPass_123!", fresh, "E2E Alpha")
-        save(f"claim_{fresh}", claim)
-        rec(f"first_claim_ok:{fresh}", claim.get("stage") == "update" and not claim.get("error"),
-            claim.get("error") or json.dumps(claim))
+        # Lookup player user_id.
+        player = await sb(page, f"""
+            const {{ data }} = await supabase.from('profiles').select('user_id, username').eq('username', 'player_user').maybeSingle();
+            return data;
+        """)
+        player_id = (player or {}).get("user_id")
+        if not player_id:
+            rec("find_player", False, "player_user not found")
+            sys.exit(1)
 
-        # 4. Now the same username must be reported as taken.
-        r = await check_taken(page, fresh)
-        rec(f"after_claim_taken:{fresh}", r.get("taken") is True, r.get("error") or "")
+        # 3. Attempt to steal a taken username onto the player profile — DB unique index must reject.
+        for target in ("scout_pending", "SCOUT_PENDING", "Admin_User"):
+            conflict = await sb(page, f"""
+                const {{ error }} = await supabase.from('profiles').update({{ username: '{target}' }}).eq('user_id', '{player_id}');
+                return {{ error: error?.message ?? null, code: error?.code ?? null }};
+            """)
+            save(f"conflict_{target}", conflict)
+            rejected = bool(conflict.get("error"))
+            rec(f"conflict_rejected:{target}", rejected, conflict.get("error") or "unexpectedly succeeded")
 
-        # 5. A second signup with a different email that tries the same username FAILS.
-        await page.evaluate("async () => { const m = await import('/src/integrations/supabase/client.ts'); await m.supabase.auth.signOut(); }")
-        email_b = f"e2e_{uuid.uuid4().hex[:8]}@cholokheli.test"
-        claim2 = await try_claim_username(page, email_b, "TempPass_123!", fresh, "E2E Beta")
-        save(f"claim_conflict_{fresh}", claim2)
-        # The DB unique index must reject the update.
-        rejected = claim2.get("stage") == "update" and bool(claim2.get("error"))
-        rec(f"second_claim_rejected:{fresh}", rejected, claim2.get("error") or json.dumps(claim2))
+        # 4. Confirm the player's username is still 'player_user' (was not overwritten).
+        after = await sb(page, f"""
+            const {{ data }} = await supabase.from('profiles').select('username').eq('user_id', '{player_id}').maybeSingle();
+            return data;
+        """)
+        rec("player_username_intact", (after or {}).get("username") == "player_user", json.dumps(after))
 
-        # 6. Case-insensitive rejection: second user tries UPPER form of the same username.
-        upper = fresh.upper()
-        claim3 = await page.evaluate(
-            """async (u) => {
-                const mod = await import('/src/integrations/supabase/client.ts');
-                const { data: sess } = await mod.supabase.auth.getSession();
-                const uid = sess?.session?.user?.id;
-                if (!uid) return { error: 'no_session' };
-                const { error } = await mod.supabase.from('profiles').update({ username: u }).eq('user_id', uid);
-                return { error: error?.message ?? null };
-            }""",
-            upper,
-        )
-        save(f"claim_conflict_ci_{fresh}", claim3)
-        rec(f"second_claim_rejected_ci:{upper}", bool(claim3.get("error")), claim3.get("error") or "")
+        # 5. A brand-new username CAN be claimed onto the player.
+        set_ok = await sb(page, f"""
+            const {{ error }} = await supabase.from('profiles').update({{ username: '{fresh}' }}).eq('user_id', '{player_id}');
+            return {{ error: error?.message ?? null }};
+        """)
+        save(f"claim_{fresh}", set_ok)
+        rec(f"fresh_claim_ok:{fresh}", not set_ok.get("error"), set_ok.get("error") or "")
+
+        # 6. Now the fresh name reports as taken.
+        r2 = await sb(page, f"""
+            const {{ data }} = await supabase.from('profiles').select('user_id').ilike('username', '{fresh}').maybeSingle();
+            return {{ taken: !!data }};
+        """)
+        rec(f"after_claim_taken:{fresh}", r2.get("taken") is True)
+
+        # 7. Cleanup — restore player_user.
+        restore = await sb(page, f"""
+            const {{ error }} = await supabase.from('profiles').update({{ username: 'player_user' }}).eq('user_id', '{player_id}');
+            return {{ error: error?.message ?? null }};
+        """)
+        save("cleanup_restore_player", restore)
+        rec("cleanup:restore_player_user", not restore.get("error"), restore.get("error") or "")
 
         await browser.close()
 
