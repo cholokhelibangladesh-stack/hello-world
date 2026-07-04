@@ -1,8 +1,8 @@
 import { motion } from "framer-motion";
-import { Loader2, Trash2, AlertTriangle, Video } from "lucide-react";
+import { Loader2, Trash2, AlertTriangle, Video, Settings } from "lucide-react";
 import { useState, useEffect } from "react";
 import { useAuth } from "@/hooks/useAuth";
-import { useNavigate } from "@tanstack/react-router";
+import { Link, useNavigate } from "@tanstack/react-router";
 import { supabase } from "@/integrations/supabase/client";
 import { useToast } from "@/hooks/use-toast";
 import { Badge } from "@/components/ui/badge";
@@ -53,9 +53,18 @@ const PlayerProfile = () => {
     <div className="min-h-screen pt-16 pb-24">
       <div className="container max-w-2xl">
         <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} className="pt-4 space-y-6">
-          <div>
-            <h1 className="font-display text-3xl text-foreground">MY PROFILE</h1>
-            <p className="text-sm text-muted-foreground">Edit your info and manage your videos</p>
+          <div className="flex items-start justify-between gap-3">
+            <div>
+              <h1 className="font-display text-3xl text-foreground">MY PROFILE</h1>
+              <p className="text-sm text-muted-foreground">Edit your info and manage your videos</p>
+            </div>
+            <Link
+              to={"/player/settings" as any}
+              className="inline-flex items-center gap-1.5 text-xs text-muted-foreground hover:text-foreground rounded-lg border border-white/10 bg-secondary/40 px-3 py-1.5"
+              data-testid="link-account-settings"
+            >
+              <Settings className="h-3.5 w-3.5" /> Settings
+            </Link>
           </div>
 
           <ProfileTab showVideos={allVideos} onDeleteVideo={handleDeleteVideo} deletingVideoId={deletingVideoId} />
