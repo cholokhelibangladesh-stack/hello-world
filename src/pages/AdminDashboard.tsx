@@ -93,6 +93,9 @@ const SearchFilterBar = ({ search, setSearch, filter, setFilter, filters, placeh
   </div>
 );
 
+const AdminDashboard = () => {
+
+
   const { user, role, loading: authLoading } = useAuth();
   const [scouts, setScouts] = useState<ScoutRow[]>([]);
   const [players, setPlayers] = useState<PlayerRow[]>([]);
