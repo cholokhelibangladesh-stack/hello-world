@@ -686,6 +686,11 @@ const AdminDashboard = () => {
             <TabsContent value="profile">
               <ProfileTab />
             </TabsContent>
+
+            {/* Username Audit Tab */}
+            <TabsContent value="audit">
+              <UsernameAuditTab />
+            </TabsContent>
           </Tabs>
         </motion.div>
       </div>
