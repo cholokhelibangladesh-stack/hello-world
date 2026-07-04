@@ -458,8 +458,6 @@ export default function HeroScrollVideo({
             // Release the pin — allow the rest of the page to scroll.
             released = true;
             observer?.disable();
-            document.documentElement.style.overflow = prevHtmlOverflow;
-            document.body.style.overflow = prevBodyOverflow;
           });
         }
       };
@@ -495,11 +493,9 @@ export default function HeroScrollVideo({
         }
       };
 
-      // ─── lock the page while the hero is active ───────────────────
-      const prevHtmlOverflow = document.documentElement.style.overflow;
-      const prevBodyOverflow = document.body.style.overflow;
-      document.documentElement.style.overflow = "hidden";
-      document.body.style.overflow = "hidden";
+      // Keep the document scrollable. The gesture observer handles the hero
+      // sequence without globally locking overflow, which prevents stale
+      // preview frames from getting trapped on a blank painted background.
       window.scrollTo(0, 0);
 
       // ─── one-gesture-per-scroll interception ──────────────────────
@@ -527,8 +523,6 @@ export default function HeroScrollVideo({
         if (!released) return;
         if (e.deltaY < 0 && window.scrollY <= 0) {
           released = false;
-          document.documentElement.style.overflow = "hidden";
-          document.body.style.overflow = "hidden";
           window.scrollTo(0, 0);
           observer?.enable();
         }
@@ -538,8 +532,6 @@ export default function HeroScrollVideo({
       cleanup = () => {
         observer?.kill();
         window.removeEventListener("wheel", onReengageWheel);
-        document.documentElement.style.overflow = prevHtmlOverflow;
-        document.body.style.overflow = prevBodyOverflow;
         gsap.killTweensOf(anim);
       };
 
