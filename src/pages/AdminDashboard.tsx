@@ -14,13 +14,34 @@ import ProfileTab from "@/components/ProfileTab";
 import AdminNoticeForm from "@/components/AdminNoticeForm";
 import AdminStatsPanel from "@/components/AdminStatsPanel";
 
-interface ScoutRow { id: string; user_id: string; organization: string | null; verification_status: string; created_at: string; full_name?: string; is_banned?: boolean; }
-interface PlayerRow { user_id: string; full_name: string; is_banned?: boolean; sport?: string | null; }
-interface VideoRow { id: string; user_id: string; title: string | null; description: string | null; video_url: string | null; status: string; created_at: string; full_name?: string; }
+interface ScoutRow { id: string; user_id: string; organization: string | null; verification_status: string; created_at: string; full_name?: string; username?: string | null; email?: string | null; is_banned?: boolean; }
+interface PlayerRow { user_id: string; full_name: string; username?: string | null; email?: string | null; is_banned?: boolean; sport?: string | null; }
+interface VideoRow { id: string; user_id: string; title: string | null; description: string | null; video_url: string | null; status: string; created_at: string; full_name?: string; username?: string | null; email?: string | null; }
 interface MessageRow { id: string; sender_id: string; receiver_id: string; content: string; flagged: boolean; flag_reason: string | null; created_at: string; sender_name?: string; receiver_name?: string; }
-interface ScoutRequestRow { id: string; scout_id: string; player_id: string; status: string; notes: string | null; admin_response: string | null; created_at: string; scout_name?: string; player_name?: string; }
+interface ScoutRequestRow { id: string; scout_id: string; player_id: string; status: string; notes: string | null; admin_response: string | null; created_at: string; scout_name?: string; player_name?: string; scout_username?: string | null; player_username?: string | null; scout_email?: string | null; player_email?: string | null; }
 interface ContactMessageRow { id: string; name: string; email: string; subject: string | null; message: string; is_read: boolean; created_at: string; }
 interface Stats { totalPlayers: number; totalScouts: number; activeScouts: number; pendingScouts: number; liveVideos: number; totalRevenue: number; flaggedMessages: number; pendingRequests: number; unreadContacts: number; }
+
+// Persisted state for the moderation queue: filter/sort/search choices survive reloads.
+const MOD_STORAGE_PREFIX = "adminMod:";
+const readPersisted = (key: string, fallback: string): string => {
+  if (typeof window === "undefined") return fallback;
+  try {
+    const v = window.localStorage.getItem(MOD_STORAGE_PREFIX + key);
+    return v === null ? fallback : v;
+  } catch {
+    return fallback;
+  }
+};
+const writePersisted = (key: string, value: string) => {
+  if (typeof window === "undefined") return;
+  try { window.localStorage.setItem(MOD_STORAGE_PREFIX + key, value); } catch { /* ignore quota */ }
+};
+const usePersistedString = (key: string, initial: string): [string, (v: string) => void] => {
+  const [value, setValue] = useState<string>(() => readPersisted(key, initial));
+  useEffect(() => { writePersisted(key, value); }, [key, value]);
+  return [value, setValue];
+};
 
 const AdminDashboard = () => {
   const { user, role, loading: authLoading } = useAuth();
