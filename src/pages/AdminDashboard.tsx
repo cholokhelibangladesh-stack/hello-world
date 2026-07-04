@@ -220,6 +220,14 @@ const AdminDashboard = () => {
     const contactData = ((contactRes.data as unknown) as ContactMessageRow[]) || [];
     setContactMessages(contactData);
 
+    const alertRows = ((alertRes.data as unknown) as ModerationAlertRow[]) || [];
+    const enrichedAlerts = alertRows.map((a) => ({
+      ...a,
+      target_name: (a.target_user_id && profileMap.get(a.target_user_id)?.name) || "Unknown",
+      target_email: (a.target_user_id && emailMap.get(a.target_user_id)) || null,
+    }));
+    setAlerts(enrichedAlerts);
+
     setStats({
       totalPlayers: roles.filter((r) => r.role === "player").length,
       totalScouts: roles.filter((r) => r.role === "scout").length,
@@ -230,8 +238,27 @@ const AdminDashboard = () => {
       flaggedMessages: msgData.filter((m) => m.flagged).length,
       pendingRequests: reqData.filter((r) => r.status === "pending").length,
       unreadContacts: contactData.filter((c) => !c.is_read).length,
+      openAlerts: enrichedAlerts.filter((a) => a.status === "new").length,
     });
     setLoading(false);
+  };
+
+  const resolveAlert = async (id: string) => {
+    const { error } = await supabase
+      .from("moderation_alerts" as any)
+      .update({ status: "resolved", resolved_at: new Date().toISOString(), resolved_by: user?.id } as any)
+      .eq("id", id);
+    if (error) toast({ title: "Error", description: error.message, variant: "destructive" });
+    else { toast({ title: "Alert resolved" }); fetchAll(); }
+  };
+
+  const reopenAlert = async (id: string) => {
+    const { error } = await supabase
+      .from("moderation_alerts" as any)
+      .update({ status: "new", resolved_at: null, resolved_by: null } as any)
+      .eq("id", id);
+    if (error) toast({ title: "Error", description: error.message, variant: "destructive" });
+    else fetchAll();
   };
 
   const toggleContactRead = async (id: string, isRead: boolean) => {
