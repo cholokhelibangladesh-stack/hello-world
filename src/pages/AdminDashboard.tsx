@@ -475,6 +475,7 @@ const AdminDashboard = () => {
                 <TabsTrigger value="notices" className="data-[state=active]:bg-primary data-[state=active]:text-primary-foreground text-xs whitespace-nowrap px-3">Notices</TabsTrigger>
                 <TabsTrigger value="contact" className="data-[state=active]:bg-primary data-[state=active]:text-primary-foreground text-xs whitespace-nowrap px-3">Contact {stats?.unreadContacts ? `(${stats.unreadContacts})` : ""}</TabsTrigger>
                 <TabsTrigger value="profile" className="data-[state=active]:bg-primary data-[state=active]:text-primary-foreground text-xs whitespace-nowrap px-3">Profile</TabsTrigger>
+                <TabsTrigger value="audit" className="data-[state=active]:bg-primary data-[state=active]:text-primary-foreground text-xs whitespace-nowrap px-3" data-testid="tab-audit">Usernames</TabsTrigger>
               </TabsList>
             </div>
 
