@@ -476,7 +476,7 @@ const AdminDashboard = () => {
                 sort={scoutSort} setSort={setScoutSort}
                 filters={[{ value: "pending", label: "Pending" }, { value: "active", label: "Active" }, { value: "rejected", label: "Rejected" }]} />
               {filteredScouts.length === 0 ? <p className="text-muted-foreground text-center py-12">No scouts found.</p> : filteredScouts.map((s) => (
-                <div key={s.id} className="apple-glass glass-card rounded-xl p-4 space-y-3">
+                <div key={s.id} data-testid="mod-row-scouts" data-account={s.full_name || ""} data-status={s.verification_status} data-created-at={s.created_at} className="apple-glass glass-card rounded-xl p-4 space-y-3">
                   <div className="flex items-start justify-between gap-3">
                     <div className="flex-1 min-w-0">
                       <p className={`font-semibold truncate ${s.is_banned ? "line-through text-muted-foreground" : "text-foreground"}`}>{s.full_name}</p>
@@ -530,7 +530,7 @@ const AdminDashboard = () => {
                 sort={videoSort} setSort={setVideoSort}
                 filters={[{ value: "pending_payment", label: "Pending" }, { value: "live", label: "Live" }, { value: "rejected", label: "Rejected" }, { value: "draft", label: "Draft" }]} />
               {filteredVideos.length === 0 ? <p className="text-muted-foreground text-center py-12">No videos found.</p> : filteredVideos.map((v) => (
-                <div key={v.id} className="apple-glass glass-card rounded-xl p-4 space-y-3">
+                <div key={v.id} data-testid="mod-row-videos" data-account={v.full_name || ""} data-status={v.status} data-created-at={v.created_at} className="apple-glass glass-card rounded-xl p-4 space-y-3">
                   <div className="flex items-start justify-between gap-3">
                     <div className="flex-1 min-w-0">
                       <p className="font-semibold text-foreground truncate">{v.full_name}</p>
@@ -557,7 +557,7 @@ const AdminDashboard = () => {
                 sort={requestSort} setSort={setRequestSort}
                 filters={[{ value: "pending", label: "Pending" }, { value: "approved", label: "Approved" }, { value: "rejected", label: "Rejected" }]} />
               {filteredRequests.length === 0 ? <p className="text-muted-foreground text-center py-12">No requests found.</p> : filteredRequests.map((r) => (
-                <div key={r.id} className="apple-glass glass-card rounded-xl p-4 space-y-3">
+                <div key={r.id} data-testid="mod-row-requests" data-account={r.player_name || ""} data-scout={r.scout_name || ""} data-status={r.status} data-created-at={r.created_at} className="apple-glass glass-card rounded-xl p-4 space-y-3">
                   <div className="space-y-1">
                     <div className="flex items-start justify-between gap-2">
                       <p className="font-semibold text-sm text-foreground leading-tight">
