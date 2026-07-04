@@ -93,12 +93,14 @@ async def set_sort(page, tab, value):
 
 async def set_search(page, tab, value):
     inp = page.get_by_test_id(f"mod-search-{tab}")
-    await inp.click()
-    await inp.press("Control+a")
-    await inp.press("Delete")
-    if value:
-        await inp.type(value, delay=10)
-    await page.wait_for_timeout(150)
+    await inp.fill(value)
+    # Wait for React state → useEffect → localStorage write to settle.
+    await page.wait_for_function(
+        f"(v) => (document.querySelector('[data-testid=\"mod-search-{tab}\"]')?.value || '') === v",
+        arg=value,
+        timeout=3000,
+    )
+    await page.wait_for_timeout(80)
 
 
 async def open_tab(page, name):
