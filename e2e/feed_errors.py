@@ -55,15 +55,14 @@ async def sign_in(page, email, password):
     return False
 
 async def rpc(page, params_json, override_token=None):
-    """Call get_ranked_feed. Optionally override the Authorization header."""
+    """Call get_ranked_feed. If override_token is not None (including ""), force a raw fetch."""
     return await page.evaluate(
         """
-        async ({ params, overrideToken }) => {
+        async ({ params, overrideToken, useOverride }) => {
           try {
             const mod = await import('/src/integrations/supabase/client.ts');
             const supabase = mod.supabase;
-            if (overrideToken !== undefined) {
-              // Bypass PostgREST-JS to force a specific Authorization header.
+            if (useOverride) {
               const url = supabase.supabaseUrl + '/rest/v1/rpc/get_ranked_feed';
               const key = supabase.supabaseKey;
               const headers = { 'apikey': key, 'Content-Type': 'application/json' };
@@ -82,7 +81,7 @@ async def rpc(page, params_json, override_token=None):
           }
         }
         """,
-        {"params": params_json, "overrideToken": override_token},
+        {"params": params_json, "overrideToken": override_token or "", "useOverride": override_token is not None},
     )
 
 def save(name, payload):
