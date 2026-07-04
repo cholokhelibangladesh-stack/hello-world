@@ -430,26 +430,9 @@ const Index = () => {
       {/* ══════════════════════════════════════════
           HOW IT WORKS — 3 STEPS
       ══════════════════════════════════════════ */}
-      <section className="py-20 sm:py-32 overflow-hidden relative surface-paper">
-        {/* Subtle cinematic backdrop */}
-        <img src={stadiumImg.url} alt="" aria-hidden loading="lazy" decoding="async"
-          className="absolute inset-0 w-full h-full object-cover opacity-[0.07]" />
-        <div className="absolute inset-0 pointer-events-none"
-          style={{ background: "linear-gradient(to bottom, hsl(var(--paper)) 0%, hsl(var(--paper) / 0.98) 30%, hsl(var(--paper-deep) / 0.85) 100%)" }} />
-
-
-        <div className="container relative z-10">
-          <Reveal className="text-center mb-16 sm:mb-24">
-            <span className="inline-block text-xs font-bold tracking-[0.2em] uppercase mb-4 px-4 py-1.5 rounded-full"
-              style={{ background: "hsl(var(--teal-deep) / 0.12)", color: "hsl(var(--teal-deep))" }}>
-              {T.thePlatform}
-            </span>
-            <h2 className="font-display text-4xl sm:text-6xl" style={{ color: "hsl(var(--teal-deep))" }}>{T.howItWorks1} <span style={{ color: "hsl(var(--teal))" }}>{T.howItWorks2}</span></h2>
-            <p className="mt-3 max-w-md mx-auto" style={{ color: "hsl(var(--teal-deep) / 0.75)" }}>{T.howItWorksSub}</p>
-          </Reveal>
-
-
-          <div className="space-y-24 sm:space-y-36">
+      <section className="py-16 sm:py-20 overflow-hidden relative surface-paper">
+...
+          <div className="space-y-16 sm:space-y-20">
 
             {/* Step 1 */}
             <div className="flex flex-col sm:flex-row items-center justify-between gap-12">
