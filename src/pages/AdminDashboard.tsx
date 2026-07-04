@@ -38,10 +38,13 @@ const AdminDashboard = () => {
   // Search & filter states
   const [scoutSearch, setScoutSearch] = useState("");
   const [scoutFilter, setScoutFilter] = useState<string>("all");
+  const [scoutSort, setScoutSort] = useState<string>("date_desc");
   const [videoSearch, setVideoSearch] = useState("");
   const [videoFilter, setVideoFilter] = useState<string>("all");
+  const [videoSort, setVideoSort] = useState<string>("date_desc");
   const [requestSearch, setRequestSearch] = useState("");
   const [requestFilter, setRequestFilter] = useState<string>("all");
+  const [requestSort, setRequestSort] = useState<string>("date_desc");
   const [messageSearch, setMessageSearch] = useState("");
   const [messageFilter, setMessageFilter] = useState<string>("all");
   const navigate = useNavigate();
