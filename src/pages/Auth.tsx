@@ -126,11 +126,29 @@ const Auth = () => {
         toast({ title: "Date of birth required", description: "Please enter your date of birth.", variant: "destructive" });
         return;
       }
+    if (!isLogin) {
+      const uname = formUsername.trim().toLowerCase();
+      if (!/^[a-z0-9_]{3,24}$/.test(uname)) {
+        toast({ title: "Invalid username", description: "3–24 characters. Only lowercase letters, numbers and underscore.", variant: "destructive" });
+        return;
+      }
+      // Final uniqueness pre-check
+      const { data: taken } = await supabase.from("profiles").select("user_id").ilike("username" as any, uname).maybeSingle();
+      if (taken) {
+        setUsernameStatus("taken");
+        toast({ title: "Username taken", description: "Please pick a different username.", variant: "destructive" });
+        return;
+      }
+    }
+    if (!isLogin) {
+      if (!formDob) {
+        toast({ title: "Date of birth required", description: "Please enter your date of birth.", variant: "destructive" });
+        return;
+      }
       if (age === null || age < 13) {
         toast({ title: "Not eligible", description: "You must be at least 13 years old to register.", variant: "destructive" });
         return;
       }
-      if (!agreePrivacy) {
         toast({ title: "Privacy agreement required", description: "You must agree to the Privacy Policy to continue.", variant: "destructive" });
         return;
       }
