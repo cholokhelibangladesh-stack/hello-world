@@ -13,6 +13,7 @@ import { useToast } from "@/hooks/use-toast";
 import ProfileTab from "@/components/ProfileTab";
 import AdminNoticeForm from "@/components/AdminNoticeForm";
 import AdminStatsPanel from "@/components/AdminStatsPanel";
+import UsernameAuditTab from "@/components/UsernameAuditTab";
 
 interface ScoutRow { id: string; user_id: string; organization: string | null; verification_status: string; created_at: string; full_name?: string; username?: string | null; email?: string | null; is_banned?: boolean; }
 interface PlayerRow { user_id: string; full_name: string; username?: string | null; email?: string | null; is_banned?: boolean; sport?: string | null; }
