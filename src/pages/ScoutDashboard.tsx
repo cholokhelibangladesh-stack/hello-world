@@ -210,7 +210,7 @@ const ScoutDashboard = () => {
                         onClick={() => setSelectedPlayer(null)}
                       >
                         <motion.div initial={{ scale: 0.9 }} animate={{ scale: 1 }} exit={{ scale: 0.9 }}
-                          className="bg-card border border-border rounded-2xl overflow-hidden max-w-lg w-full max-h-[90vh] flex flex-col"
+                          className="apple-glass glass-card rounded-2xl overflow-hidden max-w-lg w-full max-h-[90vh] flex flex-col"
                           onClick={(e) => e.stopPropagation()}
                         >
                           <div className="flex items-center gap-3 p-4 border-b border-border">
@@ -260,7 +260,7 @@ const ScoutDashboard = () => {
                 <p className="text-center text-muted-foreground py-12">No player selections yet. Browse the talent database and select players.</p>
               ) : (
                 requests.map((r) => (
-                  <motion.div key={r.id} layout className="bg-card border border-border rounded-2xl overflow-hidden">
+                  <motion.div key={r.id} layout className="apple-glass glass-card rounded-2xl overflow-hidden">
                     <div className="p-4 flex items-center justify-between gap-4 cursor-pointer" onClick={() => setExpandedRequest(expandedRequest === r.id ? null : r.id)}>
                       <div className="flex-1 min-w-0">
                         <p className="font-semibold text-foreground truncate">{r.player_name}</p>
@@ -339,7 +339,7 @@ const ScoutDashboard = () => {
 
             <TabsContent value="messages">
               <div className="space-y-4">
-                <div className="bg-card/50 border border-border rounded-2xl p-4">
+                <div className="apple-glass glass-card rounded-2xl p-4">
                   <p className="text-xs text-muted-foreground">💬 Use this to communicate with other users. All messages are moderated for safety.</p>
                 </div>
                 <ChatInterface />
