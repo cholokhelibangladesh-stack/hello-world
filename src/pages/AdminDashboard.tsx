@@ -510,6 +510,63 @@ const AdminDashboard = () => {
               </TabsList>
             </div>
 
+            {/* Moderation Alerts Inbox */}
+            <TabsContent value="alerts" className="space-y-3">
+              <div className="bg-primary/5 border border-primary/20 rounded-2xl p-4 flex items-start gap-2">
+                <AlertTriangle className="h-5 w-5 text-primary shrink-0 mt-0.5" />
+                <p className="text-sm text-muted-foreground">
+                  New scout requests, videos, and scout signups that need review. Mark items resolved once you've actioned them.
+                </p>
+              </div>
+              {alerts.filter((a) => a.status === "new").length === 0 ? (
+                <p className="text-muted-foreground text-center py-12" data-testid="alerts-empty-new">No open alerts.</p>
+              ) : (
+                alerts.filter((a) => a.status === "new").map((a) => (
+                  <div key={a.id} data-testid="alert-row" data-alert-id={a.id} data-alert-kind={a.kind} data-alert-status={a.status}
+                    className="apple-glass glass-card rounded-xl p-4 flex items-center justify-between gap-3">
+                    <div className="flex-1 min-w-0">
+                      <div className="flex items-center gap-2 flex-wrap">
+                        <Badge className="rounded-full bg-primary/20 text-primary border-primary/30 text-[10px] uppercase">
+                          {a.kind === "scout_request" ? "Request" : a.kind === "video" ? "Video" : "Scout"}
+                        </Badge>
+                        <p className="font-semibold text-foreground truncate">{a.target_name}</p>
+                      </div>
+                      {a.target_email && <p className="text-[11px] text-muted-foreground truncate">{a.target_email}</p>}
+                      <p className="text-[11px] text-muted-foreground">{new Date(a.created_at).toLocaleString()}</p>
+                    </div>
+                    <Button size="sm" onClick={() => resolveAlert(a.id)} data-testid="alert-resolve"
+                      className="bg-primary text-primary-foreground hover:bg-primary/90 rounded-full text-xs shrink-0">
+                      <CheckCircle className="h-3.5 w-3.5 mr-1" /> Mark resolved
+                    </Button>
+                  </div>
+                ))
+              )}
+              {alerts.some((a) => a.status === "resolved") && (
+                <details className="pt-2">
+                  <summary className="text-xs text-muted-foreground cursor-pointer hover:text-foreground" data-testid="alerts-resolved-toggle">
+                    Recently resolved ({alerts.filter((a) => a.status === "resolved").length})
+                  </summary>
+                  <div className="space-y-2 mt-2">
+                    {alerts.filter((a) => a.status === "resolved").slice(0, 30).map((a) => (
+                      <div key={a.id} data-testid="alert-row" data-alert-id={a.id} data-alert-kind={a.kind} data-alert-status={a.status}
+                        className="bg-secondary/50 border border-border rounded-xl p-3 flex items-center justify-between gap-3">
+                        <div className="flex-1 min-w-0">
+                          <p className="text-xs font-medium text-muted-foreground truncate">
+                            <span className="uppercase mr-2">{a.kind}</span>{a.target_name}
+                          </p>
+                          <p className="text-[10px] text-muted-foreground">Resolved {a.resolved_at ? new Date(a.resolved_at).toLocaleString() : ""}</p>
+                        </div>
+                        <Button size="sm" variant="outline" onClick={() => reopenAlert(a.id)} data-testid="alert-reopen"
+                          className="rounded-full text-xs border-border text-muted-foreground shrink-0">
+                          Reopen
+                        </Button>
+                      </div>
+                    ))}
+                  </div>
+                </details>
+              )}
+            </TabsContent>
+
             {/* Scouts Tab */}
             <TabsContent value="scouts" className="space-y-3">
               <SearchFilterBar testKey="scouts" search={scoutSearch} setSearch={setScoutSearch} filter={scoutFilter} setFilter={setScoutFilter} placeholder="Search scouts by name, email, or username..."
