@@ -1,0 +1,6 @@
+{
+  "value": "ab",
+  "code": "too_short",
+  "msg": "Too short \u2014 usernames must be at least 3 characters.",
+  "disabled": true
+}

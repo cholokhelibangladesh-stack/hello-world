@@ -1,0 +1,6 @@
+{
+  "value": "9alpha",
+  "code": "leading_digit_underscore",
+  "msg": "Must start with a lowercase letter (a\u2013z).",
+  "disabled": true
+}

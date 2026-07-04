@@ -1,0 +1,6 @@
+{
+  "value": "bad handle!",
+  "code": "invalid_chars",
+  "msg": "Only lowercase letters, digits, and underscore (_) are allowed.",
+  "disabled": true
+}
