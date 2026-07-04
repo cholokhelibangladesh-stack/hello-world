@@ -60,6 +60,7 @@ const AccountSettings = () => {
       return;
     }
     setChecking(true);
+    let cancelled = false;
     const t = setTimeout(async () => {
       const { data } = await supabase
         .from("profiles")
@@ -67,10 +68,14 @@ const AccountSettings = () => {
         .ilike("username", value)
         .neq("user_id", user.id)
         .maybeSingle();
+      if (cancelled) return;
       setChecking(false);
       setAvailability(data ? "taken" : "available");
     }, 400);
-    return () => clearTimeout(t);
+    return () => {
+      cancelled = true;
+      clearTimeout(t);
+    };
   }, [newUsername, currentUsername, user]);
 
   const handleSave = async () => {
