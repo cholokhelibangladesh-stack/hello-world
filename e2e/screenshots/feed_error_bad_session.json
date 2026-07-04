@@ -1,0 +1,10 @@
+{
+  "transport": "fetch",
+  "status": 401,
+  "body": {
+    "code": "PGRST301",
+    "details": null,
+    "hint": null,
+    "message": "JWT cryptographic operation failed"
+  }
+}
