@@ -251,7 +251,7 @@ const ScoutCarouselCard = React.forwardRef<HTMLDivElement, { scout: ScoutProfile
       exit={{ opacity: 0, y: -16, filter: "blur(6px)" }}
       transition={{ duration: 0.6, ease: [0.22, 1, 0.36, 1] }}
       whileHover={{ scale: 1.005 }}
-      className="absolute inset-0 rounded-3xl border overflow-hidden p-8 sm:p-12 flex flex-col justify-between shadow-2xl"
+      className="absolute inset-0 rounded-3xl border overflow-hidden p-5 sm:p-10 lg:p-12 flex flex-col justify-between shadow-2xl"
       style={{ borderColor: "hsl(var(--green) / 0.22)", background: "#0a1520" }}
     >
       {/* Mouse-tracked shine */}
