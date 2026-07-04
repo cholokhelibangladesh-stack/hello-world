@@ -170,6 +170,39 @@ export type Database = {
         }
         Relationships: []
       }
+      moderation_alerts: {
+        Row: {
+          created_at: string
+          id: string
+          kind: string
+          resolved_at: string | null
+          resolved_by: string | null
+          status: string
+          target_id: string
+          target_user_id: string | null
+        }
+        Insert: {
+          created_at?: string
+          id?: string
+          kind: string
+          resolved_at?: string | null
+          resolved_by?: string | null
+          status?: string
+          target_id: string
+          target_user_id?: string | null
+        }
+        Update: {
+          created_at?: string
+          id?: string
+          kind?: string
+          resolved_at?: string | null
+          resolved_by?: string | null
+          status?: string
+          target_id?: string
+          target_user_id?: string | null
+        }
+        Relationships: []
+      }
       notifications: {
         Row: {
           created_at: string
