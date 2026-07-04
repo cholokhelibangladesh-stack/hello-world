@@ -64,6 +64,8 @@ const Auth = () => {
 
   const [formEmail, setFormEmail] = useState("");
   const [formName, setFormName] = useState("");
+  const [formUsername, setFormUsername] = useState("");
+  const [usernameStatus, setUsernameStatus] = useState<"idle" | "checking" | "ok" | "taken" | "invalid">("idle");
   const [formPhone, setFormPhone] = useState("");
   const [formGender, setFormGender] = useState("");
   const [formPassword, setFormPassword] = useState("");
@@ -103,9 +105,34 @@ const Auth = () => {
     }
   }, [user, userRole, navigate]);
 
+  // Debounced username availability check
+  useEffect(() => {
+    if (isLogin) return;
+    const u = formUsername.trim().toLowerCase();
+    if (!u) { setUsernameStatus("idle"); return; }
+    if (!/^[a-z0-9_]{3,24}$/.test(u)) { setUsernameStatus("invalid"); return; }
+    setUsernameStatus("checking");
+    const h = setTimeout(async () => {
+      const { data } = await supabase.from("profiles").select("user_id").ilike("username" as any, u).maybeSingle();
+      setUsernameStatus(data ? "taken" : "ok");
+    }, 350);
+    return () => clearTimeout(h);
+  }, [formUsername, isLogin]);
+
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!isLogin) {
+      const uname = formUsername.trim().toLowerCase();
+      if (!/^[a-z0-9_]{3,24}$/.test(uname)) {
+        toast({ title: "Invalid username", description: "3–24 characters. Only lowercase letters, numbers and underscore.", variant: "destructive" });
+        return;
+      }
+      const { data: taken } = await supabase.from("profiles").select("user_id").ilike("username" as any, uname).maybeSingle();
+      if (taken) {
+        setUsernameStatus("taken");
+        toast({ title: "Username taken", description: "Please pick a different username.", variant: "destructive" });
+        return;
+      }
       if (!formDob) {
         toast({ title: "Date of birth required", description: "Please enter your date of birth.", variant: "destructive" });
         return;
@@ -182,6 +209,7 @@ const Auth = () => {
           localStorage.setItem("pendingPhone", formPhone);
           localStorage.setItem("pendingGender", formGender);
           localStorage.setItem("pendingName", formName);
+          localStorage.setItem("pendingUsername", formUsername.trim().toLowerCase());
 
           // Stash birth certificate (base64) for upload once authenticated
           if (birthCertFile) {
@@ -242,10 +270,11 @@ const Auth = () => {
       const phone = localStorage.getItem("pendingPhone") || "";
       const gender = localStorage.getItem("pendingGender") || "";
       const name = localStorage.getItem("pendingName") || "";
+      const username = localStorage.getItem("pendingUsername") || "";
 
       try {
         await supabase.functions.invoke("handle-signup-role", {
-          body: { role: pendingRole, sport, phone, gender, full_name: name },
+          body: { role: pendingRole, sport, phone, gender, full_name: name, username },
         });
       } catch {}
 
@@ -302,6 +331,7 @@ const Auth = () => {
       localStorage.removeItem("pendingPhone");
       localStorage.removeItem("pendingGender");
       localStorage.removeItem("pendingName");
+      localStorage.removeItem("pendingUsername");
     };
     setupPendingProfile();
   }, [user]);
@@ -436,6 +466,33 @@ const Auth = () => {
                   value={formName}
                   onChange={(e) => setFormName(e.target.value)}
                 />
+              </div>
+            )}
+            {!isLogin && (
+              <div>
+                <Label htmlFor="username" className="text-sm text-muted-foreground">Username</Label>
+                <Input
+                  id="username"
+                  placeholder="e.g. neymar_11"
+                  required
+                  autoComplete="off"
+                  className="bg-secondary border-border mt-1"
+                  value={formUsername}
+                  onChange={(e) => setFormUsername(e.target.value.toLowerCase().replace(/[^a-z0-9_]/g, ""))}
+                  maxLength={24}
+                />
+                {formUsername && (
+                  <p className={`text-xs mt-1 ${
+                    usernameStatus === "ok" ? "text-primary" :
+                    usernameStatus === "taken" || usernameStatus === "invalid" ? "text-destructive" :
+                    "text-muted-foreground"
+                  }`}>
+                    {usernameStatus === "checking" && "Checking availability…"}
+                    {usernameStatus === "ok" && "✓ Available"}
+                    {usernameStatus === "taken" && "This username is already taken"}
+                    {usernameStatus === "invalid" && "3–24 chars: lowercase letters, numbers, underscore"}
+                  </p>
+                )}
               </div>
             )}
             <div>
@@ -671,7 +728,7 @@ const Auth = () => {
             )}
             <Button
               type="submit"
-              disabled={loading || (!isLogin && !agreePrivacy) || (!isLogin && isMinor && !parentalConsent) || (bcRequired && !birthCertFile) || (scoutDocsRequired && (!scoutOrgIdFile || !scoutCvFile))}
+              disabled={loading || (!isLogin && !agreePrivacy) || (!isLogin && usernameStatus !== "ok") || (!isLogin && isMinor && !parentalConsent) || (bcRequired && !birthCertFile) || (scoutDocsRequired && (!scoutOrgIdFile || !scoutCvFile))}
               className="w-full bg-foreground text-background font-bold hover:bg-foreground/90 transition-all duration-300 disabled:opacity-50"
             >
               {loading ? <Loader2 className="h-4 w-4 animate-spin" /> : isLogin ? t("auth.signIn") : t("auth.createAccount")}

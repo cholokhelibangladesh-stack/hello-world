@@ -50,7 +50,28 @@ serve(async (req) => {
       });
     }
 
-    const { role, sport, phone, gender, full_name } = await req.json();
+    const { role, sport, phone, gender, full_name, username } = await req.json();
+
+    // Validate + enforce unique username (case-insensitive)
+    const uname = typeof username === "string" ? username.trim().toLowerCase() : "";
+    if (!uname || !/^[a-z0-9_]{3,24}$/.test(uname)) {
+      return new Response(JSON.stringify({ error: "invalid_username" }), {
+        status: 400,
+        headers: { ...corsHeaders, "Content-Type": "application/json" },
+      });
+    }
+    const { data: taken } = await supabase
+      .from("profiles")
+      .select("user_id")
+      .ilike("username", uname)
+      .neq("user_id", user.id)
+      .maybeSingle();
+    if (taken) {
+      return new Response(JSON.stringify({ error: "username_taken" }), {
+        status: 409,
+        headers: { ...corsHeaders, "Content-Type": "application/json" },
+      });
+    }
 
     // Assign role
     const { error: roleError } = await supabase
@@ -64,11 +85,17 @@ serve(async (req) => {
       });
     }
 
-    // Update profile
-    await supabase
+    // Update profile (username is unique in DB via case-insensitive index)
+    const { error: profErr } = await supabase
       .from("profiles")
-      .update({ full_name, phone, gender, sport: role === "player" ? sport : null })
+      .update({ full_name, phone, gender, username: uname, sport: role === "player" ? sport : null })
       .eq("user_id", user.id);
+    if (profErr) {
+      return new Response(JSON.stringify({ error: profErr.message }), {
+        status: 400,
+        headers: { ...corsHeaders, "Content-Type": "application/json" },
+      });
+    }
 
     // Create scout profile if scout — defaults to verification_status='pending'
     if (role === "scout") {
