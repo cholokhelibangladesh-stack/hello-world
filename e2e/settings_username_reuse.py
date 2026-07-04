@@ -79,7 +79,9 @@ async def main():
         page = await ctx.new_page()
         page.on("pageerror", lambda err: print(f"  [pageerror] {err}"))
 
-        await page.goto(BASE + "/auth", wait_until="domcontentloaded")
+        # Load the app shell on the root path (not /auth — that page auto-redirects
+        # once a session appears, which would race with our subsequent goto).
+        await page.goto(BASE + "/", wait_until="domcontentloaded")
         await page.wait_for_timeout(400)
 
         signin = await page.evaluate(
