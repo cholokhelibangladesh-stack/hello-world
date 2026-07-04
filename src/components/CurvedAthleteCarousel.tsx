@@ -76,7 +76,10 @@ export default function CurvedAthleteCarousel() {
           perspectiveOrigin: "50% 60%",
         }}
       >
-        <div className="absolute inset-0 flex items-center justify-center">
+        <div
+          className="absolute inset-0 flex items-center justify-center"
+          style={{ transformStyle: "preserve-3d" }}
+        >
           <div
             className="relative carousel-ring"
             style={{
@@ -94,7 +97,7 @@ export default function CurvedAthleteCarousel() {
                   height: cardH,
                   marginLeft: -cardW / 2,
                   marginTop: -cardH / 2,
-                  transform: `rotateY(${i * angleStep}deg) translateZ(${radius}px)`,
+                  transform: `rotateY(${i * angleStep}deg) translateZ(-${radius}px)`,
                   backfaceVisibility: "hidden",
                   background: "hsl(0 0% 4%)",
                 }}
