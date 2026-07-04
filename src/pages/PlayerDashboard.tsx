@@ -81,7 +81,7 @@ const PlayerDashboard = () => {
     return ["upload", "explore", "profile"].includes(hash) ? hash : "upload";
   });
   const fileRef = useRef<HTMLInputElement>(null);
-  const bcRef = useRef<HTMLInputElement>(null);
+  
   const { toast } = useToast();
   const { user, loading: authLoading } = useAuth();
   const { t } = useLanguage();
