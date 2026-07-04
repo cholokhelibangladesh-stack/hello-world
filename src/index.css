@@ -302,3 +302,15 @@
     height: 2px;
     background: linear-gradient(90deg, transparent, hsl(var(--teal)), transparent);
   }
+
+/* Ocultar badge "Made with Lovable" */
+#lovable-badge,
+a[href*="lovable.dev"][href*="badge"],
+a[href*="lovable.dev/?utm"],
+[data-lovable-badge],
+iframe[src*="lovable.dev"][src*="badge"] {
+  display: none !important;
+  visibility: hidden !important;
+  opacity: 0 !important;
+  pointer-events: none !important;
+}
