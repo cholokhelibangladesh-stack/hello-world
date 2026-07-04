@@ -97,15 +97,8 @@ const Auth = () => {
 
   useEffect(() => {
     if (user && userRole) {
-      const isMobile = window.innerWidth < 768;
-      let dest: string;
-      if (userRole === "admin") {
-        dest = "/admin";
-      } else if (userRole === "scout") {
-        dest = isMobile ? "/scout/profile" : "/scout";
-      } else {
-        dest = isMobile ? "/player/profile" : "/player";
-      }
+      // Always land on the role dashboard (not the profile) so all sections are visible.
+      const dest = userRole === "admin" ? "/admin" : userRole === "scout" ? "/scout" : "/player";
       navigate({ to: dest as any, replace: true });
     }
   }, [user, userRole, navigate]);
