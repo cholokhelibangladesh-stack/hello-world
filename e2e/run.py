@@ -27,16 +27,16 @@ SHOTS.mkdir(parents=True, exist_ok=True)
 
 PUBLIC_ROUTES = [
     ("/",                r"bangladesh|football|cricket|scout|player", "public_root"),
-    ("/mission",         r"mission",                    "public_mission"),
-    ("/safe-scouting",   r"safe\s*scouting",            "public_safe"),
-    ("/faq",             r"faq|helpline",               "public_faq"),
-    ("/privacy-policy",  r"privacy",                    "public_privacy"),
-    ("/auth",            r"welcome back|sign in|sign up|email", "public_auth"),
+    ("/mission",         r"digitise|grassroots|cholo kheli",          "public_mission"),
+    ("/safe-scouting",   r"safe\s*scouting",                          "public_safe"),
+    ("/faq",             r"frequently asked|faq|helpline|contact",    "public_faq"),
+    ("/privacy-policy",  r"privacy",                                  "public_privacy"),
+    ("/auth",            r"welcome back|sign in|sign up|email",       "public_auth"),
 ]
 
 ACCOUNTS = [
     dict(role="admin",           email="admin@cholokheli.test",         password="Admin123!",  dashboard="/admin",  heading=r"admin"),
-    dict(role="scout_pending",   email="scout@cholokheli.test",         password="Scout123!",  dashboard="/scout",  heading=r"pending|authenticated|verified|wait"),
+    dict(role="scout_pending",   email="scout@cholokheli.test",         password="Scout123!",  dashboard="/scout",  heading=r"pending|authenticated|verified|wait|approved"),
     dict(role="scout_verified",  email="scout.verified@cholokheli.test",password="Scout123!",  dashboard="/scout",  heading=r"scout"),
     dict(role="player",          email="player@cholokheli.test",        password="Player123!", dashboard="/player", heading=r"report|upload|profile|dashboard"),
 ]
