@@ -75,7 +75,6 @@ const PlayerDashboard = () => {
   const [showNewUpload, setShowNewUpload] = useState(false);
   const [uploadsHalted, setUploadsHalted] = useState(false);
   const [savingSport, setSavingSport] = useState(false);
-  const [savingSport, setSavingSport] = useState(false);
   const [activeTab, setActiveTab] = useState(() => {
     if (typeof window === "undefined") return "upload";
     const hash = window.location.hash.replace("#", "");
