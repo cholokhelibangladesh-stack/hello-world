@@ -21,7 +21,8 @@ interface VideoRow { id: string; user_id: string; title: string | null; descript
 interface MessageRow { id: string; sender_id: string; receiver_id: string; content: string; flagged: boolean; flag_reason: string | null; created_at: string; sender_name?: string; receiver_name?: string; }
 interface ScoutRequestRow { id: string; scout_id: string; player_id: string; status: string; notes: string | null; admin_response: string | null; created_at: string; scout_name?: string; player_name?: string; scout_username?: string | null; player_username?: string | null; scout_email?: string | null; player_email?: string | null; }
 interface ContactMessageRow { id: string; name: string; email: string; subject: string | null; message: string; is_read: boolean; created_at: string; }
-interface Stats { totalPlayers: number; totalScouts: number; activeScouts: number; pendingScouts: number; liveVideos: number; totalRevenue: number; flaggedMessages: number; pendingRequests: number; unreadContacts: number; }
+interface ModerationAlertRow { id: string; kind: "scout_request" | "video" | "scout"; target_id: string; target_user_id: string | null; status: "new" | "resolved"; created_at: string; resolved_at: string | null; resolved_by: string | null; target_name?: string; target_email?: string | null; }
+interface Stats { totalPlayers: number; totalScouts: number; activeScouts: number; pendingScouts: number; liveVideos: number; totalRevenue: number; flaggedMessages: number; pendingRequests: number; unreadContacts: number; openAlerts: number; }
 
 // Persisted state for the moderation queue: filter/sort/search choices survive reloads.
 const MOD_STORAGE_PREFIX = "adminMod:";
