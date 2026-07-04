@@ -1,5 +1,5 @@
 import { motion } from "framer-motion";
-import { Upload, Tag, CreditCard, Award, Video, Loader2, Download, CheckCircle, FileText, User, Eye, Flag, Plus, Sparkles } from "lucide-react";
+import { Upload, Tag, CreditCard, Award, Video, Loader2, Download, CheckCircle, FileText, User, Eye, Flag, Plus, Sparkles, X } from "lucide-react";
 // jspdf is browser-only — dynamic-imported inside the download handlers below.
 import { Button } from "@/components/ui/button";
 import { Label } from "@/components/ui/label";
