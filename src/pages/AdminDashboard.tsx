@@ -454,7 +454,7 @@ const AdminDashboard = () => {
             <AdminStatsPanel />
           </div>
 
-          <Tabs defaultValue="scouts" className="space-y-4">
+          <Tabs value={activeTab} onValueChange={setActiveTab} className="space-y-4">
             {/* Mobile: horizontally scrollable tab row */}
             <div className="overflow-x-auto -mx-4 px-4 sm:mx-0 sm:px-0">
               <TabsList className="bg-card border border-border flex w-max sm:w-full sm:flex-wrap min-w-full">
