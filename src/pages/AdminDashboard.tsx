@@ -482,6 +482,7 @@ const AdminDashboard = () => {
             {/* Scout Requests Tab */}
             <TabsContent value="requests" className="space-y-3">
               <SearchFilterBar search={requestSearch} setSearch={setRequestSearch} filter={requestFilter} setFilter={setRequestFilter} placeholder="Search requests..."
+                sort={requestSort} setSort={setRequestSort}
                 filters={[{ value: "pending", label: "Pending" }, { value: "approved", label: "Approved" }, { value: "rejected", label: "Rejected" }]} />
               {filteredRequests.length === 0 ? <p className="text-muted-foreground text-center py-12">No requests found.</p> : filteredRequests.map((r) => (
                 <div key={r.id} className="apple-glass glass-card rounded-xl p-4 space-y-3">
