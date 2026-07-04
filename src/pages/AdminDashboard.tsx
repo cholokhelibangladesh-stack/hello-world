@@ -455,6 +455,7 @@ const AdminDashboard = () => {
             {/* Videos Tab */}
             <TabsContent value="videos" className="space-y-3">
               <SearchFilterBar search={videoSearch} setSearch={setVideoSearch} filter={videoFilter} setFilter={setVideoFilter} placeholder="Search videos..."
+                sort={videoSort} setSort={setVideoSort}
                 filters={[{ value: "pending_payment", label: "Pending" }, { value: "live", label: "Live" }, { value: "rejected", label: "Rejected" }, { value: "draft", label: "Draft" }]} />
               {filteredVideos.length === 0 ? <p className="text-muted-foreground text-center py-12">No videos found.</p> : filteredVideos.map((v) => (
                 <div key={v.id} className="apple-glass glass-card rounded-xl p-4 space-y-3">
