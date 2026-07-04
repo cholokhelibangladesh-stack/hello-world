@@ -251,7 +251,7 @@ const ScoutCarouselCard = React.forwardRef<HTMLDivElement, { scout: ScoutProfile
       exit={{ opacity: 0, y: -16, filter: "blur(6px)" }}
       transition={{ duration: 0.6, ease: [0.22, 1, 0.36, 1] }}
       whileHover={{ scale: 1.005 }}
-      className="absolute inset-0 rounded-3xl border overflow-hidden p-8 sm:p-12 flex flex-col justify-between shadow-2xl"
+      className="absolute inset-0 rounded-3xl border overflow-hidden p-5 sm:p-10 lg:p-12 flex flex-col justify-between shadow-2xl"
       style={{ borderColor: "hsl(var(--green) / 0.22)", background: "#0a1520" }}
     >
       {/* Mouse-tracked shine */}
@@ -288,14 +288,15 @@ const ScoutCarouselCard = React.forwardRef<HTMLDivElement, { scout: ScoutProfile
         </div>
       </div>
 
-      <p className="relative text-xl sm:text-2xl lg:text-[26px] leading-relaxed text-white/95 font-light tracking-tight my-8">
+      <p className="relative text-sm sm:text-xl lg:text-[26px] leading-relaxed text-white/95 font-light tracking-tight my-4 sm:my-8 line-clamp-6 sm:line-clamp-none break-words">
         "{scout.bio ?? defaultBio}"
       </p>
 
-      <div className="relative">
-        <p className="text-base font-semibold text-white">{scout.full_name}</p>
-        {scout.organization && <p className="text-sm text-white/55 mt-0.5">{scout.organization}</p>}
+      <div className="relative min-w-0">
+        <p className="text-sm sm:text-base font-semibold text-white truncate">{scout.full_name}</p>
+        {scout.organization && <p className="text-xs sm:text-sm text-white/55 mt-0.5 truncate">{scout.organization}</p>}
       </div>
+
     </motion.div>
   );
 });
@@ -780,22 +781,23 @@ const Index = () => {
               { label: T.talentDiscovered,  target: 340,  suffix: "+", Icon: Trophy },
             ].map((stat, i) => (
               <Reveal key={stat.label} delay={i * 0.12} className="text-center group">
-                <div className="relative p-6 rounded-2xl border transition-all duration-300 card-hover"
+                <div className="relative p-3 sm:p-6 rounded-2xl border transition-all duration-300 card-hover"
                   style={{ background: "hsl(var(--card))", borderColor: "hsl(var(--border))" }}>
-                  <div className="flex justify-center mb-3">
-                    <div className="w-12 h-12 rounded-xl flex items-center justify-center transition-all duration-300 group-hover:scale-110"
+                  <div className="flex justify-center mb-2 sm:mb-3">
+                    <div className="w-9 h-9 sm:w-12 sm:h-12 rounded-xl flex items-center justify-center transition-all duration-300 group-hover:scale-110"
                       style={{ background: "hsl(var(--green) / 0.12)" }}>
-                      <stat.Icon className="h-5 w-5" style={{ color: "hsl(var(--green))" }} />
+                      <stat.Icon className="h-4 w-4 sm:h-5 sm:w-5" style={{ color: "hsl(var(--green))" }} />
                     </div>
                   </div>
-                  <div className="font-display text-3xl sm:text-4xl lg:text-5xl mb-1 leading-tight tracking-tight whitespace-nowrap" style={{ color: "hsl(var(--green))" }}>
+                  <div className="font-display text-xl sm:text-4xl lg:text-5xl mb-1 leading-tight tracking-tight whitespace-nowrap" style={{ color: "hsl(var(--green))" }}>
                     <Counter target={stat.target} suffix={stat.suffix} />
                   </div>
-                  <div className="text-xs sm:text-sm text-muted-foreground">{stat.label}</div>
+                  <div className="text-[10px] sm:text-sm text-muted-foreground leading-snug">{stat.label}</div>
                   <div className="absolute bottom-0 left-1/2 -translate-x-1/2 w-0 h-0.5 group-hover:w-full transition-all duration-500 rounded-full"
                     style={{ background: "hsl(var(--green))" }} />
                 </div>
               </Reveal>
+
             ))}
           </div>
         </div>
