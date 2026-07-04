@@ -78,6 +78,7 @@ const PlayerDashboard = () => {
   const [birthCertUploading, setBirthCertUploading] = useState(false);
   const [savingSport, setSavingSport] = useState(false);
   const [activeTab, setActiveTab] = useState(() => {
+    if (typeof window === "undefined") return "upload";
     const hash = window.location.hash.replace("#", "");
     return ["upload", "explore", "profile"].includes(hash) ? hash : "upload";
   });
