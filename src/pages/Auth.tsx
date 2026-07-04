@@ -331,6 +331,7 @@ const Auth = () => {
       localStorage.removeItem("pendingPhone");
       localStorage.removeItem("pendingGender");
       localStorage.removeItem("pendingName");
+      localStorage.removeItem("pendingUsername");
     };
     setupPendingProfile();
   }, [user]);
