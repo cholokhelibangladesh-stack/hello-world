@@ -114,11 +114,9 @@ const FloatingHeader = () => {
 
         </Link>
 
-        {/* RIGHT: Language + Notification + Menu (uniform across all sizes) */}
+        {/* RIGHT: Notification + Menu */}
         <div className="pointer-events-auto flex items-center gap-2 shrink-0">
-          <LanguageSwitcher
-            className={`${bgChip} backdrop-blur-md ring-1 ${fg}`}
-          />
+
 
           {loading ? (
             <div className={`h-9 w-9 rounded-full ${bgChip} backdrop-blur-md ring-1 animate-pulse`} aria-hidden />
