@@ -14,15 +14,88 @@ import ProfileTab from "@/components/ProfileTab";
 import AdminNoticeForm from "@/components/AdminNoticeForm";
 import AdminStatsPanel from "@/components/AdminStatsPanel";
 
-interface ScoutRow { id: string; user_id: string; organization: string | null; verification_status: string; created_at: string; full_name?: string; is_banned?: boolean; }
-interface PlayerRow { user_id: string; full_name: string; is_banned?: boolean; sport?: string | null; }
-interface VideoRow { id: string; user_id: string; title: string | null; description: string | null; video_url: string | null; status: string; created_at: string; full_name?: string; }
+interface ScoutRow { id: string; user_id: string; organization: string | null; verification_status: string; created_at: string; full_name?: string; username?: string | null; email?: string | null; is_banned?: boolean; }
+interface PlayerRow { user_id: string; full_name: string; username?: string | null; email?: string | null; is_banned?: boolean; sport?: string | null; }
+interface VideoRow { id: string; user_id: string; title: string | null; description: string | null; video_url: string | null; status: string; created_at: string; full_name?: string; username?: string | null; email?: string | null; }
 interface MessageRow { id: string; sender_id: string; receiver_id: string; content: string; flagged: boolean; flag_reason: string | null; created_at: string; sender_name?: string; receiver_name?: string; }
-interface ScoutRequestRow { id: string; scout_id: string; player_id: string; status: string; notes: string | null; admin_response: string | null; created_at: string; scout_name?: string; player_name?: string; }
+interface ScoutRequestRow { id: string; scout_id: string; player_id: string; status: string; notes: string | null; admin_response: string | null; created_at: string; scout_name?: string; player_name?: string; scout_username?: string | null; player_username?: string | null; scout_email?: string | null; player_email?: string | null; }
 interface ContactMessageRow { id: string; name: string; email: string; subject: string | null; message: string; is_read: boolean; created_at: string; }
 interface Stats { totalPlayers: number; totalScouts: number; activeScouts: number; pendingScouts: number; liveVideos: number; totalRevenue: number; flaggedMessages: number; pendingRequests: number; unreadContacts: number; }
 
+// Persisted state for the moderation queue: filter/sort/search choices survive reloads.
+const MOD_STORAGE_PREFIX = "adminMod:";
+const readPersisted = (key: string, fallback: string): string => {
+  if (typeof window === "undefined") return fallback;
+  try {
+    const v = window.localStorage.getItem(MOD_STORAGE_PREFIX + key);
+    return v === null ? fallback : v;
+  } catch {
+    return fallback;
+  }
+};
+const writePersisted = (key: string, value: string) => {
+  if (typeof window === "undefined") return;
+  try { window.localStorage.setItem(MOD_STORAGE_PREFIX + key, value); } catch { /* ignore quota */ }
+};
+const usePersistedString = (key: string, initial: string): [string, (v: string) => void] => {
+  const [value, setValue] = useState<string>(() => readPersisted(key, initial));
+  useEffect(() => { writePersisted(key, value); }, [key, value]);
+  return [value, setValue];
+};
+
+const SORT_OPTIONS = [
+  { value: "date_desc", label: "Newest first" },
+  { value: "date_asc", label: "Oldest first" },
+  { value: "status_asc", label: "Status (pending first)" },
+  { value: "status_desc", label: "Status (resolved first)" },
+  { value: "target_asc", label: "Account A–Z" },
+  { value: "target_desc", label: "Account Z–A" },
+];
+
+// Hoisted out of AdminDashboard so React does not re-create the component
+// tree on every parent render — that would unmount the search Input mid-keystroke.
+const SearchFilterBar = ({ search, setSearch, filter, setFilter, filters, placeholder, sort, setSort, testKey }: { search: string; setSearch: (v: string) => void; filter: string; setFilter: (v: string) => void; filters: { value: string; label: string }[]; placeholder: string; sort?: string; setSort?: (v: string) => void; testKey: string }) => (
+  <div className="flex flex-col sm:flex-row gap-2 mb-4" data-testid={`mod-filterbar-${testKey}`}>
+    <div className="relative flex-1">
+      <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
+      <Input
+        placeholder={placeholder}
+        className="pl-10 bg-secondary border-border rounded-xl text-sm"
+        value={search}
+        onChange={(e) => setSearch(e.target.value)}
+        data-testid={`mod-search-${testKey}`}
+        aria-label={`Search ${testKey} by name, email, or username`}
+      />
+    </div>
+    <div className="flex gap-1.5 flex-wrap items-center">
+      {filters.map((f) => (
+        <Button key={f.value} size="sm" variant="outline"
+          onClick={() => setFilter(filter === f.value ? "all" : f.value)}
+          data-testid={`mod-filter-${testKey}-${f.value}`}
+          className={`text-xs rounded-full border-border ${filter === f.value ? "border-primary text-primary bg-primary/10" : "text-muted-foreground"}`}>
+          <Filter className="h-3 w-3 mr-1" /> {f.label}
+        </Button>
+      ))}
+      {setSort && (
+        <select
+          aria-label="Sort"
+          value={sort}
+          onChange={(e) => setSort(e.target.value)}
+          data-testid={`mod-sort-${testKey}`}
+          className="h-8 rounded-full border border-border bg-secondary text-xs px-3 text-muted-foreground focus:outline-none focus:ring-2 focus:ring-ring"
+        >
+          {SORT_OPTIONS.map((o) => (
+            <option key={o.value} value={o.value}>{o.label}</option>
+          ))}
+        </select>
+      )}
+    </div>
+  </div>
+);
+
 const AdminDashboard = () => {
+
+
   const { user, role, loading: authLoading } = useAuth();
   const [scouts, setScouts] = useState<ScoutRow[]>([]);
   const [players, setPlayers] = useState<PlayerRow[]>([]);
@@ -35,18 +108,19 @@ const AdminDashboard = () => {
   const [feedbackInputs, setFeedbackInputs] = useState<Record<string, string>>({});
   const [uploadsHalted, setUploadsHalted] = useState(false);
   const [haltLoading, setHaltLoading] = useState(false);
-  // Search & filter states
-  const [scoutSearch, setScoutSearch] = useState("");
-  const [scoutFilter, setScoutFilter] = useState<string>("all");
-  const [scoutSort, setScoutSort] = useState<string>("date_desc");
-  const [videoSearch, setVideoSearch] = useState("");
-  const [videoFilter, setVideoFilter] = useState<string>("all");
-  const [videoSort, setVideoSort] = useState<string>("date_desc");
-  const [requestSearch, setRequestSearch] = useState("");
-  const [requestFilter, setRequestFilter] = useState<string>("all");
-  const [requestSort, setRequestSort] = useState<string>("date_desc");
-  const [messageSearch, setMessageSearch] = useState("");
-  const [messageFilter, setMessageFilter] = useState<string>("all");
+  // Search & filter states — persisted across reloads via localStorage
+  const [scoutSearch, setScoutSearch] = usePersistedString("scoutSearch", "");
+  const [scoutFilter, setScoutFilter] = usePersistedString("scoutFilter", "all");
+  const [scoutSort, setScoutSort] = usePersistedString("scoutSort", "date_desc");
+  const [videoSearch, setVideoSearch] = usePersistedString("videoSearch", "");
+  const [videoFilter, setVideoFilter] = usePersistedString("videoFilter", "all");
+  const [videoSort, setVideoSort] = usePersistedString("videoSort", "date_desc");
+  const [requestSearch, setRequestSearch] = usePersistedString("requestSearch", "");
+  const [requestFilter, setRequestFilter] = usePersistedString("requestFilter", "all");
+  const [requestSort, setRequestSort] = usePersistedString("requestSort", "date_desc");
+  const [messageSearch, setMessageSearch] = usePersistedString("messageSearch", "");
+  const [messageFilter, setMessageFilter] = usePersistedString("messageFilter", "all");
+  const [activeTab, setActiveTab] = usePersistedString("activeTab", "scouts");
   const navigate = useNavigate();
   const { toast } = useToast();
 
@@ -91,22 +165,53 @@ const AdminDashboard = () => {
       ...playerUserIds,
     ])];
 
-    let profileMap = new Map<string, { name: string; is_banned: boolean; sport?: string | null }>();
+    let profileMap = new Map<string, { name: string; username: string | null; is_banned: boolean; sport?: string | null }>();
     if (allUserIds.length > 0) {
-      const { data: profiles } = await supabase.from("profiles").select("user_id, full_name, is_banned, sport").in("user_id", allUserIds);
-      (profiles || []).forEach((p) => profileMap.set(p.user_id, { name: p.full_name, is_banned: (p as any).is_banned || false, sport: (p as any).sport }));
+      const { data: profiles } = await supabase.from("profiles").select("user_id, full_name, username, is_banned, sport").in("user_id", allUserIds);
+      (profiles || []).forEach((p) => profileMap.set(p.user_id, {
+        name: p.full_name,
+        username: (p as any).username ?? null,
+        is_banned: (p as any).is_banned || false,
+        sport: (p as any).sport,
+      }));
     }
 
-    setScouts(scoutData.map((s) => ({ ...s, full_name: profileMap.get(s.user_id)?.name || "Unknown", is_banned: (s as any).is_banned || false })));
+    // Admin-only helper: pull emails so the moderation search can match by email too.
+    const emailMap = new Map<string, string>();
+    const { data: emailRows } = await supabase.rpc("get_admin_user_emails" as any);
+    ((emailRows as any[]) || []).forEach((r) => emailMap.set(r.user_id, r.email));
+
+    setScouts(scoutData.map((s) => ({
+      ...s,
+      full_name: profileMap.get(s.user_id)?.name || "Unknown",
+      username: profileMap.get(s.user_id)?.username ?? null,
+      email: emailMap.get(s.user_id) ?? null,
+      is_banned: (s as any).is_banned || false,
+    })));
     setPlayers(playerUserIds.map((uid) => ({
       user_id: uid,
       full_name: profileMap.get(uid)?.name || "Unknown",
+      username: profileMap.get(uid)?.username ?? null,
+      email: emailMap.get(uid) ?? null,
       is_banned: profileMap.get(uid)?.is_banned || false,
       sport: profileMap.get(uid)?.sport,
     })));
-    setVideos(videoData.map((v) => ({ ...v, full_name: profileMap.get(v.user_id)?.name || "Unknown" })));
+    setVideos(videoData.map((v) => ({
+      ...v,
+      full_name: profileMap.get(v.user_id)?.name || "Unknown",
+      username: profileMap.get(v.user_id)?.username ?? null,
+      email: emailMap.get(v.user_id) ?? null,
+    })));
     setMessages(msgData.map((m) => ({ ...m, sender_name: profileMap.get(m.sender_id)?.name || "Unknown", receiver_name: profileMap.get(m.receiver_id)?.name || "Unknown" })));
-    setScoutRequests(reqData.map((r) => ({ ...r, scout_name: profileMap.get(r.scout_id)?.name || "Unknown", player_name: profileMap.get(r.player_id)?.name || "Unknown" })));
+    setScoutRequests(reqData.map((r) => ({
+      ...r,
+      scout_name: profileMap.get(r.scout_id)?.name || "Unknown",
+      player_name: profileMap.get(r.player_id)?.name || "Unknown",
+      scout_username: profileMap.get(r.scout_id)?.username ?? null,
+      player_username: profileMap.get(r.player_id)?.username ?? null,
+      scout_email: emailMap.get(r.scout_id) ?? null,
+      player_email: emailMap.get(r.player_id) ?? null,
+    })));
 
     const contactData = ((contactRes.data as unknown) as ContactMessageRow[]) || [];
     setContactMessages(contactData);
@@ -273,10 +378,18 @@ const AdminDashboard = () => {
     return arr;
   };
 
+  // Case-insensitive substring match across a bundle of fields (name/email/username/etc.)
+  const matchAny = (needle: string, hay: (string | null | undefined)[]): boolean => {
+    if (!needle) return true;
+    const q = needle.trim().toLowerCase();
+    if (!q) return true;
+    return hay.some((v) => (v || "").toLowerCase().includes(q));
+  };
+
   // Filtered + sorted data
   const filteredScouts = applySort(
     scouts.filter((s) => {
-      const matchSearch = !scoutSearch || s.full_name?.toLowerCase().includes(scoutSearch.toLowerCase()) || s.organization?.toLowerCase().includes(scoutSearch.toLowerCase());
+      const matchSearch = matchAny(scoutSearch, [s.full_name, s.organization, s.username, s.email]);
       const matchFilter = scoutFilter === "all" || s.verification_status === scoutFilter;
       return matchSearch && matchFilter;
     }),
@@ -285,7 +398,7 @@ const AdminDashboard = () => {
 
   const filteredVideos = applySort(
     videos.filter((v) => {
-      const matchSearch = !videoSearch || v.full_name?.toLowerCase().includes(videoSearch.toLowerCase()) || v.description?.toLowerCase().includes(videoSearch.toLowerCase());
+      const matchSearch = matchAny(videoSearch, [v.full_name, v.description, v.username, v.email]);
       const matchFilter = videoFilter === "all" || v.status === videoFilter;
       return matchSearch && matchFilter;
     }),
@@ -294,7 +407,9 @@ const AdminDashboard = () => {
 
   const filteredRequests = applySort(
     scoutRequests.filter((r) => {
-      const matchSearch = !requestSearch || r.scout_name?.toLowerCase().includes(requestSearch.toLowerCase()) || r.player_name?.toLowerCase().includes(requestSearch.toLowerCase());
+      const matchSearch = matchAny(requestSearch, [
+        r.scout_name, r.player_name, r.scout_username, r.player_username, r.scout_email, r.player_email,
+      ]);
       const matchFilter = requestFilter === "all" || r.status === requestFilter;
       return matchSearch && matchFilter;
     }),
@@ -309,44 +424,8 @@ const AdminDashboard = () => {
 
   if (authLoading || loading) return <div className="min-h-screen flex items-center justify-center"><Loader2 className="h-8 w-8 animate-spin text-primary" /></div>;
 
-  const SORT_OPTIONS = [
-    { value: "date_desc", label: "Newest first" },
-    { value: "date_asc", label: "Oldest first" },
-    { value: "status_asc", label: "Status (pending first)" },
-    { value: "status_desc", label: "Status (resolved first)" },
-    { value: "target_asc", label: "Account A–Z" },
-    { value: "target_desc", label: "Account Z–A" },
-  ];
+  
 
-  const SearchFilterBar = ({ search, setSearch, filter, setFilter, filters, placeholder, sort, setSort }: { search: string; setSearch: (v: string) => void; filter: string; setFilter: (v: string) => void; filters: { value: string; label: string }[]; placeholder: string; sort?: string; setSort?: (v: string) => void }) => (
-    <div className="flex flex-col sm:flex-row gap-2 mb-4">
-      <div className="relative flex-1">
-        <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
-        <Input placeholder={placeholder} className="pl-10 bg-secondary border-border rounded-xl text-sm" value={search} onChange={(e) => setSearch(e.target.value)} />
-      </div>
-      <div className="flex gap-1.5 flex-wrap items-center">
-        {filters.map((f) => (
-          <Button key={f.value} size="sm" variant="outline"
-            onClick={() => setFilter(filter === f.value ? "all" : f.value)}
-            className={`text-xs rounded-full border-border ${filter === f.value ? "border-primary text-primary bg-primary/10" : "text-muted-foreground"}`}>
-            <Filter className="h-3 w-3 mr-1" /> {f.label}
-          </Button>
-        ))}
-        {setSort && (
-          <select
-            aria-label="Sort"
-            value={sort}
-            onChange={(e) => setSort(e.target.value)}
-            className="h-8 rounded-full border border-border bg-secondary text-xs px-3 text-muted-foreground focus:outline-none focus:ring-2 focus:ring-ring"
-          >
-            {SORT_OPTIONS.map((o) => (
-              <option key={o.value} value={o.value}>{o.label}</option>
-            ))}
-          </select>
-        )}
-      </div>
-    </div>
-  );
 
   return (
     <div className="min-h-screen pt-16 pb-20 md:pb-8">
@@ -382,7 +461,7 @@ const AdminDashboard = () => {
             <AdminStatsPanel />
           </div>
 
-          <Tabs defaultValue="scouts" className="space-y-4">
+          <Tabs value={activeTab} onValueChange={setActiveTab} className="space-y-4">
             {/* Mobile: horizontally scrollable tab row */}
             <div className="overflow-x-auto -mx-4 px-4 sm:mx-0 sm:px-0">
               <TabsList className="bg-card border border-border flex w-max sm:w-full sm:flex-wrap min-w-full">
@@ -400,11 +479,11 @@ const AdminDashboard = () => {
 
             {/* Scouts Tab */}
             <TabsContent value="scouts" className="space-y-3">
-              <SearchFilterBar search={scoutSearch} setSearch={setScoutSearch} filter={scoutFilter} setFilter={setScoutFilter} placeholder="Search scouts..."
+              <SearchFilterBar testKey="scouts" search={scoutSearch} setSearch={setScoutSearch} filter={scoutFilter} setFilter={setScoutFilter} placeholder="Search scouts by name, email, or username..."
                 sort={scoutSort} setSort={setScoutSort}
                 filters={[{ value: "pending", label: "Pending" }, { value: "active", label: "Active" }, { value: "rejected", label: "Rejected" }]} />
               {filteredScouts.length === 0 ? <p className="text-muted-foreground text-center py-12">No scouts found.</p> : filteredScouts.map((s) => (
-                <div key={s.id} className="apple-glass glass-card rounded-xl p-4 space-y-3">
+                <div key={s.id} data-testid="mod-row-scouts" data-account={s.full_name || ""} data-status={s.verification_status} data-created-at={s.created_at} className="apple-glass glass-card rounded-xl p-4 space-y-3">
                   <div className="flex items-start justify-between gap-3">
                     <div className="flex-1 min-w-0">
                       <p className={`font-semibold truncate ${s.is_banned ? "line-through text-muted-foreground" : "text-foreground"}`}>{s.full_name}</p>
@@ -454,11 +533,11 @@ const AdminDashboard = () => {
 
             {/* Videos Tab */}
             <TabsContent value="videos" className="space-y-3">
-              <SearchFilterBar search={videoSearch} setSearch={setVideoSearch} filter={videoFilter} setFilter={setVideoFilter} placeholder="Search videos..."
+              <SearchFilterBar testKey="videos" search={videoSearch} setSearch={setVideoSearch} filter={videoFilter} setFilter={setVideoFilter} placeholder="Search videos by uploader name, email, or username..."
                 sort={videoSort} setSort={setVideoSort}
                 filters={[{ value: "pending_payment", label: "Pending" }, { value: "live", label: "Live" }, { value: "rejected", label: "Rejected" }, { value: "draft", label: "Draft" }]} />
               {filteredVideos.length === 0 ? <p className="text-muted-foreground text-center py-12">No videos found.</p> : filteredVideos.map((v) => (
-                <div key={v.id} className="apple-glass glass-card rounded-xl p-4 space-y-3">
+                <div key={v.id} data-testid="mod-row-videos" data-account={v.full_name || ""} data-status={v.status} data-created-at={v.created_at} className="apple-glass glass-card rounded-xl p-4 space-y-3">
                   <div className="flex items-start justify-between gap-3">
                     <div className="flex-1 min-w-0">
                       <p className="font-semibold text-foreground truncate">{v.full_name}</p>
@@ -481,11 +560,11 @@ const AdminDashboard = () => {
 
             {/* Scout Requests Tab */}
             <TabsContent value="requests" className="space-y-3">
-              <SearchFilterBar search={requestSearch} setSearch={setRequestSearch} filter={requestFilter} setFilter={setRequestFilter} placeholder="Search requests..."
+              <SearchFilterBar testKey="requests" search={requestSearch} setSearch={setRequestSearch} filter={requestFilter} setFilter={setRequestFilter} placeholder="Search requests by scout or player name, email, or username..."
                 sort={requestSort} setSort={setRequestSort}
                 filters={[{ value: "pending", label: "Pending" }, { value: "approved", label: "Approved" }, { value: "rejected", label: "Rejected" }]} />
               {filteredRequests.length === 0 ? <p className="text-muted-foreground text-center py-12">No requests found.</p> : filteredRequests.map((r) => (
-                <div key={r.id} className="apple-glass glass-card rounded-xl p-4 space-y-3">
+                <div key={r.id} data-testid="mod-row-requests" data-account={r.player_name || ""} data-scout={r.scout_name || ""} data-status={r.status} data-created-at={r.created_at} className="apple-glass glass-card rounded-xl p-4 space-y-3">
                   <div className="space-y-1">
                     <div className="flex items-start justify-between gap-2">
                       <p className="font-semibold text-sm text-foreground leading-tight">

@@ -527,6 +527,13 @@ export type Database = {
         Args: { _max?: number; _user: string }
         Returns: undefined
       }
+      get_admin_user_emails: {
+        Args: never
+        Returns: {
+          email: string
+          user_id: string
+        }[]
+      }
       get_ranked_feed: {
         Args: { _limit?: number; _offset?: number; _sport?: string }
         Returns: {
