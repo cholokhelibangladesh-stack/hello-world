@@ -1,4 +1,8 @@
 {
-  "data": null,
-  "error": "permission denied for function has_role"
+  "data": [
+    {
+      "id": "5d04cadf-41ca-4371-9d8f-d526fcde8f3f"
+    }
+  ],
+  "error": null
 }

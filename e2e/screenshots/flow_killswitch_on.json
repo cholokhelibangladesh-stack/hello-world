@@ -1,4 +1,4 @@
 {
-  "err": "permission denied for function has_role",
-  "value": "false"
+  "err": null,
+  "value": "true"
 }

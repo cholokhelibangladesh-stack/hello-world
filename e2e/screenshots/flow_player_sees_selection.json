@@ -1,0 +1,17 @@
+{
+  "data": [
+    {
+      "id": "477303fd-f875-4935-9513-c5cc5f07c6cf",
+      "user_id": "b232d1a4-7745-4af8-b03a-00603728c3f7",
+      "title": "E2E Selection",
+      "message": "you were selected (e2e)",
+      "type": "selection",
+      "read": false,
+      "metadata": {
+        "e2e": true
+      },
+      "created_at": "2026-07-04T16:57:30.890297+00:00"
+    }
+  ],
+  "error": null
+}
