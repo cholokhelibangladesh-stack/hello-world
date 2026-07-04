@@ -302,7 +302,7 @@ const AdminDashboard = () => {
           </div>
 
           {stats && (
-            <div className="grid grid-cols-3 sm:grid-cols-6 gap-2 sm:gap-3 mb-5">
+            <div className="glass-stagger grid grid-cols-3 sm:grid-cols-6 gap-2 sm:gap-3 mb-5">
               {[
                 { label: "Players", value: stats.totalPlayers, icon: Users },
                 { label: "Scouts", value: `${stats.activeScouts}/${stats.totalScouts}`, icon: Shield },
