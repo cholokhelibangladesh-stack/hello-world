@@ -401,6 +401,7 @@ const AdminDashboard = () => {
             {/* Scouts Tab */}
             <TabsContent value="scouts" className="space-y-3">
               <SearchFilterBar search={scoutSearch} setSearch={setScoutSearch} filter={scoutFilter} setFilter={setScoutFilter} placeholder="Search scouts..."
+                sort={scoutSort} setSort={setScoutSort}
                 filters={[{ value: "pending", label: "Pending" }, { value: "active", label: "Active" }, { value: "rejected", label: "Rejected" }]} />
               {filteredScouts.length === 0 ? <p className="text-muted-foreground text-center py-12">No scouts found.</p> : filteredScouts.map((s) => (
                 <div key={s.id} className="apple-glass glass-card rounded-xl p-4 space-y-3">
