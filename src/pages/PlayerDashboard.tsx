@@ -179,31 +179,8 @@ const PlayerDashboard = () => {
     }
   };
 
-  const handleBirthCertUpload = async (file: File) => {
-    if (!user) return;
-    if (file.size > 8 * 1024 * 1024) {
-      toast({ title: "File too large", description: "Birth certificate must be under 8 MB.", variant: "destructive" });
-      return;
-    }
-    setBirthCertUploading(true);
-    try {
-      const ext = file.name.split(".").pop();
-      const path = `${user.id}/birth_certificate_${Date.now()}.${ext}`;
-      const { error: upErr } = await supabase.storage.from("documents").upload(path, file, { upsert: true });
-      if (upErr) throw upErr;
-      const { data: { publicUrl } } = supabase.storage.from("documents").getPublicUrl(path);
-      await supabase.from("documents").delete().eq("user_id", user.id).eq("type", "birth_certificate");
-      await supabase.from("documents").insert(
-        { user_id: user.id, type: "birth_certificate", url: publicUrl, name: file.name } as any
-      );
-      setBirthCertUrl(publicUrl);
-      toast({ title: "Birth certificate uploaded ✅" });
-    } catch (err: any) {
-      toast({ title: "Upload failed", description: err.message, variant: "destructive" });
-    } finally {
-      setBirthCertUploading(false);
-    }
-  };
+
+
 
   const resetUploadForm = () => {
     setVideoFile(null);
