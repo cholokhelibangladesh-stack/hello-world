@@ -145,21 +145,4 @@ const downloadPdf = async () => {
 Type-only imports (`import type { jsPDF } from "jspdf"`) are allowed —
 they are erased at build time.
 
-### Automated enforcement
-
-Two scripts back these rules and run in CI (`.github/workflows/ssr-check.yml`):
-
-```sh
-# Scans src/ for module-scope browser-global reads AND module-scope
-# imports of known browser-only libraries.
-node scripts/check-ssr-leaks.mjs
-
-# Runs the scan, then the production build, then verifies the SSR
-# entry (dist/server/index.mjs) exists. Fails the pipeline on any
-# missing-export error or server-bundle failure.
-bun run check:ssr
-```
-
-Run `bun run check:ssr` locally before opening a PR that changes
-component logic, routing, or dependencies.
 
