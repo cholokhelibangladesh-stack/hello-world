@@ -644,70 +644,94 @@ const PlayerDashboard = () => {
                     </div>
                   ) : (
                     <div className="space-y-6">
-                      {/* Sport selector */}
-                      <div className="bg-card border border-border rounded-xl p-6">
-                        <div className="flex items-center gap-3 mb-3">
-                          <Tag className="h-5 w-5 text-primary" />
+                      {/* Sport selector — glass */}
+                      <motion.div
+                        initial={{ opacity: 0, y: 8 }}
+                        animate={{ opacity: 1, y: 0 }}
+                        className="relative overflow-hidden rounded-3xl border border-white/10 bg-card/40 backdrop-blur-xl p-6 shadow-lg"
+                      >
+                        <div className="absolute -top-20 -right-20 w-56 h-56 rounded-full bg-primary/15 blur-3xl pointer-events-none" />
+                        <div className="relative flex items-center gap-3 mb-3">
+                          <div className="w-9 h-9 rounded-xl bg-primary/15 border border-primary/25 flex items-center justify-center text-primary">
+                            <Tag className="h-4 w-4" />
+                          </div>
                           <h2 className="font-display text-xl text-foreground">{t("player.yourSport" as any)}</h2>
                           {savingSport && <Loader2 className="h-4 w-4 animate-spin text-muted-foreground" />}
                         </div>
-                        <p className="text-xs text-muted-foreground mb-3">{t("player.sportHint" as any)}</p>
-                        <div className="grid grid-cols-3 gap-2">
+                        <p className="text-xs text-muted-foreground mb-4">{t("player.sportHint" as any)}</p>
+                        <div className="relative grid grid-cols-3 gap-2">
                           {SPORTS.map((s) => (
-                            <button
+                            <motion.button
                               key={s.id}
                               type="button"
+                              whileHover={{ y: -2 }}
+                              whileTap={{ scale: 0.97 }}
                               disabled={savingSport}
                               onClick={() => handleSportChange(s.id)}
-                              className={`py-3 rounded-xl text-sm font-semibold transition-all border ${
+                              className={`relative overflow-hidden py-3 rounded-2xl text-sm font-semibold transition-all border backdrop-blur-sm ${
                                 sport === s.id
-                                  ? "bg-primary text-primary-foreground border-primary shadow-md"
-                                  : "bg-secondary text-secondary-foreground border-border hover:border-primary/40"
+                                  ? `bg-gradient-to-br ${s.accent} text-foreground border-primary/40 shadow-lg shadow-primary/20`
+                                  : "bg-white/5 text-secondary-foreground border-white/10 hover:border-primary/40"
                               }`}
                             >
-                              <span className="mr-1">{s.icon}</span> {SPORT_LABEL[s.id]}
-                            </button>
+                              {SPORT_LABEL[s.id]}
+                            </motion.button>
                           ))}
                         </div>
-                      </div>
+                      </motion.div>
 
-                      {/* Birth certificate (required) */}
-                      <div className={`bg-card border rounded-xl p-6 ${birthCertUrl ? "border-border" : "border-destructive/40"}`}>
-                        <div className="flex items-center gap-3 mb-3">
-                          <FileText className={`h-5 w-5 ${birthCertUrl ? "text-primary" : "text-destructive"}`} />
-                          <h2 className="font-display text-xl text-foreground">{t("player.birthCertificate" as any)}</h2>
-                          {birthCertUrl ? (
-                            <Badge className="bg-primary/20 text-primary border-primary/30">{t("player.uploaded" as any)}</Badge>
-                          ) : (
-                            <Badge variant="outline" className="border-destructive/40 text-destructive">{t("player.required" as any)}</Badge>
+                      {/* Video Upload — glass */}
+                      <motion.div
+                        initial={{ opacity: 0, y: 8 }}
+                        animate={{ opacity: 1, y: 0 }}
+                        transition={{ delay: 0.05 }}
+                        className="relative overflow-hidden rounded-3xl border border-white/10 bg-card/40 backdrop-blur-xl p-6 shadow-lg"
+                      >
+                        <div className="absolute -bottom-20 -left-20 w-56 h-56 rounded-full bg-sky-500/15 blur-3xl pointer-events-none" />
+                        <div className="relative flex items-center gap-3 mb-4">
+                          <div className="w-9 h-9 rounded-xl bg-sky-500/15 border border-sky-400/25 flex items-center justify-center text-sky-300">
+                            <Video className="h-4 w-4" />
+                          </div>
+                          <h2 className="font-display text-xl text-foreground">{t("player.highlightVideo" as any)}</h2>
+                          {videoStatus && (
+                            <Badge variant={videoStatus === "live" ? "default" : "outline"} className={videoStatus === "live" ? "bg-emerald-500/20 text-emerald-300 border-emerald-400/30" : "bg-amber-500/20 text-amber-300 border-amber-400/30"}>{videoStatus === "live" ? t("player.status.live" as any) : t("player.status.pendingPayment" as any)}</Badge>
                           )}
                         </div>
-                        <p className="text-xs text-muted-foreground mb-3">
-                          {t("player.bcHint" as any)}
-                        </p>
-                        <div className="flex flex-col sm:flex-row gap-2">
-                          <Button
-                            type="button"
-                            variant="outline"
-                            onClick={() => bcRef.current?.click()}
-                            disabled={birthCertUploading}
-                            className="border-primary/40 text-primary hover:bg-primary/10"
-                          >
-                            {birthCertUploading ? <Loader2 className="h-4 w-4 animate-spin mr-2" /> : <Upload className="h-4 w-4 mr-2" />}
-                            {birthCertUrl ? t("player.replaceBC" as any) : t("player.uploadBC" as any)}
-                          </Button>
-                          <input
-                            ref={bcRef}
-                            type="file"
-                            accept="application/pdf,image/jpeg,image/png"
-                            className="hidden"
-                            onChange={(e) => e.target.files?.[0] && handleBirthCertUpload(e.target.files[0])}
-                          />
+                        {!videoId ? (
+                          <>
+                            <motion.div
+                              whileHover={{ scale: 1.005 }}
+                              onClick={() => fileRef.current?.click()}
+                              className="relative border-2 border-dashed border-white/15 rounded-2xl p-12 text-center hover:border-primary/50 transition-all cursor-pointer bg-white/5 backdrop-blur-sm group"
+                            >
+                              <motion.div
+                                animate={{ y: [0, -4, 0] }}
+                                transition={{ repeat: Infinity, duration: 2.5, ease: "easeInOut" }}
+                                className="inline-flex items-center justify-center w-14 h-14 rounded-2xl bg-primary/10 border border-primary/25 mb-3 group-hover:bg-primary/20 transition-colors"
+                              >
+                                <Upload className="h-6 w-6 text-primary" />
+                              </motion.div>
+                              <p className="text-foreground font-medium mb-1">{videoFile ? videoFile.name : t("player.dropVideo" as any)}</p>
+                              <p className="text-xs text-muted-foreground">{t("player.maxLen" as any)}</p>
+                              {videoFile && <p className="text-xs text-primary mt-2 inline-flex items-center gap-1"><Sparkles className="h-3 w-3" /> {t("player.fileSelectedHint" as any)}</p>}
+                            </motion.div>
+                            <input ref={fileRef} type="file" accept="video/*" className="hidden" onChange={(e) => setVideoFile(e.target.files?.[0] || null)} />
+                          </>
+                        ) : (
+                          <div className="flex items-center gap-2 bg-emerald-500/10 border border-emerald-400/20 rounded-xl p-4 backdrop-blur-sm">
+                            <CheckCircle className="h-5 w-5 text-emerald-400" />
+                            <span className="text-foreground text-sm">{paymentDone ? t("player.videoUploadedLive" as any) : t("player.detailsSaved" as any)}</span>
+                          </div>
+                        )}
+                        <div className="mt-4">
+                          <Label className="text-xs text-muted-foreground uppercase tracking-wide">{t("player.videoDescLabel" as any)}</Label>
+                          <Textarea placeholder={t("player.videoDescPh" as any)} className="mt-1 bg-white/5 border-white/10 backdrop-blur-sm resize-none rounded-xl" rows={3} maxLength={600} value={description} onChange={(e) => setDescription(e.target.value)} />
                         </div>
-                      </div>
+                      </motion.div>
 
-                      {/* Video Upload */}
-                      <div className="bg-card border border-border rounded-xl p-6">
+                      {/* placeholder end of old video block — original block below removed */}
+                      <div className="hidden">
+
                         <div className="flex items-center gap-3 mb-4">
                           <Video className="h-5 w-5 text-primary" />
                           <h2 className="font-display text-xl text-foreground">{t("player.highlightVideo" as any)}</h2>
