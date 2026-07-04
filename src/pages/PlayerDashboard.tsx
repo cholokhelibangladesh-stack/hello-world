@@ -774,9 +774,30 @@ const PlayerDashboard = () => {
                           <div className="flex flex-wrap gap-2 mt-2">
                             {positionTags.map((tag) => (
                               <Badge key={tag} variant={selectedPositions.includes(tag) ? "default" : "outline"}
-                                className={`cursor-pointer transition-all rounded-full ${selectedPositions.includes(tag) ? "bg-primary text-primary-foreground hover:bg-primary/90 shadow-md shadow-primary/25" : "bg-white/5 border-white/10 text-muted-foreground hover:border-primary/40 hover:text-foreground backdrop-blur-sm"}`}
+                                className={`cursor-pointer transition-colors rounded-full ${selectedPositions.includes(tag) ? "bg-primary text-primary-foreground hover:bg-primary/90 shadow-md shadow-primary/25" : "bg-white/5 border-white/10 text-muted-foreground hover:border-primary/40 hover:text-foreground"}`}
                                 onClick={() => toggleTag(tag, selectedPositions, setSelectedPositions)}>{tag}</Badge>
                             ))}
+                            {selectedPositions.filter((t) => !positionTags.includes(t)).map((tag) => (
+                              <Badge key={tag} className="rounded-full bg-primary/90 text-primary-foreground pl-3 pr-1 py-0 flex items-center gap-1 shadow-md shadow-primary/25">
+                                {tag}
+                                <button type="button" onClick={() => removeTag(tag, selectedPositions, setSelectedPositions)} className="w-4 h-4 rounded-full hover:bg-white/20 flex items-center justify-center" aria-label={`Remove ${tag}`}>
+                                  <X className="h-3 w-3" />
+                                </button>
+                              </Badge>
+                            ))}
+                          </div>
+                          <div className="flex gap-2 mt-3">
+                            <Input
+                              placeholder="Add custom position (e.g. False 9)"
+                              value={customPosition}
+                              onChange={(e) => setCustomPosition(e.target.value)}
+                              onKeyDown={(e) => { if (e.key === "Enter") { e.preventDefault(); addCustomTag(customPosition, selectedPositions, setSelectedPositions, () => setCustomPosition("")); } }}
+                              className="bg-white/5 border-white/10 rounded-xl h-9 text-sm"
+                              maxLength={40}
+                            />
+                            <Button type="button" size="sm" variant="outline" onClick={() => addCustomTag(customPosition, selectedPositions, setSelectedPositions, () => setCustomPosition(""))} className="rounded-xl border-white/15 bg-white/5 hover:bg-white/10 h-9 px-3">
+                              <Plus className="h-3.5 w-3.5" />
+                            </Button>
                           </div>
                         </div>
                         <div className="relative">
@@ -784,11 +805,33 @@ const PlayerDashboard = () => {
                           <div className="flex flex-wrap gap-2 mt-2">
                             {traitTags.map((tag) => (
                               <Badge key={tag} variant={selectedTraits.includes(tag) ? "default" : "outline"}
-                                className={`cursor-pointer transition-all rounded-full ${selectedTraits.includes(tag) ? "bg-primary text-primary-foreground hover:bg-primary/90 shadow-md shadow-primary/25" : "bg-white/5 border-white/10 text-muted-foreground hover:border-primary/40 hover:text-foreground backdrop-blur-sm"}`}
+                                className={`cursor-pointer transition-colors rounded-full ${selectedTraits.includes(tag) ? "bg-primary text-primary-foreground hover:bg-primary/90 shadow-md shadow-primary/25" : "bg-white/5 border-white/10 text-muted-foreground hover:border-primary/40 hover:text-foreground"}`}
                                 onClick={() => toggleTag(tag, selectedTraits, setSelectedTraits)}>{tag}</Badge>
                             ))}
+                            {selectedTraits.filter((t) => !traitTags.includes(t)).map((tag) => (
+                              <Badge key={tag} className="rounded-full bg-primary/90 text-primary-foreground pl-3 pr-1 py-0 flex items-center gap-1 shadow-md shadow-primary/25">
+                                {tag}
+                                <button type="button" onClick={() => removeTag(tag, selectedTraits, setSelectedTraits)} className="w-4 h-4 rounded-full hover:bg-white/20 flex items-center justify-center" aria-label={`Remove ${tag}`}>
+                                  <X className="h-3 w-3" />
+                                </button>
+                              </Badge>
+                            ))}
+                          </div>
+                          <div className="flex gap-2 mt-3">
+                            <Input
+                              placeholder="Add custom trait (e.g. Left-footed)"
+                              value={customTrait}
+                              onChange={(e) => setCustomTrait(e.target.value)}
+                              onKeyDown={(e) => { if (e.key === "Enter") { e.preventDefault(); addCustomTag(customTrait, selectedTraits, setSelectedTraits, () => setCustomTrait("")); } }}
+                              className="bg-white/5 border-white/10 rounded-xl h-9 text-sm"
+                              maxLength={40}
+                            />
+                            <Button type="button" size="sm" variant="outline" onClick={() => addCustomTag(customTrait, selectedTraits, setSelectedTraits, () => setCustomTrait(""))} className="rounded-xl border-white/15 bg-white/5 hover:bg-white/10 h-9 px-3">
+                              <Plus className="h-3.5 w-3.5" />
+                            </Button>
                           </div>
                         </div>
+
                       </motion.div>
 
                       {/* Save details */}
