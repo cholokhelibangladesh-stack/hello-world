@@ -496,6 +496,7 @@ const AdminDashboard = () => {
             {/* Mobile: horizontally scrollable tab row */}
             <div className="overflow-x-auto -mx-4 px-4 sm:mx-0 sm:px-0">
               <TabsList className="bg-card border border-border flex w-max sm:w-full sm:flex-wrap min-w-full">
+                <TabsTrigger value="alerts" className="data-[state=active]:bg-primary data-[state=active]:text-primary-foreground text-xs whitespace-nowrap px-3" data-testid="tab-alerts">Inbox {stats?.openAlerts ? `(${stats.openAlerts})` : ""}</TabsTrigger>
                 <TabsTrigger value="scouts" className="data-[state=active]:bg-primary data-[state=active]:text-primary-foreground text-xs whitespace-nowrap px-3">Scouts {stats?.pendingScouts ? `(${stats.pendingScouts})` : ""}</TabsTrigger>
                 <TabsTrigger value="players" className="data-[state=active]:bg-primary data-[state=active]:text-primary-foreground text-xs whitespace-nowrap px-3">Players</TabsTrigger>
                 <TabsTrigger value="videos" className="data-[state=active]:bg-primary data-[state=active]:text-primary-foreground text-xs whitespace-nowrap px-3">Videos</TabsTrigger>
