@@ -29,10 +29,10 @@ const traitsBySport: Record<string, string[]> = {
   cricket: ["Aggressive", "Defensive", "Anchor", "Power Hitter", "Tactical"],
   basketball: ["Sharpshooter", "Playmaker", "Slasher", "Lockdown Defender", "Rim Protector"],
 };
-const SPORTS: { id: "football" | "cricket" | "basketball"; label: string; icon: string }[] = [
-  { id: "football", label: "Football", icon: "⚽" },
-  { id: "cricket", label: "Cricket", icon: "🏏" },
-  { id: "basketball", label: "Basketball", icon: "🏀" },
+const SPORTS: { id: "football" | "cricket" | "basketball"; label: string; accent: string }[] = [
+  { id: "football", label: "Football", accent: "from-emerald-500/40 to-teal-500/10" },
+  { id: "cricket", label: "Cricket", accent: "from-sky-500/40 to-blue-500/10" },
+  { id: "basketball", label: "Basketball", accent: "from-orange-500/40 to-amber-500/10" },
 ];
 
 interface Scout {
