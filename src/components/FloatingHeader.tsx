@@ -1,11 +1,11 @@
 import { useEffect, useState } from "react";
 import { Link, useNavigate, useRouterState } from "@tanstack/react-router";
-import { LogOut, Menu, X, Sun, Moon, LayoutDashboard } from "lucide-react";
+import { LogOut, Menu, X, Sun, Moon, LayoutDashboard, Languages } from "lucide-react";
 import { useAuth } from "@/hooks/useAuth";
 import { useTheme } from "@/hooks/useTheme";
 import NotificationBell from "@/components/NotificationBell";
-import LanguageSwitcher from "@/components/LanguageSwitcher";
 import { useLanguage } from "@/i18n/LanguageProvider";
+
 import logoAsset from "@/assets/cholo-kheli-mark.png.asset.json";
 
 // Routes whose hero image is dark — icons stay white while at the top of these
@@ -19,7 +19,7 @@ const HERO_SCROLL_ROUTES = new Set<string>(["/mission"]);
 const FloatingHeader = () => {
   const { user, role, loading, signOut } = useAuth();
   const { theme, toggleTheme } = useTheme();
-  const { t } = useLanguage();
+  const { t, lang, toggleLang } = useLanguage();
   const navigate = useNavigate();
   const [busy, setBusy] = useState(false);
   const [open, setOpen] = useState(false);
@@ -114,11 +114,9 @@ const FloatingHeader = () => {
 
         </Link>
 
-        {/* RIGHT: Language + Notification + Menu (uniform across all sizes) */}
+        {/* RIGHT: Notification + Menu */}
         <div className="pointer-events-auto flex items-center gap-2 shrink-0">
-          <LanguageSwitcher
-            className={`${bgChip} backdrop-blur-md ring-1 ${fg}`}
-          />
+
 
           {loading ? (
             <div className={`h-9 w-9 rounded-full ${bgChip} backdrop-blur-md ring-1 animate-pulse`} aria-hidden />
@@ -160,9 +158,22 @@ const FloatingHeader = () => {
             </Link>
           ))}
           <button
+            onClick={() => { toggleLang(); }}
+            className="w-full flex items-center gap-2 px-4 py-2.5 rounded-xl text-sm font-medium text-foreground/75 hover:text-foreground hover:bg-foreground/5 transition-colors"
+          >
+            <Languages className="h-4 w-4" />
+            <span>{t("nav.language")}</span>
+            <span className="ml-auto text-xs text-foreground/60">
+              <span className={lang === "en" ? "text-foreground font-semibold" : ""}>EN</span>
+              <span className="opacity-50 mx-1">/</span>
+              <span className={lang === "bn" ? "text-foreground font-semibold" : ""}>বাং</span>
+            </span>
+          </button>
+          <button
             onClick={() => { toggleTheme(); setOpen(false); }}
             className="w-full flex items-center gap-2 px-4 py-2.5 rounded-xl text-sm font-medium text-foreground/75 hover:text-foreground hover:bg-foreground/5 transition-colors"
           >
+
             {theme === "dark" ? <Sun className="h-4 w-4" /> : <Moon className="h-4 w-4" />}
             {theme === "dark" ? t("nav.lightMode") : t("nav.darkMode")}
           </button>
