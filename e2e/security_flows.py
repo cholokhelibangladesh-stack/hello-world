@@ -116,11 +116,12 @@ async def test_password_isolation(page, context):
         ok, err = await sign_in_attempt(page, email, pw)
         record(f"pw:own:{role}", ok, err or "")
 
-    # Negative: cross-account passwords must fail.
+    # Negative: cross-account passwords must fail — but skip pairs that
+    # happen to share a password (seed data reuses "Scout123!" for both scouts).
     passwords = list(ACCOUNTS.items())
-    for role_a, (email_a, _) in passwords:
+    for role_a, (email_a, pw_a) in passwords:
         for role_b, (_, pw_b) in passwords:
-            if role_a == role_b:
+            if role_a == role_b or pw_a == pw_b:
                 continue
             await hard_sign_out(page, context)
             ok, err = await sign_in_attempt(page, email_a, pw_b)
