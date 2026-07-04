@@ -1,0 +1,25 @@
+{
+  "select_alerts": {
+    "rows": 1,
+    "error": null
+  },
+  "select_audit": {
+    "rows": 1,
+    "error": null
+  },
+  "update_alerts": {
+    "error": null,
+    "status": 204
+  },
+  "delete_alerts": {
+    "error": null
+  },
+  "rpc_audit": {
+    "rows": 5,
+    "error": null
+  },
+  "rpc_emails": {
+    "rows": 6,
+    "error": null
+  }
+}
