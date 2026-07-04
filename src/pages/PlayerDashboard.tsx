@@ -608,7 +608,7 @@ const PlayerDashboard = () => {
           </div>
 
           <Tabs value={activeTab} onValueChange={handleTabChange} className="space-y-4 sm:space-y-6" onTouchStart={handleTouchStart} onTouchEnd={handleTouchEnd}>
-            <TabsList className="bg-card/40 backdrop-blur-xl border border-white/10 w-full grid grid-cols-3 rounded-2xl h-11 p-1 shadow-lg">
+            <TabsList className="bg-card/40 backdrop-blur-xl glass-card border border-white/10 w-full grid grid-cols-3 rounded-2xl h-11 p-1 shadow-lg">
               <TabsTrigger value="upload" className="rounded-xl data-[state=active]:bg-gradient-to-br data-[state=active]:from-primary data-[state=active]:to-primary/80 data-[state=active]:text-primary-foreground data-[state=active]:shadow-md data-[state=active]:shadow-primary/30 text-xs sm:text-sm transition-all">
                 <Upload className="h-3.5 w-3.5 sm:mr-1.5 shrink-0" /> <span className="hidden sm:inline">{t("player.tab.uploadFull" as any)}</span><span className="sm:hidden ml-1">{t("player.tab.upload" as any)}</span>
               </TabsTrigger>
@@ -659,7 +659,7 @@ const PlayerDashboard = () => {
                       <motion.div
                         initial={{ opacity: 0, y: 8 }}
                         animate={{ opacity: 1, y: 0 }}
-                        className="relative overflow-hidden rounded-3xl border border-white/10 bg-card/40 backdrop-blur-xl p-6 shadow-lg"
+                        className="relative overflow-hidden rounded-3xl border border-white/10 bg-card/40 backdrop-blur-xl glass-card p-6 shadow-lg"
                       >
                         <div className="absolute -top-20 -right-20 w-56 h-56 rounded-full bg-primary/15 blur-3xl pointer-events-none" />
                         <div className="relative flex items-center gap-3 mb-3">
@@ -696,7 +696,7 @@ const PlayerDashboard = () => {
                         initial={{ opacity: 0, y: 8 }}
                         animate={{ opacity: 1, y: 0 }}
                         transition={{ delay: 0.05 }}
-                        className="relative overflow-hidden rounded-3xl border border-white/10 bg-card/40 backdrop-blur-xl p-6 shadow-lg"
+                        className="relative overflow-hidden rounded-3xl border border-white/10 bg-card/40 backdrop-blur-xl glass-card p-6 shadow-lg"
                       >
                         <div className="absolute -bottom-20 -left-20 w-56 h-56 rounded-full bg-sky-500/15 blur-3xl pointer-events-none" />
                         <div className="relative flex items-center gap-3 mb-4">
@@ -746,7 +746,7 @@ const PlayerDashboard = () => {
                         initial={{ opacity: 0, y: 8 }}
                         animate={{ opacity: 1, y: 0 }}
                         transition={{ delay: 0.08 }}
-                        className="relative overflow-hidden rounded-3xl border border-white/10 bg-card/40 backdrop-blur-xl p-6 shadow-lg"
+                        className="relative overflow-hidden rounded-3xl border border-white/10 bg-card/40 backdrop-blur-xl glass-card p-6 shadow-lg"
                       >
                         <div className="absolute -top-16 -right-16 w-48 h-48 rounded-full bg-fuchsia-500/10 blur-3xl pointer-events-none" />
                         <div className="relative flex items-center gap-3 mb-4">
@@ -796,7 +796,7 @@ const PlayerDashboard = () => {
                         <motion.div
                           initial={{ opacity: 0, y: 8 }}
                           animate={{ opacity: 1, y: 0 }}
-                          className="relative overflow-hidden rounded-3xl border border-white/10 bg-card/40 backdrop-blur-xl p-6 shadow-lg"
+                          className="relative overflow-hidden rounded-3xl border border-white/10 bg-card/40 backdrop-blur-xl glass-card p-6 shadow-lg"
                         >
                           <div className="absolute -bottom-20 -right-20 w-56 h-56 rounded-full bg-pink-500/15 blur-3xl pointer-events-none" />
                           <div className="relative flex items-center gap-3 mb-4">
@@ -831,7 +831,7 @@ const PlayerDashboard = () => {
                         <motion.div
                           initial={{ opacity: 0, y: 8 }}
                           animate={{ opacity: 1, y: 0 }}
-                          className="relative overflow-hidden rounded-3xl border border-white/10 bg-card/40 backdrop-blur-xl p-6 shadow-lg"
+                          className="relative overflow-hidden rounded-3xl border border-white/10 bg-card/40 backdrop-blur-xl glass-card p-6 shadow-lg"
                         >
                           <div className="absolute -top-20 -left-20 w-56 h-56 rounded-full bg-amber-500/15 blur-3xl pointer-events-none" />
                           <div className="relative flex items-center gap-3 mb-4">

@@ -182,7 +182,7 @@ const ProfileTab = ({ showVideos, onDeleteVideo, deletingVideoId, stats }: Profi
         initial={{ opacity: 0, y: 12 }}
         animate={{ opacity: 1, y: 0 }}
         transition={{ duration: 0.4 }}
-        className="relative overflow-hidden rounded-3xl border border-white/10 bg-card/40 backdrop-blur-xl shadow-[0_10px_40px_-15px_rgba(0,0,0,0.4)]"
+        className="relative overflow-hidden rounded-3xl border border-white/10 bg-card/40 backdrop-blur-xl glass-card shadow-[0_10px_40px_-15px_rgba(0,0,0,0.4)]"
       >
         <div className="absolute inset-0 bg-gradient-to-br from-primary/20 via-fuchsia-500/5 to-sky-500/10 pointer-events-none" />
         <div className="absolute -top-24 -right-24 w-64 h-64 rounded-full bg-primary/20 blur-3xl pointer-events-none" />
@@ -293,7 +293,7 @@ const ProfileTab = ({ showVideos, onDeleteVideo, deletingVideoId, stats }: Profi
 
       {/* Edit form */}
       {editing && (
-        <motion.div initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} className="rounded-3xl border border-white/10 bg-card/40 backdrop-blur-xl p-4 sm:p-6 space-y-4 shadow-lg">
+        <motion.div initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} className="rounded-3xl border border-white/10 bg-card/40 backdrop-blur-xl glass-card p-4 sm:p-6 space-y-4 shadow-lg">
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
             <div>
               <Label className="text-xs text-muted-foreground uppercase tracking-wide">Full Name</Label>
@@ -352,7 +352,7 @@ const ProfileTab = ({ showVideos, onDeleteVideo, deletingVideoId, stats }: Profi
           initial={{ opacity: 0, y: 10 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ delay: 0.1 }}
-          className="rounded-3xl border border-white/10 bg-card/40 backdrop-blur-xl p-4 sm:p-6 shadow-lg"
+          className="rounded-3xl border border-white/10 bg-card/40 backdrop-blur-xl glass-card p-4 sm:p-6 shadow-lg"
         >
           <div className="flex items-center gap-3 mb-4">
             <Video className="h-5 w-5 text-primary" />
