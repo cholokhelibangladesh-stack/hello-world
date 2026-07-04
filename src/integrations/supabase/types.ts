@@ -119,6 +119,24 @@ export type Database = {
         }
         Relationships: []
       }
+      feed_rate_limit: {
+        Row: {
+          request_count: number
+          user_id: string
+          window_start: string
+        }
+        Insert: {
+          request_count?: number
+          user_id: string
+          window_start: string
+        }
+        Update: {
+          request_count?: number
+          user_id?: string
+          window_start?: string
+        }
+        Relationships: []
+      }
       messages: {
         Row: {
           content: string
@@ -267,6 +285,8 @@ export type Database = {
           id: string
           is_banned: boolean
           organization: string | null
+          preferred_positions: string[]
+          preferred_sport: string | null
           user_id: string
           verification_status: string
         }
@@ -276,6 +296,8 @@ export type Database = {
           id?: string
           is_banned?: boolean
           organization?: string | null
+          preferred_positions?: string[]
+          preferred_sport?: string | null
           user_id: string
           verification_status?: string
         }
@@ -285,6 +307,8 @@ export type Database = {
           id?: string
           is_banned?: boolean
           organization?: string | null
+          preferred_positions?: string[]
+          preferred_sport?: string | null
           user_id?: string
           verification_status?: string
         }
@@ -341,6 +365,96 @@ export type Database = {
         }
         Relationships: []
       }
+      video_events: {
+        Row: {
+          completed: boolean
+          created_at: string
+          id: string
+          video_id: string
+          viewer_id: string | null
+          watch_ms: number
+        }
+        Insert: {
+          completed?: boolean
+          created_at?: string
+          id?: string
+          video_id: string
+          viewer_id?: string | null
+          watch_ms?: number
+        }
+        Update: {
+          completed?: boolean
+          created_at?: string
+          id?: string
+          video_id?: string
+          viewer_id?: string | null
+          watch_ms?: number
+        }
+        Relationships: [
+          {
+            foreignKeyName: "video_events_video_id_fkey"
+            columns: ["video_id"]
+            isOneToOne: false
+            referencedRelation: "videos"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      video_likes: {
+        Row: {
+          created_at: string
+          user_id: string
+          video_id: string
+        }
+        Insert: {
+          created_at?: string
+          user_id: string
+          video_id: string
+        }
+        Update: {
+          created_at?: string
+          user_id?: string
+          video_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "video_likes_video_id_fkey"
+            columns: ["video_id"]
+            isOneToOne: false
+            referencedRelation: "videos"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      video_shares: {
+        Row: {
+          created_at: string
+          id: string
+          user_id: string
+          video_id: string
+        }
+        Insert: {
+          created_at?: string
+          id?: string
+          user_id: string
+          video_id: string
+        }
+        Update: {
+          created_at?: string
+          id?: string
+          user_id?: string
+          video_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "video_shares_video_id_fkey"
+            columns: ["video_id"]
+            isOneToOne: false
+            referencedRelation: "videos"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       videos: {
         Row: {
           created_at: string
@@ -348,12 +462,16 @@ export type Database = {
           flag_reason: string | null
           flagged: boolean
           id: string
+          like_count: number
           position_tags: string[]
+          share_count: number
           status: string
           title: string
+          total_watch_ms: number
           trait_tags: string[]
           user_id: string
           video_url: string
+          view_count: number
         }
         Insert: {
           created_at?: string
@@ -361,12 +479,16 @@ export type Database = {
           flag_reason?: string | null
           flagged?: boolean
           id?: string
+          like_count?: number
           position_tags?: string[]
+          share_count?: number
           status?: string
           title?: string
+          total_watch_ms?: number
           trait_tags?: string[]
           user_id: string
           video_url?: string
+          view_count?: number
         }
         Update: {
           created_at?: string
@@ -374,12 +496,16 @@ export type Database = {
           flag_reason?: string | null
           flagged?: boolean
           id?: string
+          like_count?: number
           position_tags?: string[]
+          share_count?: number
           status?: string
           title?: string
+          total_watch_ms?: number
           trait_tags?: string[]
           user_id?: string
           video_url?: string
+          view_count?: number
         }
         Relationships: []
       }
@@ -388,6 +514,29 @@ export type Database = {
       [_ in never]: never
     }
     Functions: {
+      enforce_feed_rate_limit: {
+        Args: { _max?: number; _user: string }
+        Returns: undefined
+      }
+      get_ranked_feed: {
+        Args: { _limit?: number; _offset?: number; _sport?: string }
+        Returns: {
+          avatar_url: string
+          description: string
+          full_name: string
+          id: string
+          like_count: number
+          liked_by_me: boolean
+          position_tags: string[]
+          score: number
+          share_count: number
+          sport: string
+          trait_tags: string[]
+          user_id: string
+          video_url: string
+          view_count: number
+        }[]
+      }
       has_role: {
         Args: {
           _role: Database["public"]["Enums"]["app_role"]
