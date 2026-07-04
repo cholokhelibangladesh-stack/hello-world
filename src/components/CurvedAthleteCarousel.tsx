@@ -94,7 +94,7 @@ export default function CurvedAthleteCarousel() {
                   height: cardH,
                   marginLeft: -cardW / 2,
                   marginTop: -cardH / 2,
-                  transform: `rotateY(${i * angleStep}deg) translateZ(${radius}px)`,
+                  transform: `rotateY(${i * angleStep}deg) translateZ(-${radius}px)`,
                   backfaceVisibility: "hidden",
                   background: "hsl(0 0% 4%)",
                 }}
