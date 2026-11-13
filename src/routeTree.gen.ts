@@ -22,6 +22,8 @@ import { Route as ResetPasswordRouteImport } from './routes/reset-password'
 import { Route as SafeScoutingRouteImport } from './routes/safe-scouting'
 import { Route as AdminIndexRouteImport } from './routes/admin.index'
 import { Route as AdminExploreRouteImport } from './routes/admin.explore'
+import { Route as AdminInsightsRouteImport } from './routes/admin.insights'
+import { Route as AdminManageRouteImport } from './routes/admin.manage'
 import { Route as AdminModerationRouteImport } from './routes/admin.moderation'
 import { Route as AdminPanelRouteImport } from './routes/admin.panel'
 import { Route as AdminReportsRouteImport } from './routes/admin.reports'
@@ -128,6 +130,16 @@ const AdminIndexRoute = AdminIndexRouteImport.update({
 const AdminExploreRoute = AdminExploreRouteImport.update({
   id: '/explore',
   path: '/explore',
+  getParentRoute: () => AdminRoute,
+} as any)
+const AdminInsightsRoute = AdminInsightsRouteImport.update({
+  id: '/insights',
+  path: '/insights',
+  getParentRoute: () => AdminRoute,
+} as any)
+const AdminManageRoute = AdminManageRouteImport.update({
+  id: '/manage',
+  path: '/manage',
   getParentRoute: () => AdminRoute,
 } as any)
 const AdminModerationRoute = AdminModerationRouteImport.update({
@@ -362,6 +374,8 @@ export interface FileRoutesByFullPath {
   '/reset-password': typeof ResetPasswordRoute
   '/safe-scouting': typeof SafeScoutingRoute
   '/admin/explore': typeof AdminExploreRoute
+  '/admin/insights': typeof AdminInsightsRoute
+  '/admin/manage': typeof AdminManageRoute
   '/admin/moderation': typeof AdminModerationRoute
   '/admin/panel': typeof AdminPanelRoute
   '/admin/reports': typeof AdminReportsRoute
@@ -417,6 +431,8 @@ export interface FileRoutesByTo {
   '/reset-password': typeof ResetPasswordRoute
   '/safe-scouting': typeof SafeScoutingRoute
   '/admin/explore': typeof AdminExploreRoute
+  '/admin/insights': typeof AdminInsightsRoute
+  '/admin/manage': typeof AdminManageRoute
   '/admin/moderation': typeof AdminModerationRoute
   '/admin/panel': typeof AdminPanelRoute
   '/admin/reports': typeof AdminReportsRoute
@@ -473,6 +489,8 @@ export interface FileRoutesById {
   '/reset-password': typeof ResetPasswordRoute
   '/safe-scouting': typeof SafeScoutingRoute
   '/admin/explore': typeof AdminExploreRoute
+  '/admin/insights': typeof AdminInsightsRoute
+  '/admin/manage': typeof AdminManageRoute
   '/admin/moderation': typeof AdminModerationRoute
   '/admin/panel': typeof AdminPanelRoute
   '/admin/reports': typeof AdminReportsRoute
@@ -532,6 +550,8 @@ export interface FileRouteTypes {
     | '/reset-password'
     | '/safe-scouting'
     | '/admin/explore'
+    | '/admin/insights'
+    | '/admin/manage'
     | '/admin/moderation'
     | '/admin/panel'
     | '/admin/reports'
@@ -587,6 +607,8 @@ export interface FileRouteTypes {
     | '/reset-password'
     | '/safe-scouting'
     | '/admin/explore'
+    | '/admin/insights'
+    | '/admin/manage'
     | '/admin/moderation'
     | '/admin/panel'
     | '/admin/reports'
@@ -642,6 +664,8 @@ export interface FileRouteTypes {
     | '/reset-password'
     | '/safe-scouting'
     | '/admin/explore'
+    | '/admin/insights'
+    | '/admin/manage'
     | '/admin/moderation'
     | '/admin/panel'
     | '/admin/reports'
@@ -805,6 +829,20 @@ declare module '@tanstack/react-router' {
       path: '/explore'
       fullPath: '/admin/explore'
       preLoaderRoute: typeof AdminExploreRouteImport
+      parentRoute: typeof AdminRoute
+    }
+    '/admin/insights': {
+      id: '/admin/insights'
+      path: '/insights'
+      fullPath: '/admin/insights'
+      preLoaderRoute: typeof AdminInsightsRouteImport
+      parentRoute: typeof AdminRoute
+    }
+    '/admin/manage': {
+      id: '/admin/manage'
+      path: '/manage'
+      fullPath: '/admin/manage'
+      preLoaderRoute: typeof AdminManageRouteImport
       parentRoute: typeof AdminRoute
     }
     '/admin/moderation': {
@@ -1106,6 +1144,8 @@ declare module '@tanstack/react-router' {
 
 interface AdminRouteChildren {
   AdminExploreRoute: typeof AdminExploreRoute
+  AdminInsightsRoute: typeof AdminInsightsRoute
+  AdminManageRoute: typeof AdminManageRoute
   AdminModerationRoute: typeof AdminModerationRoute
   AdminPanelRoute: typeof AdminPanelRoute
   AdminReportsRoute: typeof AdminReportsRoute
@@ -1117,6 +1157,8 @@ interface AdminRouteChildren {
 
 const AdminRouteChildren: AdminRouteChildren = {
   AdminExploreRoute: AdminExploreRoute,
+  AdminInsightsRoute: AdminInsightsRoute,
+  AdminManageRoute: AdminManageRoute,
   AdminModerationRoute: AdminModerationRoute,
   AdminPanelRoute: AdminPanelRoute,
   AdminReportsRoute: AdminReportsRoute,

@@ -5,6 +5,9 @@ import { toast } from "sonner";
 import { useAuth } from "@/hooks/useAuth";
 import { supabase } from "@/integrations/supabase/client";
 import CholoKheliMark from "@/components/CholoKheliMark";
+import football from "@/assets/intro-football.webp";
+import cricket from "@/assets/intro-cricket.webp";
+import basketball from "@/assets/intro-basketball.webp";
 import { useLanguage } from "@/i18n/LanguageProvider";
 import { publicUrl } from "@/lib/publicUrl";
 
@@ -67,7 +70,7 @@ async function runOnboarding(body?: Onboarding): Promise<{ ok: true } | { ok: fa
 }
 
 const inputCls =
-  "h-12 w-full rounded-xl bg-secondary px-4 text-[16px] text-foreground outline-none placeholder:text-muted-foreground/80 focus:ring-2 focus:ring-ring";
+  "h-12 w-full rounded-2xl bg-white/70 px-4 text-[16px] text-foreground ring-1 ring-black/[0.06] outline-none transition placeholder:text-muted-foreground/80 focus:bg-white focus:ring-2 focus:ring-ring dark:bg-white/10 dark:ring-white/10 dark:focus:bg-white/15";
 
 function Field({ label, htmlFor, hint, error, children }: { label: string; htmlFor: string; hint?: string; error?: string; children: React.ReactNode }) {
   return (
@@ -81,7 +84,7 @@ function Field({ label, htmlFor, hint, error, children }: { label: string; htmlF
 
 function Segmented<T extends string>({ value, options, onChange, label }: { value: T; options: { value: T; label: string }[]; onChange: (v: T) => void; label: string }) {
   return (
-    <div role="radiogroup" aria-label={label} className="grid rounded-xl bg-secondary p-1" style={{ gridTemplateColumns: `repeat(${options.length}, 1fr)` }}>
+    <div role="radiogroup" aria-label={label} className="grid rounded-2xl bg-[#0E2A33]/[0.07] p-1 dark:bg-white/10" style={{ gridTemplateColumns: `repeat(${options.length}, 1fr)` }}>
       {options.map((o) => (
         <button
           key={o.value}
@@ -89,7 +92,7 @@ function Segmented<T extends string>({ value, options, onChange, label }: { valu
           role="radio"
           aria-checked={value === o.value}
           onClick={() => onChange(o.value)}
-          className={`h-9 rounded-[9px] text-[15px] font-medium transition-colors ${value === o.value ? "bg-card text-foreground shadow-[0_1px_3px_hsl(var(--foreground)/0.12)]" : "text-muted-foreground"}`}
+          className={`h-9 rounded-xl text-[15px] font-medium transition-colors ${value === o.value ? "bg-white text-foreground shadow-[0_2px_8px_-2px_rgba(14,42,51,0.25)] dark:bg-white/20" : "text-muted-foreground"}`}
         >
           {o.label}
         </button>
@@ -359,19 +362,35 @@ const Auth = () => {
   const titleKey = { signin: "auth.welcomeBack", signup: "auth.joinTheGame", sent: "auth.checkEmail", mfa: "auth.mfaTitle", finish: "auth.finishTitle" }[view];
   const subKey = { signin: "auth.signInSub", signup: "auth.signUpSub", sent: "auth.confirmSent", mfa: "auth.mfaSub", finish: "auth.finishSub" }[view];
 
-  return (
-    <div className="min-h-[100dvh] px-5" style={{ paddingTop: "calc(2rem + env(safe-area-inset-top))", paddingBottom: "calc(2rem + env(safe-area-inset-bottom))" }}>
-      <div className="mx-auto w-full max-w-md">
-        <Link to="/" aria-label="Cholo Kheli home" className="inline-block"><CholoKheliMark className="h-9 w-12" /></Link>
-        <h1 className="large-title mt-4">{t(titleKey as never)}</h1>
-        <p className="mt-1.5 text-[16px] text-muted-foreground">
-          {t(subKey as never)}{view === "sent" && <> <span className="font-medium text-foreground">{email}</span></>}
-        </p>
+  const photo = view === "signin" ? cricket : view === "signup" ? football : basketball;
 
-        {error && <p role="alert" className="mt-5 rounded-xl bg-destructive/10 px-4 py-3 text-[14px] text-destructive">{error}</p>}
+  return (
+    <div className="relative min-h-[100dvh]">
+      {/* Backdrop: the sports photo, and a teal and candy-blue wash the glass sheet picks up */}
+      <div aria-hidden className="fixed inset-0 z-0 overflow-hidden bg-[#0E2A33]">
+        <img src={photo} alt="" className="absolute inset-x-0 top-0 h-[62dvh] w-full object-cover object-[50%_32%]" />
+        <img src={photo} alt="" className="absolute inset-0 h-full w-full scale-125 object-cover opacity-80 blur-3xl" style={{ WebkitMaskImage: "linear-gradient(to bottom, transparent 28%, #000 58%)", maskImage: "linear-gradient(to bottom, transparent 28%, #000 58%)" }} />
+        <div className="absolute inset-0" style={{ background: "linear-gradient(180deg, rgba(14,42,51,0.35) 0%, rgba(14,42,51,0) 20%, rgba(14,42,51,0.35) 42%, rgba(14,42,51,0.82) 100%)" }} />
+        <div className="absolute -left-24 bottom-[8%] h-80 w-80 rounded-full bg-[#7EC8FF]/35 blur-3xl" />
+        <div className="absolute -right-20 bottom-[30%] h-72 w-72 rounded-full bg-[#5FD3B5]/25 blur-3xl" />
+      </div>
+
+      <div className="relative z-10 mx-auto w-full max-w-md px-4" style={{ paddingTop: "calc(1.25rem + env(safe-area-inset-top))", paddingBottom: "calc(1.5rem + env(safe-area-inset-bottom))" }}>
+        <Link to="/" aria-label="Cholo Kheli home" className="press inline-grid h-11 w-11 place-items-center rounded-[14px] bg-white/15 ring-1 ring-white/25 backdrop-blur-xl">
+          <CholoKheliMark className="h-6 w-7" tone="light" />
+        </Link>
+        <div className="pb-6 pt-[18dvh] text-white">
+          <h1 className="text-[34px] font-extrabold italic leading-[1.02] tracking-[-0.03em] drop-shadow-[0_2px_12px_rgba(0,0,0,0.35)]">{t(titleKey as never)}</h1>
+          <p className="mt-2 text-[16px] text-white/85">
+            {t(subKey as never)}{view === "sent" && <> <span className="font-semibold text-white">{email}</span></>}
+          </p>
+        </div>
+
+        <div className="rounded-[32px] bg-white/[0.78] p-5 shadow-[0_30px_70px_-30px_rgba(0,0,0,0.6)] ring-1 ring-white/70 backdrop-blur-2xl backdrop-saturate-150 dark:bg-[#0E2A33]/60 dark:ring-white/10">
+        {error && <p role="alert" className="mb-4 rounded-2xl bg-destructive/10 px-4 py-3 text-[14px] text-destructive">{error}</p>}
 
         {view === "signin" && !user && (
-          <form onSubmit={signIn} className="mt-6 space-y-4" noValidate>
+          <form onSubmit={signIn} className="space-y-4" noValidate>
             <Field label={t("auth.email")} htmlFor="email">
               <input id="email" type="email" autoComplete="email" inputMode="email" className={inputCls} required value={email} onChange={(e) => setEmail(e.target.value)} placeholder={t("auth.emailPh")} />
             </Field>
@@ -394,7 +413,7 @@ const Auth = () => {
         )}
 
         {view === "signup" && !user && (
-          <form onSubmit={signUp} className="mt-6 space-y-4" noValidate>
+          <form onSubmit={signUp} className="space-y-4" noValidate>
             <ProfileFields value={profile} onChange={setProfile} usernameState={usernameState} />
             <Field label={t("auth.email")} htmlFor="email">
               <input id="email" type="email" autoComplete="email" inputMode="email" className={inputCls} required value={email} onChange={(e) => setEmail(e.target.value)} placeholder={t("auth.emailPh")} />
@@ -423,7 +442,7 @@ const Auth = () => {
         )}
 
         {view === "sent" && (
-          <div className="mt-8 space-y-4">
+          <div className="space-y-4">
             <div className="ios-group flex items-start gap-3 p-4">
               <MailCheck className="mt-0.5 h-6 w-6 shrink-0 text-primary" aria-hidden="true" />
               <p className="text-[15px] leading-snug">{t("auth.activateHint")}</p>
@@ -434,7 +453,7 @@ const Auth = () => {
         )}
 
         {view === "mfa" && (
-          <form onSubmit={verifyMfa} className="mt-6 space-y-4">
+          <form onSubmit={verifyMfa} className="space-y-4">
             <div className="flex justify-center py-2"><ShieldCheck className="h-10 w-10 text-primary" aria-hidden="true" /></div>
             <Field label={t("auth.mfaCode")} htmlFor="otp">
               <input id="otp" inputMode="numeric" autoComplete="one-time-code" maxLength={6} className={inputCls + " text-center text-[22px] "} value={code} onChange={(e) => setCode(e.target.value.replace(/\D/g, ""))} />
@@ -447,7 +466,7 @@ const Auth = () => {
         )}
 
         {view === "finish" && (
-          <form onSubmit={finish} className="mt-6 space-y-4" noValidate>
+          <form onSubmit={finish} className="space-y-4" noValidate>
             <ProfileFields value={profile} onChange={setProfile} usernameState={usernameState} />
             <button type="submit" disabled={busy} className={primaryBtn}>
               {busy ? <Loader2 className="h-5 w-5 animate-spin" /> : t("auth.finishCta")}
@@ -461,6 +480,7 @@ const Auth = () => {
             <Loader2 className="h-5 w-5 animate-spin" /> {t("auth.settingUp")}
           </div>
         )}
+        </div>
       </div>
     </div>
   );

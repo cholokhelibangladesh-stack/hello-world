@@ -4,6 +4,12 @@ import { Loader2, RefreshCw } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
 import { formatCount } from "@/lib/taxonomy";
 
+/** Splits "/path?a=b" into the path and a search object, as the router expects them separately. */
+const splitTo = (to: string) => {
+  const [path, qs] = to.split("?");
+  return { to: path as never, search: (qs ? Object.fromEntries(new URLSearchParams(qs)) : undefined) as never };
+};
+
 type Day = { day: string; signups: number; uploads: number; views: number; likes: number };
 export type AdminStatsData = {
   generated_at: string; days: number;
@@ -53,7 +59,7 @@ const Tile = ({ label, value, to, alert }: { label: string; value: number | stri
       <p className="text-[13px] text-muted-foreground">{label}</p>
     </>
   );
-  return to ? <Link to={to as never} className="press rounded-[14px] bg-card px-3 py-2.5">{body}</Link> : <div className="rounded-[14px] bg-card px-3 py-2.5">{body}</div>;
+  return to ? <Link {...splitTo(to)} className="press rounded-[14px] bg-card px-3 py-2.5">{body}</Link> : <div className="rounded-[14px] bg-card px-3 py-2.5">{body}</div>;
 };
 
 /** Platform statistics, computed by the database so the numbers are exact at any size. */
@@ -85,8 +91,8 @@ const AdminStats = ({ compact = false }: { compact?: boolean }) => {
           <Tile label="Open reports" value={q.reports_open} to="/admin/reports" alert={q.reports_open > 0} />
           <Tile label="Scouts to verify" value={data.users.scouts_pending} to="/admin/moderation" alert={data.users.scouts_pending > 0} />
           <Tile label="Videos in review" value={data.content.videos_flagged} to="/admin/explore" alert={data.content.videos_flagged > 0} />
-          <Tile label="Scout requests" value={q.scout_requests} to="/admin/panel" />
-          <Tile label="Unread support" value={q.support_unread + q.contact_unread} to="/admin/panel" />
+          <Tile label="Scout requests" value={q.scout_requests} to="/admin/panel?tab=requests" />
+          <Tile label="Unread support" value={q.support_unread + q.contact_unread} to="/admin/panel?tab=contact" />
           <Tile label="New alerts" value={q.alerts_new} to="/admin/moderation" />
         </div>
       </section>

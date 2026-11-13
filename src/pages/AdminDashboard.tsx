@@ -102,7 +102,16 @@ const SearchFilterBar = ({ search, setSearch, filter, setFilter, filters, placeh
  </div>
 );
 
-const AdminDashboard = () => {
+// The admin console is split across three bottom-bar tabs so no single screen is crowded.
+export type AdminSection = "review" | "manage" | "insights";
+const SECTIONS: Record<AdminSection, { title: string; sub: string; tabs: string[] }> = {
+  review: { title: "Review", sub: "Everything waiting on an admin", tabs: ["alerts", "scouts", "requests", "contact", "safety"] },
+  manage: { title: "Manage", sub: "People, content and platform settings", tabs: ["players", "videos", "notices", "news", "controls", "profile"] },
+  insights: { title: "Insights", sub: "Platform statistics and the audit trail", tabs: ["stats", "activity", "audit"] },
+};
+
+const AdminDashboard = ({ section = "review" }: { section?: AdminSection }) => {
+  const sectionCfg = SECTIONS[section];
 
 
  const { user, role, loading: authLoading } = useAuth();
@@ -134,7 +143,13 @@ const AdminDashboard = () => {
  const [requestSort, setRequestSort] = usePersistedString("requestSort","date_desc");
  const [messageSearch, setMessageSearch] = usePersistedString("messageSearch","");
  const [messageFilter, setMessageFilter] = usePersistedString("messageFilter","all");
- const [activeTab, setActiveTab] = usePersistedString("activeTab","scouts");
+ const [storedTab, setActiveTab] = usePersistedString(`activeTab:${section}`, sectionCfg.tabs[0]);
+ const [linkedTab] = useState(() => {
+   try { const t = new URLSearchParams(window.location.search).get("tab"); return t && sectionCfg.tabs.includes(t) ? t : null; } catch { return null; }
+ });
+ useEffect(() => { if (linkedTab) setActiveTab(linkedTab); }, [linkedTab, setActiveTab]);
+ // A ?tab= link wins on arrival; after that the admin's own choice sticks.
+ const activeTab = sectionCfg.tabs.includes(storedTab) ? storedTab : sectionCfg.tabs[0];
  const navigate = useNavigate();
  const { toast } = useToast();
 
@@ -484,51 +499,46 @@ const AdminDashboard = () => {
 
 
 
-  return (
-    <div className="min-h-screen pt-16 pb-20 md:pb-8">
+  const count = (n?: number) => (n ? ` (${n})` : "");
+ const tabLabel = (t: string): string => ({
+   alerts: `Inbox${count(stats?.openAlerts)}`,
+   scouts: `Scouts${count(stats?.pendingScouts)}`,
+   requests: `Requests${count(stats?.pendingRequests)}`,
+   contact: `Contact${count(stats?.unreadContacts)}`,
+   safety: `Safety${count(stats?.flaggedMessages)}`,
+   players: "Players", videos: "Videos", notices: "Notifications", news: "News", controls: "Controls", profile: "My profile",
+   stats: "Overview", activity: "Activity log", audit: "Usernames",
+ } as Record<string, string>)[t] ?? t;
+
+ return (
+    <div className="pb-8">
       <div className="container">
         <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }}>
           {/* Header */}
-          <div className="flex flex-col sm:flex-row sm:items-end sm:justify-between gap-2 mb-5 pt-4">
+          <div className="flex flex-col sm:flex-row sm:items-end sm:justify-between gap-2 mb-4 pt-2">
             <div className="flex items-center gap-3">
               <div className="w-10 h-10 rounded-2xl grid place-items-center" style={{ background: "linear-gradient(135deg, hsl(var(--teal-deep)) 0%, hsl(174 100% 24%) 100%)", boxShadow: "inset 0 1px 0 rgba(255,255,255,0.25)" }}>
                 <Shield className="h-5 w-5 text-white" />
               </div>
               <div>
-                <h1 className="font-display text-2xl sm:text-3xl text-foreground leading-none">Analytics overview</h1>
-                <p className="text-xs text-muted-foreground mt-1">Real-time platform activity and moderation queue</p>
-              </div>
-            </div>
-            <div className="hidden sm:flex items-center gap-2">
-              <div className="relative">
-                <Search className="w-4 h-4 absolute left-3 top-1/2 -translate-y-1/2 text-muted-foreground" />
-                <Input placeholder="Search platform…" className="pl-9 pr-4 h-10 w-64 bg-card border-border rounded-xl text-sm" />
+                <h1 className="font-display text-2xl sm:text-3xl text-foreground leading-none">{sectionCfg.title}</h1>
+                <p className="text-xs text-muted-foreground mt-1">{sectionCfg.sub}</p>
               </div>
             </div>
           </div>
 
-          <div className="mb-5">
-            <AdminStats />
-          </div>
 
           <Tabs value={activeTab} onValueChange={setActiveTab} className="lg:flex lg:gap-6 space-y-4 lg:space-y-0" orientation="vertical">
             {/* Sidebar (desktop) / scrollable pill row (mobile) */}
             <div className="lg:w-56 lg:shrink-0">
               <div className="overflow-x-auto -mx-4 px-4 sm:mx-0 sm:px-0 lg:overflow-visible lg:sticky lg:top-20">
-                <TabsList className="bg-card border border-border rounded-2xl p-1.5 flex w-max lg:w-full lg:flex-col lg:items-stretch lg:h-auto lg:gap-1">
-                  <TabsTrigger value="alerts" className="data-[state=active]:bg-primary data-[state=active]:text-primary-foreground text-xs whitespace-nowrap px-3 lg:justify-start lg:rounded-xl lg:py-2.5" data-testid="tab-alerts">Inbox {stats?.openAlerts ? `(${stats.openAlerts})` : ""}</TabsTrigger>
-                  <TabsTrigger value="scouts" className="data-[state=active]:bg-primary data-[state=active]:text-primary-foreground text-xs whitespace-nowrap px-3 lg:justify-start lg:rounded-xl lg:py-2.5">Scouts {stats?.pendingScouts ? `(${stats.pendingScouts})` : ""}</TabsTrigger>
-                  <TabsTrigger value="players" className="data-[state=active]:bg-primary data-[state=active]:text-primary-foreground text-xs whitespace-nowrap px-3 lg:justify-start lg:rounded-xl lg:py-2.5">Players</TabsTrigger>
-                  <TabsTrigger value="videos" className="data-[state=active]:bg-primary data-[state=active]:text-primary-foreground text-xs whitespace-nowrap px-3 lg:justify-start lg:rounded-xl lg:py-2.5">Videos</TabsTrigger>
-                  <TabsTrigger value="requests" className="data-[state=active]:bg-primary data-[state=active]:text-primary-foreground text-xs whitespace-nowrap px-3 lg:justify-start lg:rounded-xl lg:py-2.5">Requests {stats?.pendingRequests ? `(${stats.pendingRequests})` : ""}</TabsTrigger>
-                  <TabsTrigger value="safety" className="data-[state=active]:bg-primary data-[state=active]:text-primary-foreground text-xs whitespace-nowrap px-3 lg:justify-start lg:rounded-xl lg:py-2.5">Safety {stats?.flaggedMessages ? `(${stats.flaggedMessages})` : ""}</TabsTrigger>
-                  <TabsTrigger value="controls" className="data-[state=active]:bg-primary data-[state=active]:text-primary-foreground text-xs whitespace-nowrap px-3 lg:justify-start lg:rounded-xl lg:py-2.5">Controls</TabsTrigger>
-                  <TabsTrigger value="news" className="data-[state=active]:bg-primary data-[state=active]:text-primary-foreground text-xs whitespace-nowrap px-3 lg:justify-start lg:rounded-xl lg:py-2.5">News</TabsTrigger>
-                  <TabsTrigger value="notices" className="data-[state=active]:bg-primary data-[state=active]:text-primary-foreground text-xs whitespace-nowrap px-3 lg:justify-start lg:rounded-xl lg:py-2.5">Notifications</TabsTrigger>
-                  <TabsTrigger value="contact" className="data-[state=active]:bg-primary data-[state=active]:text-primary-foreground text-xs whitespace-nowrap px-3 lg:justify-start lg:rounded-xl lg:py-2.5">Contact {stats?.unreadContacts ? `(${stats.unreadContacts})` : ""}</TabsTrigger>
-                  <TabsTrigger value="profile" className="data-[state=active]:bg-primary data-[state=active]:text-primary-foreground text-xs whitespace-nowrap px-3 lg:justify-start lg:rounded-xl lg:py-2.5">Profile</TabsTrigger>
-                  <TabsTrigger value="audit" className="data-[state=active]:bg-primary data-[state=active]:text-primary-foreground text-xs whitespace-nowrap px-3 lg:justify-start lg:rounded-xl lg:py-2.5" data-testid="tab-audit">Usernames</TabsTrigger>
-                  <TabsTrigger value="activity" className="data-[state=active]:bg-primary data-[state=active]:text-primary-foreground text-xs whitespace-nowrap px-3 lg:justify-start lg:rounded-xl lg:py-2.5" data-testid="tab-activity">Activity log</TabsTrigger>
+                <TabsList className="bg-card border border-border rounded-2xl p-1.5 flex w-max min-w-full lg:w-full lg:flex-col lg:items-stretch lg:h-auto lg:gap-1">
+                  {sectionCfg.tabs.map((t) => (
+                    <TabsTrigger key={t} value={t} data-testid={`tab-${t}`}
+                      className="flex-1 data-[state=active]:bg-primary data-[state=active]:text-primary-foreground text-xs whitespace-nowrap px-3 lg:flex-none lg:justify-start lg:rounded-xl lg:py-2.5">
+                      {tabLabel(t)}
+                    </TabsTrigger>
+                  ))}
                 </TabsList>
               </div>
             </div>
@@ -820,6 +830,9 @@ const AdminDashboard = () => {
  <TabsContent value="audit">
  <UsernameAuditTab />
   </TabsContent>
+ <TabsContent value="stats">
+   <AdminStats />
+ </TabsContent>
  <TabsContent value="activity">
    <AdminAuditLog />
  </TabsContent>

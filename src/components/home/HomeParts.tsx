@@ -2,6 +2,12 @@ import { Link } from "@tanstack/react-router";
 import { ChevronRight, type LucideIcon } from "lucide-react";
 import { ReactNode } from "react";
 
+/** Splits "/path?a=b" into the path and a search object, as the router expects them separately. */
+const splitTo = (to: string) => {
+  const [path, qs] = to.split("?");
+  return { to: path as never, search: (qs ? Object.fromEntries(new URLSearchParams(qs)) : undefined) as never };
+};
+
 /** Large-title header for a tab root. */
 export const HomeHeader = ({ title, subtitle }: { title: string; subtitle?: string }) => (
   <header className="px-4 pt-4">
@@ -40,14 +46,16 @@ export const HomeRow = ({ icon: Icon, label, detail, to, badge, tone = "primary"
       {to ? <ChevronRight className="h-5 w-5 shrink-0 text-muted-foreground/60" aria-hidden="true" /> : null}
     </div>
   );
-  return to ? <Link to={to as never} className="block active:bg-muted">{inner}</Link> : inner;
+  return to ? <Link {...splitTo(to)} className="block active:bg-muted">{inner}</Link> : inner;
 };
 
 /** Three-up stat tiles. */
+const TINTS = ["glass-tint-sky", "glass-tint-mint", "glass-tint-sand"];
+
 export const StatTiles = ({ items }: { items: { label: string; value: string | number }[] }) => (
   <div className="grid grid-cols-3 gap-3">
-    {items.map((s) => (
-      <div key={s.label} className="ios-group px-3 py-3">
+    {items.map((s, i) => (
+      <div key={s.label} className={`${TINTS[i % TINTS.length]} px-3 py-3`}>
         <p className="text-[24px] font-bold leading-none tracking-tight">{s.value}</p>
         <p className="footnote mt-1.5">{s.label}</p>
       </div>

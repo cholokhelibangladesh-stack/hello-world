@@ -48,7 +48,7 @@ const ScoutHome = () => {
       </HomeSection>
 
       <HomeSection>
-        <div className="ios-group">
+        <div className="glass-tint-ink">
           <HomeRow icon={Search} label="Explore highlights" detail={d?.sport ? `Ranked for ${d.sport}` : "Set a sport in preferences to rank results"} to="/scout/explore" />
           <HomeRow icon={Inbox} label="Talent inbox" detail="Profiles admins shared with you" badge={d?.inbox} to="/scout/inbox" />
           <HomeRow icon={Trophy} label="Your picks" detail="Players you requested and the admin's response" to="/scout/selections" />

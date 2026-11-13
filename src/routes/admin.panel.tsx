@@ -4,7 +4,7 @@ import ProtectedRoute from "@/components/ProtectedRoute";
 export const Route = createFileRoute("/admin/panel")({
   component: () => (
     <ProtectedRoute allowedRoles={["admin"]}>
-      <AdminDashboard />
+      <AdminDashboard section="review" />
     </ProtectedRoute>
   ),
 });

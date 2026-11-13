@@ -48,14 +48,14 @@ const ProfileCard = ({ name, subtitle, avatarUrl, verified, isPrivate, counts, o
 
       <div className="min-w-0">
       <dl className="mt-3 grid grid-cols-3 gap-2 md:mt-0">
-        {counts.map((c) => {
+        {counts.map((c, i) => {
           const inner = (
             <>
               <dd className="text-[20px] font-bold leading-tight tabular-nums">{formatCount(c.value)}</dd>
               <dt className="text-[13px] text-muted-foreground">{c.label}</dt>
             </>
           );
-          const cls = "flex flex-col-reverse items-center rounded-[20px] bg-card py-2.5";
+          const cls = `flex flex-col-reverse items-center !rounded-[20px] py-2.5 ${["glass-tint-sky", "glass-tint-mint", "glass-tint-sand"][i % 3]}`;
           return c.onClick
             ? <button key={c.label} type="button" onClick={c.onClick} className={`press ${cls}`}>{inner}</button>
             : <div key={c.label} className={cls}>{inner}</div>;

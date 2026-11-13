@@ -70,9 +70,9 @@ const PlayerHome = () => {
 
       {d && remaining.length > 0 && (
         <HomeSection title="Get scout-ready">
-          <div className="ios-group">
+          <div className="glass-tint-ink">
             {steps.map((s) => (
-              <Link key={s.label} to={s.to as never} className="ios-row active:bg-muted">
+              <Link key={s.label} to={s.to as never} className="ios-row active:bg-white/10">
                 {s.done
                   ? <CheckCircle2 className="h-6 w-6 shrink-0 text-success" aria-label="Done" />
                   : <Circle className="h-6 w-6 shrink-0 text-muted-foreground/50" aria-label="To do" />}

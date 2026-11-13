@@ -34,13 +34,13 @@ const AdminHome = () => {
       <HomeHeader title="Admin" subtitle="Keep scouting safe and moving." />
 
       <HomeSection title="Needs attention">
-        <div className="ios-group">
-          <HomeRow icon={BadgeCheck} label="Scouts to verify" badge={c?.scouts} to="/admin/panel" />
-          <HomeRow icon={UserSearch} label="Scout requests" badge={c?.requests} to="/admin/panel" />
+        <div className="glass-tint-ink">
+          <HomeRow icon={BadgeCheck} label="Scouts to verify" badge={c?.scouts} to="/admin/panel?tab=scouts" />
+          <HomeRow icon={UserSearch} label="Scout requests" badge={c?.requests} to="/admin/panel?tab=requests" />
           <HomeRow icon={Flag} label="User reports" badge={c?.reports} to="/admin/reports" />
           <HomeRow icon={AlertTriangle} label="Moderation queue" badge={c?.alerts} to="/admin/moderation" />
-          <HomeRow icon={Inbox} label="Contact messages" badge={c?.contacts} to="/admin/panel" />
-          <HomeRow icon={LayoutDashboard} label="Open full admin panel" to="/admin/panel" />
+          <HomeRow icon={Inbox} label="Contact messages" badge={c?.contacts} to="/admin/panel?tab=contact" />
+          <HomeRow icon={LayoutDashboard} label="Statistics and audit log" to="/admin/insights" />
         </div>
       </HomeSection>
 

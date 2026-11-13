@@ -1,5 +1,5 @@
 import { Link, useRouterState } from "@tanstack/react-router";
-import { Home, PlusSquare, User, ClipboardList, Shield, Search } from "lucide-react";
+import { Home, PlusSquare, User, ClipboardList, Search, ClipboardCheck, SlidersHorizontal, BarChart3 } from "lucide-react";
 import { useAuth } from "@/hooks/useAuth";
 import { motion } from "framer-motion";
 import { haptic } from "@/lib/native";
@@ -22,7 +22,9 @@ export const TABS: Record<string, Tab[]> = {
   admin: [
     { label: "Home", to: "/admin", Icon: Home },
     { label: "Explore", to: "/admin/explore", Icon: Search },
-    { label: "Panel", to: "/admin/panel", Icon: Shield },
+    { label: "Review", to: "/admin/panel", Icon: ClipboardCheck },
+    { label: "Manage", to: "/admin/manage", Icon: SlidersHorizontal },
+    { label: "Insights", to: "/admin/insights", Icon: BarChart3 },
   ],
 };
 

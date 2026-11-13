@@ -10,7 +10,7 @@ import { haptic } from "@/lib/native";
 const TAB_ROOTS = new Set([
   "/player", "/player/explore", "/player/upload", "/player/profile",
   "/scout", "/scout/explore", "/scout/selections", "/scout/profile",
-  "/admin", "/admin/explore", "/admin/panel", "/messages",
+  "/admin", "/admin/explore", "/admin/panel", "/admin/manage", "/admin/insights", "/messages",
 ]);
 
 const iconButton = "press glass-icon";
@@ -25,7 +25,7 @@ const AppHeader = () => {
   if (!user) return null;
   if (/^\/messages\/.+/.test(pathname)) return null; // a thread draws its own bar
   if (pathname.startsWith("/auth") || pathname.startsWith("/reset-password")) return null;
-  if (/\/settings(\/|$)/.test(pathname) || pathname.startsWith("/admin/") && pathname !== "/admin/explore" && pathname !== "/admin/panel") return null;
+  if (/\/settings(\/|$)/.test(pathname) || pathname.startsWith("/admin/") && !["/admin/explore", "/admin/panel", "/admin/manage", "/admin/insights"].includes(pathname)) return null;
 
   const isTabRoot = TAB_ROOTS.has(pathname);
   const base = role === "scout" ? "/scout" : role === "admin" ? "/admin" : "/player";
