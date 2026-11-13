@@ -6,7 +6,8 @@ export const DEFAULT_ALLOWED_ORIGINS = [
   "https://id-preview--be579631-1dac-4942-9680-4157262d2c84.lovable.app",
   "https://localhost", // Android app (Capacitor WebView)
   "capacitor://localhost", // iOS app (Capacitor WebView)
-  "http://localhost:8080", // local dev
+  "http://localhost:8080", // local dev: app
+  "http://localhost:8081", // local dev: website (run alongside the app)
 ];
 
 export function allowedOrigins(): string[] {
