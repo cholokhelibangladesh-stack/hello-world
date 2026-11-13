@@ -1,756 +1,466 @@
-import { useState, useEffect, useRef } from "react";
-import { motion } from "framer-motion";
-import { Link, useNavigate } from "@tanstack/react-router";
-import { Eye, EyeOff, Loader2, CheckCircle2, FileText, Upload } from "lucide-react";
-import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
-import { Label } from "@/components/ui/label";
-import { useToast } from "@/hooks/use-toast";
+import { useEffect, useRef, useState } from "react";
+import { Link, useNavigate, useSearch } from "@tanstack/react-router";
+import { Eye, EyeOff, Loader2, MailCheck, ShieldCheck } from "lucide-react";
+import { toast } from "sonner";
 import { useAuth } from "@/hooks/useAuth";
 import { supabase } from "@/integrations/supabase/client";
 import CholoKheliMark from "@/components/CholoKheliMark";
 import { useLanguage } from "@/i18n/LanguageProvider";
-
-const BC_EXEMPT_EMAILS = ["player@cholokheli.test"];
+import { publicUrl } from "@/lib/publicUrl";
 
 type Role = "player" | "scout";
 type Sport = "football" | "cricket" | "basketball";
+type View = "signin" | "signup" | "sent" | "mfa" | "finish";
 
-const ForgotPasswordInline = ({ email, toast }: { email: string; toast: any }) => {
-  const [sending, setSending] = useState(false);
-  const [sent, setSent] = useState(false);
+export type Onboarding = {
+  role: Role;
+  username: string;
+  full_name: string;
+  sport: Sport | null;
+  gender: string;
+  phone: string;
+  date_of_birth: string;
+  organization: string;
+  guardian_name: string;
+  guardian_email: string;
+  parental_consent: boolean;
+};
 
-  const handleForgot = async () => {
-    if (!email) {
-      toast({ title: "Enter your email first", description: "Type your email above then click Forgot Password.", variant: "destructive" });
-      return;
-    }
-    setSending(true);
-    try {
-      const { error } = await supabase.auth.resetPasswordForEmail(email, {
-        redirectTo: `${window.location.origin}/reset-password`,
-      });
-      if (error) throw error;
-      setSent(true);
-      toast({ title: "Reset link sent!", description: "Check your email for the password reset link." });
-    } catch (err: any) {
-      toast({ title: "Error", description: err.message, variant: "destructive" });
-    } finally {
-      setSending(false);
-    }
+const EMPTY: Onboarding = {
+  role: "player", username: "", full_name: "", sport: "football", gender: "", phone: "",
+  date_of_birth: "", organization: "", guardian_name: "", guardian_email: "", parental_consent: false,
+};
+
+export function ageFrom(dob: string): number | null {
+  const m = /^(\d{4})-(\d{2})-(\d{2})$/.exec(dob);
+  if (!m) return null;
+  const now = new Date();
+  let age = now.getFullYear() - Number(m[1]);
+  if (now.getMonth() + 1 < Number(m[2]) || (now.getMonth() + 1 === Number(m[2]) && now.getDate() < Number(m[3]))) age--;
+  return age;
+}
+
+const SERVER_ERRORS: Record<string, string> = {
+  username_taken: "auth.err.usernameTaken",
+  invalid_username: "auth.err.username",
+  guardian_consent_required: "auth.err.guardian",
+  age_not_eligible: "auth.tooYoung",
+  scouts_must_be_adults: "auth.err.scoutAge",
+  date_of_birth_required: "auth.err.dob",
+  invalid_date_of_birth: "auth.err.dob",
+  invalid_phone: "auth.err.phone",
+  invalid_guardian_email: "auth.err.guardianEmail",
+  invalid_full_name: "auth.err.name",
+};
+
+/** Calls the onboarding function; body omitted = use the answers stored on the account. */
+async function runOnboarding(body?: Onboarding): Promise<{ ok: true } | { ok: false; code: string }> {
+  const { error } = await supabase.functions.invoke("handle-signup-role", { body: body ?? {} });
+  if (!error) return { ok: true };
+  let code = "internal_error";
+  try {
+    const ctx = (error as { context?: Response }).context;
+    if (ctx && typeof ctx.json === "function") code = ((await ctx.json()) as { error?: string }).error ?? code;
+  } catch { /* keep generic code */ }
+  if (code === "already_onboarded") return { ok: true };
+  return { ok: false, code };
+}
+
+const inputCls =
+  "h-12 w-full rounded-xl bg-secondary px-4 text-[16px] text-foreground outline-none placeholder:text-muted-foreground/80 focus:ring-2 focus:ring-ring";
+
+function Field({ label, htmlFor, hint, error, children }: { label: string; htmlFor: string; hint?: string; error?: string; children: React.ReactNode }) {
+  return (
+    <div>
+      <label htmlFor={htmlFor} className="mb-1.5 block text-[13px] font-medium text-muted-foreground">{label}</label>
+      {children}
+      {error ? <p className="mt-1.5 text-[13px] text-destructive" role="alert">{error}</p> : hint ? <p className="mt-1.5 text-[13px] text-muted-foreground">{hint}</p> : null}
+    </div>
+  );
+}
+
+function Segmented<T extends string>({ value, options, onChange, label }: { value: T; options: { value: T; label: string }[]; onChange: (v: T) => void; label: string }) {
+  return (
+    <div role="radiogroup" aria-label={label} className="grid rounded-xl bg-secondary p-1" style={{ gridTemplateColumns: `repeat(${options.length}, 1fr)` }}>
+      {options.map((o) => (
+        <button
+          key={o.value}
+          type="button"
+          role="radio"
+          aria-checked={value === o.value}
+          onClick={() => onChange(o.value)}
+          className={`h-9 rounded-[9px] text-[15px] font-medium transition-colors ${value === o.value ? "bg-card text-foreground shadow-[0_1px_3px_hsl(var(--foreground)/0.12)]" : "text-muted-foreground"}`}
+        >
+          {o.label}
+        </button>
+      ))}
+    </div>
+  );
+}
+
+/** Profile questions shared by sign-up and "finish setting up your account". */
+export function ProfileFields({ value, onChange, usernameState }: {
+  value: Onboarding;
+  onChange: (next: Onboarding) => void;
+  usernameState: "idle" | "checking" | "ok" | "taken" | "invalid";
+}) {
+  const { t } = useLanguage();
+  const set = <K extends keyof Onboarding>(k: K, v: Onboarding[K]) => onChange({ ...value, [k]: v });
+  const age = ageFrom(value.date_of_birth);
+  const minor = age !== null && age >= 13 && age < 18;
+  const today = new Date().toISOString().slice(0, 10);
+  const usernameMsg: Record<string, string | undefined> = {
+    checking: t("auth.usernameChecking"), ok: t("auth.usernameOk"), taken: t("auth.err.usernameTaken"), invalid: t("auth.err.username"),
   };
 
-  if (sent) return <span className="text-foreground">Reset link sent! Check your email.</span>;
-
   return (
-    <button type="button" onClick={handleForgot} disabled={sending} className="text-foreground hover:underline font-medium transition-colors disabled:opacity-60">
-      {sending ? "Sending..." : "Forgot Password?"}
-    </button>
+    <div className="space-y-4">
+      <Segmented
+        label={t("auth.iAmA")}
+        value={value.role}
+        onChange={(r) => onChange({ ...value, role: r, sport: r === "player" ? value.sport ?? "football" : null })}
+        options={[{ value: "player", label: t("auth.rolePlayer") }, { value: "scout", label: t("auth.roleScout") }]}
+      />
+      {value.role === "player" && (
+        <Field label={t("auth.sportCategory")} htmlFor="sport">
+          <Segmented
+            label={t("auth.sportCategory")}
+            value={(value.sport ?? "football") as Sport}
+            onChange={(s) => set("sport", s)}
+            options={[{ value: "football", label: t("auth.football") }, { value: "cricket", label: t("auth.cricket") }, { value: "basketball", label: t("auth.basketball") }]}
+          />
+        </Field>
+      )}
+      <Field label={t("auth.fullName")} htmlFor="name">
+        <input id="name" className={inputCls} autoComplete="name" maxLength={100} required value={value.full_name} onChange={(e) => set("full_name", e.target.value)} placeholder={t("auth.fullNamePh")} />
+      </Field>
+      <Field
+        label={t("auth.username")}
+        htmlFor="username"
+        hint={usernameState === "ok" || usernameState === "checking" ? usernameMsg[usernameState] : t("auth.usernameHint")}
+        error={usernameState === "taken" || usernameState === "invalid" ? usernameMsg[usernameState] : undefined}
+      >
+        <input
+          id="username" className={inputCls} autoComplete="username" autoCapitalize="none" spellCheck={false} maxLength={24} required
+          value={value.username} placeholder="e.g. rafiq_10"
+          onChange={(e) => set("username", e.target.value.toLowerCase().replace(/[^a-z0-9_]/g, ""))}
+        />
+      </Field>
+      {value.role === "scout" && (
+        <Field label={t("auth.organization")} htmlFor="org" hint={t("auth.organizationHint")}>
+          <input id="org" className={inputCls} maxLength={120} required value={value.organization} onChange={(e) => set("organization", e.target.value)} placeholder={t("auth.organizationPh")} />
+        </Field>
+      )}
+      <div className="grid grid-cols-2 gap-3">
+        <Field label={t("auth.dob")} htmlFor="dob">
+          <input id="dob" type="date" className={inputCls} required max={today} value={value.date_of_birth} onChange={(e) => set("date_of_birth", e.target.value)} />
+        </Field>
+        <Field label={t("auth.gender")} htmlFor="gender">
+          <select id="gender" className={inputCls} required value={value.gender} onChange={(e) => set("gender", e.target.value)}>
+            <option value="">{t("auth.selectGender")}</option>
+            <option value="male">{t("auth.male")}</option>
+            <option value="female">{t("auth.female")}</option>
+            <option value="other">{t("auth.other")}</option>
+          </select>
+        </Field>
+      </div>
+      {age !== null && age < 13 && <p className="text-[13px] text-destructive" role="alert">{t("auth.tooYoung")}</p>}
+      {value.role === "scout" && age !== null && age >= 13 && age < 18 && <p className="text-[13px] text-destructive" role="alert">{t("auth.err.scoutAge")}</p>}
+      <Field label={t("auth.phone")} htmlFor="phone">
+        <input id="phone" type="tel" inputMode="tel" autoComplete="tel" className={inputCls} maxLength={20} required value={value.phone} onChange={(e) => set("phone", e.target.value)} placeholder={t("auth.phonePh")} />
+      </Field>
+      {minor && value.role === "player" && (
+        <div className="space-y-3 rounded-2xl bg-accent p-4">
+          <p className="headline">{t("auth.guardianHeading")}</p>
+          <p className="footnote">{t("auth.minorNotice")}</p>
+          <Field label={t("auth.guardianName")} htmlFor="gname">
+            <input id="gname" className={inputCls + " bg-card"} maxLength={100} required value={value.guardian_name} onChange={(e) => set("guardian_name", e.target.value)} placeholder={t("auth.guardianNamePh")} />
+          </Field>
+          <Field label={t("auth.guardianEmail")} htmlFor="gemail">
+            <input id="gemail" type="email" className={inputCls + " bg-card"} maxLength={254} required value={value.guardian_email} onChange={(e) => set("guardian_email", e.target.value)} placeholder={t("auth.guardianEmailPh")} />
+          </Field>
+          <label className="flex items-start gap-3 text-[14px] leading-snug">
+            <input type="checkbox" className="mt-0.5 h-5 w-5 shrink-0 accent-[hsl(var(--primary))]" checked={value.parental_consent} onChange={(e) => set("parental_consent", e.target.checked)} required />
+            <span>{t("auth.parentalConsent")} <Link to="/privacy-policy" className="font-medium text-primary underline underline-offset-2">{t("auth.privacyPolicy")}</Link>.</span>
+          </label>
+        </div>
+      )}
+    </div>
   );
-};
+}
+
+/** Returns a problem with the profile answers (translation key) or null if they look complete. */
+export function profileProblem(v: Onboarding, usernameState: string): string | null {
+  if (!v.full_name.trim()) return "auth.err.name";
+  if (!/^[a-z0-9_]{3,24}$/.test(v.username)) return "auth.err.username";
+  if (usernameState === "taken") return "auth.err.usernameTaken";
+  if (v.role === "scout" && !v.organization.trim()) return "auth.err.organization";
+  const age = ageFrom(v.date_of_birth);
+  if (age === null) return "auth.err.dob";
+  if (age < 13) return "auth.tooYoung";
+  if (v.role === "scout" && age < 18) return "auth.err.scoutAge";
+  if (!v.gender) return "auth.err.gender";
+  if (!/^[+0-9][0-9 -]{5,19}$/.test(v.phone.trim())) return "auth.err.phone";
+  if (v.role === "player" && age < 18 && (!v.guardian_name.trim() || !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(v.guardian_email.trim()) || !v.parental_consent)) return "auth.err.guardian";
+  return null;
+}
+
+/** Debounced username availability via the is_username_available RPC (works before sign-in). */
+export function useUsernameState(username: string, active: boolean) {
+  const [state, setState] = useState<"idle" | "checking" | "ok" | "taken" | "invalid">("idle");
+  useEffect(() => {
+    if (!active) return;
+    if (!username) { setState("idle"); return; }
+    if (!/^[a-z0-9_]{3,24}$/.test(username)) { setState("invalid"); return; }
+    setState("checking");
+    const h = setTimeout(async () => {
+      const { data, error } = await supabase.rpc("is_username_available" as never, { _username: username } as never);
+      setState(error ? "idle" : data ? "ok" : "taken");
+    }, 350);
+    return () => clearTimeout(h);
+  }, [username, active]);
+  return state;
+}
+
+const cleanOnboarding = (v: Onboarding): Onboarding => ({
+  ...v,
+  full_name: v.full_name.trim(), phone: v.phone.trim(), organization: v.role === "scout" ? v.organization.trim() : "",
+  sport: v.role === "player" ? v.sport ?? "football" : null,
+  guardian_name: v.guardian_name.trim(), guardian_email: v.guardian_email.trim().toLowerCase(),
+});
 
 const Auth = () => {
   const navigate = useNavigate();
-  const { user, role: userRole, signIn } = useAuth();
-  const { toast } = useToast();
+  const { user, role, loading, needsMfa, refreshRole, signOut } = useAuth();
   const { t } = useLanguage();
-  const [isLogin, setIsLogin] = useState(true);
-  const initialRole: Role = typeof window !== "undefined" && new URLSearchParams(window.location.search).get("role") === "scout" ? "scout" : "player";
-  const [selectedRole, setSelectedRole] = useState<Role>(initialRole);
-  const [sport, setSport] = useState<Sport>("football");
+  // Read from the router (available during SSR too) so server and client render the same view.
+  const search = useSearch({ strict: false }) as { mode?: string; role?: string };
+  const [view, setView] = useState<View>(search.mode === "signup" ? "signup" : "signin");
+  const [email, setEmail] = useState("");
+  const [password, setPassword] = useState("");
   const [showPass, setShowPass] = useState(false);
-  const [loading, setLoading] = useState(false);
-  const [emailSent, setEmailSent] = useState(false);
+  const [busy, setBusy] = useState(false);
+  const [error, setError] = useState<string | null>(null);
+  const [profile, setProfile] = useState<Onboarding>({ ...EMPTY, role: search.role === "scout" ? "scout" : "player" });
+  const [agree, setAgree] = useState(false);
+  const [code, setCode] = useState("");
+  const triedAuto = useRef(false);
+  const usernameState = useUsernameState(profile.username, view === "signup" || view === "finish");
 
-  const [formEmail, setFormEmail] = useState("");
-  const [formName, setFormName] = useState("");
-  const [formUsername, setFormUsername] = useState("");
-  const [usernameStatus, setUsernameStatus] = useState<"idle" | "checking" | "ok" | "taken" | "invalid">("idle");
-  const [formPhone, setFormPhone] = useState("");
-  const [formGender, setFormGender] = useState("");
-  const [formPassword, setFormPassword] = useState("");
-  const [formDob, setFormDob] = useState("");
-  const [agreePrivacy, setAgreePrivacy] = useState(false);
-  const [guardianName, setGuardianName] = useState("");
-  const [guardianEmail, setGuardianEmail] = useState("");
-  const [parentalConsent, setParentalConsent] = useState(false);
-  const [birthCertFile, setBirthCertFile] = useState<File | null>(null);
-  const [scoutOrgIdFile, setScoutOrgIdFile] = useState<File | null>(null);
-  const [scoutCvFile, setScoutCvFile] = useState<File | null>(null);
-  const bcRef = useRef<HTMLInputElement>(null);
-  const orgIdRef = useRef<HTMLInputElement>(null);
-  const cvRef = useRef<HTMLInputElement>(null);
-  const isBcExempt = BC_EXEMPT_EMAILS.includes(formEmail.trim().toLowerCase());
-  const bcRequired = !isLogin && selectedRole === "player" && !isBcExempt;
-  const scoutDocsRequired = !isLogin && selectedRole === "scout";
-
-  const computeAge = (dob: string): number | null => {
-    if (!dob) return null;
-    const d = new Date(dob);
-    if (Number.isNaN(d.getTime())) return null;
-    const now = new Date();
-    let age = now.getFullYear() - d.getFullYear();
-    const m = now.getMonth() - d.getMonth();
-    if (m < 0 || (m === 0 && now.getDate() < d.getDate())) age--;
-    return age;
-  };
-  const age = computeAge(formDob);
-  const isMinor = age !== null && age < 18;
-
+  // Email links that failed (expired or already used) come back as #error=…; say so plainly.
   useEffect(() => {
-    if (user && userRole) {
-      // Always land on the role dashboard (not the profile) so all sections are visible.
-      const dest = userRole === "admin" ? "/admin" : userRole === "scout" ? "/scout" : "/player";
-      navigate({ to: dest as any, replace: true });
+    if (typeof window === "undefined") return;
+    const h = new URLSearchParams(window.location.hash.slice(1));
+    if (h.get("error_code") || h.get("error")) {
+      setError(t((h.get("error_code") === "otp_expired" ? "auth.err.linkExpired" : "auth.err.generic") as never));
+      window.history.replaceState(null, "", window.location.pathname + window.location.search);
     }
-  }, [user, userRole, navigate]);
+  }, [t]);
 
-  // Debounced username availability check
+  // Where a signed-in session should end up.
   useEffect(() => {
-    if (isLogin) return;
-    const u = formUsername.trim().toLowerCase();
-    if (!u) { setUsernameStatus("idle"); return; }
-    if (!/^[a-z0-9_]{3,24}$/.test(u)) { setUsernameStatus("invalid"); return; }
-    setUsernameStatus("checking");
-    const h = setTimeout(async () => {
-      const { data } = await supabase.from("profiles").select("user_id").ilike("username" as any, u).maybeSingle();
-      setUsernameStatus(data ? "taken" : "ok");
-    }, 350);
-    return () => clearTimeout(h);
-  }, [formUsername, isLogin]);
-
-  const handleSubmit = async (e: React.FormEvent) => {
-    e.preventDefault();
-    if (!isLogin) {
-      const uname = formUsername.trim().toLowerCase();
-      if (!/^[a-z0-9_]{3,24}$/.test(uname)) {
-        toast({ title: "Invalid username", description: "3–24 characters. Only lowercase letters, numbers and underscore.", variant: "destructive" });
-        return;
-      }
-      const { data: taken } = await supabase.from("profiles").select("user_id").ilike("username" as any, uname).maybeSingle();
-      if (taken) {
-        setUsernameStatus("taken");
-        toast({ title: "Username taken", description: "Please pick a different username.", variant: "destructive" });
-        return;
-      }
-      if (!formDob) {
-        toast({ title: "Date of birth required", description: "Please enter your date of birth.", variant: "destructive" });
-        return;
-      }
-      if (age === null || age < 13) {
-        toast({ title: "Not eligible", description: "You must be at least 13 years old to register.", variant: "destructive" });
-        return;
-      }
-      if (!agreePrivacy) {
-        toast({ title: "Privacy agreement required", description: "You must agree to the Privacy Policy to continue.", variant: "destructive" });
-        return;
-      }
-      if (isMinor) {
-        if (!guardianName.trim() || !guardianEmail.trim() || !parentalConsent) {
-          toast({ title: "Parental consent required", description: "Parent/Guardian name, email, and consent are required for users under 18.", variant: "destructive" });
-          return;
-        }
-      }
-      if (bcRequired && !birthCertFile) {
-        toast({ title: "Birth certificate required", description: "Please upload a valid birth certificate to create your account.", variant: "destructive" });
-        return;
-      }
-      if (birthCertFile && birthCertFile.size > 8 * 1024 * 1024) {
-        toast({ title: "File too large", description: "Birth certificate must be under 8 MB.", variant: "destructive" });
-        return;
-      }
-      if (scoutDocsRequired && (!scoutOrgIdFile || !scoutCvFile)) {
-        toast({ title: "Scout documents required", description: "Please upload your organization ID card and official CV to apply as a scout.", variant: "destructive" });
-        return;
-      }
-      if (scoutOrgIdFile && scoutOrgIdFile.size > 8 * 1024 * 1024) {
-        toast({ title: "File too large", description: "Organization ID card must be under 8 MB.", variant: "destructive" });
-        return;
-      }
-      if (scoutCvFile && scoutCvFile.size > 8 * 1024 * 1024) {
-        toast({ title: "File too large", description: "CV must be under 8 MB.", variant: "destructive" });
-        return;
-      }
+    if (loading || !user) return;
+    if (needsMfa) { setView("mfa"); return; }
+    if (role) {
+      navigate({ to: (role === "admin" ? "/admin" : role === "scout" ? "/scout" : "/player") as never, replace: true });
+      return;
     }
-    setLoading(true);
-    try {
-      if (isLogin) {
-        const { error } = await signIn(formEmail, formPassword);
-        if (error) throw error;
-        toast({ title: "Welcome back!", description: "You've been signed in." });
-      } else {
-        // Sign up — Supabase sends a confirmation link email
-        const { data, error } = await supabase.auth.signUp({
-          email: formEmail,
-          password: formPassword,
-          options: {
-            data: { full_name: formName },
-            emailRedirectTo: `${window.location.origin}/auth`,
-          },
-        });
+    // Signed in but not onboarded: finish with the answers saved on the account, else ask.
+    if (triedAuto.current) return;
+    triedAuto.current = true;
+    const saved = (user.user_metadata as { onboarding?: Partial<Onboarding> } | undefined)?.onboarding;
+    if (saved) setProfile((p) => ({ ...p, ...saved, sport: (saved.sport as Sport) ?? p.sport }));
+    setBusy(true);
+    runOnboarding().then(async (r) => {
+      setBusy(false);
+      if (r.ok) { await refreshRole(); return; }
+      setView("finish");
+      if (saved) setError(t((SERVER_ERRORS[r.code] ?? "auth.err.generic") as never));
+    });
+  }, [loading, user, role, needsMfa, navigate, refreshRole, t]);
 
-        if (error) {
-          if (
-            error.message.toLowerCase().includes("already registered") ||
-            error.message.toLowerCase().includes("already exists") ||
-            error.message.toLowerCase().includes("user already registered")
-          ) {
-            toast({ title: "Already registered", description: "Please sign in instead.", variant: "destructive" });
-            setIsLogin(true);
-            return;
-          }
-          throw error;
-        }
+  const fail = (key: string) => { setError(t(key as never)); setBusy(false); };
 
-        // Store role/profile data to be set after email confirmation
-        if (data.user) {
-          localStorage.setItem("pendingRole", selectedRole);
-          localStorage.setItem("pendingSport", sport);
-          localStorage.setItem("pendingPhone", formPhone);
-          localStorage.setItem("pendingGender", formGender);
-          localStorage.setItem("pendingName", formName);
-          localStorage.setItem("pendingUsername", formUsername.trim().toLowerCase());
-
-          // Stash birth certificate (base64) for upload once authenticated
-          if (birthCertFile) {
-            try {
-              const b64 = await new Promise<string>((resolve, reject) => {
-                const r = new FileReader();
-                r.onload = () => resolve(String(r.result));
-                r.onerror = () => reject(r.error);
-                r.readAsDataURL(birthCertFile);
-              });
-              sessionStorage.setItem("pendingBirthCertData", b64);
-              sessionStorage.setItem("pendingBirthCertName", birthCertFile.name);
-              sessionStorage.setItem("pendingBirthCertType", birthCertFile.type);
-            } catch { /* ignore — gate will catch missing BC */ }
-          }
-
-          // Stash scout documents (org ID + CV) for upload once authenticated
-          const stashScoutDoc = async (file: File | null, key: string) => {
-            if (!file) return;
-            try {
-              const b64 = await new Promise<string>((resolve, reject) => {
-                const r = new FileReader();
-                r.onload = () => resolve(String(r.result));
-                r.onerror = () => reject(r.error);
-                r.readAsDataURL(file);
-              });
-              sessionStorage.setItem(`pending${key}Data`, b64);
-              sessionStorage.setItem(`pending${key}Name`, file.name);
-              sessionStorage.setItem(`pending${key}Type`, file.type);
-            } catch { /* ignore */ }
-          };
-          await stashScoutDoc(scoutOrgIdFile, "ScoutOrgId");
-          await stashScoutDoc(scoutCvFile, "ScoutCv");
-        }
-
-        setEmailSent(true);
-        if (selectedRole === "scout") {
-          toast({ title: "Account created", description: "Please confirm your email to continue." });
-        } else {
-          toast({ title: "Check your email", description: "Click the confirmation link to activate your account." });
-        }
-      }
-    } catch (err: any) {
-      toast({ title: "Error", description: err.message || "Something went wrong", variant: "destructive" });
-    } finally {
-      setLoading(false);
+  const signIn = async (e: React.FormEvent) => {
+    e.preventDefault(); setError(null); setBusy(true);
+    const { error: err } = await supabase.auth.signInWithPassword({ email: email.trim(), password });
+    if (err) {
+      const msg = err.message.toLowerCase();
+      return fail(msg.includes("confirm") ? "auth.err.unconfirmed" : msg.includes("invalid") ? "auth.err.credentials" : "auth.err.generic");
     }
+    await refreshRole();
+    setBusy(false);
   };
 
-  // Handle email confirmation redirect — set role after user returns
-  useEffect(() => {
-    const setupPendingProfile = async () => {
-      if (!user) return;
-      const pendingRole = localStorage.getItem("pendingRole");
-      if (!pendingRole) return;
+  const signUp = async (e: React.FormEvent) => {
+    e.preventDefault(); setError(null);
+    const problem = profileProblem(profile, usernameState);
+    if (problem) return fail(problem);
+    if (password.length < 8) return fail("auth.err.password");
+    if (!agree) return fail("auth.err.agree");
+    setBusy(true);
+    const onboarding = cleanOnboarding(profile);
+    const { data, error: err } = await supabase.auth.signUp({
+      email: email.trim(),
+      password,
+      options: { emailRedirectTo: publicUrl("/auth"), data: { full_name: onboarding.full_name, onboarding } },
+    });
+    if (err) {
+      const m = err.message.toLowerCase();
+      return fail(m.includes("already") ? "auth.err.exists" : m.includes("password") ? "auth.err.password" : "auth.err.generic");
+    }
+    // With email confirmation on, an existing address comes back with no identities.
+    if (data.user && (data.user.identities?.length ?? 0) === 0) return fail("auth.err.exists");
+    setBusy(false);
+    if (!data.session) setView("sent");
+    // With a session (confirmation off) the effect above finishes onboarding.
+  };
 
-      const sport = localStorage.getItem("pendingSport") || "football";
-      const phone = localStorage.getItem("pendingPhone") || "";
-      const gender = localStorage.getItem("pendingGender") || "";
-      const name = localStorage.getItem("pendingName") || "";
-      const username = localStorage.getItem("pendingUsername") || "";
+  const finish = async (e: React.FormEvent) => {
+    e.preventDefault(); setError(null);
+    const problem = profileProblem(profile, usernameState);
+    if (problem) return fail(problem);
+    setBusy(true);
+    const r = await runOnboarding(cleanOnboarding(profile));
+    if (!r.ok) return fail(SERVER_ERRORS[r.code] ?? "auth.err.generic");
+    await refreshRole();
+    setBusy(false);
+  };
 
-      try {
-        await supabase.functions.invoke("handle-signup-role", {
-          body: { role: pendingRole, sport, phone, gender, full_name: name, username },
-        });
-      } catch {}
+  const verifyMfa = async (e: React.FormEvent) => {
+    e.preventDefault(); setError(null); setBusy(true);
+    const { data: factors, error: fErr } = await supabase.auth.mfa.listFactors();
+    const factor = factors?.totp?.find((f) => f.status === "verified");
+    if (fErr || !factor) return fail("auth.err.generic");
+    const { error: vErr } = await supabase.auth.mfa.challengeAndVerify({ factorId: factor.id, code: code.trim() });
+    if (vErr) return fail("auth.err.code");
+    await refreshRole();
+    setBusy(false);
+  };
 
-      // Upload stashed birth certificate, if present
-      const bcData = sessionStorage.getItem("pendingBirthCertData");
-      const bcName = sessionStorage.getItem("pendingBirthCertName") || "birth_certificate";
-      const bcType = sessionStorage.getItem("pendingBirthCertType") || "application/octet-stream";
-      if (bcData && pendingRole === "player") {
-        try {
-          const res = await fetch(bcData);
-          const blob = await res.blob();
-          const ext = (bcName.split(".").pop() || "bin").toLowerCase();
-          const path = `${user.id}/birth_certificate_${Date.now()}.${ext}`;
-          const { error: upErr } = await supabase.storage.from("documents").upload(path, blob, { upsert: true, contentType: bcType });
-          if (!upErr) {
-            const { data: { publicUrl } } = supabase.storage.from("documents").getPublicUrl(path);
-            await supabase.from("documents").delete().eq("user_id", user.id).eq("type", "birth_certificate");
-            await supabase.from("documents").insert({ user_id: user.id, type: "birth_certificate", url: publicUrl, name: bcName } as any);
-          }
-        } catch { /* ignore — user can re-upload from dashboard */ }
-        sessionStorage.removeItem("pendingBirthCertData");
-        sessionStorage.removeItem("pendingBirthCertName");
-        sessionStorage.removeItem("pendingBirthCertType");
-      }
+  const forgot = async () => {
+    setError(null);
+    if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email.trim())) return fail("auth.err.emailFirst");
+    setBusy(true);
+    const { error: err } = await supabase.auth.resetPasswordForEmail(email.trim(), { redirectTo: publicUrl("/reset-password") });
+    setBusy(false);
+    if (err) return fail("auth.err.generic");
+    toast.success(t("auth.resetSent"));
+  };
 
-      // Upload stashed scout documents, if present
-      const uploadScoutDoc = async (key: string, docType: string, defaultName: string) => {
-        const data = sessionStorage.getItem(`pending${key}Data`);
-        if (!data || pendingRole !== "scout") return;
-        const name = sessionStorage.getItem(`pending${key}Name`) || defaultName;
-        const type = sessionStorage.getItem(`pending${key}Type`) || "application/octet-stream";
-        try {
-          const res = await fetch(data);
-          const blob = await res.blob();
-          const ext = (name.split(".").pop() || "bin").toLowerCase();
-          const path = `${user.id}/${docType}_${Date.now()}.${ext}`;
-          const { error: upErr } = await supabase.storage.from("documents").upload(path, blob, { upsert: true, contentType: type });
-          if (!upErr) {
-            const { data: { publicUrl } } = supabase.storage.from("documents").getPublicUrl(path);
-            await supabase.from("documents").delete().eq("user_id", user.id).eq("type", docType);
-            await supabase.from("documents").insert({ user_id: user.id, type: docType, url: publicUrl, name } as any);
-          }
-        } catch { /* ignore */ }
-        sessionStorage.removeItem(`pending${key}Data`);
-        sessionStorage.removeItem(`pending${key}Name`);
-        sessionStorage.removeItem(`pending${key}Type`);
-      };
-      await uploadScoutDoc("ScoutOrgId", "scout_org_id", "organization_id");
-      await uploadScoutDoc("ScoutCv", "scout_cv", "cv");
+  const resend = async () => {
+    setBusy(true);
+    const { error: err } = await supabase.auth.resend({ type: "signup", email: email.trim(), options: { emailRedirectTo: publicUrl("/auth") } });
+    setBusy(false);
+    if (err) toast.error(t("auth.err.generic")); else toast.success(t("auth.resent"));
+  };
 
-
-      localStorage.removeItem("pendingRole");
-      localStorage.removeItem("pendingSport");
-      localStorage.removeItem("pendingPhone");
-      localStorage.removeItem("pendingGender");
-      localStorage.removeItem("pendingName");
-      localStorage.removeItem("pendingUsername");
-    };
-    setupPendingProfile();
-  }, [user]);
-
-  if (emailSent) {
-    const isScout = localStorage.getItem("pendingRole") === "scout";
-    return (
-      <div className="min-h-screen flex items-center justify-center pt-20 pb-24 px-4">
-        <motion.div
-          initial={{ opacity: 0, y: 16 }}
-          animate={{ opacity: 1, y: 0 }}
-          className="w-full max-w-md bg-card border border-border rounded-2xl p-10 shadow-2xl text-center space-y-6"
-        >
-          <div className="flex justify-center">
-            <motion.div
-              animate={{ scale: [1, 1.06, 1] }}
-              transition={{ duration: 2.5, repeat: Infinity }}
-              className="w-20 h-20 rounded-full bg-foreground/10 border border-border flex items-center justify-center"
-            >
-              <CheckCircle2 className="h-10 w-10 text-foreground" />
-            </motion.div>
-          </div>
-          <div>
-            <h2 className="font-display text-3xl text-foreground mb-2">{t("auth.checkEmail")}</h2>
-            <p className="text-sm text-muted-foreground">
-              {t("auth.confirmSent")}{" "}
-              <span className="text-foreground font-medium">{formEmail}</span>
-            </p>
-            {isScout ? (
-              <div className="mt-4 bg-primary/10 border border-primary/30 rounded-xl p-4">
-                <p className="text-sm text-foreground font-medium mb-1">{t("auth.scoutReview")}</p>
-                <p className="text-xs text-muted-foreground leading-relaxed">
-                  {t("auth.scoutReviewBody")}
-                </p>
-              </div>
-            ) : (
-              <p className="text-xs text-muted-foreground mt-3">
-                {t("auth.activateHint")}
-              </p>
-            )}
-          </div>
-          <button
-            onClick={() => { setEmailSent(false); setIsLogin(true); }}
-            className="text-sm text-muted-foreground hover:text-foreground transition-colors underline underline-offset-4"
-          >
-            {t("auth.alreadyConfirmed")}
-          </button>
-        </motion.div>
-      </div>
-    );
-  }
+  const primaryBtn = "press flex h-[52px] w-full items-center justify-center rounded-full bg-primary text-[17px] font-semibold text-primary-foreground disabled:opacity-50";
+  const titleKey = { signin: "auth.welcomeBack", signup: "auth.joinTheGame", sent: "auth.checkEmail", mfa: "auth.mfaTitle", finish: "auth.finishTitle" }[view];
+  const subKey = { signin: "auth.signInSub", signup: "auth.signUpSub", sent: "auth.confirmSent", mfa: "auth.mfaSub", finish: "auth.finishSub" }[view];
 
   return (
-    <div className="min-h-screen flex items-start justify-center pt-24 pb-24 px-4 overflow-y-auto bg-gradient-to-b from-[hsl(var(--paper))] via-[hsl(var(--paper))] to-[hsl(var(--teal-deep)/0.08)]">
-      <div className="w-full max-w-md">
-        <div className="text-center mb-6">
-          <Link to="/" className="inline-flex items-center gap-2.5 mb-4 group">
-            <CholoKheliMark className="h-10 w-10" />
-            <span className="font-display text-2xl tracking-[0.04em] text-[hsl(var(--teal-deep))] font-semibold">
-              CHOLO <span className="font-bold">KHELI</span>
-            </span>
-          </Link>
-          <h1 className="font-display text-3xl text-[hsl(var(--teal-deep))]">
-            {isLogin ? t("auth.welcomeBack") : t("auth.joinTheGame")}
-          </h1>
-          <p className="text-sm text-muted-foreground mt-2">
-            {isLogin ? t("auth.signInSub") : t("auth.signUpSub")}
-          </p>
-        </div>
+    <div className="min-h-[100dvh] px-5" style={{ paddingTop: "calc(2rem + env(safe-area-inset-top))", paddingBottom: "calc(2rem + env(safe-area-inset-bottom))" }}>
+      <div className="mx-auto w-full max-w-md">
+        <Link to="/" aria-label="Cholo Kheli home" className="inline-block"><CholoKheliMark className="h-9 w-12" /></Link>
+        <h1 className="large-title mt-4">{t(titleKey as never)}</h1>
+        <p className="mt-1.5 text-[16px] text-muted-foreground">
+          {t(subKey as never)}{view === "sent" && <> <span className="font-medium text-foreground">{email}</span></>}
+        </p>
 
-        <motion.div
-          initial={{ opacity: 0, y: 16 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.3, ease: "easeOut" }}
-          className="bg-card border border-border rounded-2xl p-5 sm:p-6 shadow-2xl"
-        >
-          {!isLogin && (
-            <>
-              <div className="mb-5">
-                <Label className="text-sm text-muted-foreground mb-2 block">{t("auth.iAmA")}</Label>
-                <div className="grid grid-cols-2 gap-3">
-                  {(["player", "scout"] as Role[]).map((r) => (
-                    <button
-                      key={r}
-                      type="button"
-                      onClick={() => setSelectedRole(r)}
-                      className={`py-3 rounded-xl font-display text-lg tracking-wide transition-all duration-300 border ${
-                        selectedRole === r
-                          ? "bg-foreground text-background border-foreground"
-                          : "bg-secondary text-secondary-foreground border-border hover:border-foreground/40"
-                      }`}
-                    >
-                      {r === "player" ? t("auth.player") : t("auth.scout")}
-                    </button>
-                  ))}
-                </div>
-              </div>
+        {error && <p role="alert" className="mt-5 rounded-xl bg-destructive/10 px-4 py-3 text-[14px] text-destructive">{error}</p>}
 
-              {selectedRole === "player" && (
-                <div className="mb-5">
-                  <Label className="text-sm text-muted-foreground mb-2 block">{t("auth.sportCategory")}</Label>
-                  <div className="grid grid-cols-3 gap-3">
-                    {(["football", "cricket", "basketball"] as Sport[]).map((s) => (
-                      <button
-                        key={s}
-                        type="button"
-                        onClick={() => setSport(s)}
-                        className={`py-2.5 rounded-xl text-sm font-semibold transition-all duration-300 border ${
-                          sport === s
-                            ? "bg-foreground/15 text-foreground border-foreground/50"
-                            : "bg-secondary text-secondary-foreground border-border hover:border-foreground/30"
-                        }`}
-                      >
-                        {s === "football" ? t("auth.football") : s === "cricket" ? t("auth.cricket") : t("auth.basketball")}
-                      </button>
-                    ))}
-                  </div>
-                </div>
-              )}
-            </>
-          )}
-
-          <form onSubmit={handleSubmit} className="space-y-4">
-            {!isLogin && (
-              <div>
-                <Label htmlFor="name" className="text-sm text-muted-foreground">{t("auth.fullName")}</Label>
-                <Input
-                  id="name"
-                  placeholder={t("auth.fullNamePh")}
-                  required
-                  className="bg-secondary border-border mt-1"
-                  value={formName}
-                  onChange={(e) => setFormName(e.target.value)}
-                />
-              </div>
-            )}
-            {!isLogin && (
-              <div>
-                <Label htmlFor="username" className="text-sm text-muted-foreground">Username</Label>
-                <Input
-                  id="username"
-                  placeholder="e.g. neymar_11"
-                  required
-                  autoComplete="off"
-                  className="bg-secondary border-border mt-1"
-                  value={formUsername}
-                  onChange={(e) => setFormUsername(e.target.value.toLowerCase().replace(/[^a-z0-9_]/g, ""))}
-                  maxLength={24}
-                />
-                {formUsername && (
-                  <p className={`text-xs mt-1 ${
-                    usernameStatus === "ok" ? "text-primary" :
-                    usernameStatus === "taken" || usernameStatus === "invalid" ? "text-destructive" :
-                    "text-muted-foreground"
-                  }`}>
-                    {usernameStatus === "checking" && "Checking availability…"}
-                    {usernameStatus === "ok" && "✓ Available"}
-                    {usernameStatus === "taken" && "This username is already taken"}
-                    {usernameStatus === "invalid" && "3–24 chars: lowercase letters, numbers, underscore"}
-                  </p>
-                )}
-              </div>
-            )}
-            <div>
-              <Label htmlFor="email" className="text-sm text-muted-foreground">{t("auth.email")}</Label>
-              <Input
-                id="email"
-                type="email"
-                placeholder={t("auth.emailPh")}
-                required
-                className="bg-secondary border-border mt-1"
-                value={formEmail}
-                onChange={(e) => setFormEmail(e.target.value)}
-              />
-            </div>
-            {!isLogin && (
-              <>
-                <div>
-                  <Label htmlFor="phone" className="text-sm text-muted-foreground">{t("auth.phone")}</Label>
-                  <Input
-                    id="phone"
-                    placeholder={t("auth.phonePh")}
-                    required
-                    className="bg-secondary border-border mt-1"
-                    value={formPhone}
-                    onChange={(e) => setFormPhone(e.target.value)}
-                  />
-                </div>
-                <div>
-                  <Label htmlFor="gender" className="text-sm text-muted-foreground">{t("auth.gender")}</Label>
-                  <select
-                    id="gender"
-                    className="flex h-10 w-full rounded-md border border-border bg-secondary px-3 py-2 text-sm text-foreground focus:outline-none focus:ring-2 focus:ring-ring mt-1"
-                    value={formGender}
-                    onChange={(e) => setFormGender(e.target.value)}
-                    required
-                  >
-                    <option value="">{t("auth.selectGender")}</option>
-                    <option value="male">{t("auth.male")}</option>
-                    <option value="female">{t("auth.female")}</option>
-                    <option value="other">{t("auth.other")}</option>
-                  </select>
-                </div>
-                <div>
-                  <Label htmlFor="dob" className="text-sm text-muted-foreground">{t("auth.dob")}</Label>
-                  <Input
-                    id="dob"
-                    type="date"
-                    required
-                    max={new Date().toISOString().split("T")[0]}
-                    className="bg-secondary border-border mt-1"
-                    value={formDob}
-                    onChange={(e) => setFormDob(e.target.value)}
-                  />
-                  {age !== null && age >= 0 && age < 13 && (
-                    <p className="text-xs text-destructive mt-1">{t("auth.tooYoung")}</p>
-                  )}
-                  {isMinor && age !== null && age >= 13 && (
-                    <p className="text-xs text-muted-foreground mt-1">{t("auth.minorNotice")}</p>
-                  )}
-                </div>
-              </>
-            )}
-            <div>
-              <Label htmlFor="password" className="text-sm text-muted-foreground">{t("auth.password")}</Label>
-              <div className="relative mt-1">
-                <Input
-                  id="password"
-                  type={showPass ? "text" : "password"}
-                  placeholder="••••••••"
-                  required
-                  minLength={6}
-                  className="bg-secondary border-border pr-10"
-                  value={formPassword}
-                  onChange={(e) => setFormPassword(e.target.value)}
-                />
-                <button
-                  type="button"
-                  onClick={() => setShowPass(!showPass)}
-                  className="absolute right-3 top-1/2 -translate-y-1/2 text-muted-foreground hover:text-foreground transition-colors"
-                >
-                  {showPass ? <EyeOff className="h-4 w-4" /> : <Eye className="h-4 w-4" />}
+        {view === "signin" && !user && (
+          <form onSubmit={signIn} className="mt-6 space-y-4" noValidate>
+            <Field label={t("auth.email")} htmlFor="email">
+              <input id="email" type="email" autoComplete="email" inputMode="email" className={inputCls} required value={email} onChange={(e) => setEmail(e.target.value)} placeholder={t("auth.emailPh")} />
+            </Field>
+            <Field label={t("auth.password")} htmlFor="password">
+              <div className="relative">
+                <input id="password" type={showPass ? "text" : "password"} autoComplete="current-password" className={inputCls + " pr-12"} required value={password} onChange={(e) => setPassword(e.target.value)} />
+                <button type="button" onClick={() => setShowPass((v) => !v)} aria-label={showPass ? t("auth.hidePassword") : t("auth.showPassword")} className="absolute right-1 top-1/2 grid h-10 w-10 -translate-y-1/2 place-items-center text-muted-foreground">
+                  {showPass ? <EyeOff className="h-5 w-5" /> : <Eye className="h-5 w-5" />}
                 </button>
               </div>
-            </div>
-            {!isLogin && selectedRole === "player" && !isBcExempt && (
-              <div className="p-4 rounded-xl border border-border bg-secondary/50 space-y-2">
-                <div className="flex items-center gap-2">
-                  <FileText className={`h-4 w-4 ${birthCertFile ? "text-foreground" : "text-destructive"}`} />
-                  <Label className="text-sm font-semibold text-foreground">
-                    Birth Certificate <span className="text-destructive">*</span>
-                  </Label>
-                </div>
-                <p className="text-xs text-muted-foreground">
-                  A valid birth certificate is mandatory to create a player account. Accepted: PDF, JPG, PNG (max 8 MB). Only admins can view this document.
-                </p>
-                <input
-                  ref={bcRef}
-                  type="file"
-                  accept="application/pdf,image/jpeg,image/png"
-                  className="hidden"
-                  onChange={(e) => setBirthCertFile(e.target.files?.[0] || null)}
-                />
-                <div className="flex items-center gap-2">
-                  <Button
-                    type="button"
-                    variant="outline"
-                    size="sm"
-                    onClick={() => bcRef.current?.click()}
-                    className="border-border"
-                  >
-                    <Upload className="h-3.5 w-3.5 mr-2" />
-                    {birthCertFile ? "Replace file" : "Choose file"}
-                  </Button>
-                  <span className="text-xs text-muted-foreground truncate">
-                    {birthCertFile ? birthCertFile.name : "No file chosen"}
-                  </span>
-                </div>
-              </div>
-            )}
-            {!isLogin && selectedRole === "scout" && (
-              <div className="p-4 rounded-xl border border-border bg-secondary/50 space-y-4">
-                <p className="text-sm font-semibold text-foreground">Scout verification documents</p>
-                <p className="text-xs text-muted-foreground -mt-2">
-                  Both documents are required to apply as a scout. Accepted: PDF, JPG, PNG (max 8 MB each). Only admins can view these documents.
-                </p>
-
-                <div className="space-y-2">
-                  <div className="flex items-center gap-2">
-                    <FileText className={`h-4 w-4 ${scoutOrgIdFile ? "text-foreground" : "text-destructive"}`} />
-                    <Label className="text-sm font-semibold text-foreground">
-                      Organization ID card <span className="text-destructive">*</span>
-                    </Label>
-                  </div>
-                  <input
-                    ref={orgIdRef}
-                    type="file"
-                    accept="application/pdf,image/jpeg,image/png"
-                    className="hidden"
-                    onChange={(e) => setScoutOrgIdFile(e.target.files?.[0] || null)}
-                  />
-                  <div className="flex items-center gap-2">
-                    <Button type="button" variant="outline" size="sm" onClick={() => orgIdRef.current?.click()} className="border-border">
-                      <Upload className="h-3.5 w-3.5 mr-2" />
-                      {scoutOrgIdFile ? "Replace file" : "Choose file"}
-                    </Button>
-                    <span className="text-xs text-muted-foreground truncate">
-                      {scoutOrgIdFile ? scoutOrgIdFile.name : "No file chosen"}
-                    </span>
-                  </div>
-                </div>
-
-                <div className="space-y-2">
-                  <div className="flex items-center gap-2">
-                    <FileText className={`h-4 w-4 ${scoutCvFile ? "text-foreground" : "text-destructive"}`} />
-                    <Label className="text-sm font-semibold text-foreground">
-                      Official CV <span className="text-destructive">*</span>
-                    </Label>
-                  </div>
-                  <input
-                    ref={cvRef}
-                    type="file"
-                    accept="application/pdf,image/jpeg,image/png"
-                    className="hidden"
-                    onChange={(e) => setScoutCvFile(e.target.files?.[0] || null)}
-                  />
-                  <div className="flex items-center gap-2">
-                    <Button type="button" variant="outline" size="sm" onClick={() => cvRef.current?.click()} className="border-border">
-                      <Upload className="h-3.5 w-3.5 mr-2" />
-                      {scoutCvFile ? "Replace file" : "Choose file"}
-                    </Button>
-                    <span className="text-xs text-muted-foreground truncate">
-                      {scoutCvFile ? scoutCvFile.name : "No file chosen"}
-                    </span>
-                  </div>
-                </div>
-              </div>
-            )}
-            {!isLogin && isMinor && age !== null && age >= 13 && (
-              <div className="space-y-3 p-4 rounded-xl border border-border bg-secondary/60">
-                <p className="text-sm font-semibold text-foreground">{t("auth.guardianHeading")}</p>
-                <div>
-                  <Label htmlFor="guardianName" className="text-sm text-muted-foreground">{t("auth.guardianName")}</Label>
-                  <Input
-                    id="guardianName"
-                    placeholder={t("auth.guardianNamePh")}
-                    required
-                    className="bg-background border-border mt-1"
-                    value={guardianName}
-                    onChange={(e) => setGuardianName(e.target.value)}
-                  />
-                </div>
-                <div>
-                  <Label htmlFor="guardianEmail" className="text-sm text-muted-foreground">{t("auth.guardianEmail")}</Label>
-                  <Input
-                    id="guardianEmail"
-                    type="email"
-                    placeholder={t("auth.guardianEmailPh")}
-                    required
-                    className="bg-background border-border mt-1"
-                    value={guardianEmail}
-                    onChange={(e) => setGuardianEmail(e.target.value)}
-                  />
-                </div>
-                <label className="flex items-start gap-2 text-sm text-foreground/85 cursor-pointer">
-                  <input
-                    type="checkbox"
-                    className="mt-1 h-4 w-4 rounded border-border accent-foreground"
-                    checked={parentalConsent}
-                    onChange={(e) => setParentalConsent(e.target.checked)}
-                    required
-                  />
-                  <span>
-                    {t("auth.parentalConsent")}{" "}
-                    <Link to="/privacy-policy" className="underline font-medium">{t("auth.privacyPolicy")}</Link>.
-                  </span>
-                </label>
-              </div>
-            )}
-            {!isLogin && (
-              <label className="flex items-start gap-2 text-sm text-foreground/85 cursor-pointer">
-                <input
-                  type="checkbox"
-                  className="mt-1 h-4 w-4 rounded border-border accent-foreground"
-                  checked={agreePrivacy}
-                  onChange={(e) => setAgreePrivacy(e.target.checked)}
-                  required
-                />
-                <span>
-                  {t("auth.agreePrivacy")}{" "}
-                  <Link to="/privacy-policy" className="underline font-medium" target="_blank">{t("auth.privacyPolicy")}</Link>.
-                </span>
-              </label>
-            )}
-            <Button
-              type="submit"
-              disabled={loading || (!isLogin && !agreePrivacy) || (!isLogin && usernameStatus !== "ok") || (!isLogin && isMinor && !parentalConsent) || (bcRequired && !birthCertFile) || (scoutDocsRequired && (!scoutOrgIdFile || !scoutCvFile))}
-              className="w-full bg-foreground text-background font-bold hover:bg-foreground/90 transition-all duration-300 disabled:opacity-50"
-            >
-              {loading ? <Loader2 className="h-4 w-4 animate-spin" /> : isLogin ? t("auth.signIn") : t("auth.createAccount")}
-            </Button>
-          </form>
-
-          <p className="text-center text-sm text-muted-foreground mt-4">
-            {isLogin ? t("auth.noAccount") : t("auth.hasAccount")}
-            <button
-              type="button"
-              onClick={() => { setIsLogin(!isLogin); }}
-              className="text-foreground hover:underline font-medium transition-colors"
-            >
-              {isLogin ? t("auth.signUp") : t("auth.signIn")}
+            </Field>
+            <button type="submit" disabled={busy || !email || !password} className={primaryBtn}>
+              {busy ? <Loader2 className="h-5 w-5 animate-spin" aria-label={t("common.loading")} /> : t("auth.signIn")}
             </button>
-          </p>
-          {isLogin && (
-            <p className="text-center text-sm text-muted-foreground mt-2">
-              <ForgotPasswordInline email={formEmail} toast={toast} />
+            <div className="flex items-center justify-between pt-1 text-[15px]">
+              <button type="button" onClick={forgot} className="py-2 text-primary">{t("auth.forgot")}</button>
+              <button type="button" onClick={() => { setView("signup"); setError(null); }} className="py-2 font-medium text-primary">{t("auth.createAccount")}</button>
+            </div>
+          </form>
+        )}
+
+        {view === "signup" && !user && (
+          <form onSubmit={signUp} className="mt-6 space-y-4" noValidate>
+            <ProfileFields value={profile} onChange={setProfile} usernameState={usernameState} />
+            <Field label={t("auth.email")} htmlFor="email">
+              <input id="email" type="email" autoComplete="email" inputMode="email" className={inputCls} required value={email} onChange={(e) => setEmail(e.target.value)} placeholder={t("auth.emailPh")} />
+            </Field>
+            <Field label={t("auth.password")} htmlFor="password" hint={t("auth.passwordHint")}>
+              <div className="relative">
+                <input id="password" type={showPass ? "text" : "password"} autoComplete="new-password" minLength={8} className={inputCls + " pr-12"} required value={password} onChange={(e) => setPassword(e.target.value)} />
+                <button type="button" onClick={() => setShowPass((v) => !v)} aria-label={showPass ? t("auth.hidePassword") : t("auth.showPassword")} className="absolute right-1 top-1/2 grid h-10 w-10 -translate-y-1/2 place-items-center text-muted-foreground">
+                  {showPass ? <EyeOff className="h-5 w-5" /> : <Eye className="h-5 w-5" />}
+                </button>
+              </div>
+            </Field>
+            {profile.role === "scout" && <p className="footnote">{t("auth.scoutDocsLater")}</p>}
+            <label className="flex items-start gap-3 text-[14px] leading-snug">
+              <input type="checkbox" className="mt-0.5 h-5 w-5 shrink-0 accent-[hsl(var(--primary))]" checked={agree} onChange={(e) => setAgree(e.target.checked)} />
+              <span>{t("auth.agreePrivacy")} <Link to="/privacy-policy" className="font-medium text-primary underline underline-offset-2">{t("auth.privacyPolicy")}</Link>.</span>
+            </label>
+            <button type="submit" disabled={busy} className={primaryBtn}>
+              {busy ? <Loader2 className="h-5 w-5 animate-spin" aria-label={t("common.loading")} /> : t("auth.createAccount")}
+            </button>
+            <p className="text-center text-[15px] text-muted-foreground">
+              {t("auth.hasAccount")}{" "}
+              <button type="button" onClick={() => { setView("signin"); setError(null); }} className="py-2 font-medium text-primary">{t("auth.signIn")}</button>
             </p>
-          )}
-        </motion.div>
+          </form>
+        )}
+
+        {view === "sent" && (
+          <div className="mt-8 space-y-4">
+            <div className="ios-group flex items-start gap-3 p-4">
+              <MailCheck className="mt-0.5 h-6 w-6 shrink-0 text-primary" aria-hidden="true" />
+              <p className="text-[15px] leading-snug">{t("auth.activateHint")}</p>
+            </div>
+            <button type="button" onClick={() => { setView("signin"); setError(null); }} className={primaryBtn}>{t("auth.alreadyConfirmed")}</button>
+            <button type="button" onClick={resend} disabled={busy} className="w-full py-2 text-[15px] text-primary">{t("auth.resend")}</button>
+          </div>
+        )}
+
+        {view === "mfa" && (
+          <form onSubmit={verifyMfa} className="mt-6 space-y-4">
+            <div className="flex justify-center py-2"><ShieldCheck className="h-10 w-10 text-primary" aria-hidden="true" /></div>
+            <Field label={t("auth.mfaCode")} htmlFor="otp">
+              <input id="otp" inputMode="numeric" autoComplete="one-time-code" maxLength={6} className={inputCls + " text-center text-[22px] "} value={code} onChange={(e) => setCode(e.target.value.replace(/\D/g, ""))} />
+            </Field>
+            <button type="submit" disabled={busy || code.length !== 6} className={primaryBtn}>
+              {busy ? <Loader2 className="h-5 w-5 animate-spin" /> : t("auth.verify")}
+            </button>
+            <button type="button" onClick={() => signOut().then(() => setView("signin"))} className="w-full py-2 text-[15px] text-primary">{t("auth.useOtherAccount")}</button>
+          </form>
+        )}
+
+        {view === "finish" && (
+          <form onSubmit={finish} className="mt-6 space-y-4" noValidate>
+            <ProfileFields value={profile} onChange={setProfile} usernameState={usernameState} />
+            <button type="submit" disabled={busy} className={primaryBtn}>
+              {busy ? <Loader2 className="h-5 w-5 animate-spin" /> : t("auth.finishCta")}
+            </button>
+            <button type="button" onClick={() => signOut().then(() => setView("signin"))} className="w-full py-2 text-[15px] text-primary">{t("nav.signOut")}</button>
+          </form>
+        )}
+
+        {busy && user && !role && view !== "finish" && (
+          <div className="mt-10 flex items-center justify-center gap-2 text-muted-foreground" role="status">
+            <Loader2 className="h-5 w-5 animate-spin" /> {t("auth.settingUp")}
+          </div>
+        )}
       </div>
     </div>
   );

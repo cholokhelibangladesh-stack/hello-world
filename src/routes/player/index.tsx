@@ -1,10 +1,10 @@
 import { createFileRoute } from "@tanstack/react-router";
-import PlayerDashboard from "@/pages/PlayerDashboard";
+import PlayerHome from "@/pages/PlayerHome";
 import ProtectedRoute from "@/components/ProtectedRoute";
 export const Route = createFileRoute("/player/")({
   component: () => (
     <ProtectedRoute allowedRoles={["player"]}>
-      <PlayerDashboard />
+      <PlayerHome />
     </ProtectedRoute>
   ),
 });

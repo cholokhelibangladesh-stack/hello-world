@@ -54,9 +54,9 @@ const COPY = {
     athletics: "Athletics",
     step2Pill: "Upload Highlights",
     step2Title: "LET YOUR GAME\nSPEAK",
-    step2Body: "Record a 3-minute highlight video. Tag your position and traits. Pay ৳100 via bKash. Your reel goes live to hundreds of verified scouts instantly.",
-    only100: "Only ৳100",
-    only100Sub: "One-time payment via bKash · Instantly live",
+    step2Body: "Record a short highlight clip. Tag your position and what it shows. It goes live straight away to verified scouts across the country.",
+    only100: "Free to upload",
+    only100Sub: "No fees for players or scouts. Live in seconds.",
     step3Pill: "Get Discovered",
     step3Title: "SCOUTS\nFIND YOU",
     step3Body: "Verified scouts browse your profile, shortlist you, and reach out through our safe admin-mediated channel. No direct contact. No corruption. Pure merit.",
@@ -107,9 +107,9 @@ const COPY = {
     athletics: "অ্যাথলেটিক্স",
     step2Pill: "হাইলাইট আপলোড করুন",
     step2Title: "আপনার খেলা\nকথা বলুক",
-    step2Body: "একটি ৩-মিনিটের হাইলাইট ভিডিও রেকর্ড করুন। আপনার পজিশন ও বৈশিষ্ট্য ট্যাগ করুন। বিকাশে ১০০ টাকা পরিশোধ করুন। আপনার রিল তাৎক্ষণিকভাবে শত শত যাচাইকৃত স্কাউটের কাছে লাইভ হয়ে যাবে।",
-    only100: "মাত্র ১০০ টাকা",
-    only100Sub: "বিকাশে এককালীন পেমেন্ট · তাৎক্ষণিক লাইভ",
+    step2Body: "একটি ছোট হাইলাইট ক্লিপ রেকর্ড করুন। আপনার পজিশন আর ক্লিপে কী দেখা যাচ্ছে, তা ট্যাগ করুন। আপলোডের সাথে সাথেই এটি সারা দেশের যাচাইকৃত স্কাউটদের কাছে লাইভ হয়ে যাবে।",
+    only100: "আপলোড বিনামূল্যে",
+    only100Sub: "খেলোয়াড় বা স্কাউট, কারও কোনো ফি নেই। কয়েক সেকেন্ডেই লাইভ।",
     step3Pill: "আবিষ্কৃত হন",
     step3Title: "স্কাউট\nআপনাকে খুঁজে পাবে",
     step3Body: "যাচাইকৃত স্কাউটরা আপনার প্রোফাইল দেখে, আপনাকে শর্টলিস্ট করে এবং আমাদের নিরাপদ অ্যাডমিন-মধ্যস্থ চ্যানেলে যোগাযোগ করে। কোনো সরাসরি যোগাযোগ নেই। কোনো দুর্নীতি নেই। শুধুই মেধা।",
@@ -206,6 +206,65 @@ function Counter({ target, suffix = "" }: { target: number; suffix?: string }) {
     requestAnimationFrame(step);
   }, [inView, target]);
   return <span ref={ref}>{count.toLocaleString()}{suffix}</span>;
+}
+
+/* ── Sport card: tilts toward the pointer in 3D, the photo shifts the other way, a soft glare follows ── */
+type SportCardData = { img: string; name: string; tagline: string; blurb: string };
+function SportTiltCard({ sport, exploreLabel }: { sport: SportCardData; exploreLabel: string }) {
+  const ref = useRef<HTMLAnchorElement>(null);
+  const px = useMotionValue(0.5);
+  const py = useMotionValue(0.5);
+  const spring = { stiffness: 160, damping: 18, mass: 0.6 };
+  const rotY = useSpring(useTransform(px, [0, 1], [-9, 9]), spring);
+  const rotX = useSpring(useTransform(py, [0, 1], [8, -8]), spring);
+  const imgX = useSpring(useTransform(px, [0, 1], [14, -14]), spring);
+  const imgY = useSpring(useTransform(py, [0, 1], [10, -10]), spring);
+  const glare = useMotionTemplate`radial-gradient(60% 45% at ${useTransform(px, (v) => v * 100)}% ${useTransform(py, (v) => v * 100)}%, rgba(255,255,255,0.22), transparent 70%)`;
+  const onMove = (e: React.PointerEvent) => {
+    if (e.pointerType !== "mouse") return;
+    const r = ref.current?.getBoundingClientRect(); if (!r) return;
+    px.set((e.clientX - r.left) / r.width); py.set((e.clientY - r.top) / r.height);
+  };
+  const reset = () => { px.set(0.5); py.set(0.5); };
+  return (
+    <div style={{ perspective: 1100 }}>
+      <motion.a
+        ref={ref}
+        href="/auth?mode=signup"
+        onPointerMove={onMove}
+        onPointerLeave={reset}
+        style={{ rotateX: rotX, rotateY: rotY, transformStyle: "preserve-3d" }}
+        className="group relative block aspect-[3/5] overflow-hidden rounded-3xl shadow-lg transition-shadow duration-500 hover:shadow-[0_40px_80px_-30px_hsl(200_40%_4%/0.6)] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
+        aria-label={`${sport.name}: ${sport.tagline}. ${exploreLabel}`}
+      >
+        <motion.img
+          src={sport.img}
+          alt=""
+          loading="lazy"
+          style={{ x: imgX, y: imgY, scale: 1.12 }}
+          className="absolute inset-0 h-full w-full object-cover"
+        />
+        <div className="absolute inset-0"
+          style={{ background: "linear-gradient(to top, hsl(200 40% 4% / 0.85) 0%, hsl(200 40% 4% / 0.2) 55%, transparent 100%)" }} />
+        <div className="absolute inset-0 opacity-0 transition-opacity duration-500 group-hover:opacity-100 group-focus-visible:opacity-100"
+          style={{ background: "linear-gradient(to top, hsl(var(--teal-deep) / 0.92) 0%, hsl(var(--teal-deep) / 0.5) 60%, hsl(var(--teal-deep) / 0.15) 100%)" }} />
+        <motion.div aria-hidden className="pointer-events-none absolute inset-0 opacity-0 transition-opacity duration-500 group-hover:opacity-100" style={{ background: glare }} />
+
+        <div className="absolute inset-x-0 bottom-0 p-5 text-white sm:p-6" style={{ transform: "translateZ(40px)" }}>
+          <h3 className="whitespace-nowrap font-display text-2xl tracking-tight drop-shadow-lg sm:text-3xl">{sport.name}</h3>
+          <p className="mt-1 text-sm text-white/80 transition-opacity duration-300 group-hover:opacity-0">{sport.tagline}</p>
+          <div className="grid grid-rows-[0fr] transition-[grid-template-rows] duration-500 ease-[cubic-bezier(0.22,1,0.36,1)] group-hover:grid-rows-[1fr] group-focus-visible:grid-rows-[1fr]">
+            <div className="overflow-hidden">
+              <p className="mt-3 translate-y-2 text-sm leading-relaxed text-white/95 transition-transform duration-500 group-hover:translate-y-0">{sport.blurb}</p>
+              <span className="mt-4 inline-flex items-center gap-2 text-sm font-semibold text-[hsl(188_60%_82%)]">
+                {exploreLabel} <ArrowRight className="h-3.5 w-3.5 transition-transform duration-300 group-hover:translate-x-1" />
+              </span>
+            </div>
+          </div>
+        </div>
+      </motion.a>
+    </div>
+  );
 }
 
 /* ── Scroll-reveal ── */
@@ -381,44 +440,7 @@ const Index = () => {
               { img: sportBasketball.url, name: T.basketball, tagline: T.basketballTag, blurb: T.basketballBlurb },
             ].map((sport, i) => (
               <Reveal key={sport.name} delay={i * 0.12}>
-                <motion.div
-                  whileHover={{ y: -10, scale: 1.03 }}
-                  transition={{ type: "spring", stiffness: 260, damping: 20 }}
-                  className="group relative aspect-[3/5] rounded-3xl overflow-hidden cursor-pointer shadow-lg hover:shadow-2xl"
-                >
-                  <img
-                    src={sport.img}
-                    alt={sport.name}
-                    loading="lazy"
-                    className="absolute inset-0 w-full h-full object-cover transition-transform duration-700 group-hover:scale-110"
-                  />
-                  {/* Base gradient — always visible */}
-                  <div className="absolute inset-0"
-                    style={{ background: "linear-gradient(to top, hsl(200 40% 4% / 0.85) 0%, hsl(200 40% 4% / 0.2) 55%, transparent 100%)" }} />
-                  {/* Hover overlay — deeper */}
-                  <div className="absolute inset-0 opacity-0 group-hover:opacity-100 transition-opacity duration-500"
-                    style={{ background: "linear-gradient(to top, hsl(var(--teal-deep) / 0.92) 0%, hsl(var(--teal-deep) / 0.55) 60%, hsl(var(--teal-deep) / 0.2) 100%)" }} />
-
-                  {/* Always-visible label */}
-                  <div className="absolute inset-x-0 bottom-0 p-5 sm:p-6 text-white">
-                    <h3 className="font-display text-2xl sm:text-3xl tracking-wide drop-shadow-lg whitespace-nowrap">
-
-                      {sport.name.toUpperCase()}
-                    </h3>
-                    <p className="mt-1 text-sm text-white/80 transition-opacity duration-300 group-hover:opacity-0">
-                      {sport.tagline}
-                    </p>
-                    {/* Revealed blurb */}
-                    <div className="overflow-hidden max-h-0 group-hover:max-h-48 transition-all duration-500 ease-out">
-                      <p className="mt-3 text-sm leading-relaxed text-white/95 translate-y-2 group-hover:translate-y-0 transition-transform duration-500">
-                        {sport.blurb}
-                      </p>
-                      <div className="mt-4 inline-flex items-center gap-2 text-xs font-semibold uppercase tracking-[0.18em] text-[hsl(188_60%_82%)]">
-                        {T.explore} <ArrowRight className="h-3.5 w-3.5" />
-                      </div>
-                    </div>
-                  </div>
-                </motion.div>
+                <SportTiltCard sport={sport} exploreLabel={T.explore} />
               </Reveal>
             ))}
           </div>
@@ -736,8 +758,8 @@ const Index = () => {
               {/* CTAs below the phones */}
               <div className="flex flex-col sm:flex-row gap-4 justify-center items-center">
                 {!user && (
-                  <Link to="/auth">
-                    <Button size="lg" className="font-bold text-lg px-12 py-6 animate-pulse-glow"
+                  <Link to="/auth" search={{ mode: "signup" } as never}>
+                    <Button size="lg" className="font-bold text-lg px-12 py-6 transition-transform duration-300 hover:-translate-y-0.5"
                       style={{ background: "hsl(var(--green))", color: "hsl(var(--primary-foreground))" }}>
                       {T.joinFree} <ArrowRight className="ml-2 h-5 w-5" />
                     </Button>

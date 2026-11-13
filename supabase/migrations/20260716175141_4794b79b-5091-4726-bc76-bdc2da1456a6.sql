@@ -1,0 +1,2 @@
+CREATE POLICY "Public read player-videos" ON storage.objects FOR SELECT USING (bucket_id = 'player-videos');
+CREATE POLICY "Authenticated upload player-videos" ON storage.objects FOR INSERT TO authenticated WITH CHECK (bucket_id = 'player-videos');

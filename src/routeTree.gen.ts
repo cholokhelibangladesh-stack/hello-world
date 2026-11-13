@@ -9,61 +9,65 @@
 // Additionally, you should also exclude this file from your linter and/or formatter to prevent it from being checked or modified.
 
 import { Route as rootRouteImport } from './routes/__root'
-import { Route as SafeScoutingRouteImport } from './routes/safe-scouting'
-import { Route as ResetPasswordRouteImport } from './routes/reset-password'
-import { Route as PrivacyPolicyRouteImport } from './routes/privacy-policy'
-import { Route as MissionRouteImport } from './routes/mission'
-import { Route as FaqRouteImport } from './routes/faq'
-import { Route as AuthRouteImport } from './routes/auth'
-import { Route as AdminRouteImport } from './routes/admin'
-import { Route as SplatRouteImport } from './routes/$'
 import { Route as IndexRouteImport } from './routes/index'
-import { Route as ScoutIndexRouteImport } from './routes/scout/index'
-import { Route as PlayerIndexRouteImport } from './routes/player/index'
-import { Route as ScoutSettingsRouteImport } from './routes/scout/settings'
-import { Route as ScoutSelectionsRouteImport } from './routes/scout/selections'
-import { Route as ScoutProfileRouteImport } from './routes/scout/profile'
-import { Route as ScoutExploreRouteImport } from './routes/scout/explore'
-import { Route as ResumeUserIdRouteImport } from './routes/resume.$userId'
-import { Route as PlayerUploadRouteImport } from './routes/player/upload'
-import { Route as PlayerSettingsRouteImport } from './routes/player/settings'
-import { Route as PlayerProfileRouteImport } from './routes/player/profile'
-import { Route as PlayerExploreRouteImport } from './routes/player/explore'
+import { Route as SplatRouteImport } from './routes/$'
+import { Route as AdminRouteImport } from './routes/admin'
+import { Route as AuthRouteImport } from './routes/auth'
+import { Route as BlockedRouteImport } from './routes/blocked'
+import { Route as FaqRouteImport } from './routes/faq'
+import { Route as MessagesRouteImport } from './routes/messages'
+import { Route as MissionRouteImport } from './routes/mission'
+import { Route as PrivacyPolicyRouteImport } from './routes/privacy-policy'
+import { Route as ResetPasswordRouteImport } from './routes/reset-password'
+import { Route as SafeScoutingRouteImport } from './routes/safe-scouting'
+import { Route as AdminIndexRouteImport } from './routes/admin.index'
+import { Route as AdminExploreRouteImport } from './routes/admin.explore'
+import { Route as AdminModerationRouteImport } from './routes/admin.moderation'
+import { Route as AdminPanelRouteImport } from './routes/admin.panel'
+import { Route as AdminReportsRouteImport } from './routes/admin.reports'
+import { Route as AdminSettingsRouteImport } from './routes/admin.settings'
+import { Route as AdminUsersRouteImport } from './routes/admin.users'
+import { Route as AdminVideosRouteImport } from './routes/admin.videos'
 import { Route as ApiHealthRouteImport } from './routes/api/health'
+import { Route as MessagesIndexRouteImport } from './routes/messages.index'
+import { Route as MessagesIdRouteImport } from './routes/messages.$id'
+import { Route as PlayerIndexRouteImport } from './routes/player/index'
+import { Route as PlayerExploreRouteImport } from './routes/player/explore'
+import { Route as PlayerProfileRouteImport } from './routes/player/profile'
+import { Route as PlayerSettingsRouteImport } from './routes/player/settings'
+import { Route as PlayerUploadRouteImport } from './routes/player/upload'
+import { Route as ResumeUserIdRouteImport } from './routes/resume.$userId'
+import { Route as ScoutIndexRouteImport } from './routes/scout/index'
+import { Route as ScoutExploreRouteImport } from './routes/scout/explore'
+import { Route as ScoutInboxRouteImport } from './routes/scout/inbox'
+import { Route as ScoutProfileRouteImport } from './routes/scout/profile'
+import { Route as ScoutSelectionsRouteImport } from './routes/scout/selections'
+import { Route as ScoutSettingsRouteImport } from './routes/scout/settings'
+import { Route as PlayerSettingsIndexRouteImport } from './routes/player/settings.index'
+import { Route as PlayerSettingsAboutRouteImport } from './routes/player/settings.about'
+import { Route as PlayerSettingsAccountStatusRouteImport } from './routes/player/settings.account-status'
+import { Route as PlayerSettingsActivityRouteImport } from './routes/player/settings.activity'
+import { Route as PlayerSettingsAppearanceRouteImport } from './routes/player/settings.appearance'
+import { Route as PlayerSettingsDeleteAccountRouteImport } from './routes/player/settings.delete-account'
+import { Route as PlayerSettingsHelpRouteImport } from './routes/player/settings.help'
+import { Route as PlayerSettingsInviteRouteImport } from './routes/player/settings.invite'
+import { Route as PlayerSettingsLanguageRouteImport } from './routes/player/settings.language'
+import { Route as PlayerSettingsLogoutRouteImport } from './routes/player/settings.logout'
+import { Route as PlayerSettingsMessagesRouteImport } from './routes/player/settings.messages'
+import { Route as PlayerSettingsNotificationsRouteImport } from './routes/player/settings.notifications'
+import { Route as PlayerSettingsPasswordRouteImport } from './routes/player/settings.password'
+import { Route as PlayerSettingsPersonalDetailsRouteImport } from './routes/player/settings.personal-details'
+import { Route as PlayerSettingsPrivacyRouteImport } from './routes/player/settings.privacy'
+import { Route as PlayerSettingsPrivacyCenterRouteImport } from './routes/player/settings.privacy-center'
+import { Route as PlayerSettingsSessionsRouteImport } from './routes/player/settings.sessions'
+import { Route as PlayerSettingsTwoFactorRouteImport } from './routes/player/settings.two-factor'
+import { Route as ScoutSettingsIndexRouteImport } from './routes/scout/settings.index'
+import { Route as ScoutSettingsPreferencesRouteImport } from './routes/scout/settings.preferences'
+import { Route as ScoutSettingsVerificationRouteImport } from './routes/scout/settings.verification'
 
-const SafeScoutingRoute = SafeScoutingRouteImport.update({
-  id: '/safe-scouting',
-  path: '/safe-scouting',
-  getParentRoute: () => rootRouteImport,
-} as any)
-const ResetPasswordRoute = ResetPasswordRouteImport.update({
-  id: '/reset-password',
-  path: '/reset-password',
-  getParentRoute: () => rootRouteImport,
-} as any)
-const PrivacyPolicyRoute = PrivacyPolicyRouteImport.update({
-  id: '/privacy-policy',
-  path: '/privacy-policy',
-  getParentRoute: () => rootRouteImport,
-} as any)
-const MissionRoute = MissionRouteImport.update({
-  id: '/mission',
-  path: '/mission',
-  getParentRoute: () => rootRouteImport,
-} as any)
-const FaqRoute = FaqRouteImport.update({
-  id: '/faq',
-  path: '/faq',
-  getParentRoute: () => rootRouteImport,
-} as any)
-const AuthRoute = AuthRouteImport.update({
-  id: '/auth',
-  path: '/auth',
-  getParentRoute: () => rootRouteImport,
-} as any)
-const AdminRoute = AdminRouteImport.update({
-  id: '/admin',
-  path: '/admin',
+const IndexRoute = IndexRouteImport.update({
+  id: '/',
+  path: '/',
   getParentRoute: () => rootRouteImport,
 } as any)
 const SplatRoute = SplatRouteImport.update({
@@ -71,59 +75,109 @@ const SplatRoute = SplatRouteImport.update({
   path: '/$',
   getParentRoute: () => rootRouteImport,
 } as any)
-const IndexRoute = IndexRouteImport.update({
-  id: '/',
-  path: '/',
+const AdminRoute = AdminRouteImport.update({
+  id: '/admin',
+  path: '/admin',
   getParentRoute: () => rootRouteImport,
 } as any)
-const ScoutIndexRoute = ScoutIndexRouteImport.update({
-  id: '/scout/',
-  path: '/scout/',
+const AuthRoute = AuthRouteImport.update({
+  id: '/auth',
+  path: '/auth',
   getParentRoute: () => rootRouteImport,
+} as any)
+const BlockedRoute = BlockedRouteImport.update({
+  id: '/blocked',
+  path: '/blocked',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const FaqRoute = FaqRouteImport.update({
+  id: '/faq',
+  path: '/faq',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const MessagesRoute = MessagesRouteImport.update({
+  id: '/messages',
+  path: '/messages',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const MissionRoute = MissionRouteImport.update({
+  id: '/mission',
+  path: '/mission',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const PrivacyPolicyRoute = PrivacyPolicyRouteImport.update({
+  id: '/privacy-policy',
+  path: '/privacy-policy',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const ResetPasswordRoute = ResetPasswordRouteImport.update({
+  id: '/reset-password',
+  path: '/reset-password',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const SafeScoutingRoute = SafeScoutingRouteImport.update({
+  id: '/safe-scouting',
+  path: '/safe-scouting',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const AdminIndexRoute = AdminIndexRouteImport.update({
+  id: '/',
+  path: '/',
+  getParentRoute: () => AdminRoute,
+} as any)
+const AdminExploreRoute = AdminExploreRouteImport.update({
+  id: '/explore',
+  path: '/explore',
+  getParentRoute: () => AdminRoute,
+} as any)
+const AdminModerationRoute = AdminModerationRouteImport.update({
+  id: '/moderation',
+  path: '/moderation',
+  getParentRoute: () => AdminRoute,
+} as any)
+const AdminPanelRoute = AdminPanelRouteImport.update({
+  id: '/panel',
+  path: '/panel',
+  getParentRoute: () => AdminRoute,
+} as any)
+const AdminReportsRoute = AdminReportsRouteImport.update({
+  id: '/reports',
+  path: '/reports',
+  getParentRoute: () => AdminRoute,
+} as any)
+const AdminSettingsRoute = AdminSettingsRouteImport.update({
+  id: '/settings',
+  path: '/settings',
+  getParentRoute: () => AdminRoute,
+} as any)
+const AdminUsersRoute = AdminUsersRouteImport.update({
+  id: '/users',
+  path: '/users',
+  getParentRoute: () => AdminRoute,
+} as any)
+const AdminVideosRoute = AdminVideosRouteImport.update({
+  id: '/videos',
+  path: '/videos',
+  getParentRoute: () => AdminRoute,
+} as any)
+const ApiHealthRoute = ApiHealthRouteImport.update({
+  id: '/api/health',
+  path: '/api/health',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const MessagesIndexRoute = MessagesIndexRouteImport.update({
+  id: '/',
+  path: '/',
+  getParentRoute: () => MessagesRoute,
+} as any)
+const MessagesIdRoute = MessagesIdRouteImport.update({
+  id: '/$id',
+  path: '/$id',
+  getParentRoute: () => MessagesRoute,
 } as any)
 const PlayerIndexRoute = PlayerIndexRouteImport.update({
   id: '/player/',
   path: '/player/',
-  getParentRoute: () => rootRouteImport,
-} as any)
-const ScoutSettingsRoute = ScoutSettingsRouteImport.update({
-  id: '/scout/settings',
-  path: '/scout/settings',
-  getParentRoute: () => rootRouteImport,
-} as any)
-const ScoutSelectionsRoute = ScoutSelectionsRouteImport.update({
-  id: '/scout/selections',
-  path: '/scout/selections',
-  getParentRoute: () => rootRouteImport,
-} as any)
-const ScoutProfileRoute = ScoutProfileRouteImport.update({
-  id: '/scout/profile',
-  path: '/scout/profile',
-  getParentRoute: () => rootRouteImport,
-} as any)
-const ScoutExploreRoute = ScoutExploreRouteImport.update({
-  id: '/scout/explore',
-  path: '/scout/explore',
-  getParentRoute: () => rootRouteImport,
-} as any)
-const ResumeUserIdRoute = ResumeUserIdRouteImport.update({
-  id: '/resume/$userId',
-  path: '/resume/$userId',
-  getParentRoute: () => rootRouteImport,
-} as any)
-const PlayerUploadRoute = PlayerUploadRouteImport.update({
-  id: '/player/upload',
-  path: '/player/upload',
-  getParentRoute: () => rootRouteImport,
-} as any)
-const PlayerSettingsRoute = PlayerSettingsRouteImport.update({
-  id: '/player/settings',
-  path: '/player/settings',
-  getParentRoute: () => rootRouteImport,
-} as any)
-const PlayerProfileRoute = PlayerProfileRouteImport.update({
-  id: '/player/profile',
-  path: '/player/profile',
   getParentRoute: () => rootRouteImport,
 } as any)
 const PlayerExploreRoute = PlayerExploreRouteImport.update({
@@ -131,81 +185,337 @@ const PlayerExploreRoute = PlayerExploreRouteImport.update({
   path: '/player/explore',
   getParentRoute: () => rootRouteImport,
 } as any)
-const ApiHealthRoute = ApiHealthRouteImport.update({
-  id: '/api/health',
-  path: '/api/health',
+const PlayerProfileRoute = PlayerProfileRouteImport.update({
+  id: '/player/profile',
+  path: '/player/profile',
   getParentRoute: () => rootRouteImport,
 } as any)
+const PlayerSettingsRoute = PlayerSettingsRouteImport.update({
+  id: '/player/settings',
+  path: '/player/settings',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const PlayerUploadRoute = PlayerUploadRouteImport.update({
+  id: '/player/upload',
+  path: '/player/upload',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const ResumeUserIdRoute = ResumeUserIdRouteImport.update({
+  id: '/resume/$userId',
+  path: '/resume/$userId',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const ScoutIndexRoute = ScoutIndexRouteImport.update({
+  id: '/scout/',
+  path: '/scout/',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const ScoutExploreRoute = ScoutExploreRouteImport.update({
+  id: '/scout/explore',
+  path: '/scout/explore',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const ScoutInboxRoute = ScoutInboxRouteImport.update({
+  id: '/scout/inbox',
+  path: '/scout/inbox',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const ScoutProfileRoute = ScoutProfileRouteImport.update({
+  id: '/scout/profile',
+  path: '/scout/profile',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const ScoutSelectionsRoute = ScoutSelectionsRouteImport.update({
+  id: '/scout/selections',
+  path: '/scout/selections',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const ScoutSettingsRoute = ScoutSettingsRouteImport.update({
+  id: '/scout/settings',
+  path: '/scout/settings',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const PlayerSettingsIndexRoute = PlayerSettingsIndexRouteImport.update({
+  id: '/',
+  path: '/',
+  getParentRoute: () => PlayerSettingsRoute,
+} as any)
+const PlayerSettingsAboutRoute = PlayerSettingsAboutRouteImport.update({
+  id: '/about',
+  path: '/about',
+  getParentRoute: () => PlayerSettingsRoute,
+} as any)
+const PlayerSettingsAccountStatusRoute =
+  PlayerSettingsAccountStatusRouteImport.update({
+    id: '/account-status',
+    path: '/account-status',
+    getParentRoute: () => PlayerSettingsRoute,
+  } as any)
+const PlayerSettingsActivityRoute = PlayerSettingsActivityRouteImport.update({
+  id: '/activity',
+  path: '/activity',
+  getParentRoute: () => PlayerSettingsRoute,
+} as any)
+const PlayerSettingsAppearanceRoute =
+  PlayerSettingsAppearanceRouteImport.update({
+    id: '/appearance',
+    path: '/appearance',
+    getParentRoute: () => PlayerSettingsRoute,
+  } as any)
+const PlayerSettingsDeleteAccountRoute =
+  PlayerSettingsDeleteAccountRouteImport.update({
+    id: '/delete-account',
+    path: '/delete-account',
+    getParentRoute: () => PlayerSettingsRoute,
+  } as any)
+const PlayerSettingsHelpRoute = PlayerSettingsHelpRouteImport.update({
+  id: '/help',
+  path: '/help',
+  getParentRoute: () => PlayerSettingsRoute,
+} as any)
+const PlayerSettingsInviteRoute = PlayerSettingsInviteRouteImport.update({
+  id: '/invite',
+  path: '/invite',
+  getParentRoute: () => PlayerSettingsRoute,
+} as any)
+const PlayerSettingsLanguageRoute = PlayerSettingsLanguageRouteImport.update({
+  id: '/language',
+  path: '/language',
+  getParentRoute: () => PlayerSettingsRoute,
+} as any)
+const PlayerSettingsLogoutRoute = PlayerSettingsLogoutRouteImport.update({
+  id: '/logout',
+  path: '/logout',
+  getParentRoute: () => PlayerSettingsRoute,
+} as any)
+const PlayerSettingsMessagesRoute = PlayerSettingsMessagesRouteImport.update({
+  id: '/messages',
+  path: '/messages',
+  getParentRoute: () => PlayerSettingsRoute,
+} as any)
+const PlayerSettingsNotificationsRoute =
+  PlayerSettingsNotificationsRouteImport.update({
+    id: '/notifications',
+    path: '/notifications',
+    getParentRoute: () => PlayerSettingsRoute,
+  } as any)
+const PlayerSettingsPasswordRoute = PlayerSettingsPasswordRouteImport.update({
+  id: '/password',
+  path: '/password',
+  getParentRoute: () => PlayerSettingsRoute,
+} as any)
+const PlayerSettingsPersonalDetailsRoute =
+  PlayerSettingsPersonalDetailsRouteImport.update({
+    id: '/personal-details',
+    path: '/personal-details',
+    getParentRoute: () => PlayerSettingsRoute,
+  } as any)
+const PlayerSettingsPrivacyRoute = PlayerSettingsPrivacyRouteImport.update({
+  id: '/privacy',
+  path: '/privacy',
+  getParentRoute: () => PlayerSettingsRoute,
+} as any)
+const PlayerSettingsPrivacyCenterRoute =
+  PlayerSettingsPrivacyCenterRouteImport.update({
+    id: '/privacy-center',
+    path: '/privacy-center',
+    getParentRoute: () => PlayerSettingsRoute,
+  } as any)
+const PlayerSettingsSessionsRoute = PlayerSettingsSessionsRouteImport.update({
+  id: '/sessions',
+  path: '/sessions',
+  getParentRoute: () => PlayerSettingsRoute,
+} as any)
+const PlayerSettingsTwoFactorRoute = PlayerSettingsTwoFactorRouteImport.update({
+  id: '/two-factor',
+  path: '/two-factor',
+  getParentRoute: () => PlayerSettingsRoute,
+} as any)
+const ScoutSettingsIndexRoute = ScoutSettingsIndexRouteImport.update({
+  id: '/',
+  path: '/',
+  getParentRoute: () => ScoutSettingsRoute,
+} as any)
+const ScoutSettingsPreferencesRoute =
+  ScoutSettingsPreferencesRouteImport.update({
+    id: '/preferences',
+    path: '/preferences',
+    getParentRoute: () => ScoutSettingsRoute,
+  } as any)
+const ScoutSettingsVerificationRoute =
+  ScoutSettingsVerificationRouteImport.update({
+    id: '/verification',
+    path: '/verification',
+    getParentRoute: () => ScoutSettingsRoute,
+  } as any)
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
   '/$': typeof SplatRoute
-  '/admin': typeof AdminRoute
+  '/admin': typeof AdminRouteWithChildren
   '/auth': typeof AuthRoute
+  '/blocked': typeof BlockedRoute
   '/faq': typeof FaqRoute
+  '/messages': typeof MessagesRouteWithChildren
   '/mission': typeof MissionRoute
   '/privacy-policy': typeof PrivacyPolicyRoute
   '/reset-password': typeof ResetPasswordRoute
   '/safe-scouting': typeof SafeScoutingRoute
+  '/admin/explore': typeof AdminExploreRoute
+  '/admin/moderation': typeof AdminModerationRoute
+  '/admin/panel': typeof AdminPanelRoute
+  '/admin/reports': typeof AdminReportsRoute
+  '/admin/settings': typeof AdminSettingsRoute
+  '/admin/users': typeof AdminUsersRoute
+  '/admin/videos': typeof AdminVideosRoute
   '/api/health': typeof ApiHealthRoute
+  '/messages/$id': typeof MessagesIdRoute
   '/player/explore': typeof PlayerExploreRoute
   '/player/profile': typeof PlayerProfileRoute
-  '/player/settings': typeof PlayerSettingsRoute
+  '/player/settings': typeof PlayerSettingsRouteWithChildren
   '/player/upload': typeof PlayerUploadRoute
   '/resume/$userId': typeof ResumeUserIdRoute
   '/scout/explore': typeof ScoutExploreRoute
+  '/scout/inbox': typeof ScoutInboxRoute
   '/scout/profile': typeof ScoutProfileRoute
   '/scout/selections': typeof ScoutSelectionsRoute
-  '/scout/settings': typeof ScoutSettingsRoute
+  '/scout/settings': typeof ScoutSettingsRouteWithChildren
+  '/admin/': typeof AdminIndexRoute
+  '/messages/': typeof MessagesIndexRoute
   '/player/': typeof PlayerIndexRoute
   '/scout/': typeof ScoutIndexRoute
+  '/player/settings/about': typeof PlayerSettingsAboutRoute
+  '/player/settings/account-status': typeof PlayerSettingsAccountStatusRoute
+  '/player/settings/activity': typeof PlayerSettingsActivityRoute
+  '/player/settings/appearance': typeof PlayerSettingsAppearanceRoute
+  '/player/settings/delete-account': typeof PlayerSettingsDeleteAccountRoute
+  '/player/settings/help': typeof PlayerSettingsHelpRoute
+  '/player/settings/invite': typeof PlayerSettingsInviteRoute
+  '/player/settings/language': typeof PlayerSettingsLanguageRoute
+  '/player/settings/logout': typeof PlayerSettingsLogoutRoute
+  '/player/settings/messages': typeof PlayerSettingsMessagesRoute
+  '/player/settings/notifications': typeof PlayerSettingsNotificationsRoute
+  '/player/settings/password': typeof PlayerSettingsPasswordRoute
+  '/player/settings/personal-details': typeof PlayerSettingsPersonalDetailsRoute
+  '/player/settings/privacy': typeof PlayerSettingsPrivacyRoute
+  '/player/settings/privacy-center': typeof PlayerSettingsPrivacyCenterRoute
+  '/player/settings/sessions': typeof PlayerSettingsSessionsRoute
+  '/player/settings/two-factor': typeof PlayerSettingsTwoFactorRoute
+  '/scout/settings/preferences': typeof ScoutSettingsPreferencesRoute
+  '/scout/settings/verification': typeof ScoutSettingsVerificationRoute
+  '/player/settings/': typeof PlayerSettingsIndexRoute
+  '/scout/settings/': typeof ScoutSettingsIndexRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
   '/$': typeof SplatRoute
-  '/admin': typeof AdminRoute
   '/auth': typeof AuthRoute
+  '/blocked': typeof BlockedRoute
   '/faq': typeof FaqRoute
   '/mission': typeof MissionRoute
   '/privacy-policy': typeof PrivacyPolicyRoute
   '/reset-password': typeof ResetPasswordRoute
   '/safe-scouting': typeof SafeScoutingRoute
+  '/admin/explore': typeof AdminExploreRoute
+  '/admin/moderation': typeof AdminModerationRoute
+  '/admin/panel': typeof AdminPanelRoute
+  '/admin/reports': typeof AdminReportsRoute
+  '/admin/settings': typeof AdminSettingsRoute
+  '/admin/users': typeof AdminUsersRoute
+  '/admin/videos': typeof AdminVideosRoute
   '/api/health': typeof ApiHealthRoute
+  '/messages/$id': typeof MessagesIdRoute
   '/player/explore': typeof PlayerExploreRoute
   '/player/profile': typeof PlayerProfileRoute
-  '/player/settings': typeof PlayerSettingsRoute
   '/player/upload': typeof PlayerUploadRoute
   '/resume/$userId': typeof ResumeUserIdRoute
   '/scout/explore': typeof ScoutExploreRoute
+  '/scout/inbox': typeof ScoutInboxRoute
   '/scout/profile': typeof ScoutProfileRoute
   '/scout/selections': typeof ScoutSelectionsRoute
-  '/scout/settings': typeof ScoutSettingsRoute
+  '/admin': typeof AdminIndexRoute
+  '/messages': typeof MessagesIndexRoute
   '/player': typeof PlayerIndexRoute
   '/scout': typeof ScoutIndexRoute
+  '/player/settings/about': typeof PlayerSettingsAboutRoute
+  '/player/settings/account-status': typeof PlayerSettingsAccountStatusRoute
+  '/player/settings/activity': typeof PlayerSettingsActivityRoute
+  '/player/settings/appearance': typeof PlayerSettingsAppearanceRoute
+  '/player/settings/delete-account': typeof PlayerSettingsDeleteAccountRoute
+  '/player/settings/help': typeof PlayerSettingsHelpRoute
+  '/player/settings/invite': typeof PlayerSettingsInviteRoute
+  '/player/settings/language': typeof PlayerSettingsLanguageRoute
+  '/player/settings/logout': typeof PlayerSettingsLogoutRoute
+  '/player/settings/messages': typeof PlayerSettingsMessagesRoute
+  '/player/settings/notifications': typeof PlayerSettingsNotificationsRoute
+  '/player/settings/password': typeof PlayerSettingsPasswordRoute
+  '/player/settings/personal-details': typeof PlayerSettingsPersonalDetailsRoute
+  '/player/settings/privacy': typeof PlayerSettingsPrivacyRoute
+  '/player/settings/privacy-center': typeof PlayerSettingsPrivacyCenterRoute
+  '/player/settings/sessions': typeof PlayerSettingsSessionsRoute
+  '/player/settings/two-factor': typeof PlayerSettingsTwoFactorRoute
+  '/scout/settings/preferences': typeof ScoutSettingsPreferencesRoute
+  '/scout/settings/verification': typeof ScoutSettingsVerificationRoute
+  '/player/settings': typeof PlayerSettingsIndexRoute
+  '/scout/settings': typeof ScoutSettingsIndexRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
   '/': typeof IndexRoute
   '/$': typeof SplatRoute
-  '/admin': typeof AdminRoute
+  '/admin': typeof AdminRouteWithChildren
   '/auth': typeof AuthRoute
+  '/blocked': typeof BlockedRoute
   '/faq': typeof FaqRoute
+  '/messages': typeof MessagesRouteWithChildren
   '/mission': typeof MissionRoute
   '/privacy-policy': typeof PrivacyPolicyRoute
   '/reset-password': typeof ResetPasswordRoute
   '/safe-scouting': typeof SafeScoutingRoute
+  '/admin/explore': typeof AdminExploreRoute
+  '/admin/moderation': typeof AdminModerationRoute
+  '/admin/panel': typeof AdminPanelRoute
+  '/admin/reports': typeof AdminReportsRoute
+  '/admin/settings': typeof AdminSettingsRoute
+  '/admin/users': typeof AdminUsersRoute
+  '/admin/videos': typeof AdminVideosRoute
   '/api/health': typeof ApiHealthRoute
+  '/messages/$id': typeof MessagesIdRoute
   '/player/explore': typeof PlayerExploreRoute
   '/player/profile': typeof PlayerProfileRoute
-  '/player/settings': typeof PlayerSettingsRoute
+  '/player/settings': typeof PlayerSettingsRouteWithChildren
   '/player/upload': typeof PlayerUploadRoute
   '/resume/$userId': typeof ResumeUserIdRoute
   '/scout/explore': typeof ScoutExploreRoute
+  '/scout/inbox': typeof ScoutInboxRoute
   '/scout/profile': typeof ScoutProfileRoute
   '/scout/selections': typeof ScoutSelectionsRoute
-  '/scout/settings': typeof ScoutSettingsRoute
+  '/scout/settings': typeof ScoutSettingsRouteWithChildren
+  '/admin/': typeof AdminIndexRoute
+  '/messages/': typeof MessagesIndexRoute
   '/player/': typeof PlayerIndexRoute
   '/scout/': typeof ScoutIndexRoute
+  '/player/settings/about': typeof PlayerSettingsAboutRoute
+  '/player/settings/account-status': typeof PlayerSettingsAccountStatusRoute
+  '/player/settings/activity': typeof PlayerSettingsActivityRoute
+  '/player/settings/appearance': typeof PlayerSettingsAppearanceRoute
+  '/player/settings/delete-account': typeof PlayerSettingsDeleteAccountRoute
+  '/player/settings/help': typeof PlayerSettingsHelpRoute
+  '/player/settings/invite': typeof PlayerSettingsInviteRoute
+  '/player/settings/language': typeof PlayerSettingsLanguageRoute
+  '/player/settings/logout': typeof PlayerSettingsLogoutRoute
+  '/player/settings/messages': typeof PlayerSettingsMessagesRoute
+  '/player/settings/notifications': typeof PlayerSettingsNotificationsRoute
+  '/player/settings/password': typeof PlayerSettingsPasswordRoute
+  '/player/settings/personal-details': typeof PlayerSettingsPersonalDetailsRoute
+  '/player/settings/privacy': typeof PlayerSettingsPrivacyRoute
+  '/player/settings/privacy-center': typeof PlayerSettingsPrivacyCenterRoute
+  '/player/settings/sessions': typeof PlayerSettingsSessionsRoute
+  '/player/settings/two-factor': typeof PlayerSettingsTwoFactorRoute
+  '/scout/settings/preferences': typeof ScoutSettingsPreferencesRoute
+  '/scout/settings/verification': typeof ScoutSettingsVerificationRoute
+  '/player/settings/': typeof PlayerSettingsIndexRoute
+  '/scout/settings/': typeof ScoutSettingsIndexRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
@@ -214,77 +524,177 @@ export interface FileRouteTypes {
     | '/$'
     | '/admin'
     | '/auth'
+    | '/blocked'
     | '/faq'
+    | '/messages'
     | '/mission'
     | '/privacy-policy'
     | '/reset-password'
     | '/safe-scouting'
+    | '/admin/explore'
+    | '/admin/moderation'
+    | '/admin/panel'
+    | '/admin/reports'
+    | '/admin/settings'
+    | '/admin/users'
+    | '/admin/videos'
     | '/api/health'
+    | '/messages/$id'
     | '/player/explore'
     | '/player/profile'
     | '/player/settings'
     | '/player/upload'
     | '/resume/$userId'
     | '/scout/explore'
+    | '/scout/inbox'
     | '/scout/profile'
     | '/scout/selections'
     | '/scout/settings'
+    | '/admin/'
+    | '/messages/'
     | '/player/'
     | '/scout/'
+    | '/player/settings/about'
+    | '/player/settings/account-status'
+    | '/player/settings/activity'
+    | '/player/settings/appearance'
+    | '/player/settings/delete-account'
+    | '/player/settings/help'
+    | '/player/settings/invite'
+    | '/player/settings/language'
+    | '/player/settings/logout'
+    | '/player/settings/messages'
+    | '/player/settings/notifications'
+    | '/player/settings/password'
+    | '/player/settings/personal-details'
+    | '/player/settings/privacy'
+    | '/player/settings/privacy-center'
+    | '/player/settings/sessions'
+    | '/player/settings/two-factor'
+    | '/scout/settings/preferences'
+    | '/scout/settings/verification'
+    | '/player/settings/'
+    | '/scout/settings/'
   fileRoutesByTo: FileRoutesByTo
   to:
     | '/'
     | '/$'
-    | '/admin'
     | '/auth'
+    | '/blocked'
     | '/faq'
     | '/mission'
     | '/privacy-policy'
     | '/reset-password'
     | '/safe-scouting'
+    | '/admin/explore'
+    | '/admin/moderation'
+    | '/admin/panel'
+    | '/admin/reports'
+    | '/admin/settings'
+    | '/admin/users'
+    | '/admin/videos'
     | '/api/health'
+    | '/messages/$id'
     | '/player/explore'
     | '/player/profile'
-    | '/player/settings'
     | '/player/upload'
     | '/resume/$userId'
     | '/scout/explore'
+    | '/scout/inbox'
     | '/scout/profile'
     | '/scout/selections'
-    | '/scout/settings'
+    | '/admin'
+    | '/messages'
     | '/player'
     | '/scout'
+    | '/player/settings/about'
+    | '/player/settings/account-status'
+    | '/player/settings/activity'
+    | '/player/settings/appearance'
+    | '/player/settings/delete-account'
+    | '/player/settings/help'
+    | '/player/settings/invite'
+    | '/player/settings/language'
+    | '/player/settings/logout'
+    | '/player/settings/messages'
+    | '/player/settings/notifications'
+    | '/player/settings/password'
+    | '/player/settings/personal-details'
+    | '/player/settings/privacy'
+    | '/player/settings/privacy-center'
+    | '/player/settings/sessions'
+    | '/player/settings/two-factor'
+    | '/scout/settings/preferences'
+    | '/scout/settings/verification'
+    | '/player/settings'
+    | '/scout/settings'
   id:
     | '__root__'
     | '/'
     | '/$'
     | '/admin'
     | '/auth'
+    | '/blocked'
     | '/faq'
+    | '/messages'
     | '/mission'
     | '/privacy-policy'
     | '/reset-password'
     | '/safe-scouting'
+    | '/admin/explore'
+    | '/admin/moderation'
+    | '/admin/panel'
+    | '/admin/reports'
+    | '/admin/settings'
+    | '/admin/users'
+    | '/admin/videos'
     | '/api/health'
+    | '/messages/$id'
     | '/player/explore'
     | '/player/profile'
     | '/player/settings'
     | '/player/upload'
     | '/resume/$userId'
     | '/scout/explore'
+    | '/scout/inbox'
     | '/scout/profile'
     | '/scout/selections'
     | '/scout/settings'
+    | '/admin/'
+    | '/messages/'
     | '/player/'
     | '/scout/'
+    | '/player/settings/about'
+    | '/player/settings/account-status'
+    | '/player/settings/activity'
+    | '/player/settings/appearance'
+    | '/player/settings/delete-account'
+    | '/player/settings/help'
+    | '/player/settings/invite'
+    | '/player/settings/language'
+    | '/player/settings/logout'
+    | '/player/settings/messages'
+    | '/player/settings/notifications'
+    | '/player/settings/password'
+    | '/player/settings/personal-details'
+    | '/player/settings/privacy'
+    | '/player/settings/privacy-center'
+    | '/player/settings/sessions'
+    | '/player/settings/two-factor'
+    | '/scout/settings/preferences'
+    | '/scout/settings/verification'
+    | '/player/settings/'
+    | '/scout/settings/'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
   SplatRoute: typeof SplatRoute
-  AdminRoute: typeof AdminRoute
+  AdminRoute: typeof AdminRouteWithChildren
   AuthRoute: typeof AuthRoute
+  BlockedRoute: typeof BlockedRoute
   FaqRoute: typeof FaqRoute
+  MessagesRoute: typeof MessagesRouteWithChildren
   MissionRoute: typeof MissionRoute
   PrivacyPolicyRoute: typeof PrivacyPolicyRoute
   ResetPasswordRoute: typeof ResetPasswordRoute
@@ -292,66 +702,25 @@ export interface RootRouteChildren {
   ApiHealthRoute: typeof ApiHealthRoute
   PlayerExploreRoute: typeof PlayerExploreRoute
   PlayerProfileRoute: typeof PlayerProfileRoute
-  PlayerSettingsRoute: typeof PlayerSettingsRoute
+  PlayerSettingsRoute: typeof PlayerSettingsRouteWithChildren
   PlayerUploadRoute: typeof PlayerUploadRoute
   ResumeUserIdRoute: typeof ResumeUserIdRoute
   ScoutExploreRoute: typeof ScoutExploreRoute
+  ScoutInboxRoute: typeof ScoutInboxRoute
   ScoutProfileRoute: typeof ScoutProfileRoute
   ScoutSelectionsRoute: typeof ScoutSelectionsRoute
-  ScoutSettingsRoute: typeof ScoutSettingsRoute
+  ScoutSettingsRoute: typeof ScoutSettingsRouteWithChildren
   PlayerIndexRoute: typeof PlayerIndexRoute
   ScoutIndexRoute: typeof ScoutIndexRoute
 }
 
 declare module '@tanstack/react-router' {
   interface FileRoutesByPath {
-    '/safe-scouting': {
-      id: '/safe-scouting'
-      path: '/safe-scouting'
-      fullPath: '/safe-scouting'
-      preLoaderRoute: typeof SafeScoutingRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/reset-password': {
-      id: '/reset-password'
-      path: '/reset-password'
-      fullPath: '/reset-password'
-      preLoaderRoute: typeof ResetPasswordRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/privacy-policy': {
-      id: '/privacy-policy'
-      path: '/privacy-policy'
-      fullPath: '/privacy-policy'
-      preLoaderRoute: typeof PrivacyPolicyRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/mission': {
-      id: '/mission'
-      path: '/mission'
-      fullPath: '/mission'
-      preLoaderRoute: typeof MissionRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/faq': {
-      id: '/faq'
-      path: '/faq'
-      fullPath: '/faq'
-      preLoaderRoute: typeof FaqRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/auth': {
-      id: '/auth'
-      path: '/auth'
-      fullPath: '/auth'
-      preLoaderRoute: typeof AuthRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/admin': {
-      id: '/admin'
-      path: '/admin'
-      fullPath: '/admin'
-      preLoaderRoute: typeof AdminRouteImport
+    '/': {
+      id: '/'
+      path: '/'
+      fullPath: '/'
+      preLoaderRoute: typeof IndexRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/$': {
@@ -361,81 +730,151 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof SplatRouteImport
       parentRoute: typeof rootRouteImport
     }
-    '/': {
-      id: '/'
-      path: '/'
-      fullPath: '/'
-      preLoaderRoute: typeof IndexRouteImport
+    '/admin': {
+      id: '/admin'
+      path: '/admin'
+      fullPath: '/admin'
+      preLoaderRoute: typeof AdminRouteImport
       parentRoute: typeof rootRouteImport
     }
-    '/scout/': {
-      id: '/scout/'
-      path: '/scout'
-      fullPath: '/scout/'
-      preLoaderRoute: typeof ScoutIndexRouteImport
+    '/auth': {
+      id: '/auth'
+      path: '/auth'
+      fullPath: '/auth'
+      preLoaderRoute: typeof AuthRouteImport
       parentRoute: typeof rootRouteImport
+    }
+    '/blocked': {
+      id: '/blocked'
+      path: '/blocked'
+      fullPath: '/blocked'
+      preLoaderRoute: typeof BlockedRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/faq': {
+      id: '/faq'
+      path: '/faq'
+      fullPath: '/faq'
+      preLoaderRoute: typeof FaqRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/messages': {
+      id: '/messages'
+      path: '/messages'
+      fullPath: '/messages'
+      preLoaderRoute: typeof MessagesRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/mission': {
+      id: '/mission'
+      path: '/mission'
+      fullPath: '/mission'
+      preLoaderRoute: typeof MissionRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/privacy-policy': {
+      id: '/privacy-policy'
+      path: '/privacy-policy'
+      fullPath: '/privacy-policy'
+      preLoaderRoute: typeof PrivacyPolicyRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/reset-password': {
+      id: '/reset-password'
+      path: '/reset-password'
+      fullPath: '/reset-password'
+      preLoaderRoute: typeof ResetPasswordRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/safe-scouting': {
+      id: '/safe-scouting'
+      path: '/safe-scouting'
+      fullPath: '/safe-scouting'
+      preLoaderRoute: typeof SafeScoutingRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/admin/': {
+      id: '/admin/'
+      path: '/'
+      fullPath: '/admin/'
+      preLoaderRoute: typeof AdminIndexRouteImport
+      parentRoute: typeof AdminRoute
+    }
+    '/admin/explore': {
+      id: '/admin/explore'
+      path: '/explore'
+      fullPath: '/admin/explore'
+      preLoaderRoute: typeof AdminExploreRouteImport
+      parentRoute: typeof AdminRoute
+    }
+    '/admin/moderation': {
+      id: '/admin/moderation'
+      path: '/moderation'
+      fullPath: '/admin/moderation'
+      preLoaderRoute: typeof AdminModerationRouteImport
+      parentRoute: typeof AdminRoute
+    }
+    '/admin/panel': {
+      id: '/admin/panel'
+      path: '/panel'
+      fullPath: '/admin/panel'
+      preLoaderRoute: typeof AdminPanelRouteImport
+      parentRoute: typeof AdminRoute
+    }
+    '/admin/reports': {
+      id: '/admin/reports'
+      path: '/reports'
+      fullPath: '/admin/reports'
+      preLoaderRoute: typeof AdminReportsRouteImport
+      parentRoute: typeof AdminRoute
+    }
+    '/admin/settings': {
+      id: '/admin/settings'
+      path: '/settings'
+      fullPath: '/admin/settings'
+      preLoaderRoute: typeof AdminSettingsRouteImport
+      parentRoute: typeof AdminRoute
+    }
+    '/admin/users': {
+      id: '/admin/users'
+      path: '/users'
+      fullPath: '/admin/users'
+      preLoaderRoute: typeof AdminUsersRouteImport
+      parentRoute: typeof AdminRoute
+    }
+    '/admin/videos': {
+      id: '/admin/videos'
+      path: '/videos'
+      fullPath: '/admin/videos'
+      preLoaderRoute: typeof AdminVideosRouteImport
+      parentRoute: typeof AdminRoute
+    }
+    '/api/health': {
+      id: '/api/health'
+      path: '/api/health'
+      fullPath: '/api/health'
+      preLoaderRoute: typeof ApiHealthRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/messages/': {
+      id: '/messages/'
+      path: '/'
+      fullPath: '/messages/'
+      preLoaderRoute: typeof MessagesIndexRouteImport
+      parentRoute: typeof MessagesRoute
+    }
+    '/messages/$id': {
+      id: '/messages/$id'
+      path: '/$id'
+      fullPath: '/messages/$id'
+      preLoaderRoute: typeof MessagesIdRouteImport
+      parentRoute: typeof MessagesRoute
     }
     '/player/': {
       id: '/player/'
       path: '/player'
       fullPath: '/player/'
       preLoaderRoute: typeof PlayerIndexRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/scout/settings': {
-      id: '/scout/settings'
-      path: '/scout/settings'
-      fullPath: '/scout/settings'
-      preLoaderRoute: typeof ScoutSettingsRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/scout/selections': {
-      id: '/scout/selections'
-      path: '/scout/selections'
-      fullPath: '/scout/selections'
-      preLoaderRoute: typeof ScoutSelectionsRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/scout/profile': {
-      id: '/scout/profile'
-      path: '/scout/profile'
-      fullPath: '/scout/profile'
-      preLoaderRoute: typeof ScoutProfileRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/scout/explore': {
-      id: '/scout/explore'
-      path: '/scout/explore'
-      fullPath: '/scout/explore'
-      preLoaderRoute: typeof ScoutExploreRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/resume/$userId': {
-      id: '/resume/$userId'
-      path: '/resume/$userId'
-      fullPath: '/resume/$userId'
-      preLoaderRoute: typeof ResumeUserIdRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/player/upload': {
-      id: '/player/upload'
-      path: '/player/upload'
-      fullPath: '/player/upload'
-      preLoaderRoute: typeof PlayerUploadRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/player/settings': {
-      id: '/player/settings'
-      path: '/player/settings'
-      fullPath: '/player/settings'
-      preLoaderRoute: typeof PlayerSettingsRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/player/profile': {
-      id: '/player/profile'
-      path: '/player/profile'
-      fullPath: '/player/profile'
-      preLoaderRoute: typeof PlayerProfileRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/player/explore': {
@@ -445,22 +884,334 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof PlayerExploreRouteImport
       parentRoute: typeof rootRouteImport
     }
-    '/api/health': {
-      id: '/api/health'
-      path: '/api/health'
-      fullPath: '/api/health'
-      preLoaderRoute: typeof ApiHealthRouteImport
+    '/player/profile': {
+      id: '/player/profile'
+      path: '/player/profile'
+      fullPath: '/player/profile'
+      preLoaderRoute: typeof PlayerProfileRouteImport
       parentRoute: typeof rootRouteImport
+    }
+    '/player/settings': {
+      id: '/player/settings'
+      path: '/player/settings'
+      fullPath: '/player/settings'
+      preLoaderRoute: typeof PlayerSettingsRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/player/upload': {
+      id: '/player/upload'
+      path: '/player/upload'
+      fullPath: '/player/upload'
+      preLoaderRoute: typeof PlayerUploadRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/resume/$userId': {
+      id: '/resume/$userId'
+      path: '/resume/$userId'
+      fullPath: '/resume/$userId'
+      preLoaderRoute: typeof ResumeUserIdRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/scout/': {
+      id: '/scout/'
+      path: '/scout'
+      fullPath: '/scout/'
+      preLoaderRoute: typeof ScoutIndexRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/scout/explore': {
+      id: '/scout/explore'
+      path: '/scout/explore'
+      fullPath: '/scout/explore'
+      preLoaderRoute: typeof ScoutExploreRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/scout/inbox': {
+      id: '/scout/inbox'
+      path: '/scout/inbox'
+      fullPath: '/scout/inbox'
+      preLoaderRoute: typeof ScoutInboxRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/scout/profile': {
+      id: '/scout/profile'
+      path: '/scout/profile'
+      fullPath: '/scout/profile'
+      preLoaderRoute: typeof ScoutProfileRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/scout/selections': {
+      id: '/scout/selections'
+      path: '/scout/selections'
+      fullPath: '/scout/selections'
+      preLoaderRoute: typeof ScoutSelectionsRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/scout/settings': {
+      id: '/scout/settings'
+      path: '/scout/settings'
+      fullPath: '/scout/settings'
+      preLoaderRoute: typeof ScoutSettingsRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/player/settings/': {
+      id: '/player/settings/'
+      path: '/'
+      fullPath: '/player/settings/'
+      preLoaderRoute: typeof PlayerSettingsIndexRouteImport
+      parentRoute: typeof PlayerSettingsRoute
+    }
+    '/player/settings/about': {
+      id: '/player/settings/about'
+      path: '/about'
+      fullPath: '/player/settings/about'
+      preLoaderRoute: typeof PlayerSettingsAboutRouteImport
+      parentRoute: typeof PlayerSettingsRoute
+    }
+    '/player/settings/account-status': {
+      id: '/player/settings/account-status'
+      path: '/account-status'
+      fullPath: '/player/settings/account-status'
+      preLoaderRoute: typeof PlayerSettingsAccountStatusRouteImport
+      parentRoute: typeof PlayerSettingsRoute
+    }
+    '/player/settings/activity': {
+      id: '/player/settings/activity'
+      path: '/activity'
+      fullPath: '/player/settings/activity'
+      preLoaderRoute: typeof PlayerSettingsActivityRouteImport
+      parentRoute: typeof PlayerSettingsRoute
+    }
+    '/player/settings/appearance': {
+      id: '/player/settings/appearance'
+      path: '/appearance'
+      fullPath: '/player/settings/appearance'
+      preLoaderRoute: typeof PlayerSettingsAppearanceRouteImport
+      parentRoute: typeof PlayerSettingsRoute
+    }
+    '/player/settings/delete-account': {
+      id: '/player/settings/delete-account'
+      path: '/delete-account'
+      fullPath: '/player/settings/delete-account'
+      preLoaderRoute: typeof PlayerSettingsDeleteAccountRouteImport
+      parentRoute: typeof PlayerSettingsRoute
+    }
+    '/player/settings/help': {
+      id: '/player/settings/help'
+      path: '/help'
+      fullPath: '/player/settings/help'
+      preLoaderRoute: typeof PlayerSettingsHelpRouteImport
+      parentRoute: typeof PlayerSettingsRoute
+    }
+    '/player/settings/invite': {
+      id: '/player/settings/invite'
+      path: '/invite'
+      fullPath: '/player/settings/invite'
+      preLoaderRoute: typeof PlayerSettingsInviteRouteImport
+      parentRoute: typeof PlayerSettingsRoute
+    }
+    '/player/settings/language': {
+      id: '/player/settings/language'
+      path: '/language'
+      fullPath: '/player/settings/language'
+      preLoaderRoute: typeof PlayerSettingsLanguageRouteImport
+      parentRoute: typeof PlayerSettingsRoute
+    }
+    '/player/settings/logout': {
+      id: '/player/settings/logout'
+      path: '/logout'
+      fullPath: '/player/settings/logout'
+      preLoaderRoute: typeof PlayerSettingsLogoutRouteImport
+      parentRoute: typeof PlayerSettingsRoute
+    }
+    '/player/settings/messages': {
+      id: '/player/settings/messages'
+      path: '/messages'
+      fullPath: '/player/settings/messages'
+      preLoaderRoute: typeof PlayerSettingsMessagesRouteImport
+      parentRoute: typeof PlayerSettingsRoute
+    }
+    '/player/settings/notifications': {
+      id: '/player/settings/notifications'
+      path: '/notifications'
+      fullPath: '/player/settings/notifications'
+      preLoaderRoute: typeof PlayerSettingsNotificationsRouteImport
+      parentRoute: typeof PlayerSettingsRoute
+    }
+    '/player/settings/password': {
+      id: '/player/settings/password'
+      path: '/password'
+      fullPath: '/player/settings/password'
+      preLoaderRoute: typeof PlayerSettingsPasswordRouteImport
+      parentRoute: typeof PlayerSettingsRoute
+    }
+    '/player/settings/personal-details': {
+      id: '/player/settings/personal-details'
+      path: '/personal-details'
+      fullPath: '/player/settings/personal-details'
+      preLoaderRoute: typeof PlayerSettingsPersonalDetailsRouteImport
+      parentRoute: typeof PlayerSettingsRoute
+    }
+    '/player/settings/privacy': {
+      id: '/player/settings/privacy'
+      path: '/privacy'
+      fullPath: '/player/settings/privacy'
+      preLoaderRoute: typeof PlayerSettingsPrivacyRouteImport
+      parentRoute: typeof PlayerSettingsRoute
+    }
+    '/player/settings/privacy-center': {
+      id: '/player/settings/privacy-center'
+      path: '/privacy-center'
+      fullPath: '/player/settings/privacy-center'
+      preLoaderRoute: typeof PlayerSettingsPrivacyCenterRouteImport
+      parentRoute: typeof PlayerSettingsRoute
+    }
+    '/player/settings/sessions': {
+      id: '/player/settings/sessions'
+      path: '/sessions'
+      fullPath: '/player/settings/sessions'
+      preLoaderRoute: typeof PlayerSettingsSessionsRouteImport
+      parentRoute: typeof PlayerSettingsRoute
+    }
+    '/player/settings/two-factor': {
+      id: '/player/settings/two-factor'
+      path: '/two-factor'
+      fullPath: '/player/settings/two-factor'
+      preLoaderRoute: typeof PlayerSettingsTwoFactorRouteImport
+      parentRoute: typeof PlayerSettingsRoute
+    }
+    '/scout/settings/': {
+      id: '/scout/settings/'
+      path: '/'
+      fullPath: '/scout/settings/'
+      preLoaderRoute: typeof ScoutSettingsIndexRouteImport
+      parentRoute: typeof ScoutSettingsRoute
+    }
+    '/scout/settings/preferences': {
+      id: '/scout/settings/preferences'
+      path: '/preferences'
+      fullPath: '/scout/settings/preferences'
+      preLoaderRoute: typeof ScoutSettingsPreferencesRouteImport
+      parentRoute: typeof ScoutSettingsRoute
+    }
+    '/scout/settings/verification': {
+      id: '/scout/settings/verification'
+      path: '/verification'
+      fullPath: '/scout/settings/verification'
+      preLoaderRoute: typeof ScoutSettingsVerificationRouteImport
+      parentRoute: typeof ScoutSettingsRoute
     }
   }
 }
 
+interface AdminRouteChildren {
+  AdminExploreRoute: typeof AdminExploreRoute
+  AdminModerationRoute: typeof AdminModerationRoute
+  AdminPanelRoute: typeof AdminPanelRoute
+  AdminReportsRoute: typeof AdminReportsRoute
+  AdminSettingsRoute: typeof AdminSettingsRoute
+  AdminUsersRoute: typeof AdminUsersRoute
+  AdminVideosRoute: typeof AdminVideosRoute
+  AdminIndexRoute: typeof AdminIndexRoute
+}
+
+const AdminRouteChildren: AdminRouteChildren = {
+  AdminExploreRoute: AdminExploreRoute,
+  AdminModerationRoute: AdminModerationRoute,
+  AdminPanelRoute: AdminPanelRoute,
+  AdminReportsRoute: AdminReportsRoute,
+  AdminSettingsRoute: AdminSettingsRoute,
+  AdminUsersRoute: AdminUsersRoute,
+  AdminVideosRoute: AdminVideosRoute,
+  AdminIndexRoute: AdminIndexRoute,
+}
+
+const AdminRouteWithChildren = AdminRoute._addFileChildren(AdminRouteChildren)
+
+interface MessagesRouteChildren {
+  MessagesIdRoute: typeof MessagesIdRoute
+  MessagesIndexRoute: typeof MessagesIndexRoute
+}
+
+const MessagesRouteChildren: MessagesRouteChildren = {
+  MessagesIdRoute: MessagesIdRoute,
+  MessagesIndexRoute: MessagesIndexRoute,
+}
+
+const MessagesRouteWithChildren = MessagesRoute._addFileChildren(
+  MessagesRouteChildren,
+)
+
+interface PlayerSettingsRouteChildren {
+  PlayerSettingsAboutRoute: typeof PlayerSettingsAboutRoute
+  PlayerSettingsAccountStatusRoute: typeof PlayerSettingsAccountStatusRoute
+  PlayerSettingsActivityRoute: typeof PlayerSettingsActivityRoute
+  PlayerSettingsAppearanceRoute: typeof PlayerSettingsAppearanceRoute
+  PlayerSettingsDeleteAccountRoute: typeof PlayerSettingsDeleteAccountRoute
+  PlayerSettingsHelpRoute: typeof PlayerSettingsHelpRoute
+  PlayerSettingsInviteRoute: typeof PlayerSettingsInviteRoute
+  PlayerSettingsLanguageRoute: typeof PlayerSettingsLanguageRoute
+  PlayerSettingsLogoutRoute: typeof PlayerSettingsLogoutRoute
+  PlayerSettingsMessagesRoute: typeof PlayerSettingsMessagesRoute
+  PlayerSettingsNotificationsRoute: typeof PlayerSettingsNotificationsRoute
+  PlayerSettingsPasswordRoute: typeof PlayerSettingsPasswordRoute
+  PlayerSettingsPersonalDetailsRoute: typeof PlayerSettingsPersonalDetailsRoute
+  PlayerSettingsPrivacyRoute: typeof PlayerSettingsPrivacyRoute
+  PlayerSettingsPrivacyCenterRoute: typeof PlayerSettingsPrivacyCenterRoute
+  PlayerSettingsSessionsRoute: typeof PlayerSettingsSessionsRoute
+  PlayerSettingsTwoFactorRoute: typeof PlayerSettingsTwoFactorRoute
+  PlayerSettingsIndexRoute: typeof PlayerSettingsIndexRoute
+}
+
+const PlayerSettingsRouteChildren: PlayerSettingsRouteChildren = {
+  PlayerSettingsAboutRoute: PlayerSettingsAboutRoute,
+  PlayerSettingsAccountStatusRoute: PlayerSettingsAccountStatusRoute,
+  PlayerSettingsActivityRoute: PlayerSettingsActivityRoute,
+  PlayerSettingsAppearanceRoute: PlayerSettingsAppearanceRoute,
+  PlayerSettingsDeleteAccountRoute: PlayerSettingsDeleteAccountRoute,
+  PlayerSettingsHelpRoute: PlayerSettingsHelpRoute,
+  PlayerSettingsInviteRoute: PlayerSettingsInviteRoute,
+  PlayerSettingsLanguageRoute: PlayerSettingsLanguageRoute,
+  PlayerSettingsLogoutRoute: PlayerSettingsLogoutRoute,
+  PlayerSettingsMessagesRoute: PlayerSettingsMessagesRoute,
+  PlayerSettingsNotificationsRoute: PlayerSettingsNotificationsRoute,
+  PlayerSettingsPasswordRoute: PlayerSettingsPasswordRoute,
+  PlayerSettingsPersonalDetailsRoute: PlayerSettingsPersonalDetailsRoute,
+  PlayerSettingsPrivacyRoute: PlayerSettingsPrivacyRoute,
+  PlayerSettingsPrivacyCenterRoute: PlayerSettingsPrivacyCenterRoute,
+  PlayerSettingsSessionsRoute: PlayerSettingsSessionsRoute,
+  PlayerSettingsTwoFactorRoute: PlayerSettingsTwoFactorRoute,
+  PlayerSettingsIndexRoute: PlayerSettingsIndexRoute,
+}
+
+const PlayerSettingsRouteWithChildren = PlayerSettingsRoute._addFileChildren(
+  PlayerSettingsRouteChildren,
+)
+
+interface ScoutSettingsRouteChildren {
+  ScoutSettingsPreferencesRoute: typeof ScoutSettingsPreferencesRoute
+  ScoutSettingsVerificationRoute: typeof ScoutSettingsVerificationRoute
+  ScoutSettingsIndexRoute: typeof ScoutSettingsIndexRoute
+}
+
+const ScoutSettingsRouteChildren: ScoutSettingsRouteChildren = {
+  ScoutSettingsPreferencesRoute: ScoutSettingsPreferencesRoute,
+  ScoutSettingsVerificationRoute: ScoutSettingsVerificationRoute,
+  ScoutSettingsIndexRoute: ScoutSettingsIndexRoute,
+}
+
+const ScoutSettingsRouteWithChildren = ScoutSettingsRoute._addFileChildren(
+  ScoutSettingsRouteChildren,
+)
+
 const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
   SplatRoute: SplatRoute,
-  AdminRoute: AdminRoute,
+  AdminRoute: AdminRouteWithChildren,
   AuthRoute: AuthRoute,
+  BlockedRoute: BlockedRoute,
   FaqRoute: FaqRoute,
+  MessagesRoute: MessagesRouteWithChildren,
   MissionRoute: MissionRoute,
   PrivacyPolicyRoute: PrivacyPolicyRoute,
   ResetPasswordRoute: ResetPasswordRoute,
@@ -468,13 +1219,14 @@ const rootRouteChildren: RootRouteChildren = {
   ApiHealthRoute: ApiHealthRoute,
   PlayerExploreRoute: PlayerExploreRoute,
   PlayerProfileRoute: PlayerProfileRoute,
-  PlayerSettingsRoute: PlayerSettingsRoute,
+  PlayerSettingsRoute: PlayerSettingsRouteWithChildren,
   PlayerUploadRoute: PlayerUploadRoute,
   ResumeUserIdRoute: ResumeUserIdRoute,
   ScoutExploreRoute: ScoutExploreRoute,
+  ScoutInboxRoute: ScoutInboxRoute,
   ScoutProfileRoute: ScoutProfileRoute,
   ScoutSelectionsRoute: ScoutSelectionsRoute,
-  ScoutSettingsRoute: ScoutSettingsRoute,
+  ScoutSettingsRoute: ScoutSettingsRouteWithChildren,
   PlayerIndexRoute: PlayerIndexRoute,
   ScoutIndexRoute: ScoutIndexRoute,
 }

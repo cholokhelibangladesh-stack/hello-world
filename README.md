@@ -1,3 +1,29 @@
+# Cholo Kheli website
+
+The public website (home, mission, FAQ, safe scouting, privacy) plus the full signed-in product for
+players, scouts and admins. It shares one Supabase backend with the Android app
+(`cholo-kheli-final`): same database, storage, edge functions and accounts, so anyone can sign in on
+either.
+
+- **Backend:** Supabase project `uozrskfzwbrgmozqtaco`, configured in `.env`. Migrations, edge
+  functions and database tests live in `supabase/` and are kept identical to the app repo.
+- **Signed-in layout:** a frosted sidebar on desktop (from 1024px), a wider column on tablets and the
+  floating tab bar on phones. Signed-in screens use the app's liquid-glass palette, switched on by the
+  `app-scope` class on `<html>`; the public pages keep the website's paper palette.
+- **Edge function origins:** browsers may only call `handle-signup-role` and `delete-account` from the
+  origins in `supabase/functions/_shared/origins.ts` (or the `ALLOWED_ORIGINS` secret). Add the
+  website's published domain there, and to Supabase Auth > URL Configuration > Redirect URLs, before
+  going live.
+
+```sh
+npm install          # .npmrc sets legacy-peer-deps (vaul still declares React 18)
+npm run dev          # http://localhost:8080
+npm run typecheck
+npm run build
+```
+
+---
+
 # Welcome to your Lovable project
 
 ## Project info

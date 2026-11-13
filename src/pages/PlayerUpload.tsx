@@ -1,438 +1,235 @@
-import { motion } from "framer-motion";
-import { Upload, Tag, CreditCard, Award, Video, Loader2, Download, FileText, Plus, Flag } from "lucide-react";
-// jspdf is browser-only — dynamic-imported inside the download handlers below.
-import { Button } from "@/components/ui/button";
-import { Label } from "@/components/ui/label";
-import { Textarea } from "@/components/ui/textarea";
-import { Input } from "@/components/ui/input";
-import { Badge } from "@/components/ui/badge";
-import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
-import { useState, useEffect, useRef } from "react";
-import { useToast } from "@/hooks/use-toast";
-import { useAuth } from "@/hooks/useAuth";
+import { useEffect, useMemo, useRef, useState } from "react";
+import { toast } from "sonner";
+import { Film, Loader2, PauseCircle, Plus, Trash2, X } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
-import { useNavigate } from "@tanstack/react-router";
+import { useAuth } from "@/hooks/useAuth";
+import StorageVideo from "@/components/StorageVideo";
+import { removeStoredObject, storageUrl } from "@/lib/media";
+import { haptic } from "@/lib/native";
+import { POSITIONS, TRAITS, MAX_VIDEO_MB, VIDEO_TYPES, isSport, type Sport } from "@/lib/taxonomy";
 
-const positionsBySport: Record<string, string[]> = {
-  football: ["Striker", "Defender", "Goalkeeper", "Midfielder", "Winger"],
-  cricket: ["Bowler (Fast)", "Bowler (Spin)", "Batsman", "Wicketkeeper", "All-rounder"],
-  basketball: ["Point Guard", "Shooting Guard", "Small Forward", "Power Forward", "Center"],
-};
-const traitsBySport: Record<string, string[]> = {
-  football: ["Tactical", "Pace Abuser", "Freestyler", "Classical", "Aggressive"],
-  cricket: ["Aggressive", "Defensive", "Anchor", "Power Hitter", "Tactical"],
-  basketball: ["Sharpshooter", "Playmaker", "Slasher", "Lockdown Defender", "Rim Protector"],
-};
+const MAX_MB = MAX_VIDEO_MB;
+const TYPES = VIDEO_TYPES;
 
-interface Scout { user_id: string; full_name: string; organization: string | null; }
-interface VideoRecord {
-  id: string; status: string; description: string | null;
-  position_tags: string[]; trait_tags: string[]; video_url: string | null; created_at: string;
-}
+type Video = { id: string; title: string | null; status: string; video_url: string; created_at: string; view_count: number; flagged: boolean | null };
+
+const Chip = ({ on, label, onClick }: { on: boolean; label: string; onClick: () => void }) => (
+  <button type="button" aria-pressed={on} onClick={onClick}
+    className={`press rounded-full px-3.5 py-1.5 text-[15px] ${on ? "bg-primary text-primary-foreground" : "bg-secondary text-foreground"}`}>
+    {label}
+  </button>
+);
+
+const statusLabel = (v: Video) =>
+  v.flagged ? { text: "Under review", cls: "is-pending" }
+  : v.status === "live" ? { text: "Live", cls: "is-approved" }
+  : v.status === "rejected" ? { text: "Removed", cls: "is-declined" }
+  : { text: "Processing", cls: "is-pending" };
 
 const PlayerUpload = () => {
-  const [selectedPositions, setSelectedPositions] = useState<string[]>([]);
-  const [selectedTraits, setSelectedTraits] = useState<string[]>([]);
+  const { user } = useAuth();
+  const [sport, setSport] = useState<Sport>("football");
+  const [file, setFile] = useState<File | null>(null);
+  const [title, setTitle] = useState("");
   const [description, setDescription] = useState("");
-  const [videoFile, setVideoFile] = useState<File | null>(null);
-  const [bkashNumber, setBkashNumber] = useState("");
+  const [positions, setPositions] = useState<string[]>([]);
+  const [traits, setTraits] = useState<string[]>([]);
+  const [custom, setCustom] = useState("");
   const [uploading, setUploading] = useState(false);
-  const [paying, setPaying] = useState(false);
-  const [videoId, setVideoId] = useState<string | null>(null);
-  const [videoStatus, setVideoStatus] = useState<string | null>(null);
-  const [paymentDone, setPaymentDone] = useState(false);
-  const [transactionId, setTransactionId] = useState<string | null>(null);
-  const [paymentId, setPaymentId] = useState<string | null>(null);
-  const [sport, setSport] = useState<string>("football");
-  const [reportOpen, setReportOpen] = useState(false);
-  const [scouts, setScouts] = useState<Scout[]>([]);
-  const [selectedScoutId, setSelectedScoutId] = useState<string>("");
-  const [reportReason, setReportReason] = useState("");
-  const [reporting, setReporting] = useState(false);
-  const [allVideos, setAllVideos] = useState<VideoRecord[]>([]);
-  const [showNewUpload, setShowNewUpload] = useState(false);
-  const [uploadsHalted, setUploadsHalted] = useState(false);
+  const [halted, setHalted] = useState(false);
+  const [videos, setVideos] = useState<Video[] | null>(null);
   const fileRef = useRef<HTMLInputElement>(null);
-  const { toast } = useToast();
-  const { user, loading: authLoading } = useAuth();
-  const navigate = useNavigate();
+  const preview = useMemo(() => (file ? URL.createObjectURL(file) : null), [file]);
+  useEffect(() => () => { if (preview) URL.revokeObjectURL(preview); }, [preview]);
 
-  const loadUserData = async (userId: string) => {
-    const [profileRes, videosRes] = await Promise.all([
-      supabase.from("profiles").select("sport").eq("user_id", userId).maybeSingle(),
-      supabase.from("videos").select("*").eq("user_id", userId).order("created_at", { ascending: false }),
+  const load = async () => {
+    if (!user) return;
+    const [{ data: prof }, { data: vids }, { data: setting }] = await Promise.all([
+      supabase.from("profiles").select("sport").eq("user_id", user.id).maybeSingle(),
+      supabase.from("videos").select("id, title, status, video_url, created_at, view_count, flagged").eq("user_id", user.id).neq("status", "draft").order("created_at", { ascending: false }),
+      supabase.from("app_settings").select("value").eq("key", "video_uploads_halted").maybeSingle(),
     ]);
-    if (profileRes.data?.sport) setSport(profileRes.data.sport);
-    const videos = (videosRes.data || []) as VideoRecord[];
-    setAllVideos(videos);
+    if (isSport(prof?.sport)) setSport(prof.sport);
+    setVideos((vids ?? []) as Video[]);
+    const v = setting?.value as unknown;
+    setHalted(v === true || v === "true");
+  };
+  useEffect(() => { load(); }, [user]); // eslint-disable-line react-hooks/exhaustive-deps
 
-    const { data: settingData } = await supabase.from("app_settings" as any).select("value").eq("key", "video_uploads_halted").maybeSingle();
-    setUploadsHalted((settingData as any)?.value === "true");
-
-    const activeVideo = videos.find((v) => v.status === "live" || v.status === "pending_payment");
-    if (activeVideo) {
-      setVideoId(activeVideo.id);
-      setVideoStatus(activeVideo.status);
-      setDescription(activeVideo.description || "");
-      setSelectedPositions(activeVideo.position_tags || []);
-      setSelectedTraits(activeVideo.trait_tags || []);
-      if (activeVideo.status === "live") setPaymentDone(true);
-    }
-
-    const { data: scoutProfiles } = await supabase.from("scout_profiles").select("user_id, organization").eq("verification_status", "active");
-    if (scoutProfiles && scoutProfiles.length > 0) {
-      const ids = scoutProfiles.map((s) => s.user_id);
-      const { data: profiles } = await supabase.from("profiles").select("user_id, full_name").in("user_id", ids);
-      const profileMap = new Map((profiles || []).map((p) => [p.user_id, p.full_name]));
-      setScouts(scoutProfiles.map((s) => ({ user_id: s.user_id, full_name: profileMap.get(s.user_id) || "Unknown Scout", organization: s.organization })));
-    }
+  const pick = (f: File | undefined) => {
+    if (!f) return;
+    if (!TYPES.includes(f.type)) { toast.error("Choose an MP4, MOV or WebM video."); return; }
+    if (f.size > MAX_MB * 1024 * 1024) { toast.error(`That video is over ${MAX_MB} MB. Trim it to your best moments and try again.`); return; }
+    setFile(f);
   };
 
-  useEffect(() => {
-    if (!authLoading && !user) { navigate({ to: "/auth" as any }); return; }
-    if (user) loadUserData(user.id);
-  }, [user, authLoading]);
-
-  const positionTags = positionsBySport[sport] || positionsBySport.football;
-  const traitTags = traitsBySport[sport] || traitsBySport.football;
-  const toggleTag = (tag: string, list: string[], setter: (v: string[]) => void) => {
-    setter(list.includes(tag) ? list.filter((t) => t !== tag) : [...list, tag]);
+  const changeSport = async (s: Sport) => {
+    if (!user || s === sport) return;
+    setSport(s); setPositions([]); setTraits([]);
+    const { error } = await supabase.from("profiles").update({ sport: s }).eq("user_id", user.id);
+    if (error) toast.error("Couldn't update your sport");
   };
 
-  const resetUploadForm = () => {
-    setVideoFile(null); setVideoId(null); setVideoStatus(null); setDescription("");
-    setSelectedPositions([]); setSelectedTraits([]); setPaymentDone(false);
-    setTransactionId(null); setPaymentId(null); setBkashNumber(""); setShowNewUpload(false);
+  const toggle = (list: string[], set: (v: string[]) => void, tag: string, max: number) => {
+    if (list.includes(tag)) set(list.filter((t) => t !== tag));
+    else if (list.length < max) set([...list, tag]);
+    else toast(`Choose up to ${max}.`);
   };
 
-  const handleUpload = async () => {
-    if (!videoFile || !user) return;
+  const reset = () => { setFile(null); setTitle(""); setDescription(""); setPositions([]); setTraits([]); setCustom(""); };
+
+  const upload = async () => {
+    if (!user || !file) return;
     setUploading(true);
+    let createdId: string | null = null;
+    let path: string | null = null;
     try {
       const { data: video, error: dbError } = await supabase.from("videos").insert({
-        user_id: user.id, description, video_url: "", status: "pending_payment" as any,
-        position_tags: selectedPositions, trait_tags: selectedTraits,
-      }).select().single();
+        user_id: user.id, title: title.trim().slice(0, 120) || `${sport[0].toUpperCase()}${sport.slice(1)} highlight`,
+        description: description.trim().slice(0, 1000) || undefined, video_url: "", status: "draft",
+        position_tags: positions, trait_tags: traits,
+      }).select("id").single();
       if (dbError) throw dbError;
-      setVideoId(video.id); setVideoStatus("pending_payment");
-      setAllVideos((prev) => [video as VideoRecord, ...prev]);
-      toast({ title: "Details saved!", description: "Complete payment to upload your video and go live." });
-    } catch (err: any) {
-      toast({ title: "Failed", description: err.message, variant: "destructive" });
+      createdId = video.id;
+      const ext = (file.name.split(".").pop() || "mp4").toLowerCase().replace(/[^a-z0-9]/g, "") || "mp4";
+      path = `${user.id}/${video.id}.${ext}`;
+      const { error: upErr } = await supabase.storage.from("player-videos").upload(path, file, { contentType: file.type });
+      if (upErr) throw upErr;
+      const { error: liveErr } = await supabase.from("videos").update({ video_url: storageUrl("player-videos", path), status: "live" }).eq("id", video.id);
+      if (liveErr) throw liveErr;
+      haptic("medium");
+      toast.success("Highlight published", { description: "It's live in Explore for verified scouts." });
+      reset(); load();
+    } catch (e) {
+      if (path) await supabase.storage.from("player-videos").remove([path]);
+      if (createdId) await supabase.from("videos").delete().eq("id", createdId);
+      const msg = (e as { message?: string }).message ?? "";
+      toast.error("Upload failed", { description: msg.includes("paused") ? "Uploads are paused right now. Try again later." : "Check your connection and try again." });
     } finally { setUploading(false); }
   };
 
-  const handlePayment = async () => {
-    if (!videoId || !user || !videoFile) return;
-    setPaying(true);
-    try {
-      const { data, error } = await supabase.functions.invoke("process-payment", { body: { video_id: videoId, bkash_number: bkashNumber } });
-      if (error) throw error;
-      const ext = videoFile.name.split(".").pop();
-      const filePath = `${user.id}/${Date.now()}.${ext}`;
-      const { error: uploadError } = await supabase.storage.from("player-videos").upload(filePath, videoFile);
-      if (uploadError) throw uploadError;
-      const { data: { publicUrl } } = supabase.storage.from("player-videos").getPublicUrl(filePath);
-      await supabase.from("videos").update({ video_url: publicUrl, status: "live" as any }).eq("id", videoId);
-      setPaymentDone(true); setVideoStatus("live"); setTransactionId(data.transaction_id); setPaymentId(data.payment_id);
-      setAllVideos((prev) => prev.map((v) => v.id === videoId ? { ...v, video_url: publicUrl, status: "live" } : v));
-      await supabase.from("notifications").insert({ user_id: user.id, title: "🎉 Payment Successful!", message: "Your video is now live. Download your certificate and invoice.", type: "certificate" } as any);
-      toast({ title: "Payment successful! ✅", description: `Transaction: ${data.transaction_id}` });
-    } catch (err: any) {
-      toast({ title: "Payment failed", description: err.message, variant: "destructive" });
-    } finally { setPaying(false); }
+  const remove = async (v: Video) => {
+    if (!confirm(`Delete “${v.title ?? "this highlight"}”? This can't be undone.`)) return;
+    const { error } = await supabase.from("videos").delete().eq("id", v.id);
+    if (error) { toast.error("Couldn't delete that highlight"); return; }
+    await removeStoredObject(v.video_url, "player-videos");
+    setVideos((list) => (list ?? []).filter((x) => x.id !== v.id));
+    toast.success("Highlight deleted");
   };
 
-  const handleReport = async () => {
-    if (!user || !selectedScoutId || !reportReason.trim()) return;
-    setReporting(true);
-    try {
-      const { data: scoutProfile } = await supabase.from("profiles").select("full_name").eq("user_id", selectedScoutId).maybeSingle();
-      const { data: myProfile } = await supabase.from("profiles").select("full_name").eq("user_id", user.id).maybeSingle();
-      const { data: adminRoles } = await supabase.from("user_roles").select("user_id").eq("role", "admin" as any);
-      if (adminRoles && adminRoles.length > 0) {
-        await supabase.from("notifications").insert(adminRoles.map((a) => ({
-          user_id: a.user_id, title: `🚨 Player Report: ${scoutProfile?.full_name}`,
-          message: `Player "${myProfile?.full_name}" reported "${scoutProfile?.full_name}": ${reportReason}`,
-          type: "info", metadata: { reporter_id: user.id, reported_scout_id: selectedScoutId },
-        })) as any);
-      }
-      toast({ title: "Report submitted" });
-      setReportOpen(false); setReportReason(""); setSelectedScoutId("");
-    } catch (err: any) {
-      toast({ title: "Failed", description: err.message, variant: "destructive" });
-    } finally { setReporting(false); }
-  };
-
-  const downloadCertificate = async () => {
-    const { default: jsPDF } = await import("jspdf");
-    const doc = new jsPDF({ orientation: "landscape", unit: "mm", format: "a4" });
-    const w = doc.internal.pageSize.getWidth(); const h = doc.internal.pageSize.getHeight();
-    const name = user?.user_metadata?.full_name || "Player";
-    const date = new Date().toLocaleDateString("en-BD", { year: "numeric", month: "long", day: "numeric" });
-    doc.setFillColor(10, 10, 10); doc.rect(0, 0, w, h, "F");
-    doc.setDrawColor(240, 240, 240); doc.setLineWidth(0.6); doc.rect(8, 8, w - 16, h - 16);
-    doc.setDrawColor(60, 60, 60); doc.setLineWidth(0.3); doc.rect(12, 12, w - 24, h - 24);
-    doc.setFillColor(240, 240, 240); doc.rect(12, 12, w - 24, 2, "F"); doc.rect(12, h - 14, w - 24, 2, "F");
-    doc.setFont("helvetica", "bold"); doc.setFontSize(10); doc.setTextColor(160, 160, 160); doc.text("CHOLO KHELI", w / 2, 30, { align: "center" });
-    doc.setFontSize(28); doc.setTextColor(240, 240, 240); doc.text("CERTIFICATE OF PARTICIPATION", w / 2, 50, { align: "center" });
-    doc.setDrawColor(80, 80, 80); doc.setLineWidth(0.4); doc.line(w / 2 - 80, 56, w / 2 + 80, 56);
-    doc.setFont("helvetica", "normal"); doc.setFontSize(11); doc.setTextColor(160, 160, 160); doc.text("This certifies that", w / 2, 72, { align: "center" });
-    doc.setFont("helvetica", "bold"); doc.setFontSize(32); doc.setTextColor(255, 255, 255); doc.text(name, w / 2, 92, { align: "center" });
-    const nameWidth = doc.getTextWidth(name); doc.setDrawColor(180, 180, 180); doc.setLineWidth(0.3); doc.line(w / 2 - nameWidth / 2, 95, w / 2 + nameWidth / 2, 95);
-    doc.setFont("helvetica", "normal"); doc.setFontSize(11); doc.setTextColor(140, 140, 140); doc.text("has successfully registered and submitted a highlight video on the", w / 2, 108, { align: "center" });
-    doc.setFont("helvetica", "bold"); doc.setFontSize(14); doc.setTextColor(220, 220, 220); doc.text("Cholo Kheli Platform — Digitizing Bangladesh Sports", w / 2, 122, { align: "center" });
-    doc.setFont("helvetica", "normal"); doc.setFontSize(9); doc.setTextColor(100, 100, 100); doc.text(`Date: ${date}   |   Transaction ID: ${transactionId || "N/A"}`, w / 2, 136, { align: "center" });
-    const sigY = h - 36; const sig1X = w / 2 - 60; const sig2X = w / 2 + 60;
-    doc.setDrawColor(80, 80, 80); doc.setLineWidth(0.3); doc.line(sig1X - 40, sigY, sig1X + 40, sigY); doc.line(sig2X - 40, sigY, sig2X + 40, sigY);
-    doc.setFont("helvetica", "bold"); doc.setFontSize(8); doc.setTextColor(180, 180, 180);
-    doc.text("Nahroor Rahman Khan", sig1X, sigY + 6, { align: "center" }); doc.text("Rayeed Bin Abdul Khaleque", sig2X, sigY + 6, { align: "center" });
-    doc.setFont("helvetica", "normal"); doc.setFontSize(7); doc.setTextColor(90, 90, 90);
-    doc.text("Co-Founder, Cholo Kheli", sig1X, sigY + 11, { align: "center" }); doc.text("Co-Founder, Cholo Kheli", sig2X, sigY + 11, { align: "center" });
-    doc.save("CholoKheli_Certificate.pdf");
-  };
-
-  const downloadInvoice = async () => {
-    const { default: jsPDF } = await import("jspdf");
-    const doc = new jsPDF({ orientation: "portrait", unit: "mm", format: "a4" });
-    const w = doc.internal.pageSize.getWidth(); const h = doc.internal.pageSize.getHeight();
-    const name = user?.user_metadata?.full_name || "Player"; const email = user?.email || "";
-    const date = new Date().toLocaleDateString("en-BD", { year: "numeric", month: "long", day: "numeric" });
-    doc.setFillColor(10, 10, 10); doc.rect(0, 0, w, h, "F");
-    doc.setFillColor(240, 240, 240); doc.rect(0, 0, w, 38, "F");
-    doc.setFont("helvetica", "bold"); doc.setFontSize(22); doc.setTextColor(10, 10, 10); doc.text("CHOLO KHELI", 18, 24);
-    doc.setFont("helvetica", "normal"); doc.setFontSize(9); doc.setTextColor(60, 60, 60); doc.text("INVOICE", w - 18, 20, { align: "right" }); doc.text(`Date: ${date}`, w - 18, 28, { align: "right" });
-    let y = 54; doc.setFont("helvetica", "normal"); doc.setFontSize(9); doc.setTextColor(120, 120, 120);
-    doc.text(`Transaction ID: ${transactionId || "N/A"}`, 18, y); doc.text(`Payment ID: ${paymentId || "N/A"}`, 18, y + 8);
-    y = 82; doc.setFont("helvetica", "bold"); doc.setFontSize(8); doc.setTextColor(100, 100, 100); doc.text("BILL TO", 18, y);
-    doc.setDrawColor(50, 50, 50); doc.setLineWidth(0.3); doc.line(18, y + 2, 60, y + 2);
-    doc.setFont("helvetica", "bold"); doc.setFontSize(12); doc.setTextColor(240, 240, 240); doc.text(name, 18, y + 12);
-    doc.setFont("helvetica", "normal"); doc.setFontSize(9); doc.setTextColor(120, 120, 120); doc.text(email, 18, y + 20);
-    y = 122; doc.setFillColor(30, 30, 30); doc.rect(18, y - 6, w - 36, 12, "F");
-    doc.setFont("helvetica", "bold"); doc.setFontSize(8); doc.setTextColor(160, 160, 160);
-    doc.text("DESCRIPTION", 24, y); doc.text("QTY", w / 2, y, { align: "center" }); doc.text("AMOUNT", w - 24, y, { align: "right" });
-    y += 14; doc.setFont("helvetica", "normal"); doc.setFontSize(9); doc.setTextColor(200, 200, 200);
-    doc.text("Video Registration & Participation Fee", 24, y); doc.text("1", w / 2, y, { align: "center" }); doc.text("৳100.00", w - 24, y, { align: "right" });
-    y += 8; doc.setDrawColor(40, 40, 40); doc.setLineWidth(0.3); doc.line(18, y, w - 18, y);
-    y += 14; doc.setFont("helvetica", "bold"); doc.setFontSize(11); doc.setTextColor(180, 180, 180); doc.text("TOTAL", w / 2 - 20, y);
-    doc.setTextColor(240, 240, 240); doc.text("৳100.00", w - 24, y, { align: "right" });
-    y += 18; doc.setFillColor(25, 25, 25); doc.rect(18, y - 6, w - 36, 16, "F");
-    doc.setFont("helvetica", "normal"); doc.setFontSize(8); doc.setTextColor(120, 120, 120); doc.text("Payment Method: bKash", 24, y + 2);
-    doc.setFont("helvetica", "bold"); doc.setTextColor(200, 200, 200); doc.text("Status: PAID ✓", w - 24, y + 2, { align: "right" });
-    doc.setFont("helvetica", "normal"); doc.setFontSize(7); doc.setTextColor(60, 60, 60); doc.text("Cholo Kheli — Digitizing Bangladesh Sports", w / 2, h - 12, { align: "center" });
-    doc.save("CholoKheli_Invoice.pdf");
-  };
-
-  if (authLoading) return <div className="min-h-screen flex items-center justify-center"><Loader2 className="h-8 w-8 animate-spin text-primary" /></div>;
-
-  const liveVideos = allVideos.filter((v) => v.status === "live");
+  const ready = !!file && !uploading && !halted;
 
   return (
-    <div className="min-h-screen pt-16 pb-24">
-      <div className="container max-w-2xl">
-        <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} className="space-y-6 pt-4">
+    <div className="pb-6">
+      <header className="px-4 pt-4">
+        <h1 className="large-title">Upload</h1>
+        <p className="mt-1 text-[15px] text-muted-foreground">Share a clip of your best play. Up to {MAX_MB} MB.</p>
+      </header>
 
-          {/* Header */}
-          <div className="flex items-center justify-between">
-            <div>
-              <h1 className="font-display text-3xl text-foreground">UPLOAD HUB</h1>
-              <p className="text-sm text-muted-foreground">Submit your highlight video</p>
-            </div>
-            <Dialog open={reportOpen} onOpenChange={setReportOpen}>
-              <DialogTrigger asChild>
-                <Button variant="outline" size="sm" className="border-destructive/40 text-destructive hover:bg-destructive/10 rounded-full text-xs shrink-0">
-                  <Flag className="h-3 w-3 mr-1" /> Report
-                </Button>
-              </DialogTrigger>
-              <DialogContent className="bg-card border-border">
-                <DialogHeader><DialogTitle className="font-display text-xl text-foreground">REPORT A SCOUT</DialogTitle></DialogHeader>
-                <div className="space-y-3">
-                  <Select value={selectedScoutId} onValueChange={setSelectedScoutId}>
-                    <SelectTrigger className="bg-secondary border-border"><SelectValue placeholder="Choose a scout..." /></SelectTrigger>
-                    <SelectContent className="bg-card border-border">
-                      {scouts.map((s) => <SelectItem key={s.user_id} value={s.user_id}>{s.full_name}{s.organization ? ` — ${s.organization}` : ""}</SelectItem>)}
-                    </SelectContent>
-                  </Select>
-                  <Textarea placeholder="Describe what happened..." className="bg-secondary border-border resize-none" rows={3} value={reportReason} onChange={(e) => setReportReason(e.target.value)} />
-                  <Button onClick={handleReport} disabled={reporting || !selectedScoutId || !reportReason.trim()} className="w-full bg-destructive text-white hover:bg-destructive/90">
-                    {reporting ? <Loader2 className="h-4 w-4 animate-spin mr-2" /> : <Flag className="h-4 w-4 mr-2" />} Submit Report
-                  </Button>
-                </div>
-              </DialogContent>
-            </Dialog>
+      {halted && (
+        <div className="mx-4 mt-4 flex items-start gap-3 rounded-[14px] bg-accent px-4 py-3">
+          <PauseCircle className="mt-0.5 h-5 w-5 shrink-0 text-primary" aria-hidden="true" />
+          <p className="text-[15px]">Uploads are paused by the Cholo Kheli team for now. Your existing highlights are still live.</p>
+        </div>
+      )}
+
+      <section className="px-4 pt-5">
+        <input ref={fileRef} type="file" accept={TYPES.join(",")} className="hidden" onChange={(e) => { pick(e.target.files?.[0]); e.target.value = ""; }} />
+        {file && preview ? (
+          <div className="relative overflow-hidden rounded-[18px] bg-black">
+            <video src={preview} className="aspect-[9/16] max-h-[52dvh] w-full object-contain" controls playsInline muted />
+            <button type="button" onClick={() => setFile(null)} aria-label="Remove video" className="press absolute right-3 top-3 grid h-9 w-9 place-items-center rounded-full bg-black/60 text-white">
+              <X className="h-5 w-5" />
+            </button>
+            <p className="absolute bottom-3 left-3 rounded-full bg-black/60 px-2.5 py-1 text-[12px] text-white">{(file.size / 1048576).toFixed(1)} MB</p>
           </div>
+        ) : (
+          <button type="button" disabled={halted} onClick={() => fileRef.current?.click()}
+            className="press flex aspect-[16/10] w-full flex-col items-center justify-center gap-2 rounded-[18px] border-2 border-dashed border-border bg-card text-primary disabled:opacity-50">
+            <Film className="h-9 w-9" strokeWidth={1.6} aria-hidden="true" />
+            <span className="headline">Choose a video</span>
+            <span className="footnote">MP4, MOV or WebM</span>
+          </button>
+        )}
+      </section>
 
-          {/* Upload New button when videos exist */}
-          {allVideos.length > 0 && !showNewUpload && (
-            <div className="flex justify-end">
-              <Button size="sm" variant="outline" onClick={() => { resetUploadForm(); setShowNewUpload(true); }} className="border-primary/40 text-primary hover:bg-primary/10 rounded-full text-xs">
-                <Plus className="h-3 w-3 mr-1" /> Upload New Video
-              </Button>
-            </div>
-          )}
+      <section className="space-y-5 px-4 pt-6">
+        <div>
+          <h2 className="ios-group-label !px-0">Sport</h2>
+          <div className="grid grid-cols-3 rounded-xl bg-secondary p-1" role="radiogroup" aria-label="Sport">
+            {(["football", "cricket", "basketball"] as Sport[]).map((s) => (
+              <button key={s} type="button" role="radio" aria-checked={sport === s} onClick={() => changeSport(s)}
+                className={`h-9 rounded-[9px] text-[15px] font-medium capitalize ${sport === s ? "bg-card shadow-[0_1px_3px_hsl(var(--foreground)/0.12)]" : "text-muted-foreground"}`}>{s}</button>
+            ))}
+          </div>
+        </div>
+        <div>
+          <label htmlFor="title" className="ios-group-label !px-0 block">Title</label>
+          <input id="title" value={title} maxLength={120} onChange={(e) => setTitle(e.target.value)} placeholder="e.g. Solo goal vs Uttara Youth"
+            className="h-12 w-full rounded-xl bg-card px-4 text-[16px] outline-none focus:ring-2 focus:ring-ring" />
+        </div>
+        <div>
+          <h2 className="ios-group-label !px-0">Positions <span className="font-normal">(up to 3)</span></h2>
+          <div className="flex flex-wrap gap-2">
+            {[...POSITIONS[sport], ...positions.filter((p) => !POSITIONS[sport].includes(p))].map((p) => (
+              <Chip key={p} label={p} on={positions.includes(p)} onClick={() => toggle(positions, setPositions, p, 3)} />
+            ))}
+          </div>
+        </div>
+        <div>
+          <h2 className="ios-group-label !px-0">What it shows <span className="font-normal">(up to 5)</span></h2>
+          <div className="flex flex-wrap gap-2">
+            {[...TRAITS[sport], ...traits.filter((t) => !TRAITS[sport].includes(t))].map((t) => (
+              <Chip key={t} label={t} on={traits.includes(t)} onClick={() => toggle(traits, setTraits, t, 5)} />
+            ))}
+            <form className="flex items-center" onSubmit={(e) => { e.preventDefault(); const v = custom.trim().slice(0, 30); if (v) { toggle(traits, setTraits, v, 5); setCustom(""); } }}>
+              <label htmlFor="custom-trait" className="sr-only">Add your own</label>
+              <input id="custom-trait" value={custom} onChange={(e) => setCustom(e.target.value)} placeholder="Add your own" maxLength={30}
+                className="h-[34px] w-32 rounded-full bg-secondary px-3.5 text-[15px] outline-none focus:ring-2 focus:ring-ring" />
+              <button type="submit" aria-label="Add" className="ml-1 grid h-[34px] w-[34px] place-items-center rounded-full text-primary"><Plus className="h-5 w-5" /></button>
+            </form>
+          </div>
+        </div>
+        <div>
+          <label htmlFor="desc" className="ios-group-label !px-0 block">Description</label>
+          <textarea id="desc" value={description} maxLength={1000} rows={3} onChange={(e) => setDescription(e.target.value)}
+            placeholder="Match, opponent, what scouts should watch for"
+            className="w-full resize-none rounded-xl bg-card px-4 py-3 text-[16px] outline-none focus:ring-2 focus:ring-ring" />
+        </div>
+        <button type="button" disabled={!ready} onClick={upload}
+          className="press flex h-[52px] w-full items-center justify-center gap-2 rounded-full bg-primary text-[17px] font-semibold text-primary-foreground disabled:opacity-40">
+          {uploading ? <><Loader2 className="h-5 w-5 animate-spin" /> Uploading…</> : "Publish highlight"}
+        </button>
+        <p className="footnote text-center">Highlights go live straight away. Admins review flagged clips.</p>
+      </section>
 
-          {/* Upload form */}
-          {(allVideos.length === 0 || showNewUpload) && (
-            <div className="space-y-6">
-              {showNewUpload && (
-                <div className="flex items-center justify-between">
-                  <h3 className="font-display text-lg text-foreground">NEW VIDEO UPLOAD</h3>
-                  <Button variant="ghost" size="sm" onClick={() => setShowNewUpload(false)} className="text-muted-foreground text-xs">Cancel</Button>
-                </div>
-              )}
-
-              {uploadsHalted ? (
-                <div className="bg-card border border-border rounded-xl p-10 text-center space-y-4">
-                  <Video className="h-12 w-12 mx-auto text-muted-foreground opacity-30" />
-                  <p className="font-display text-xl text-foreground">MONTHLY LIMIT REACHED!</p>
-                  <p className="text-sm text-muted-foreground max-w-xs mx-auto">We will start accepting videos again next month. Thank you for your patience!</p>
-                </div>
-              ) : (
-                <div className="space-y-6">
-                  {/* File pick */}
-                  <div className="bg-card border border-border rounded-xl p-6">
-                    <div className="flex items-center gap-3 mb-4">
-                      <Upload className="h-5 w-5 text-primary" />
-                      <h2 className="font-display text-xl text-foreground">SELECT VIDEO</h2>
-                    </div>
-                    <div
-                      className="border-2 border-dashed border-border rounded-xl p-8 text-center cursor-pointer hover:border-primary/50 transition-colors"
-                      onClick={() => fileRef.current?.click()}
-                    >
-                      {videoFile ? (
-                        <div className="space-y-1">
-                          <Video className="h-8 w-8 mx-auto text-primary" />
-                          <p className="text-sm text-foreground font-medium">{videoFile.name}</p>
-                          <p className="text-xs text-muted-foreground">{(videoFile.size / 1024 / 1024).toFixed(1)} MB</p>
-                        </div>
-                      ) : (
-                        <div className="space-y-2">
-                          <Upload className="h-8 w-8 mx-auto text-muted-foreground" />
-                          <p className="text-sm text-muted-foreground">Tap to select your highlight video</p>
-                          <p className="text-xs text-muted-foreground/60">MP4, MOV up to 100MB</p>
-                        </div>
-                      )}
-                    </div>
-                    <input ref={fileRef} type="file" accept="video/*" className="hidden" onChange={(e) => e.target.files?.[0] && setVideoFile(e.target.files[0])} />
+      <section className="px-4 pt-8">
+        <h2 className="title-2 pb-2">Your highlights</h2>
+        {videos === null ? (
+          <div className="sk-shimmer h-20 rounded-[14px]" />
+        ) : videos.length === 0 ? (
+          <p className="ios-group px-4 py-5 text-[15px] text-muted-foreground">Nothing yet. Your published highlights will appear here.</p>
+        ) : (
+          <ul className="ios-group">
+            {videos.map((v) => {
+              const s = statusLabel(v);
+              return (
+                <li key={v.id} className="ios-row">
+                  <StorageVideo src={v.video_url} fragment="#t=1" muted playsInline preload="metadata" className="h-14 w-10 shrink-0 rounded-md bg-muted object-cover" />
+                  <div className="min-w-0 flex-1">
+                    <p className="truncate text-[16px]">{v.title ?? "Highlight"}</p>
+                    <p className="footnote">{new Date(v.created_at).toLocaleDateString([], { day: "numeric", month: "short", year: "numeric" })} · {v.view_count} views</p>
                   </div>
-
-                  {/* Tags */}
-                  {videoFile && (
-                    <div className="bg-card border border-border rounded-xl p-6 space-y-4">
-                      <div className="flex items-center gap-3 mb-2">
-                        <Tag className="h-5 w-5 text-primary" />
-                        <h2 className="font-display text-xl text-foreground">DETAILS</h2>
-                      </div>
-                      <div>
-                        <Label className="text-xs text-muted-foreground uppercase tracking-wide">Description</Label>
-                        <Textarea placeholder="Short description of your highlights..." className="mt-1 bg-secondary border-border resize-none rounded-xl" rows={2} value={description} onChange={(e) => setDescription(e.target.value)} />
-                      </div>
-                      <div>
-                        <Label className="text-xs text-muted-foreground uppercase tracking-wide">Position</Label>
-                        <div className="flex flex-wrap gap-2 mt-2">
-                          {positionTags.map((tag) => (
-                            <Badge key={tag} variant={selectedPositions.includes(tag) ? "default" : "outline"}
-                              className={`cursor-pointer transition-all ${selectedPositions.includes(tag) ? "bg-primary text-primary-foreground" : "border-border text-muted-foreground hover:border-primary/40"}`}
-                              onClick={() => toggleTag(tag, selectedPositions, setSelectedPositions)}>{tag}</Badge>
-                          ))}
-                        </div>
-                      </div>
-                      <div>
-                        <Label className="text-xs text-muted-foreground uppercase tracking-wide">Play Style</Label>
-                        <div className="flex flex-wrap gap-2 mt-2">
-                          {traitTags.map((tag) => (
-                            <Badge key={tag} variant={selectedTraits.includes(tag) ? "default" : "outline"}
-                              className={`cursor-pointer transition-all ${selectedTraits.includes(tag) ? "bg-primary text-primary-foreground" : "border-border text-muted-foreground hover:border-primary/40"}`}
-                              onClick={() => toggleTag(tag, selectedTraits, setSelectedTraits)}>{tag}</Badge>
-                          ))}
-                        </div>
-                      </div>
-                    </div>
-                  )}
-
-                  {!videoId && videoFile && (
-                    <Button onClick={handleUpload} disabled={uploading} className="w-full bg-primary text-primary-foreground font-bold hover:bg-primary/90">
-                      {uploading ? <Loader2 className="h-4 w-4 animate-spin mr-2" /> : <Upload className="h-4 w-4 mr-2" />}
-                      Save Details & Proceed to Payment
-                    </Button>
-                  )}
-
-                  {/* Payment */}
-                  {videoId && !paymentDone && (
-                    <div className="bg-card border border-border rounded-xl p-6">
-                      <div className="flex items-center gap-3 mb-4">
-                        <CreditCard className="h-5 w-5 text-primary" />
-                        <h2 className="font-display text-xl text-foreground">PAYMENT</h2>
-                      </div>
-                      <div className="bg-primary/5 border border-primary/20 rounded-lg p-3 mb-4 text-sm text-muted-foreground">
-                        💡 Your video will be uploaded <span className="text-foreground font-medium">only after</span> payment is confirmed.
-                      </div>
-                      <div className="flex items-center justify-between bg-secondary rounded-lg p-4 mb-4">
-                        <div>
-                          <p className="text-foreground font-medium">Participation Fee</p>
-                          <p className="text-xs text-muted-foreground">One-time payment via bKash</p>
-                        </div>
-                        <span className="font-display text-3xl text-primary">৳100</span>
-                      </div>
-                      <Label className="text-sm text-muted-foreground">bKash Number</Label>
-                      <Input placeholder="01XXXXXXXXX" className="mt-1 bg-secondary border-border mb-4" value={bkashNumber} onChange={(e) => setBkashNumber(e.target.value)} />
-                      <Button className="w-full bg-primary text-primary-foreground font-bold hover:bg-primary/90" onClick={handlePayment} disabled={paying || !bkashNumber || !videoFile}>
-                        {paying ? <Loader2 className="h-4 w-4 animate-spin mr-2" /> : null}
-                        {paying ? "Uploading & Processing..." : "Pay with bKash & Upload Video"}
-                      </Button>
-                    </div>
-                  )}
-
-                  {/* Documents after payment */}
-                  {paymentDone && (
-                    <div className="bg-card border border-border rounded-xl p-6">
-                      <div className="flex items-center gap-3 mb-4">
-                        <Award className="h-5 w-5 text-primary" />
-                        <h2 className="font-display text-xl text-foreground">DOCUMENTS</h2>
-                      </div>
-                      <p className="text-sm text-muted-foreground mb-4">Your video is now live! Download your certificate and invoice below.</p>
-                      <div className="flex flex-col sm:flex-row gap-3">
-                        <Button onClick={downloadCertificate} variant="outline" className="border-primary/40 text-primary hover:bg-primary/10 flex-1">
-                          <Download className="h-4 w-4 mr-2" /> Download Certificate
-                        </Button>
-                        <Button onClick={downloadInvoice} variant="outline" className="border-primary/40 text-primary hover:bg-primary/10 flex-1">
-                          <FileText className="h-4 w-4 mr-2" /> Download Invoice
-                        </Button>
-                      </div>
-                    </div>
-                  )}
-                </div>
-              )}
-            </div>
-          )}
-
-          {/* Documents for existing live video */}
-          {allVideos.length > 0 && !showNewUpload && liveVideos.length > 0 && paymentDone && (
-            <div className="bg-card border border-border rounded-xl p-6">
-              <div className="flex items-center gap-3 mb-4">
-                <Award className="h-5 w-5 text-primary" />
-                <h2 className="font-display text-xl text-foreground">DOCUMENTS</h2>
-              </div>
-              <div className="flex flex-col sm:flex-row gap-3">
-                <Button onClick={downloadCertificate} variant="outline" className="border-primary/40 text-primary hover:bg-primary/10 flex-1">
-                  <Download className="h-4 w-4 mr-2" /> Download Certificate
-                </Button>
-                <Button onClick={downloadInvoice} variant="outline" className="border-primary/40 text-primary hover:bg-primary/10 flex-1">
-                  <FileText className="h-4 w-4 mr-2" /> Download Invoice
-                </Button>
-              </div>
-            </div>
-          )}
-
-          {allVideos.length === 0 && !videoFile && (
-            <div className="text-center py-8 text-muted-foreground">
-              <Video className="h-12 w-12 mx-auto mb-3 opacity-30" />
-              <p className="text-sm">No videos yet. Select a file above to get started.</p>
-            </div>
-          )}
-        </motion.div>
-      </div>
+                  <span className={`status-pill ${s.cls}`}>{s.text}</span>
+                  <button type="button" onClick={() => remove(v)} aria-label={`Delete ${v.title ?? "highlight"}`} className="grid h-9 w-9 place-items-center rounded-full text-destructive">
+                    <Trash2 className="h-[18px] w-[18px]" />
+                  </button>
+                </li>
+              );
+            })}
+          </ul>
+        )}
+      </section>
     </div>
   );
 };

@@ -114,9 +114,9 @@ const ResetPassword = () => {
         <div className="text-center mb-8">
           <Link to="/" className="inline-flex items-center gap-2 mb-4">
             <Zap className="h-6 w-6 text-foreground" />
-            <span className="font-display text-2xl text-foreground">CHOLO KHELI</span>
+            <span className="font-display text-2xl text-foreground">Cholo Kheli</span>
           </Link>
-          <h1 className="font-display text-3xl text-foreground">RESET PASSWORD</h1>
+          <h1 className="large-title">Reset password</h1>
         </div>
 
         <motion.div
@@ -133,7 +133,7 @@ const ResetPassword = () => {
               >
                 <CheckCircle2 className="h-8 w-8 text-foreground" />
               </motion.div>
-              <p className="font-display text-xl text-foreground">PASSWORD UPDATED</p>
+              <p className="font-display text-xl text-foreground">Password updated</p>
               <p className="text-sm text-muted-foreground">Redirecting you to sign in...</p>
             </div>
           ) : sessionState === "checking" ? (
@@ -146,7 +146,7 @@ const ResetPassword = () => {
               <div className="w-12 h-12 rounded-full bg-destructive/10 border border-destructive/30 flex items-center justify-center mx-auto">
                 <AlertTriangle className="h-6 w-6 text-destructive" />
               </div>
-              <p className="font-display text-lg text-foreground">LINK INVALID OR EXPIRED</p>
+              <p className="font-display text-lg text-foreground">Link invalid or expired</p>
               <p className="text-muted-foreground text-sm">
                 {errorMsg || "This password reset link is no longer valid. Please request a new one."}
               </p>
@@ -171,7 +171,7 @@ const ResetPassword = () => {
                     value={password}
                     onChange={(e) => setPassword(e.target.value)}
                   />
-                  <button type="button" onClick={() => setShowPass(!showPass)} className="absolute right-3 top-1/2 -translate-y-1/2 text-muted-foreground hover:text-foreground">
+                  <button aria-label={showPass ? "Hide password" : "Show password"} type="button" onClick={() => setShowPass(!showPass)} className="absolute right-1 top-1/2 -translate-y-1/2 p-2 rounded-md text-muted-foreground hover:text-foreground">
                     {showPass ? <EyeOff className="h-4 w-4" /> : <Eye className="h-4 w-4" />}
                   </button>
                 </div>

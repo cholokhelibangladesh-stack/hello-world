@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { Send, Loader2, Users, User, ChevronDown } from "lucide-react";
+import { Send, Loader2, User, Paperclip, X } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
@@ -21,6 +21,7 @@ const AdminNoticeForm = () => {
   const [selectedUsers, setSelectedUsers] = useState<{ user_id: string; full_name: string; role: string }[]>([]);
   const [searchResults, setSearchResults] = useState<{ user_id: string; full_name: string; role: string }[]>([]);
   const [searching, setSearching] = useState(false);
+  const [mediaFile, setMediaFile] = useState<File | null>(null);
 
   const handleUserSearch = async (query: string) => {
     setSearchEmail(query);
@@ -66,51 +67,53 @@ const AdminNoticeForm = () => {
     setSending(true);
 
     try {
-      let userIds: string[] = [];
-
-      if (audience === "selective") {
-        userIds = selectedUsers.map((u) => u.user_id);
-        if (userIds.length === 0) {
-          toast({ title: "No users selected", description: "Add at least one user for selective notices.", variant: "destructive" });
-          setSending(false);
-          return;
-        }
-      } else {
-        // Get roles
-        let query = supabase.from("user_roles").select("user_id, role");
-        const { data: roles } = await query;
-        const allRoles = roles || [];
-
-        if (audience === "all") {
-          userIds = allRoles.map((r) => r.user_id);
-        } else if (audience === "players") {
-          userIds = allRoles.filter((r) => r.role === "player").map((r) => r.user_id);
-        } else if (audience === "scouts") {
-          userIds = allRoles.filter((r) => r.role === "scout").map((r) => r.user_id);
-        }
-      }
-
-      if (userIds.length === 0) {
-        toast({ title: "No users found" });
+      if (audience === "selective" && selectedUsers.length === 0) {
+        toast({ title: "No users selected", description: "Add at least one user for selective notices.", variant: "destructive" });
         setSending(false);
         return;
       }
 
-      const notifications = userIds.map((uid) => ({
-        user_id: uid,
-        title,
-        message,
-        type: "admin_notice",
-      }));
+      // Optional media attachment — upload to the "media" bucket first
+      let mediaPath: string | null = null;
+      let mediaType: "image" | "video" | null = null;
+      if (mediaFile) {
+        mediaType = mediaFile.type.startsWith("video/") ? "video" : "image";
+        const ext = mediaFile.name.split(".").pop() || "bin";
+        mediaPath = `notifications/${Date.now()}.${ext}`;
+        const { error: upErr } = await supabase.storage
+          .from("media")
+          .upload(mediaPath, mediaFile, { contentType: mediaFile.type, upsert: false });
+        if (upErr) {
+          toast({ title: "Media upload failed", description: upErr.message, variant: "destructive" });
+          setSending(false);
+          return;
+        }
+      }
 
-      const { error } = await supabase.from("notifications").insert(notifications as any);
+      // Sent by the server: respects each person's notification settings, delivers push/email, and is logged.
+      const metadata = mediaPath ? { media_path: mediaPath, media_type: mediaType } : {};
+      let error: { message: string } | null = null;
+      let sent = 0;
+      if (audience === "selective") {
+        for (const u of selectedUsers) {
+          const r = await supabase.rpc("admin_send_notice" as never, { _title: title.trim(), _message: message.trim(), _audience: "user", _user_id: u.user_id, _metadata: metadata } as never);
+          if (r.error) { error = r.error; break; }
+          sent++;
+        }
+      } else {
+        const r = await supabase.rpc("admin_send_notice" as never, {
+          _title: title.trim(), _message: message.trim(), _audience: audience === "players" ? "player" : audience === "scouts" ? "scout" : "all", _metadata: metadata,
+        } as never);
+        error = r.error; sent = Number(r.data ?? 0);
+      }
       if (error) {
         toast({ title: "Error", description: error.message, variant: "destructive" });
       } else {
-        const audienceLabel = audience === "all" ? "all users" : audience === "players" ? "all players" : audience === "scouts" ? "all scouts" : `${userIds.length} selected user(s)`;
+        const audienceLabel = `${sent} ${sent === 1 ? "person" : "people"}`;
         toast({ title: `Notice sent to ${audienceLabel}!` });
         setTitle("");
         setMessage("");
+        setMediaFile(null);
         setSelectedUsers([]);
         setAudience("all");
       }
@@ -130,16 +133,18 @@ const AdminNoticeForm = () => {
     <div className="space-y-4">
       {/* Broadcast Card */}
       <div className="bg-card border border-border rounded-2xl p-6 space-y-5">
-        <h3 className="font-display text-xl text-foreground">SEND NOTICE</h3>
+        <h3 className="font-display text-xl text-foreground">Send notice</h3>
 
         {/* Audience Selector */}
         <div>
-          <Label className="text-xs text-muted-foreground uppercase tracking-wide mb-2 block">Send To</Label>
-          <div className="grid grid-cols-2 sm:grid-cols-4 gap-2">
+          <Label className="text-xs text-muted-foreground   mb-2 block">Send To</Label>
+          <div className="grid grid-cols-2 sm:grid-cols-4 gap-2" role="radiogroup" aria-label="Send to">
             {audienceOptions.map((opt) => (
               <motion.button
                 key={opt.value}
                 type="button"
+                role="radio"
+                aria-checked={audience === opt.value}
                 onClick={() => setAudience(opt.value)}
                 whileHover={{ scale: 1.02 }}
                 whileTap={{ scale: 0.98 }}
@@ -165,7 +170,7 @@ const AdminNoticeForm = () => {
               exit={{ height: 0, opacity: 0 }}
               className="overflow-hidden space-y-2"
             >
-              <Label className="text-xs text-muted-foreground uppercase tracking-wide block">Search Users</Label>
+              <Label className="text-xs text-muted-foreground   block">Search Users</Label>
               <div className="relative">
                 <Input
                   placeholder="Type a name to search..."
@@ -210,6 +215,25 @@ const AdminNoticeForm = () => {
         <div>
           <Label className="text-sm text-muted-foreground">Message</Label>
           <Textarea className="mt-1 bg-secondary border-border resize-none rounded-xl" rows={3} placeholder="Write your notice..." value={message} onChange={(e) => setMessage(e.target.value)} />
+        </div>
+        <div>
+          <Label className="text-sm text-muted-foreground">Attach image or video (optional)</Label>
+          {mediaFile ? (
+            <div className="mt-1 flex items-center gap-2 text-xs rounded-xl border border-border bg-secondary p-2">
+              <Paperclip className="h-3.5 w-3.5" />
+              <span className="truncate flex-1">{mediaFile.name}</span>
+              <button type="button" onClick={() => setMediaFile(null)} aria-label="Remove attachment">
+                <X className="h-3.5 w-3.5" />
+              </button>
+            </div>
+          ) : (
+            <Input
+              type="file"
+              accept="image/*,video/*"
+              onChange={(e) => setMediaFile(e.target.files?.[0] ?? null)}
+              className="mt-1 bg-secondary border-border rounded-xl"
+            />
+          )}
         </div>
         <Button
           onClick={handleSend}

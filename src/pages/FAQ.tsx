@@ -10,13 +10,13 @@ import { useLanguage } from "@/i18n/LanguageProvider";
 import { supabase } from "@/integrations/supabase/client";
 
 const faqs = [
-  { q: "How much does it cost to register?", a: "Players pay a one-time fee of ৳100 via bKash. There are no hidden charges. Scouts can register for free." },
+  { q: "How much does it cost to register?", a: "Nothing. Signing up and uploading highlights is free for players, and scouts register for free too." },
   { q: "How are scouts verified?", a: "Every scout account is manually reviewed by our admin team. They must provide valid credentials before accessing the talent database." },
-  { q: "Is my video safe?", a: "Your video is only visible to verified, active scouts. We do not share your content externally." },
-  { q: "What sports are supported?", a: "Currently we support Football and Cricket, with plans to add more sports in the future." },
-  { q: "Can I update my video after payment?", a: "Yes, you can replace your video once. Contact support for additional changes." },
-  { q: "What if I'm under 18?", a: "Players under 18 must provide a guardian contact. All communication with scouts will be shared with the guardian." },
-  { q: "How do I report suspicious behaviour?", a: "Use the 'Report a Scout' button below or email legal@cholokheli.com immediately." },
+  { q: "Is my video safe?", a: "Your highlights are shown inside Cholo Kheli to verified scouts and other players. Make your account private in Settings and only verified scouts can see them. We do not share your content outside the platform." },
+  { q: "What sports are supported?", a: "Football, cricket and basketball." },
+  { q: "Can I edit or remove a highlight?", a: "Yes. Open the highlight on your profile to change its title and description, or delete it from the Upload page at any time." },
+  { q: "What if I'm under 18?", a: "Players under 18 sign up with a parent or guardian's consent and contact. A scout can only message a player after our team approves the request, and our team can read every conversation." },
+  { q: "How do I report suspicious behaviour?", a: "Use Report on the person's profile or on a message in the app, use the form below, or email legal@cholokheli.com." },
 ];
 
 const contactSchema = z.object({

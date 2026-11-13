@@ -8,6 +8,7 @@ import { Badge } from "@/components/ui/badge";
 import { useAuth } from "@/hooks/useAuth";
 import { supabase } from "@/integrations/supabase/client";
 import { safeMediaUrl } from "@/lib/sanitize";
+import { uniqueChannel } from "@/lib/realtime";
 
 interface Message {
   id: string;
@@ -104,7 +105,7 @@ const ChatInterface = React.forwardRef<HTMLDivElement, Props>(({ adminView = fal
 
     if (!user) return;
     const channel = supabase
-      .channel("chat-realtime")
+      .channel(uniqueChannel("chat-realtime"))
       .on("postgres_changes", { event: "INSERT", schema: "public", table: "messages" }, () => {
         fetchMessages(selectedUser?.id);
       })

@@ -9,21 +9,23 @@
 @theme inline {
   --color-background: hsl(var(--background));
   --color-foreground: hsl(var(--foreground));
-  --color-card: hsl(var(--card));
+  --color-card: hsl(var(--card) / var(--card-alpha));
   --color-card-foreground: hsl(var(--card-foreground));
   --color-popover: hsl(var(--popover));
   --color-popover-foreground: hsl(var(--popover-foreground));
   --color-primary: hsl(var(--primary));
   --color-primary-foreground: hsl(var(--primary-foreground));
-  --color-secondary: hsl(var(--secondary));
+  --color-secondary: hsl(var(--secondary) / var(--secondary-alpha));
   --color-secondary-foreground: hsl(var(--secondary-foreground));
-  --color-muted: hsl(var(--muted));
+  --color-muted: hsl(var(--muted) / var(--secondary-alpha));
   --color-muted-foreground: hsl(var(--muted-foreground));
   --color-accent: hsl(var(--accent));
   --color-accent-foreground: hsl(var(--accent-foreground));
   --color-destructive: hsl(var(--destructive));
   --color-destructive-foreground: hsl(var(--destructive-foreground));
-  --color-border: hsl(var(--border));
+  --color-border: hsl(var(--border) / var(--border-alpha));
+  --color-success: hsl(var(--success));
+  --color-candy: hsl(var(--candy));
   --color-input: hsl(var(--input));
   --color-ring: hsl(var(--ring));
   --color-sidebar: hsl(var(--sidebar-background));
@@ -35,6 +37,10 @@
   --color-sidebar-border: hsl(var(--sidebar-border));
   --color-sidebar-ring: hsl(var(--sidebar-ring));
   --radius: 0.75rem;
+  --radius-sm: var(--ck-radius-sm, 0.25rem);
+  --radius-md: var(--ck-radius-md, 0.375rem);
+  --radius-lg: var(--ck-radius-lg, 0.5rem);
+  --radius-xl: var(--ck-radius-xl, 0.75rem);
   /* Font stacks. The named brands (Helvetica, San Francisco) resolve to
      system fonts when installed on the user's device; open-source web
      substitutes ship as fallbacks so the site looks consistent everywhere.
@@ -421,3 +427,276 @@ iframe[src*="lovable.dev"][src*="badge"] {
   opacity: 0 !important;
   pointer-events: none !important;
 }
+
+
+/* ==============================================================================================
+   Signed-in screens: liquid glass (shared with the mobile app)
+   The public website keeps its paper look. When someone is inside the product (player, scout,
+   admin, messages, sign-in), the root layout puts .app-scope on <html> and these tokens take over,
+   including for dialogs and sheets rendered in portals.
+   ============================================================================================== */
+:root {
+  --card-alpha: 1; --secondary-alpha: 1; --border-alpha: 1;
+  --card-solid: 198 22% 96%;
+  --success: 145 63% 28%;
+  --candy: 205 100% 75%;
+  --ink-solid: 198 35% 14%;
+  --glass-edge: 0 0% 100% / 0.5;
+  --ease-ios: cubic-bezier(0.25, 0.1, 0.25, 1);
+  --bar-bg: hsl(198 22% 92% / 0.8);
+}
+.dark {
+  --card-solid: 200 38% 12%;
+  --success: 145 55% 55%;
+  --candy: 205 100% 78%;
+  --ink-solid: 0 0% 100%;
+  --glass-edge: 0 0% 100% / 0.12;
+  --bar-bg: hsl(200 40% 7% / 0.8);
+}
+
+html.app-scope {
+  --ck-radius-sm: 0.625rem; --ck-radius-md: 0.875rem; --ck-radius-lg: 1.375rem; --ck-radius-xl: calc(1.375rem + 4px);
+  --radius: 1.375rem;
+  background: hsl(165 14% 92%);
+
+  --background: 165 14% 92%;        /* Sage Mist #E7EEEC */
+  --foreground: 196 57% 13%;        /* Pitch Ink #0E2A33 */
+  --card: 0 0% 100%;
+  --card-alpha: 0.62;               /* frosted white over the gradient field */
+  --card-solid: 0 0% 99%;
+  --card-foreground: 196 57% 13%;
+  --popover: 0 0% 100%;
+  --popover-foreground: 196 57% 13%;
+  --primary: 194 77% 30%;           /* Field Teal, a touch deeper for contrast on glass */
+  --primary-foreground: 0 0% 100%;
+  --secondary: 196 40% 22%;
+  --secondary-alpha: 0.07;          /* ink tint: works on any glass or gradient */
+  --secondary-foreground: 196 57% 13%;
+  --muted: 196 40% 22%;
+  --muted-foreground: 198 14% 34%;  /* >= 5.3:1 on frosted white and on the mist */
+  --accent: 205 100% 94%;
+  --accent-foreground: 196 57% 13%;
+  --destructive: 4 72% 46%;
+  --destructive-foreground: 0 0% 100%;
+  --success: 145 63% 28%;
+  --border: 196 40% 22%;
+  --border-alpha: 0.11;
+  --input: 196 20% 80%;
+  --ring: 205 100% 60%;
+  --ink-solid: 196 57% 13%;
+  --glass-edge: 0 0% 100% / 0.75;
+  --glass-shadow: 0 10px 30px -14px hsl(196 57% 13% / 0.22);
+  --candy: 205 100% 75%;            /* #7EC8FF */
+
+  --sidebar-background: 0 0% 100%;
+  --sidebar-foreground: 196 57% 13%;
+  --sidebar-primary: 194 77% 32%;
+  --sidebar-primary-foreground: 0 0% 100%;
+  --sidebar-accent: 210 14% 93%;
+  --sidebar-accent-foreground: 196 57% 13%;
+  --sidebar-border: 210 12% 87%;
+  --sidebar-ring: 205 100% 65%;
+
+  /* Legacy aliases still referenced by older components */
+  --paper: 210 17% 96%;
+  --paper-deep: 210 14% 92%;
+  --ink: 196 57% 13%;
+  --teal-deep: 194 77% 32%;
+  --teal: 194 60% 40%;
+  --teal-soft: 196 40% 60%;
+  --green: 194 77% 32%;
+  --green-glow: 194 60% 40%;
+  --gradient-primary: linear-gradient(hsl(194 77% 32%), hsl(194 77% 32%));
+  --gradient-paper: linear-gradient(hsl(210 17% 96%), hsl(210 17% 96%));
+  --gradient-ink: linear-gradient(hsl(196 57% 13%), hsl(196 57% 13%));
+  --shadow-glow: 0 1px 2px hsl(196 57% 13% / 0.06);
+  --shadow-glow-strong: 0 4px 16px hsl(196 57% 13% / 0.08);
+
+  --ease-ios: cubic-bezier(0.25, 0.1, 0.25, 1);
+  --bar-bg: hsl(165 20% 95% / 0.78);
+  --field-1: 186 38% 74%;
+  --field-2: 205 100% 86%;
+  --field-3: 160 24% 78%;
+  --field-4: 194 42% 62%;
+}
+html.app-scope.dark {
+  background: hsl(198 30% 5%);
+
+  --background: 198 30% 5%;
+  --foreground: 0 0% 97%;
+  --card: 0 0% 100%;
+  --card-alpha: 0.07;
+  --card-solid: 198 18% 11%;
+  --card-foreground: 0 0% 97%;
+  --popover: 198 18% 12%;
+  --popover-foreground: 0 0% 97%;
+  --primary: 194 72% 66%;
+  --primary-foreground: 196 57% 9%;
+  --secondary: 0 0% 100%;
+  --secondary-alpha: 0.09;
+  --secondary-foreground: 0 0% 95%;
+  --muted: 0 0% 100%;
+  --muted-foreground: 200 10% 70%;
+  --accent: 205 60% 22%;
+  --accent-foreground: 0 0% 97%;
+  --destructive: 4 90% 64%;
+  --destructive-foreground: 0 0% 100%;
+  --success: 145 55% 55%;
+  --border: 0 0% 100%;
+  --border-alpha: 0.12;
+  --input: 0 0% 25%;
+  --ring: 205 100% 75%;
+  --ink-solid: 0 0% 100%;
+  --glass-edge: 0 0% 100% / 0.14;
+  --glass-shadow: 0 10px 30px -14px hsl(0 0% 0% / 0.6);
+  --candy: 205 100% 78%;
+
+  --sidebar-background: 204 14% 10%;
+  --sidebar-foreground: 0 0% 95%;
+  --sidebar-primary: 194 72% 63%;
+  --sidebar-primary-foreground: 196 57% 9%;
+  --sidebar-accent: 204 10% 16%;
+  --sidebar-accent-foreground: 0 0% 95%;
+  --sidebar-border: 204 8% 20%;
+  --sidebar-ring: 205 100% 75%;
+
+  --paper: 204 14% 10%;
+  --paper-deep: 0 0% 0%;
+  --ink: 0 0% 0%;
+  --teal-deep: 194 72% 63%;
+  --teal: 194 72% 63%;
+  --teal-soft: 194 50% 75%;
+  --green: 194 72% 63%;
+  --green-glow: 194 72% 55%;
+  --gradient-primary: linear-gradient(hsl(194 72% 63%), hsl(194 72% 63%));
+  --gradient-paper: linear-gradient(hsl(204 14% 10%), hsl(204 14% 10%));
+  --gradient-ink: linear-gradient(hsl(0 0% 0%), hsl(0 0% 0%));
+  --shadow-glow: none;
+  --shadow-glow-strong: none;
+  --bar-bg: hsl(198 30% 5% / 0.72);
+  --field-1: 190 60% 22%;
+  --field-2: 205 80% 28%;
+  --field-3: 170 40% 16%;
+  --field-4: 194 60% 30%;
+}
+html.app-scope body { background-image: none; min-height: 100dvh; line-height: 1.375; }
+html.app-scope body::before {
+  content: ""; position: fixed; inset: -15%; z-index: -1; pointer-events: none;
+  background:
+    radial-gradient(38% 32% at 12% 8%, hsl(var(--field-1) / 0.75), transparent 70%),
+    radial-gradient(42% 36% at 92% 22%, hsl(var(--field-2) / 0.6), transparent 70%),
+    radial-gradient(48% 40% at 22% 78%, hsl(var(--field-3) / 0.7), transparent 72%),
+    radial-gradient(40% 38% at 88% 92%, hsl(var(--field-4) / 0.45), transparent 70%);
+  filter: blur(32px);
+  transform: translateZ(0);
+}
+html.app-scope input, html.app-scope select, html.app-scope textarea { font-size: 16px; }
+html.app-scope :focus-visible { outline: 2px solid hsl(var(--ring)); outline-offset: 2px; }
+
+/* ---------- iOS building blocks ---------- */
+@layer components {
+  /* Large title header used at the top of tab-root screens */
+  .large-title { font-size: 2rem; line-height: 1.15; font-weight: 700; letter-spacing: -0.022em; }
+  .title-2 { font-size: 1.375rem; line-height: 1.25; font-weight: 650; letter-spacing: -0.016em; }
+  .headline { font-size: 1.0625rem; line-height: 1.3; font-weight: 600; }
+  .footnote { font-size: 0.8125rem; line-height: 1.38; color: hsl(var(--muted-foreground)); }
+
+  /* Grouped inset list */
+  .ios-group { background: hsl(var(--card) / var(--card-alpha)); border-radius: var(--radius); overflow: hidden;
+               box-shadow: inset 0 0 0 1px hsl(var(--glass-edge)), var(--glass-shadow); }
+  /* Frosted surfaces: cards sit on a still gradient, so a translucent fill reads as glass without
+     paying for a blur. Overlays that float over scrolling content get a real blur (.glass-strong). */
+  html.app-scope .bg-card { box-shadow: inset 0 0 0 1px hsl(var(--glass-edge)), var(--glass-shadow); }
+  .glass-strong {
+    background: hsl(var(--card-solid) / 0.82);
+    backdrop-filter: saturate(170%) blur(28px); -webkit-backdrop-filter: saturate(170%) blur(28px);
+    box-shadow: inset 0 0 0 1px hsl(var(--glass-edge)), 0 20px 50px -20px hsl(196 57% 13% / 0.35);
+  }
+  /* Round frosted icon button, as in the header */
+  .glass-icon {
+    display: grid; place-items: center; width: 2.75rem; height: 2.75rem; border-radius: 9999px;
+    background: hsl(var(--card) / calc(var(--card-alpha) + 0.1)); color: hsl(var(--foreground));
+    box-shadow: inset 0 0 0 1px hsl(var(--glass-edge)), 0 6px 16px -10px hsl(196 57% 13% / 0.3);
+  }
+  /* Hairline between rows, inset from the left like iOS lists. */
+  .ios-group > * + * {
+    background-image: linear-gradient(hsl(var(--border) / var(--border-alpha)), hsl(var(--border) / var(--border-alpha)));
+    background-repeat: no-repeat; background-position: right top; background-size: calc(100% - 1rem) 1px;
+  }
+  .ios-group-label { padding: 0 1rem 0.375rem; font-size: 0.8125rem; color: hsl(var(--muted-foreground)); }
+  .ios-row { display: flex; align-items: center; gap: 0.75rem; min-height: 2.875rem; padding: 0.625rem 1rem; }
+
+  /* Frosted bars */
+  .ios-bar { background: var(--bar-bg); backdrop-filter: saturate(180%) blur(20px); -webkit-backdrop-filter: saturate(180%) blur(20px); }
+
+  /* Touch feedback: the only motion most surfaces have */
+  .press { transition: transform 160ms var(--ease-ios), opacity 160ms var(--ease-ios); }
+  .press:active { transform: scale(0.97); opacity: 0.85; }
+}
+
+
+/* ---------- Legacy class names, restyled flat ---------- */
+html.app-scope .text-gradient { color: hsl(var(--primary)); }
+html.app-scope .text-green, html.app-scope .text-teal { color: hsl(var(--primary)); }
+html.app-scope .bg-green, html.app-scope .bg-teal { background-color: hsl(var(--primary)); }
+html.app-scope .border-green { border-color: hsl(var(--primary) / 0.4); }
+html.app-scope .glow, html.app-scope .glow-strong, html.app-scope .glow-green { box-shadow: var(--shadow-glow); }
+html.app-scope .glass, html.app-scope .glass-hero, html.app-scope .glass-green { background: hsl(var(--card) / var(--card-alpha)); box-shadow: inset 0 0 0 1px hsl(var(--glass-edge)), var(--glass-shadow); }
+html.app-scope .hover-lift, html.app-scope .card-hover, html.app-scope .card-3d { transition: none; }
+html.app-scope .chat-bubble-own { border-radius: 1.125rem 1.125rem 0.375rem 1.125rem; }
+html.app-scope .chat-bubble-other { border-radius: 1.125rem 1.125rem 1.125rem 0.375rem; }
+html.app-scope .container { padding-inline: 1rem; margin-inline: auto; max-width: 1280px; }
+html.app-scope .truncate-mobile { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; max-width: 200px; }
+html.app-scope .page-wrapper { min-height: 100vh; width: 100%; overflow-x: hidden; }
+html.app-scope .surface-paper { background: hsl(var(--background)); color: hsl(var(--foreground)); }
+html.app-scope .surface-card { background: hsl(var(--card) / var(--card-alpha)); }
+html.app-scope .surface-ink { background: hsl(var(--foreground)); color: hsl(var(--background)); }
+html.app-scope .surface-teal { background: hsl(var(--primary)); color: hsl(var(--primary-foreground)); }
+html.app-scope .wash, html.app-scope .wash-ink { position: relative; isolation: isolate; }
+html.app-scope .accent-line { height: 1px; background: hsl(var(--border) / var(--border-alpha)); }
+
+html.app-scope .apple-glass,
+html.app-scope .glass-hub-card,
+html.app-scope .selections-panel {
+  position: relative;
+  background: hsl(var(--card) / var(--card-alpha));
+  border: 0;
+  border-radius: var(--radius);
+  box-shadow: inset 0 0 0 1px hsl(var(--glass-edge)), var(--glass-shadow);
+}
+html.app-scope .glass-card { content-visibility: auto; contain-intrinsic-size: auto 160px; }
+
+
+.status-pill {
+  display: inline-flex; align-items: center; gap: 0.25rem; padding: 0.2rem 0.55rem;
+  border-radius: 9999px; font-size: 0.75rem; line-height: 1; font-weight: 600; white-space: nowrap;
+}
+.status-pill.is-pending { background: hsl(var(--muted) / var(--secondary-alpha)); color: hsl(var(--muted-foreground)); }
+.status-pill.is-approved { background: hsl(var(--success) / 0.14); color: hsl(var(--success)); }
+.status-pill.is-declined { background: hsl(var(--destructive) / 0.12); color: hsl(var(--destructive)); }
+
+/* Loading placeholder: a calm fade, no sweeping shimmer */
+.sk-shimmer, html.app-scope .shimmer { background: hsl(var(--muted) / var(--secondary-alpha)); border-radius: 0.5rem; animation: ck-breathe 1.6s ease-in-out infinite; }
+@keyframes ck-breathe { 50% { opacity: 0.55; } }
+
+/* Decorative loops from the website era are switched off in the app */
+html.app-scope .animate-float, html.app-scope .animate-float-delayed, html.app-scope .animate-pulse-glow, html.app-scope .scan-line { animation: none !important; }
+
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after { animation-duration: 0.01ms !important; animation-iteration-count: 1 !important; transition-duration: 0.01ms !important; scroll-behavior: auto !important; }
+}
+
+/* Scrollbars hidden on horizontal strips while scrolling still works */
+.no-scrollbar, .scrollbar-none { -ms-overflow-style: none; scrollbar-width: none; }
+.no-scrollbar::-webkit-scrollbar, .scrollbar-none::-webkit-scrollbar { display: none; }
+
+/* Desktop: the sidebar carries the brand, so the top bar becomes a clear strip for the bell. */
+@media (min-width: 1024px) {
+  html.app-scope header.ios-bar { background: transparent; backdrop-filter: none; -webkit-backdrop-filter: none; }
+}
+
+/* Typography: balanced headlines, no orphaned last words, proper kerning and figures. */
+h1, h2, h3 { text-wrap: balance; }
+p, li, blockquote { text-wrap: pretty; }
+body { font-kerning: normal; font-feature-settings: "kern", "liga", "calt"; -moz-osx-font-smoothing: grayscale; }
+.tabular-nums, [data-numeric] { font-variant-numeric: tabular-nums; }

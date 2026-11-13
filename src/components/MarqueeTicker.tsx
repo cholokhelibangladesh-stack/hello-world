@@ -4,12 +4,12 @@ import { Users, Shield, Trophy, MapPin, Zap } from "lucide-react";
 const items = [
   { icon: Trophy,  text: "340+ Talents Discovered" },
   { icon: Shield,  text: "120+ Verified Scouts" },
-  { icon: Zap,     text: "৳100 Registration" },
+  { icon: Zap,     text: "Free to join" },
   { icon: MapPin,  text: "8 Divisions Covered" },
   { icon: Users,   text: "2,500+ Players Registered" },
   { icon: Trophy,  text: "340+ Talents Discovered" },
   { icon: Shield,  text: "120+ Verified Scouts" },
-  { icon: Zap,     text: "৳100 Registration" },
+  { icon: Zap,     text: "Free to join" },
   { icon: MapPin,  text: "8 Divisions Covered" },
   { icon: Users,   text: "2,500+ Players Registered" },
 ];

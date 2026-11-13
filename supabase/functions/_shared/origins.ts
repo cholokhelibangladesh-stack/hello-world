@@ -1,0 +1,15 @@
+// Browser origins allowed to call our edge functions (no wildcards).
+// Override per function with the ALLOWED_ORIGINS secret (comma-separated).
+export const DEFAULT_ALLOWED_ORIGINS = [
+  "https://cholokheli.lovable.app",
+  "https://id-preview--74d5d86b-6428-4e07-8c5b-c663d82fd606.lovable.app",
+  "https://id-preview--be579631-1dac-4942-9680-4157262d2c84.lovable.app",
+  "https://localhost", // Android app (Capacitor WebView)
+  "capacitor://localhost", // iOS app (Capacitor WebView)
+  "http://localhost:8080", // local dev
+];
+
+export function allowedOrigins(): string[] {
+  const fromEnv = Deno.env.get("ALLOWED_ORIGINS")?.split(",").map((o) => o.trim()).filter(Boolean);
+  return fromEnv && fromEnv.length ? fromEnv : DEFAULT_ALLOWED_ORIGINS;
+}

@@ -1,18 +1,25 @@
-import { createContext, useContext, useEffect, useState, ReactNode } from "react";
-import { User, Session } from "@supabase/supabase-js";
+import { createContext, useCallback, useContext, useEffect, useRef, useState, ReactNode } from "react";
+import { disablePushForThisDevice } from "@/lib/push";
+import type { User, Session } from "@supabase/supabase-js";
 import { supabase } from "@/integrations/supabase/client";
+import { publicUrl } from "@/lib/publicUrl";
 
-type AppRole = "player" | "scout" | "admin";
+export type AppRole = "player" | "scout" | "admin";
+export type ScoutStatus = "pending" | "active" | "rejected" | null;
 
 interface AuthContextType {
   user: User | null;
   session: Session | null;
   loading: boolean;
   role: AppRole | null;
-  scoutStatus: "pending" | "active" | "rejected" | null;
-  signUp: (email: string, password: string, meta: Record<string, string>) => Promise<{ error: any }>;
-  signIn: (email: string, password: string) => Promise<{ error: any }>;
+  scoutStatus: ScoutStatus;
+  /** Signed in with a password but a verified authenticator code is still required. */
+  needsMfa: boolean;
+  signUp: (email: string, password: string, meta: Record<string, unknown>) => Promise<{ error: Error | null }>;
+  signIn: (email: string, password: string) => Promise<{ error: Error | null }>;
   signOut: () => Promise<void>;
+  /** Re-reads role, scout status and MFA level (after onboarding, verification or step-up). */
+  refreshRole: () => Promise<void>;
 }
 
 const AuthContext = createContext<AuthContextType | undefined>(undefined);
@@ -22,66 +29,81 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
   const [session, setSession] = useState<Session | null>(null);
   const [loading, setLoading] = useState(true);
   const [role, setRole] = useState<AppRole | null>(null);
-  const [scoutStatus, setScoutStatus] = useState<"pending" | "active" | "rejected" | null>(null);
+  const [scoutStatus, setScoutStatus] = useState<ScoutStatus>(null);
+  const [needsMfa, setNeedsMfa] = useState(false);
+  const lastUserId = useRef<string | null>(null);
 
-  const fetchRole = async (userId: string) => {
-    const { data } = await supabase
-      .from("user_roles")
-      .select("role")
-      .eq("user_id", userId)
-      .maybeSingle();
-    const nextRole = (data?.role as AppRole) ?? null;
-    setRole(nextRole);
-
-    if (nextRole === "scout") {
-      const { data: sp } = await supabase
-        .from("scout_profiles")
-        .select("verification_status")
-        .eq("user_id", userId)
-        .maybeSingle();
-      setScoutStatus((sp?.verification_status as any) ?? null);
+  const loadAccess = useCallback(async (userId: string) => {
+    try {
+      const [{ data: roleRows }, aal] = await Promise.all([
+        supabase.from("user_roles").select("role").eq("user_id", userId),
+        supabase.auth.mfa.getAuthenticatorAssuranceLevel().catch(() => ({ data: null })),
+      ]);
+      // An account can hold more than one role (e.g. a player later promoted to admin);
+      // the most privileged one decides which app they see.
+      const held = new Set((roleRows ?? []).map((r) => r.role as AppRole));
+      const nextRole: AppRole | null = held.has("admin") ? "admin" : held.has("scout") ? "scout" : held.has("player") ? "player" : null;
+      let status: ScoutStatus = null;
+      if (nextRole === "scout") {
+        const { data: sp } = await supabase
+          .from("scout_profiles").select("verification_status").eq("user_id", userId).maybeSingle();
+        status = (sp?.verification_status as ScoutStatus) ?? "pending";
+      }
+      const a = aal?.data as { currentLevel?: string | null; nextLevel?: string | null } | null;
+      setNeedsMfa(!!a && a.nextLevel === "aal2" && a.currentLevel !== "aal2");
+      setRole(nextRole);
+      setScoutStatus(status);
+    } catch (error) {
+      console.warn("role fetch failed", error);
+      setRole(null);
+      setScoutStatus(null);
+    } finally {
+      setLoading(false);
     }
-    setLoading(false);
-  };
-
-  useEffect(() => {
-    const { data: { subscription } } = supabase.auth.onAuthStateChange(
-      async (_event, session) => {
-        setSession(session);
-        setUser(session?.user ?? null);
-        if (session?.user) {
-          // Keep loading=true until role is resolved to avoid a
-          // brief `user && !role` window that would trip ProtectedRoute.
-          setTimeout(() => fetchRole(session.user.id), 0);
-        } else {
-          setRole(null);
-          setScoutStatus(null);
-          setLoading(false);
-        }
-      }
-    );
-
-    supabase.auth.getSession().then(({ data: { session } }) => {
-      setSession(session);
-      setUser(session?.user ?? null);
-      if (session?.user) {
-        fetchRole(session.user.id);
-      } else {
-        setLoading(false);
-      }
-    });
-
-    return () => subscription.unsubscribe();
   }, []);
 
-  const signUp = async (email: string, password: string, meta: Record<string, string>) => {
+  useEffect(() => {
+    const apply = (next: Session | null) => {
+      setSession(next);
+      setUser(next?.user ?? null);
+      if (next?.user) {
+        // Token refreshes fire this too; only re-resolve access when the account changes.
+        if (lastUserId.current !== next.user.id) {
+          lastUserId.current = next.user.id;
+          setLoading(true);
+          setTimeout(() => loadAccess(next.user.id), 0);
+        }
+      } else {
+        lastUserId.current = null;
+        setRole(null);
+        setScoutStatus(null);
+        setNeedsMfa(false);
+        setLoading(false);
+      }
+    };
+    const { data: { subscription } } = supabase.auth.onAuthStateChange((event, next) => {
+      if (event === "MFA_CHALLENGE_VERIFIED" && next?.user) {
+        setTimeout(() => loadAccess(next.user.id), 0);
+      }
+      apply(next);
+    });
+    supabase.auth.getSession().then(({ data: { session: s } }) => apply(s));
+    return () => subscription.unsubscribe();
+  }, [loadAccess]);
+
+  const refreshRole = useCallback(async () => {
+    const { data } = await supabase.auth.getUser();
+    if (data.user) {
+      setLoading(true);
+      await loadAccess(data.user.id);
+    }
+  }, [loadAccess]);
+
+  const signUp = async (email: string, password: string, meta: Record<string, unknown>) => {
     const { error } = await supabase.auth.signUp({
       email,
       password,
-      options: {
-        emailRedirectTo: window.location.origin,
-        data: meta,
-      },
+      options: { emailRedirectTo: publicUrl("/auth"), data: meta },
     });
     return { error };
   };
@@ -92,13 +114,16 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
   };
 
   const signOut = async () => {
+    await disablePushForThisDevice().catch(() => {});
     await supabase.auth.signOut();
+    lastUserId.current = null;
     setRole(null);
     setScoutStatus(null);
+    setNeedsMfa(false);
   };
 
   return (
-    <AuthContext.Provider value={{ user, session, loading, role, scoutStatus, signUp, signIn, signOut }}>
+    <AuthContext.Provider value={{ user, session, loading, role, scoutStatus, needsMfa, signUp, signIn, signOut, refreshRole }}>
       {children}
     </AuthContext.Provider>
   );

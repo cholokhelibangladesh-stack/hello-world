@@ -740,7 +740,7 @@ export default function HeroScrollVideo({
                   </Link>
                 ) : (
                   <>
-                    <Link to="/auth">
+                    <Link to="/auth" search={{ mode: "signup", role: "player" } as never}>
                       <Button
                         size="lg"
                         className="font-medium text-base px-9 py-6 rounded-full"
@@ -752,7 +752,7 @@ export default function HeroScrollVideo({
                         {joinLabel} <ArrowRight className="ml-2 h-4 w-4" />
                       </Button>
                     </Link>
-                    <Link to="/auth" search={{ role: "scout" }}>
+                    <Link to="/auth" search={{ mode: "signup", role: "scout" } as never}>
                       <Button
                         size="lg"
                         variant="outline"

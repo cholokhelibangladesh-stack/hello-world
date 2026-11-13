@@ -1,9 +1,13 @@
 import { useState, useEffect, useRef } from "react";
-import { Bell, Award, Star, Info, FileText, X, Flag, CheckCheck } from "lucide-react";
+import { Bell, Award, Star, Info, FileText, X, Flag, CheckCheck, Heart, MessageCircle, UserPlus, Mail, ShieldAlert, Film, BadgeCheck, Megaphone } from "lucide-react";
+import { useNavigate } from "@tanstack/react-router";
+import { pathForNotification } from "@/lib/push";
+import { timeAgo } from "@/lib/taxonomy";
 import { Button } from "@/components/ui/button";
 import { useAuth } from "@/hooks/useAuth";
 import { supabase } from "@/integrations/supabase/client";
 import ReactDOM from "react-dom";
+import { uniqueChannel } from "@/lib/realtime";
 
 interface Notification {
   id: string;
@@ -16,6 +20,17 @@ interface Notification {
 }
 
 const typeIcons: Record<string, any> = {
+  like: Heart,
+  comment: MessageCircle,
+  follow: UserPlus,
+  message: Mail,
+  dm: MessageCircle,
+  new_video: Film,
+  video_removed: ShieldAlert,
+  video_restored: Film,
+  account_notice: ShieldAlert,
+  notice: Megaphone,
+  scout_verification: BadgeCheck,
   info: Info,
   certificate: Award,
   feedback: Star,
@@ -30,11 +45,18 @@ const typeColors: Record<string, string> = {
   feedback: "text-foreground",
   admin_notice: "text-muted-foreground",
   flag: "text-destructive",
+  like: "text-[#FF3B5C]",
+  follow: "text-primary",
+  comment: "text-primary",
+  message: "text-primary",
+  video_removed: "text-destructive",
+  account_notice: "text-destructive",
   info: "text-muted-foreground",
 };
 
 const NotificationBell = () => {
-  const { user } = useAuth();
+  const { user, role } = useAuth();
+  const navigate = useNavigate();
   const [notifications, setNotifications] = useState<Notification[]>([]);
   const [open, setOpen] = useState(false);
   const bellRef = useRef<HTMLDivElement>(null);
@@ -57,14 +79,14 @@ const NotificationBell = () => {
     fetchNotifications();
 
     const channel = supabase
-      .channel(`notifications-${user.id}`)
+      .channel(uniqueChannel(`notifications-${user.id}`))
       .on("postgres_changes", {
         event: "INSERT",
         schema: "public",
         table: "notifications",
         filter: `user_id=eq.${user.id}`,
       }, (payload) => {
-        setNotifications((prev) => [payload.new as Notification, ...prev]);
+        setNotifications((prev) => (prev.some((n) => n.id === (payload.new as Notification).id) ? prev : [payload.new as Notification, ...prev].slice(0, 50)));
       })
       .on("postgres_changes", {
         event: "UPDATE",
@@ -139,13 +161,13 @@ const NotificationBell = () => {
     <div
       ref={dropdownRef}
       style={dropdownStyle}
-      className="bg-card border border-border rounded-2xl shadow-2xl max-h-[75vh] overflow-hidden flex flex-col"
+      className="glass-strong rounded-[24px] max-h-[75vh] overflow-hidden flex flex-col"
     >
       {/* Header */}
       <div className="flex items-center justify-between px-4 py-3 border-b border-border shrink-0">
         <div className="flex items-center gap-2">
           <Bell className="h-4 w-4 text-foreground" />
-          <h3 className="font-display text-base text-foreground">NOTIFICATIONS</h3>
+          <h3 className="headline text-foreground">Notifications</h3>
           {unreadCount > 0 && (
             <span className="text-xs bg-foreground/15 text-foreground rounded-full px-2 py-0.5 font-semibold">
               {unreadCount} new
@@ -170,6 +192,7 @@ const NotificationBell = () => {
           <div className="flex flex-col items-center justify-center py-12 gap-3">
             <Bell className="h-8 w-8 text-muted-foreground/40" />
             <p className="text-sm text-muted-foreground">No notifications yet</p>
+            <p className="px-8 text-center text-xs text-muted-foreground">Likes, comments, new followers and messages from the team show up here.</p>
           </div>
         ) : (
           notifications.map((n) => {
@@ -178,7 +201,16 @@ const NotificationBell = () => {
             return (
               <div
                 key={n.id}
-                onClick={() => !n.read && markRead(n.id)}
+                role="button"
+                tabIndex={0}
+                onClick={() => {
+                  if (!n.read) markRead(n.id);
+                  setOpen(false);
+                  navigate({ to: pathForNotification(n.type, n.metadata, role) as never });
+                }}
+                onKeyDown={(e) => {
+                  if (e.key === "Enter") { if (!n.read) markRead(n.id); setOpen(false); navigate({ to: pathForNotification(n.type, n.metadata, role) as never }); }
+                }}
                 className={`p-4 hover:bg-secondary/50 cursor-pointer transition-colors ${!n.read ? "bg-foreground/5" : ""}`}
               >
                 <div className="flex items-start gap-3">
@@ -189,12 +221,12 @@ const NotificationBell = () => {
                     <p className={`text-sm font-medium leading-tight ${!n.read ? "text-foreground" : "text-muted-foreground"}`}>
                       {n.title}
                     </p>
-                    <p className="text-xs text-muted-foreground mt-0.5 leading-relaxed line-clamp-2">{n.message}</p>
+                    {n.message && <p className="text-xs text-muted-foreground mt-0.5 leading-relaxed line-clamp-2 whitespace-pre-line">{n.message}</p>}
                     <p className="text-[10px] text-muted-foreground/60 mt-1">
-                      {new Date(n.created_at).toLocaleString()}
+                      {timeAgo(n.created_at)}
                     </p>
                   </div>
-                  {!n.read && <div className="w-2 h-2 rounded-full bg-foreground shrink-0 mt-2" />}
+                  {!n.read && <div className="w-2 h-2 rounded-full bg-primary shrink-0 mt-2" aria-label="Unread" />}
                 </div>
               </div>
             );
@@ -209,12 +241,12 @@ const NotificationBell = () => {
     <div ref={bellRef} className="relative">
       <button
         onClick={() => setOpen((v) => !v)}
-        className="relative p-2 rounded-lg hover:bg-secondary transition-colors"
-        aria-label="Notifications"
+        className="relative grid h-11 w-11 place-items-center rounded-full text-foreground"
+        aria-label={unreadCount > 0 ? `Notifications, ${unreadCount} unread` : "Notifications"}
       >
-        <Bell className="h-5 w-5 text-muted-foreground" />
+        <Bell className="h-[22px] w-[22px]" strokeWidth={1.8} />
         {unreadCount > 0 && (
-          <span className="absolute -top-0.5 -right-0.5 min-w-[18px] h-[18px] rounded-full bg-foreground text-background text-[10px] font-bold flex items-center justify-center px-1 pointer-events-none">
+          <span className="absolute -right-0.5 -top-0.5 min-w-[18px] h-[18px] rounded-full bg-destructive ring-2 ring-background text-white text-[10px] font-semibold flex items-center justify-center px-1 pointer-events-none">
             {unreadCount > 9 ? "9+" : unreadCount}
           </span>
         )}

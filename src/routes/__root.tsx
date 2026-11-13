@@ -1,20 +1,31 @@
-import { Outlet, createRootRouteWithContext, HeadContent, Scripts, useRouter } from "@tanstack/react-router";
-import { useEffect } from "react";
+import { Outlet, createRootRoute, HeadContent, Scripts, useRouter } from "@tanstack/react-router";
+import { useEffect, useState } from "react";
 
 
-import type { QueryClient } from "@tanstack/react-query";
 import { TooltipProvider } from "@/components/ui/tooltip";
 import { Toaster } from "@/components/ui/toaster";
 import { Toaster as Sonner } from "@/components/ui/sonner";
 import { AuthProvider } from "@/hooks/useAuth";
 import { ThemeProvider } from "@/hooks/useTheme";
-import FloatingHeader from "@/components/FloatingHeader";
-import SiteFooter from "@/components/SiteFooter";
 import { AppErrorBoundary } from "@/components/AppErrorBoundary";
-import CookieConsentBanner from "@/components/CookieConsentBanner";
 import { LanguageProvider } from "@/i18n/LanguageProvider";
 import { reportError } from "@/lib/errors";
 import appCss from "@/index.css?url";
+import logoMark from "@/assets/cholo-kheli-mark.png.asset.json";
+import AppFrame from "@/components/app/AppFrame";
+import FloatingHeader from "@/components/FloatingHeader";
+import SiteFooter from "@/components/SiteFooter";
+import CookieConsentBanner from "@/components/CookieConsentBanner";
+import { useRouterState } from "@tanstack/react-router";
+import { useAuth } from "@/hooks/useAuth";
+import BanGuard from "@/components/BanGuard";
+
+const APP_PREFIXES = ["/player", "/scout", "/admin", "/resume", "/messages"];
+function useInAppShell() {
+  const pathname = useRouterState({ select: (s) => s.location.pathname });
+  const { user } = useAuth();
+  return !!user && APP_PREFIXES.some((p) => pathname === p || pathname.startsWith(p + "/"));
+}
 
 function RootRouteError({ error, reset }: { error: Error; reset: () => void }) {
   const router = useRouter();
@@ -55,23 +66,35 @@ function RootRouteError({ error, reset }: { error: Error; reset: () => void }) {
   );
 }
 
-export const Route = createRootRouteWithContext<{ queryClient: QueryClient }>()({
+export const Route = createRootRoute({
   head: () => ({
     meta: [
       { charSet: "utf-8" },
-      { name: "viewport", content: "width=device-width, initial-scale=1" },
-      { title: "Cholo Kheli — Bangladesh Sports, Digitised" },
+      { name: "viewport", content: "width=device-width, initial-scale=1, viewport-fit=cover" },
+      { title: "Cholo Kheli" },
       { name: "description", content: "Cholo Kheli connects Bangladesh's grassroots talent with verified scouts. Safe, transparent, beautifully simple." },
       { property: "og:title", content: "Cholo Kheli — Bangladesh Sports, Digitised" },
       { property: "og:description", content: "Cholo Kheli connects Bangladesh's grassroots talent with verified scouts. Safe, transparent, beautifully simple." },
       { property: "og:type", content: "website" },
       { name: "twitter:card", content: "summary_large_image" },
+      { name: "mobile-web-app-capable", content: "yes" },
+      { name: "apple-mobile-web-app-capable", content: "yes" },
+      { name: "apple-mobile-web-app-status-bar-style", content: "black-translucent" },
+      { name: "apple-mobile-web-app-title", content: "Cholo Kheli" },
+      { name: "theme-color", content: "#F2F4F6", media: "(prefers-color-scheme: light)" },
+      { name: "theme-color", content: "#000000", media: "(prefers-color-scheme: dark)" },
     ],
     links: [
       { rel: "preconnect", href: "https://fonts.googleapis.com" },
       { rel: "preconnect", href: "https://fonts.gstatic.com", crossOrigin: "anonymous" },
       { rel: "stylesheet", href: "https://fonts.googleapis.com/css2?family=Inter+Tight:wght@300;400;500;600;700&family=Manrope:wght@300;400;500;600;700;800&display=swap" },
       { rel: "stylesheet", href: appCss },
+      { rel: "icon", href: "/favicon.ico" },
+      { rel: "apple-touch-icon", href: "/apple-touch-icon.png" },
+      // Preload the intro logo mark so the loading screen paints
+      // instantly on first paint.
+      { rel: "preload", href: logoMark.url, as: "image", type: "image/png" },
+
     ],
   }),
   errorComponent: RootRouteError,
@@ -96,10 +119,8 @@ function AppShell() {
           <TooltipProvider>
             <Toaster />
             <Sonner />
-            <FloatingHeader />
-            <Outlet />
-            <SiteFooter />
-            <CookieConsentBanner />
+            <BanGuard />
+            <ShellRouter />
           </TooltipProvider>
         </AuthProvider>
       </LanguageProvider>
@@ -107,29 +128,90 @@ function AppShell() {
   );
 }
 
+/**
+ * Signed-in app routes get the app frame (nav bar + tab bar). The welcome, sign-in and
+ * password-reset screens are full-bleed; informational pages get a simple back bar.
+ */
+function ShellRouter() {
+  const inApp = useInAppShell();
+  const pathname = useRouterState({ select: (s) => s.location.pathname });
+  const fullBleed = pathname.startsWith("/auth") || pathname.startsWith("/reset-password") || pathname.startsWith("/blocked");
+  // Product screens use the liquid-glass palette; the public website keeps its paper look.
+  const appSurface = inApp || fullBleed;
+  useEffect(() => { document.documentElement.classList.toggle("app-scope", appSurface); }, [appSurface]);
+  if (inApp) {
+    return (
+      <AppFrame>
+        <Outlet />
+      </AppFrame>
+    );
+  }
+  if (fullBleed) {
+    return (
+      <main id="main">
+        <Outlet />
+      </main>
+    );
+  }
+  // The public website: floating header, the page, the footer.
+  return (
+    <>
+      <FloatingHeader />
+      <main id="main">
+        <Outlet />
+      </main>
+      <SiteFooter />
+      <CookieConsentBanner />
+    </>
+  );
+}
+
 
 function RootDocument({ children }: { children: React.ReactNode }) {
   return (
-    <html lang="en">
+    <html lang="en" suppressHydrationWarning>
       <head>
         <script
           dangerouslySetInnerHTML={{
-            __html:
-              "(function(){try{var t=localStorage.getItem('theme');if(t==='dark')document.documentElement.classList.add('dark');}catch(e){}})();",
+            __html: "globalThis.__name=globalThis.__name||((fn)=>fn);try{if(/^\\/(player|scout|admin|resume|messages|auth|reset-password|blocked)(\\/|$)/.test(location.pathname))document.documentElement.classList.add('app-scope')}catch(e){}",
           }}
         />
         <style
           dangerouslySetInnerHTML={{
             __html:
-              "html{background:#d6dee2;color-scheme:light}html.dark{background:#030303;color-scheme:dark}body{margin:0;background:inherit;color:hsl(var(--foreground));overflow-x:hidden}",
+              "html{background:#F2F4F6;color-scheme:light}html.dark{background:#000;color-scheme:dark}@media (prefers-color-scheme:dark){html:not(.light){background:#000}}html.dark #ck-boot-screen{color:#F5F7F8}body{margin:0;background:inherit;color:hsl(var(--foreground));overflow-x:hidden}#ck-boot-screen{position:fixed;inset:0;z-index:2147483647;display:grid;place-items:center;background:inherit;color:#0E2A33;font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif}#ck-boot-screen>div{display:grid;place-items:center;gap:18px;text-align:center}#ck-boot-screen img{width:76px;height:76px;object-fit:contain;filter:drop-shadow(0 10px 26px rgba(0,0,0,.42))}#ck-boot-screen strong{display:block;font-size:17px;font-weight:600}#ck-boot-screen span{display:block;font-size:13px;color:#5F6B71}@media (prefers-reduced-motion:no-preference){#ck-boot-screen img{animation:ckBootPulse 1.15s ease-in-out infinite alternate}@keyframes ckBootPulse{from{transform:scale(.96);opacity:.72}to{transform:scale(1);opacity:1}}}",
           }}
         />
         <HeadContent />
       </head>
       <body>
+        <BootScreen />
         {children}
         <Scripts />
       </body>
     </html>
+  );
+}
+
+function BootScreen() {
+  const [visible, setVisible] = useState(true);
+
+  useEffect(() => {
+    const frame = requestAnimationFrame(() => setVisible(false));
+    return () => cancelAnimationFrame(frame);
+  }, []);
+
+  if (!visible) return null;
+
+  return (
+    <div id="ck-boot-screen" aria-label="Opening Cholo Kheli" role="status">
+      <div>
+        <img src={logoMark.url} alt="" aria-hidden="true" />
+        <p>
+          <strong>Cholo Kheli</strong>
+          <span>Let&apos;s play</span>
+        </p>
+      </div>
+    </div>
   );
 }
