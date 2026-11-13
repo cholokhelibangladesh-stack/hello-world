@@ -1,9 +1,0 @@
-{
-  "hasSession": false,
-  "hasUser": false,
-  "error": "User already registered",
-  "raw": {
-    "user": null,
-    "session": null
-  }
-}
