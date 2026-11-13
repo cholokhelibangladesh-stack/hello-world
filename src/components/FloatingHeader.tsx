@@ -75,10 +75,23 @@ const FloatingHeader = () => {
   const wordmarkShadow = onDark ? "drop-shadow-[0_1px_3px_rgba(0,0,0,0.6)]" : "";
   // Extra opacity fade over the soft hero — same colour, lighter presence.
   const softness = overSoftHero ? "opacity-80" : "opacity-100";
+  const scrolled = useScrolledPast(24);
 
 
   return (
     <header className="fixed top-0 left-0 right-0 z-50 pointer-events-none">
+      {/* Frosted strip once the page scrolls, so content never runs under the logo. Hidden over dark heroes. */}
+      <div
+        aria-hidden
+        className={`absolute inset-x-0 top-0 h-[76px] sm:h-[84px] transition-opacity duration-500 ${scrolled && !onDark ? "opacity-100" : "opacity-0"}`}
+        style={{
+          background: "linear-gradient(to bottom, hsl(var(--paper) / 0.72), hsl(var(--paper) / 0.38))",
+          WebkitBackdropFilter: "blur(20px) saturate(160%)",
+          backdropFilter: "blur(20px) saturate(160%)",
+          WebkitMaskImage: "linear-gradient(to bottom, #000 72%, transparent)",
+          maskImage: "linear-gradient(to bottom, #000 72%, transparent)",
+        }}
+      />
       <div className={`relative flex items-center justify-between px-4 sm:px-6 lg:px-8 pt-4 sm:pt-5 transition-opacity duration-300 ${softness}`}>
         {/* LEFT: Logo + name = home */}
         <Link
@@ -206,3 +219,15 @@ const FloatingHeader = () => {
 };
 
 export default FloatingHeader;
+
+/** True once the window has scrolled past `offset` pixels. */
+function useScrolledPast(offset: number) {
+  const [past, setPast] = useState(false);
+  useEffect(() => {
+    const on = () => setPast(window.scrollY > offset);
+    on();
+    window.addEventListener("scroll", on, { passive: true });
+    return () => window.removeEventListener("scroll", on);
+  }, [offset]);
+  return past;
+}

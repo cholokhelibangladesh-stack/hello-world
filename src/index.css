@@ -41,6 +41,8 @@
   --radius-md: var(--ck-radius-md, 0.375rem);
   --radius-lg: var(--ck-radius-lg, 0.5rem);
   --radius-xl: var(--ck-radius-xl, 0.75rem);
+  --radius-2xl: var(--ck-radius-2xl, 1rem);
+  --radius-3xl: var(--ck-radius-3xl, 1.5rem);
   /* Font stacks. The named brands (Helvetica, San Francisco) resolve to
      system fonts when installed on the user's device; open-source web
      substitutes ship as fallbacks so the site looks consistent everywhere.
@@ -700,3 +702,81 @@ h1, h2, h3 { text-wrap: balance; }
 p, li, blockquote { text-wrap: pretty; }
 body { font-kerning: normal; font-feature-settings: "kern", "liga", "calt"; -moz-osx-font-smoothing: grayscale; }
 .tabular-nums, [data-numeric] { font-variant-numeric: tabular-nums; }
+
+
+/* ==============================================================================================
+   Public website: liquid glass
+   Same layout as before. A blurred sage and teal field sits behind every public page, the
+   page sections let it through, and cards, accordions, fields and panels become frosted glass
+   with a light inner edge and softer corners. Dark bands (footer, ink sections, video) stay dark.
+   ============================================================================================== */
+html:not(.app-scope) {
+  --ck-radius-sm: 0.5rem; --ck-radius-md: 0.75rem; --ck-radius-lg: 1rem;
+  --ck-radius-xl: 1.25rem; --ck-radius-2xl: 1.625rem; --ck-radius-3xl: 2rem;
+  --paper: 168 16% 92%;
+  --paper-deep: 172 14% 87%;
+  --site-glass: 0 0% 100% / 0.52;
+  --site-glass-strong: 0 0% 100% / 0.72;
+  --site-glass-edge: rgba(255, 255, 255, 0.7);
+  --site-glass-shadow: 0 1px 0 rgba(255, 255, 255, 0.65) inset, 0 18px 40px -26px rgba(14, 42, 51, 0.38);
+  --site-field-1: 170 45% 78%; --site-field-2: 196 60% 80%; --site-field-3: 160 35% 82%; --site-field-4: 205 75% 84%;
+  background: hsl(168 16% 92%);
+}
+html.dark:not(.app-scope) {
+  --paper: 200 34% 9%;
+  --paper-deep: 200 38% 6%;
+  --site-glass: 0 0% 100% / 0.06;
+  --site-glass-strong: 200 30% 12% / 0.78;
+  --site-glass-edge: rgba(255, 255, 255, 0.1);
+  --site-glass-shadow: 0 1px 0 rgba(255, 255, 255, 0.08) inset, 0 20px 44px -26px rgba(0, 0, 0, 0.7);
+  --site-field-1: 186 55% 22%; --site-field-2: 200 60% 18%; --site-field-3: 168 40% 16%; --site-field-4: 205 70% 24%;
+  background: hsl(200 38% 6%);
+}
+html:not(.app-scope) body { background: transparent; }
+html:not(.app-scope) body::before {
+  content: ""; position: fixed; inset: -15%; z-index: -1; pointer-events: none;
+  background:
+    radial-gradient(36% 30% at 10% 10%, hsl(var(--site-field-1) / 0.85), transparent 70%),
+    radial-gradient(40% 34% at 90% 18%, hsl(var(--site-field-2) / 0.75), transparent 70%),
+    radial-gradient(46% 38% at 22% 80%, hsl(var(--site-field-3) / 0.8), transparent 72%),
+    radial-gradient(40% 36% at 86% 88%, hsl(var(--site-field-4) / 0.6), transparent 70%),
+    hsl(var(--paper));
+  filter: blur(40px);
+  transform: translateZ(0);
+}
+
+/* Light sections let the field through */
+html:not(.app-scope) :is(.surface-paper, .bg-background, [class~="bg-[hsl(var(--paper))]"], [class~="bg-[hsl(var(--paper-deep))]"]) {
+  background-color: hsl(var(--paper) / 0.18);
+}
+
+/* Frosted surfaces */
+html:not(.app-scope) :is(.bg-card, .surface-card, [class~="bg-card/95"], [class~="bg-foreground/5"], [class~="bg-foreground/[0.02]"], [class~="bg-foreground/[0.03]"], [class~="bg-accent/10"]) {
+  background-color: hsl(var(--site-glass));
+  -webkit-backdrop-filter: blur(22px) saturate(160%);
+  backdrop-filter: blur(22px) saturate(160%);
+  border-color: var(--site-glass-edge);
+  box-shadow: var(--site-glass-shadow);
+}
+/* Accordion rows, inputs and other secondary fills */
+html:not(.app-scope) main :is(.bg-secondary, input:not([type=checkbox]):not([type=radio]), textarea, select, [role=combobox]) {
+  background-color: hsl(var(--site-glass));
+  -webkit-backdrop-filter: blur(16px) saturate(150%);
+  backdrop-filter: blur(16px) saturate(150%);
+  border-color: var(--site-glass-edge);
+}
+html:not(.app-scope) main :is(input, textarea, select):focus-visible { background-color: hsl(var(--site-glass-strong)); }
+html:not(.app-scope) main [data-state] > h3 > button { border-radius: inherit; }
+
+/* Existing glass helpers get real blur on the public site */
+html:not(.app-scope) :is(.glass-card, .apple-glass, .glass) {
+  background-color: hsl(var(--site-glass));
+  -webkit-backdrop-filter: blur(24px) saturate(170%);
+  backdrop-filter: blur(24px) saturate(170%);
+  border-color: var(--site-glass-edge);
+  box-shadow: var(--site-glass-shadow);
+}
+
+@media (prefers-reduced-transparency: reduce) {
+  html:not(.app-scope) :is(.bg-card, .surface-card, .glass-card, .apple-glass, .glass) { background-color: hsl(var(--card)); backdrop-filter: none; }
+}

@@ -29,7 +29,7 @@ const PrivacyCenterPage = () => {
       <div className="ios-group space-y-3 p-4 text-[15px] leading-relaxed">
         <p><span className="font-semibold">Public to verified scouts and players:</span> your name, username, sport, positions, bio, photo and live videos (unless your account is private).</p>
         <p><span className="font-semibold">Only you and admins:</span> phone number, date of birth, guardian details and any ID documents you upload.</p>
-        <p className="text-muted-foreground">Scouts never contact players directly. Every request goes through a Cholo Kheli admin.</p>
+        <p className="text-muted-foreground">Scouts can only message you after a Cholo Kheli admin approves their request, and admins can read those conversations.</p>
       </div>
       <SettingsGroup>
         {role === "player" && <SettingsRow icon={Lock} label="Private account" to="/player/settings/privacy" />}
