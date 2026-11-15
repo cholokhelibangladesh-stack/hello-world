@@ -1,67 +1,95 @@
 import { useEffect, useState, type ReactNode } from "react";
-import { BadgeCheck, Camera, Loader2, Lock } from "lucide-react";
+import { BadgeCheck, Lock } from "lucide-react";
 import { safeMediaUrl } from "@/lib/sanitize";
 import { formatCount } from "@/lib/taxonomy";
 
 type Count = { label: string; value: number; onClick?: () => void };
 
+/** Round frosted button for the top of the profile photo. */
+export const HeroIconButton = ({ label, onClick, children }: { label: string; onClick?: () => void; children: ReactNode }) => (
+  <button type="button" onClick={onClick} aria-label={label}
+    className="press grid h-11 w-11 place-items-center rounded-full bg-black/25 text-white ring-1 ring-white/30 backdrop-blur-xl">
+    {children}
+  </button>
+);
+
 /**
- * The profile hero: a tall photo card with a frosted panel across the bottom. The panel blurs and
- * darkens whatever is behind it, so the white name and details read clearly on any photo.
- * Counts sit in a row of glass pills under the card.
+ * The page behind a profile: the profile photo, heavily blurred and darkened, fills the screen so the
+ * cards below the hero read as dark glass tinted by the photo. Text tokens flip to white inside.
  */
-const ProfileCard = ({ name, subtitle, avatarUrl, verified, isPrivate, counts, onChangePhoto, uploading, children }: {
+export const ProfileSurface = ({ avatarUrl, children }: { avatarUrl?: string | null; children: ReactNode }) => (
+  <div className="profile-dark relative isolate min-h-[100dvh] overflow-hidden bg-[#0B1F26]">
+    <div aria-hidden className="pointer-events-none absolute inset-0 -z-10 bg-[#0B1F26]">
+      {avatarUrl && <img src={safeMediaUrl(avatarUrl)} alt="" className="h-full w-full scale-125 object-cover opacity-60 blur-3xl" />}
+      <div className="absolute inset-0 bg-gradient-to-b from-[#0B1F26]/40 via-[#0B1F26]/75 to-[#0B1F26]/92" />
+    </div>
+    {children}
+  </div>
+);
+
+/**
+ * Profile hero: the photo fills the top of the screen edge to edge and melts into a blurred copy of
+ * itself, with the name in large white type over the blur, the main actions, and the counts below.
+ */
+const ProfileCard = ({ name, subtitle, avatarUrl, verified, isPrivate, counts, topLeft, topRight, children }: {
   name: string; subtitle: string; avatarUrl?: string | null; verified?: boolean; isPrivate?: boolean;
-  counts: Count[]; onChangePhoto?: () => void; uploading?: boolean; children?: ReactNode;
+  counts: Count[]; topLeft?: ReactNode; topRight?: ReactNode; children?: ReactNode;
+  /** Kept for callers that still pass them; photo changes now live in the actions row. */
+  onChangePhoto?: () => void; uploading?: boolean;
 }) => {
   const initial = (name || "?").trim().charAt(0).toUpperCase();
   const [broken, setBroken] = useState(false);
   useEffect(() => setBroken(false), [avatarUrl]);
+  const photo = avatarUrl && !broken ? safeMediaUrl(avatarUrl) : null;
+
   return (
-    <section className="px-4 pt-3 md:grid md:grid-cols-[minmax(0,300px)_1fr] md:items-end md:gap-6">
-      <div className="relative aspect-[4/5] w-full overflow-hidden rounded-[30px] shadow-[0_24px_50px_-24px_rgba(14,42,51,0.55)]">
-        {avatarUrl && !broken ? (
-          <img src={safeMediaUrl(avatarUrl)} alt="" onError={() => setBroken(true)} className="absolute inset-0 h-full w-full object-cover" />
+    <section className="relative text-white">
+      <div className="relative h-[60dvh] min-h-[400px] max-h-[620px] w-full overflow-hidden md:mx-auto md:mt-4 md:max-w-[620px] md:rounded-[34px]">
+        {photo ? (
+          <>
+            <img src={photo} alt="" onError={() => setBroken(true)} className="absolute inset-0 h-full w-full object-cover" />
+            {/* The lower part of the photo turns into frosted glass */}
+            <img src={photo} alt="" aria-hidden className="absolute inset-0 h-full w-full scale-110 object-cover blur-2xl"
+              style={{ WebkitMaskImage: "linear-gradient(to bottom, transparent 48%, #000 82%)", maskImage: "linear-gradient(to bottom, transparent 48%, #000 82%)" }} />
+          </>
         ) : (
-          <div aria-hidden="true" className="absolute inset-0 grid place-items-center"
+          <div aria-hidden className="absolute inset-0 grid place-items-center"
             style={{ background: "radial-gradient(70% 60% at 25% 20%, #7EC8FF 0%, transparent 70%), radial-gradient(70% 70% at 80% 80%, #13738F 0%, transparent 70%), #0E2A33" }}>
-            <span className="text-[96px] font-semibold leading-none text-white/85">{initial}</span>
+            <span className="text-[120px] font-semibold leading-none text-white/85">{initial}</span>
           </div>
         )}
+        <div aria-hidden className="absolute inset-x-0 bottom-0 h-[55%] bg-gradient-to-b from-transparent via-[#0B1F26]/45 to-[#0B1F26]/85" />
 
-        {onChangePhoto && (
-          <button type="button" onClick={onChangePhoto} aria-label={avatarUrl ? "Change profile photo" : "Add profile photo"}
-            className="press absolute right-3 top-3 grid h-11 w-11 place-items-center rounded-full bg-black/25 text-white ring-1 ring-white/35 backdrop-blur-xl">
-            {uploading ? <Loader2 className="h-5 w-5 animate-spin" /> : <Camera className="h-5 w-5" />}
-          </button>
-        )}
+        <div className="absolute inset-x-0 top-0 flex items-center justify-between px-4" style={{ paddingTop: "calc(env(safe-area-inset-top) + 12px)" }}>
+          <div className="flex gap-2">{topLeft}</div>
+          <div className="flex gap-2">{topRight}</div>
+        </div>
 
-        <div className="absolute inset-x-2.5 bottom-2.5 rounded-[22px] bg-black/30 px-4 py-3.5 text-white ring-1 ring-white/25 backdrop-blur-2xl backdrop-saturate-150">
-          <h1 className="flex items-center gap-1.5 text-[24px] font-bold leading-tight tracking-tight">
+        <div className="absolute inset-x-0 bottom-0 px-5 pb-5 text-center">
+          <h1 className="flex items-center justify-center gap-2 text-[34px] font-bold leading-tight tracking-[-0.02em] drop-shadow-[0_2px_14px_rgba(0,0,0,0.35)]">
             <span className="truncate">{name || "Add your name"}</span>
-            {verified && <BadgeCheck className="h-5 w-5 shrink-0 text-[#7EC8FF]" aria-label="Verified scout" />}
-            {isPrivate && <Lock className="h-4 w-4 shrink-0 text-white/80" aria-label="Private account" />}
+            {verified && <BadgeCheck className="h-6 w-6 shrink-0 text-[#7EC8FF]" aria-label="Verified scout" />}
+            {isPrivate && <Lock className="h-5 w-5 shrink-0 text-white/80" aria-label="Private account" />}
           </h1>
-          {subtitle && <p className="mt-0.5 truncate text-[15px] text-white/85">{subtitle}</p>}
+          {subtitle && <p className="mt-1 truncate text-[16px] text-white/65">{subtitle}</p>}
         </div>
       </div>
 
-      <div className="min-w-0">
-      <dl className="mt-3 grid grid-cols-3 gap-2 md:mt-0">
-        {counts.map((c, i) => {
-          const inner = (
-            <>
-              <dd className="text-[20px] font-bold leading-tight tabular-nums">{formatCount(c.value)}</dd>
-              <dt className="text-[13px] text-muted-foreground">{c.label}</dt>
-            </>
-          );
-          const cls = `flex flex-col-reverse items-center !rounded-[20px] py-2.5 ${["glass-tint-sky", "glass-tint-mint", "glass-tint-sand"][i % 3]}`;
-          return c.onClick
-            ? <button key={c.label} type="button" onClick={c.onClick} className={`press ${cls}`}>{inner}</button>
-            : <div key={c.label} className={cls}>{inner}</div>;
-        })}
-      </dl>
-      {children}
+      <div className="mx-auto max-w-[620px] px-5">
+        {children}
+        <dl className="mt-5 grid grid-cols-3 text-center">
+          {counts.map((c) => {
+            const inner = (
+              <>
+                <dt className="order-2 mt-1.5 text-[14px] text-white/60">{c.label}</dt>
+                <dd className="order-1 text-[28px] font-bold leading-none tabular-nums">{formatCount(c.value)}</dd>
+              </>
+            );
+            return c.onClick
+              ? <button key={c.label} type="button" onClick={c.onClick} className="press flex flex-col items-center py-1">{inner}</button>
+              : <div key={c.label} className="flex flex-col items-center py-1">{inner}</div>;
+          })}
+        </dl>
       </div>
     </section>
   );

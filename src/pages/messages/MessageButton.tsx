@@ -5,7 +5,7 @@ import { useAuth } from "@/hooks/useAuth";
 import { fetchConversations } from "./Inbox";
 
 /** "Message" link to the approved conversation with this person. Renders nothing if there isn't one. */
-const MessageButton = ({ otherId, className }: { otherId: string; className?: string }) => {
+const MessageButton = ({ otherId, className, round }: { otherId: string; className?: string; round?: boolean }) => {
   const { user, role } = useAuth();
   const [id, setId] = useState<string | null>(null);
   useEffect(() => {
@@ -15,6 +15,14 @@ const MessageButton = ({ otherId, className }: { otherId: string; className?: st
     return () => { alive = false; };
   }, [user?.id, role, otherId]);
   if (!id) return null;
+  if (round) {
+    return (
+      <Link to="/messages/$id" params={{ id }} aria-label="Message"
+        className="press grid h-12 w-12 shrink-0 place-items-center rounded-full bg-white/10 text-white ring-1 ring-white/30 backdrop-blur-xl">
+        <Send className="h-5 w-5" />
+      </Link>
+    );
+  }
   return (
     <Link to="/messages/$id" params={{ id }}
       className={className ?? "press inline-flex h-8 items-center justify-center gap-1.5 rounded-full bg-secondary px-3 text-[13px] font-semibold"}>

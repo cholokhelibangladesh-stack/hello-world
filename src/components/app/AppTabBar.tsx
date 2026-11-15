@@ -39,7 +39,8 @@ const AppTabBar = () => {
   if (["/auth", "/reset-password"].some((p) => pathname.startsWith(p))) return null;
   const tabs = TABS[role];
   if (!tabs) return null;
-  const onReels = pathname.endsWith("/explore") && role !== "admin";
+  // Over reels and profiles the bar turns to clear glass so it sits well on dark photos.
+  const onReels = (pathname.endsWith("/explore") && role !== "admin") || /^\/(player|scout)\/profile$/.test(pathname) || pathname.startsWith("/resume/");
 
   return (
     <nav aria-label="Primary" className="pointer-events-none fixed inset-x-0 bottom-0 z-40 flex justify-center"

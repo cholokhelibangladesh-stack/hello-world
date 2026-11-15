@@ -11,7 +11,9 @@
     "preview": "vite preview",
     "test": "vitest run",
     "test:watch": "vitest",
-    "typecheck": "tsc --noEmit -p tsconfig.app.json"
+    "typecheck": "tsc --noEmit -p tsconfig.app.json",
+    "assets:vendor": "node scripts/vendor-lovable-assets.mjs",
+    "assets:check": "node scripts/vendor-lovable-assets.mjs --check"
   },
   "dependencies": {
     "@capacitor/app": "^8.1.0",

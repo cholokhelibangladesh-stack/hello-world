@@ -24,6 +24,7 @@ const AppHeader = () => {
 
   if (!user) return null;
   if (/^\/messages\/.+/.test(pathname)) return null; // a thread draws its own bar
+  if (/^\/(player|scout)\/profile$/.test(pathname) || pathname.startsWith("/resume/")) return null; // profiles draw buttons over the photo
   if (pathname.startsWith("/auth") || pathname.startsWith("/reset-password")) return null;
   if (/\/settings(\/|$)/.test(pathname) || pathname.startsWith("/admin/") && !["/admin/explore", "/admin/panel", "/admin/manage", "/admin/insights"].includes(pathname)) return null;
 

@@ -14,7 +14,7 @@ export const getRouter = () =>
     // (>400ms), and once shown keep it up long enough to not flash (>250ms).
     defaultPendingComponent: RoutePendingFallback,
     defaultPendingMs: 400,
-    defaultPendingMinMs: 250,
+    defaultPendingMinMs: 0,
   });
 
 declare module "@tanstack/react-router" {

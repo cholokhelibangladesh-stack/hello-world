@@ -66,6 +66,8 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
     const apply = (next: Session | null) => {
       setSession(next);
       setUser(next?.user ?? null);
+      // Remember that this device has signed in, so the welcome intro is shown only once.
+      if (next?.user) { try { localStorage.setItem("ck:returning", "1"); } catch { /* storage off */ } }
       if (next?.user) {
         // Token refreshes fire this too; only re-resolve access when the account changes.
         if (lastUserId.current !== next.user.id) {

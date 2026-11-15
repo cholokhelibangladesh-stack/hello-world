@@ -1,7 +1,7 @@
 import { useEffect, useState } from"react";
 import { motion } from"framer-motion";
 import { Shield, Users, Video, DollarSign, CheckCircle, XCircle, Clock, Loader2, Eye, AlertTriangle, MessageSquare, UserPlus, Send, User, Search, Filter, Ban, Power, Mail, Trash2 } from"lucide-react";
-import ChatInterface from"@/components/ChatInterface";
+import AdminSafety from"@/components/admin/AdminSafety";
 import { Button } from"@/components/ui/button";
 import { Badge } from"@/components/ui/badge";
 import { Input } from"@/components/ui/input";
@@ -102,11 +102,47 @@ const SearchFilterBar = ({ search, setSearch, filter, setFilter, filters, placeh
  </div>
 );
 
+
+/* ── Horizontal glass cards for the admin lists ── */
+const initialOf = (name?: string | null) => (name || "?").trim().charAt(0).toUpperCase();
+const AdminCard = ({ name, sub, meta, badge, struck, tone = "sky", children, actions, trailing, ...rest }: {
+  name: string; sub?: React.ReactNode; meta?: React.ReactNode; badge?: React.ReactNode; struck?: boolean;
+  tone?: "sky" | "mint" | "sand"; children?: React.ReactNode; actions?: React.ReactNode; trailing?: React.ReactNode;
+} & Record<`data-${string}`, string | undefined>) => (
+  <div {...rest} className="rounded-[22px] bg-card p-3.5">
+    <div className="flex items-center gap-3">
+      <span aria-hidden className={`grid h-11 w-11 shrink-0 place-items-center rounded-full text-[17px] font-semibold ${{
+        sky: "bg-[#7EC8FF]/25 text-[#13738F]", mint: "bg-[#5FD3B5]/25 text-[#0F7A60]", sand: "bg-[#F2C98A]/35 text-[#8A5A14]" }[tone]}`}>
+        {initialOf(name)}
+      </span>
+      <div className="min-w-0 flex-1">
+        <p className={`truncate text-[15px] font-semibold ${struck ? "text-muted-foreground line-through" : "text-foreground"}`}>{name}</p>
+        {sub && <p className="truncate text-[13px] text-muted-foreground">{sub}</p>}
+        {meta && <p className="truncate text-[12px] text-muted-foreground/80">{meta}</p>}
+      </div>
+      {badge}
+      {trailing}
+    </div>
+    {children}
+    {actions && <div className="mt-3 flex gap-2">{actions}</div>}
+  </div>
+);
+const ActionBtn = ({ kind = "plain", className = "", ...props }: React.ButtonHTMLAttributes<HTMLButtonElement> & { kind?: "primary" | "danger" | "plain" }) => (
+  <button type="button" {...props}
+    className={`press inline-flex h-10 flex-1 items-center justify-center gap-1.5 rounded-full px-3 text-[14px] font-medium disabled:opacity-50 ${{
+      primary: "bg-primary text-primary-foreground", danger: "bg-destructive/10 text-destructive", plain: "bg-secondary text-foreground" }[kind]} ${className}`} />
+);
+const StatusPill = ({ status }: { status: string }) => (
+  <span className={`shrink-0 rounded-full px-2.5 py-1 text-[12px] font-medium capitalize ${
+    ["active", "live", "approved"].includes(status) ? "bg-[#5FD3B5]/25 text-[#0F7A60]"
+    : ["rejected", "banned"].includes(status) ? "bg-destructive/10 text-destructive" : "bg-[#F2C98A]/35 text-[#8A5A14]"}`}>{status}</span>
+);
+
 // The admin console is split across three bottom-bar tabs so no single screen is crowded.
 export type AdminSection = "review" | "manage" | "insights";
 const SECTIONS: Record<AdminSection, { title: string; sub: string; tabs: string[] }> = {
   review: { title: "Review", sub: "Everything waiting on an admin", tabs: ["alerts", "scouts", "requests", "contact", "safety"] },
-  manage: { title: "Manage", sub: "People, content and platform settings", tabs: ["players", "videos", "notices", "news", "controls", "profile"] },
+  manage: { title: "Manage", sub: "People, content and platform settings", tabs: ["players", "videos", "notices", "news", "controls"] },
   insights: { title: "Insights", sub: "Platform statistics and the audit trail", tabs: ["stats", "activity", "audit"] },
 };
 
@@ -126,6 +162,7 @@ const AdminDashboard = ({ section = "review" }: { section?: AdminSection }) => {
  const [loading, setLoading] = useState(true);
  const [feedbackInputs, setFeedbackInputs] = useState<Record<string, string>>({});
  const [uploadsHalted, setUploadsHalted] = useState(false);
+ const [pushDays, setPushDays] = useState(30);
   const [haltLoading, setHaltLoading] = useState(false);
   // Ban dialog / share dialog state
   const [banTarget, setBanTarget] = useState<{ userId: string; name: string; scope:"profile" |"scout"; lift?: boolean } | null>(null);
@@ -181,7 +218,9 @@ const AdminDashboard = ({ section = "review" }: { section?: AdminSection }) => {
  // Parse settings
  const settingsData = (settingsRes.data || []) as any[];
  const haltSetting = settingsData.find((s: any) => s.key ==="video_uploads_halted");
- setUploadsHalted(haltSetting?.value ==="true");
+ setUploadsHalted(haltSetting?.value ==="true" || haltSetting?.value === true);
+ const pushSetting = settingsData.find((x: any) => x.key ==="reel_push_days");
+ if (pushSetting && Number(pushSetting.value) > 0) setPushDays(Number(pushSetting.value));
 
  const playerUserIds = roles.filter((r) => r.role ==="player").map((r) => r.user_id);
 
@@ -315,6 +354,13 @@ const AdminDashboard = ({ section = "review" }: { section?: AdminSection }) => {
   // Lifting or applying a restriction both go through the moderation dialog, so the user always gets a notice.
   const banScout = (scoutUserId: string, banned: boolean, name: string) => setBanTarget({ userId: scoutUserId, name, scope: "scout", lift: banned });
   const banPlayer = (playerUserId: string, banned: boolean, name: string) => setBanTarget({ userId: playerUserId, name, scope: "profile", lift: banned });
+
+ const savePushDays = async (days: number) => {
+ const prev = pushDays; setPushDays(days);
+ const { error } = await supabase.from("app_settings" as any).update({ value: days, updated_by: user?.id } as any).eq("key", "reel_push_days");
+ if (error) { setPushDays(prev); toast({ title:"Couldn't save", description: error.message, variant:"destructive" }); }
+ else toast({ title: `Reels now stay in the feed for ${days} days` });
+ };
 
  const toggleUploadsHalt = async () => {
  setHaltLoading(true);
@@ -549,7 +595,7 @@ const AdminDashboard = ({ section = "review" }: { section?: AdminSection }) => {
 
  {/* Moderation Alerts Inbox */}
  <TabsContent value="alerts" className="space-y-3">
- <div className="bg-primary/5 border border-primary/20 rounded-2xl p-4 flex items-start gap-2">
+ <div className="rounded-[22px] bg-card p-4 flex items-start gap-3">
  <AlertTriangle className="h-5 w-5 text-primary shrink-0 mt-0.5" />
  <p className="text-sm text-muted-foreground">
  New scout requests, videos, and scout signups that need review. Mark items resolved once you've actioned them.
@@ -558,25 +604,18 @@ const AdminDashboard = ({ section = "review" }: { section?: AdminSection }) => {
  {alerts.filter((a) => a.status ==="new").length === 0 ? (
  <p className="text-muted-foreground text-center py-12" data-testid="alerts-empty-new">No open alerts.</p>
 ) : (
- alerts.filter((a) => a.status ==="new").map((a) => (
- <div key={a.id} data-testid="alert-row" data-alert-id={a.id} data-alert-kind={a.kind} data-alert-status={a.status}
- className="apple-glass glass-card rounded-xl p-4 flex items-center justify-between gap-3">
- <div className="flex-1 min-w-0">
- <div className="flex items-center gap-2 flex-wrap">
- <Badge className="rounded-full bg-primary/20 text-primary border-primary/30 text-[10px] ">
- {a.kind ==="scout_request" ?"Request" : a.kind ==="video" ?"Video" :"Scout"}
- </Badge>
- <p className="font-semibold text-foreground truncate">{a.target_name}</p>
- </div>
- {a.target_email && <p className="text-[11px] text-muted-foreground truncate">{a.target_email}</p>}
- <p className="text-[11px] text-muted-foreground">{new Date(a.created_at).toLocaleString()}</p>
- </div>
- <Button size="sm" onClick={() => resolveAlert(a.id)} data-testid="alert-resolve"
- className="bg-primary text-primary-foreground hover:bg-primary/90 rounded-full text-xs shrink-0">
- <CheckCircle className="h-3.5 w-3.5 mr-1" /> Mark resolved
- </Button>
- </div>
-))
+ <div className="space-y-2">{alerts.filter((a) => a.status ==="new").map((a) => (
+ <AdminCard key={a.id} data-testid="alert-row" data-alert-id={a.id} data-alert-kind={a.kind} data-alert-status={a.status}
+   tone={a.kind === "video" ? "sky" : a.kind === "scout_request" ? "mint" : "sand"}
+   name={a.target_name || "Unknown"}
+   sub={<><span className="font-medium text-foreground/80">{a.kind ==="scout_request" ?"Request" : a.kind ==="video" ?"Video" :"Scout"}</span>{a.target_email ? ` · ${a.target_email}` : ""}</>}
+   meta={new Date(a.created_at).toLocaleString()}
+   trailing={
+     <button type="button" onClick={() => resolveAlert(a.id)} data-testid="alert-resolve" aria-label="Mark resolved"
+       className="press grid h-10 w-10 shrink-0 place-items-center rounded-full bg-primary text-primary-foreground">
+       <CheckCircle className="h-5 w-5" />
+     </button>} />
+))}</div>
 )}
  {alerts.some((a) => a.status ==="resolved") && (
  <details className="pt-2">
@@ -609,62 +648,38 @@ const AdminDashboard = ({ section = "review" }: { section?: AdminSection }) => {
  <SearchFilterBar testKey="scouts" search={scoutSearch} setSearch={setScoutSearch} filter={scoutFilter} setFilter={setScoutFilter} placeholder="Search scouts by name, email, or username..."
  sort={scoutSort} setSort={setScoutSort}
  filters={[{ value:"pending", label:"Pending" }, { value:"active", label:"Active" }, { value:"rejected", label:"Rejected" }]} />
- {filteredScouts.length === 0 ? <p className="text-muted-foreground text-center py-12">No scouts found.</p> : filteredScouts.map((s) => (
- <div key={s.id} data-testid="mod-row-scouts" data-account={s.full_name ||""} data-status={s.verification_status} data-created-at={s.created_at} className="apple-glass glass-card rounded-xl p-4 space-y-3">
- <div className="flex items-start justify-between gap-3">
- <div className="flex-1 min-w-0">
- <p className={`font-semibold truncate ${s.is_banned ?"line-through text-muted-foreground" :"text-foreground"}`}>{s.full_name}</p>
- <p className="text-xs text-muted-foreground">{s.organization ||"No organization"} • {new Date(s.created_at).toLocaleDateString()}</p>
- </div>
- <Badge className={`rounded-full shrink-0 ${s.verification_status ==="active" ?"bg-primary/20 text-primary border-primary/30" : s.verification_status ==="pending" ?"bg-accent/20 text-accent-foreground border-accent/30" :"bg-destructive/20 text-destructive border-destructive/30"}`}>
- {s.verification_status ==="active" && <CheckCircle className="h-3 w-3 mr-1" />}
- {s.verification_status ==="pending" && <Clock className="h-3 w-3 mr-1" />}
- {s.verification_status ==="rejected" && <XCircle className="h-3 w-3 mr-1" />}
- {s.verification_status}
- </Badge>
- </div>
- {s.is_banned && <Badge className="text-[10px] bg-destructive/20 text-destructive border-destructive/30 rounded-full">Banned</Badge>}
- {s.verification_status !=="active" && <ScoutDocuments userId={s.user_id} />}
- <div className="flex gap-2 flex-wrap">
- {s.verification_status ==="pending" && (
- <>
- <Button size="sm" onClick={() => updateScoutStatus(s.id,"active", s.user_id)} className="flex-1 bg-primary text-primary-foreground hover:bg-primary/90 rounded-full text-xs">Approve</Button>
- <Button size="sm" variant="outline" onClick={() => updateScoutStatus(s.id,"rejected", s.user_id)} className="flex-1 border-destructive/40 text-destructive hover:bg-destructive/10 rounded-full text-xs">Reject</Button>
- </>
-)}
- <Button size="sm" variant="outline" onClick={() => banScout(s.user_id, s.is_banned || false, s.full_name ||"scout")}
- className={`flex-1 rounded-full text-xs ${s.is_banned ?"border-primary/40 text-primary hover:bg-primary/10" :"border-destructive/40 text-destructive hover:bg-destructive/10"}`}>
- <Ban className="h-3 w-3 mr-1" />{s.is_banned ?"Unban" :"Ban"}
- </Button>
- </div>
- </div>
-))}
+ {filteredScouts.length === 0 ? <p className="text-muted-foreground text-center py-12">No scouts found.</p> : <div className="space-y-2">{filteredScouts.map((s) => (
+ <AdminCard key={s.id} data-testid="mod-row-scouts" data-account={s.full_name ||""} data-status={s.verification_status} data-created-at={s.created_at}
+   tone="mint" name={s.full_name || "Scout"} struck={s.is_banned}
+   sub={s.organization || "No organisation"} meta={`Joined ${new Date(s.created_at).toLocaleDateString()}${s.is_banned ? " · Banned" : ""}`}
+   badge={<StatusPill status={s.verification_status} />}
+   actions={<>
+     {s.verification_status ==="pending" && <>
+       <ActionBtn kind="primary" onClick={() => updateScoutStatus(s.id,"active", s.user_id)}>Approve</ActionBtn>
+       <ActionBtn onClick={() => updateScoutStatus(s.id,"rejected", s.user_id)}>Reject</ActionBtn>
+     </>}
+     <ActionBtn kind={s.is_banned ? "plain" : "danger"} onClick={() => banScout(s.user_id, s.is_banned || false, s.full_name ||"scout")}>
+       <Ban className="h-4 w-4" />{s.is_banned ?"Unban" :"Ban"}
+     </ActionBtn>
+   </>}>
+   {s.verification_status !=="active" && <div className="mt-3"><ScoutDocuments userId={s.user_id} /></div>}
+ </AdminCard>
+))}</div>}
  </TabsContent>
 
  {/* Players Tab */}
  <TabsContent value="players" className="space-y-3">
  <p className="text-xs text-muted-foreground mb-2">{players.length} registered players</p>
- {players.length === 0 ? <p className="text-muted-foreground text-center py-12">No players found.</p> : players.map((p) => (
- <div key={p.user_id} className="apple-glass glass-card rounded-xl p-4 space-y-3">
- <div className="flex items-start justify-between gap-3">
- <div className="flex-1 min-w-0">
- <p className={`font-semibold truncate ${p.is_banned ?"line-through text-muted-foreground" :"text-foreground"}`}>{p.full_name}</p>
- <p className="text-xs text-muted-foreground">{p.sport ||"No sport"}</p>
- {p.is_banned && <Badge className="mt-1 text-[10px] bg-destructive/20 text-destructive border-destructive/30 rounded-full">Banned</Badge>}
- </div>
- </div>
- <div className="flex gap-2">
- <Button size="sm" variant="outline" onClick={() => setShareTarget({ userId: p.user_id, name: p.full_name })}
- className="flex-1 rounded-full text-xs border-primary/40 text-primary hover:bg-primary/10">
- <Send className="h-3 w-3 mr-1" /> Share to scout
- </Button>
- <Button size="sm" variant="outline" onClick={() => banPlayer(p.user_id, p.is_banned || false, p.full_name)}
- className={`flex-1 rounded-full text-xs ${p.is_banned ?"border-primary/40 text-primary hover:bg-primary/10" :"border-destructive/40 text-destructive hover:bg-destructive/10"}`}>
- <Ban className="h-3 w-3 mr-1" />{p.is_banned ?"Unban" :"Ban"}
- </Button>
- </div>
- </div>
-))}
+ {players.length === 0 ? <p className="text-muted-foreground text-center py-12">No players found.</p> : <div className="space-y-2">{players.map((p) => (
+ <AdminCard key={p.user_id} name={p.full_name || "Player"} struck={p.is_banned}
+   sub={<span className="capitalize">{p.sport || "No sport"}</span>} meta={p.is_banned ? "Banned" : undefined}
+   trailing={<button type="button" onClick={() => navigate({ to: `/resume/${p.user_id}` as any })} aria-label={`Open ${p.full_name}'s profile`}
+     className="press grid h-10 w-10 shrink-0 place-items-center rounded-full bg-secondary"><Eye className="h-[18px] w-[18px]" /></button>}
+   actions={<>
+     <ActionBtn kind="primary" onClick={() => setShareTarget({ userId: p.user_id, name: p.full_name })}><Send className="h-4 w-4" /> Share to scout</ActionBtn>
+     <ActionBtn kind={p.is_banned ? "plain" : "danger"} onClick={() => banPlayer(p.user_id, p.is_banned || false, p.full_name)}><Ban className="h-4 w-4" />{p.is_banned ?"Unban" :"Ban"}</ActionBtn>
+   </>} />
+))}</div>}
  </TabsContent>
 
  {/* Videos Tab */}
@@ -672,26 +687,17 @@ const AdminDashboard = ({ section = "review" }: { section?: AdminSection }) => {
  <SearchFilterBar testKey="videos" search={videoSearch} setSearch={setVideoSearch} filter={videoFilter} setFilter={setVideoFilter} placeholder="Search videos by uploader name, email, or username..."
  sort={videoSort} setSort={setVideoSort}
  filters={[{ value:"live", label:"Live" }, { value:"rejected", label:"Rejected" }, { value:"draft", label:"Draft" }]} />
- {filteredVideos.length === 0 ? <p className="text-muted-foreground text-center py-12">No videos found.</p> : filteredVideos.map((v) => (
- <div key={v.id} data-testid="mod-row-videos" data-account={v.full_name ||""} data-status={v.status} data-created-at={v.created_at} className="apple-glass glass-card rounded-xl p-4 space-y-3">
- <div className="flex items-start justify-between gap-3">
- <div className="flex-1 min-w-0">
- <p className="font-semibold text-foreground truncate">{v.full_name}</p>
- <p className="text-xs text-muted-foreground truncate">{v.description ||"No description"} • {new Date(v.created_at).toLocaleDateString()}</p>
- </div>
- <Badge className={`rounded-full shrink-0 ${v.status ==="live" ?"bg-primary/20 text-primary border-primary/30" : v.status ==="rejected" ?"bg-destructive/20 text-destructive border-destructive/30" :"bg-muted text-muted-foreground border-border"}`}>{v.status}</Badge>
- </div>
- <div className="flex gap-2 flex-wrap">
- {v.video_url && <Button size="sm" variant="outline" onClick={() => navigate({ to: `/resume/${v.user_id}` as any })} className="rounded-full text-xs border-border text-muted-foreground"><Eye className="h-3.5 w-3.5 mr-1" />View</Button>}
- {(v.status ==="pending_payment" || v.status ==="draft") && (
- <>
- <Button size="sm" onClick={() => updateVideoStatus(v.id,"live")} className="flex-1 bg-primary text-primary-foreground hover:bg-primary/90 rounded-full text-xs">Approve</Button>
- <Button size="sm" variant="outline" onClick={() => updateVideoStatus(v.id,"rejected")} className="flex-1 border-destructive/40 text-destructive hover:bg-destructive/10 rounded-full text-xs">Reject</Button>
- </>
-)}
- </div>
- </div>
-))}
+ {filteredVideos.length === 0 ? <p className="text-muted-foreground text-center py-12">No videos found.</p> : <div className="space-y-2">{filteredVideos.map((v) => (
+ <AdminCard key={v.id} data-testid="mod-row-videos" data-account={v.full_name ||""} data-status={v.status} data-created-at={v.created_at}
+   name={v.full_name || "Player"} sub={v.description || "No description"} meta={new Date(v.created_at).toLocaleDateString()}
+   badge={<StatusPill status={v.status} />}
+   trailing={v.video_url ? <button type="button" onClick={() => navigate({ to: `/resume/${v.user_id}` as any })} aria-label="View"
+     className="press grid h-10 w-10 shrink-0 place-items-center rounded-full bg-secondary"><Eye className="h-[18px] w-[18px]" /></button> : undefined}
+   actions={(v.status ==="pending_payment" || v.status ==="draft") ? <>
+     <ActionBtn kind="primary" onClick={() => updateVideoStatus(v.id,"live")}>Approve</ActionBtn>
+     <ActionBtn kind="danger" onClick={() => updateVideoStatus(v.id,"rejected")}>Reject</ActionBtn>
+   </> : undefined} />
+))}</div>}
  </TabsContent>
 
  {/* Scout Requests Tab */}
@@ -699,66 +705,53 @@ const AdminDashboard = ({ section = "review" }: { section?: AdminSection }) => {
  <SearchFilterBar testKey="requests" search={requestSearch} setSearch={setRequestSearch} filter={requestFilter} setFilter={setRequestFilter} placeholder="Search requests by scout or player name, email, or username..."
  sort={requestSort} setSort={setRequestSort}
  filters={[{ value:"pending", label:"Pending" }, { value:"approved", label:"Approved" }, { value:"rejected", label:"Rejected" }]} />
- {filteredRequests.length === 0 ? <p className="text-muted-foreground text-center py-12">No requests found.</p> : filteredRequests.map((r) => (
- <div key={r.id} data-testid="mod-row-requests" data-account={r.player_name ||""} data-scout={r.scout_name ||""} data-status={r.status} data-created-at={r.created_at} className="apple-glass glass-card rounded-xl p-4 space-y-3">
- <div className="space-y-1">
- <div className="flex items-start justify-between gap-2">
- <p className="font-semibold text-sm text-foreground leading-tight">
- <span className="text-primary">{r.scout_name}</span> → <span className="text-primary">{r.player_name}</span>
- </p>
- <Badge className={`rounded-full shrink-0 text-xs ${r.status ==="approved" ?"bg-primary/20 text-primary border-primary/30" : r.status ==="rejected" ?"bg-destructive/20 text-destructive border-destructive/30" :"bg-muted text-muted-foreground border-border"}`}>{r.status}</Badge>
- </div>
- <p className="text-xs text-muted-foreground">{r.notes ||"No notes"} • {new Date(r.created_at).toLocaleDateString()}</p>
- </div>
- {r.status ==="pending" && (
- <div className="flex gap-2">
- <Button size="sm" onClick={() => handleScoutRequest(r.id,"approved", r.player_id, r.player_name ||"", r.scout_name ||"", r.scout_id)} className="flex-1 bg-primary text-primary-foreground hover:bg-primary/90 rounded-full text-xs">Approve & Forward</Button>
- <Button size="sm" variant="outline" onClick={() => handleScoutRequest(r.id,"rejected", r.player_id, r.player_name ||"", r.scout_name ||"", r.scout_id)} className="flex-1 border-destructive/40 text-destructive hover:bg-destructive/10 rounded-full text-xs">Reject</Button>
- </div>
-)}
- <div className="flex gap-2">
- <Input placeholder={`Feedback to ${r.player_name}...`} className="bg-secondary border-border text-sm rounded-xl" value={feedbackInputs[r.id] ||""} onChange={(e) => setFeedbackInputs((prev) => ({...prev, [r.id]: e.target.value }))} />
- <Button size="sm" variant="outline" onClick={() => sendPersonalizedFeedback(r.id, r.scout_id, r.scout_name ||"", r.player_id, r.player_name ||"")} className="border-primary/40 text-primary shrink-0 rounded-full">
- <Send className="h-4 w-4" />
- </Button>
- </div>
- </div>
-))}
+ {filteredRequests.length === 0 ? <p className="text-muted-foreground text-center py-12">No requests found.</p> : <div className="space-y-2">{filteredRequests.map((r) => (
+ <AdminCard key={r.id} data-testid="mod-row-requests" data-account={r.player_name ||""} data-scout={r.scout_name ||""} data-status={r.status} data-created-at={r.created_at}
+   tone="mint" name={`${r.scout_name} → ${r.player_name}`} sub={r.notes || "No notes"} meta={new Date(r.created_at).toLocaleDateString()}
+   badge={<StatusPill status={r.status} />}
+   actions={r.status ==="pending" ? <>
+     <ActionBtn kind="primary" onClick={() => handleScoutRequest(r.id,"approved", r.player_id, r.player_name ||"", r.scout_name ||"", r.scout_id)}>Approve & Forward</ActionBtn>
+     <ActionBtn kind="danger" onClick={() => handleScoutRequest(r.id,"rejected", r.player_id, r.player_name ||"", r.scout_name ||"", r.scout_id)}>Reject</ActionBtn>
+   </> : undefined}>
+   <div className="mt-3 flex gap-2">
+     <Input placeholder={`Feedback to ${r.player_name}...`} className="h-10 rounded-full border-0 bg-secondary text-sm" value={feedbackInputs[r.id] ||""} onChange={(e) => setFeedbackInputs((prev) => ({...prev, [r.id]: e.target.value }))} />
+     <button type="button" aria-label="Send feedback" onClick={() => sendPersonalizedFeedback(r.id, r.scout_id, r.scout_name ||"", r.player_id, r.player_name ||"")}
+       className="press grid h-10 w-10 shrink-0 place-items-center rounded-full bg-primary text-primary-foreground"><Send className="h-4 w-4" /></button>
+   </div>
+ </AdminCard>
+))}</div>}
  </TabsContent>
- <TabsContent value="safety" className="space-y-4">
- <div className="bg-accent/10 border border-accent/30 rounded-2xl p-4">
- <div className="flex items-center gap-2">
- <AlertTriangle className="h-5 w-5 text-accent" />
- <p className="text-sm text-muted-foreground">All scout-player messages are logged here for safety monitoring. Use the chat view below to inspect and flag conversations.</p>
+ <TabsContent value="safety" className="space-y-3">
+ <div className="rounded-[22px] bg-card p-4 flex items-start gap-3">
+ <AlertTriangle className="h-5 w-5 text-primary shrink-0 mt-0.5" />
+ <p className="text-sm text-muted-foreground">Every scout and player conversation. Open one to read it, see reported messages, or close it.</p>
  </div>
- </div>
- <ChatInterface adminView={true} />
+ <AdminSafety />
  </TabsContent>
 
  {/* Controls Tab */}
-  <TabsContent value="controls" className="space-y-4">
- <div className="apple-glass glass-card rounded-2xl p-6 space-y-4">
- <div className="flex items-center gap-3 mb-2">
- <Power className="h-5 w-5 text-primary" />
- <h2 className="font-display text-xl text-foreground">Platform controls</h2>
+  <TabsContent value="controls" className="space-y-2">
+ <div className="flex items-center gap-3 rounded-[22px] bg-card p-3.5">
+   <span className={`grid h-11 w-11 shrink-0 place-items-center rounded-full ${uploadsHalted ? "bg-destructive/15 text-destructive" : "bg-[#5FD3B5]/25 text-[#0F7A60]"}`}><Power className="h-5 w-5" /></span>
+   <div className="min-w-0 flex-1">
+     <p className="text-[15px] font-semibold">Video uploads</p>
+     <p className="text-[13px] text-muted-foreground">{uploadsHalted ? "Halted. Players see a pause message." : "Players can upload highlights."}</p>
+   </div>
+   <button type="button" onClick={toggleUploadsHalt} disabled={haltLoading}
+     className={`press inline-flex h-10 shrink-0 items-center gap-1.5 rounded-full px-4 text-[14px] font-medium ${uploadsHalted ? "bg-primary text-primary-foreground" : "bg-destructive/10 text-destructive"}`}>
+     {haltLoading ? <Loader2 className="h-4 w-4 animate-spin" /> : <Power className="h-4 w-4" />}{uploadsHalted ?"Resume Uploads" :"Halt Uploads"}
+   </button>
  </div>
- <div className="flex items-center justify-between bg-secondary rounded-xl p-4">
- <div>
- <p className="font-semibold text-foreground">Video Uploads</p>
- <p className="text-xs text-muted-foreground mt-0.5">
- {uploadsHalted ?"Currently halted — players see monthly limit message" :"Currently accepting video uploads"}
- </p>
- </div>
- <Button
- onClick={toggleUploadsHalt}
- disabled={haltLoading}
- variant="outline"
- className={uploadsHalted ?"border-primary/40 text-primary hover:bg-primary/10 rounded-full" :"border-destructive/40 text-destructive hover:bg-destructive/10 rounded-full"}
- >
- {haltLoading ? <Loader2 className="h-4 w-4 animate-spin mr-2" /> : <Power className="h-4 w-4 mr-2" />}
- {uploadsHalted ?"Resume Uploads" :"Halt Uploads"}
- </Button>
- </div>
+ <div className="flex items-center gap-3 rounded-[22px] bg-card p-3.5">
+   <span className="grid h-11 w-11 shrink-0 place-items-center rounded-full bg-[#7EC8FF]/25 text-[#13738F]"><Clock className="h-5 w-5" /></span>
+   <div className="min-w-0 flex-1">
+     <p className="text-[15px] font-semibold">Reel push window</p>
+     <p className="text-[13px] text-muted-foreground">Reels leave the main feed after this many days. Search and profiles still show them.</p>
+   </div>
+   <select aria-label="Reel push window in days" value={pushDays} onChange={(e) => savePushDays(Number(e.target.value))}
+     className="h-10 shrink-0 rounded-full bg-secondary px-3 text-[14px] font-medium">
+     {[7, 14, 30, 60, 90, 180, 365].map((d) => <option key={d} value={d}>{d} days</option>)}
+   </select>
  </div>
  </TabsContent>
 
@@ -774,7 +767,7 @@ const AdminDashboard = ({ section = "review" }: { section?: AdminSection }) => {
 
  {/* Contact Messages Tab */}
  <TabsContent value="contact" className="space-y-3">
- <div className="bg-primary/5 border border-primary/20 rounded-2xl p-4 flex items-start gap-2">
+ <div className="rounded-[22px] bg-card p-4 flex items-start gap-3">
  <Mail className="h-5 w-5 text-primary shrink-0 mt-0.5" />
  <p className="text-sm text-muted-foreground">
  Messages submitted through the public Contact Us form. Click the email address to reply directly from your mail client.
@@ -783,41 +776,24 @@ const AdminDashboard = ({ section = "review" }: { section?: AdminSection }) => {
  {contactMessages.length === 0 ? (
  <p className="text-muted-foreground text-center py-12">No contact messages yet.</p>
 ) : (
- contactMessages.map((c) => (
- <div key={c.id} className={`bg-card border rounded-xl p-4 space-y-3 ${c.is_read ?"border-border" :"border-primary/40"}`}>
- <div className="flex items-start justify-between gap-3">
- <div className="flex-1 min-w-0">
- <div className="flex items-center gap-2 flex-wrap">
- <p className="font-semibold text-foreground truncate">{c.name}</p>
- {!c.is_read && <Badge className="bg-primary/20 text-primary border-primary/30 rounded-full text-[10px]">New</Badge>}
- </div>
- <a href={`mailto:${c.email}?subject=Re: ${encodeURIComponent(c.subject ||"Your message to Cholo Kheli")}`}
- className="text-xs text-primary hover:underline break-all">
- {c.email}
- </a>
- <p className="text-[11px] text-muted-foreground mt-0.5">{new Date(c.created_at).toLocaleString()}</p>
- </div>
- </div>
- {c.subject && <p className="text-sm font-medium text-foreground">{c.subject}</p>}
- <p className="text-sm text-muted-foreground whitespace-pre-wrap">{c.message}</p>
- <div className="flex gap-2 flex-wrap">
- <Button size="sm" variant="outline" asChild
- className="rounded-full text-xs border-primary/40 text-primary hover:bg-primary/10">
- <a href={`mailto:${c.email}?subject=Re: ${encodeURIComponent(c.subject ||"Your message to Cholo Kheli")}`}>
- <Send className="h-3.5 w-3.5 mr-1" /> Reply by email
- </a>
- </Button>
- <Button size="sm" variant="outline" onClick={() => toggleContactRead(c.id, c.is_read)}
- className="rounded-full text-xs border-border text-muted-foreground">
- <CheckCircle className="h-3.5 w-3.5 mr-1" /> Mark as {c.is_read ?"unread" :"read"}
- </Button>
- <Button size="sm" variant="outline" onClick={() => deleteContact(c.id)}
- className="rounded-full text-xs border-destructive/40 text-destructive hover:bg-destructive/10">
- <Trash2 className="h-3.5 w-3.5 mr-1" /> Delete
- </Button>
- </div>
- </div>
-))
+ <div className="space-y-2">{contactMessages.map((c) => (
+ <AdminCard key={c.id} tone="sand" name={c.name || "Visitor"}
+   sub={<a href={`mailto:${c.email}?subject=Re: ${encodeURIComponent(c.subject ||"Your message to Cholo Kheli")}`} className="text-primary hover:underline">{c.email}</a>}
+   meta={new Date(c.created_at).toLocaleString()}
+   badge={!c.is_read ? <span className="shrink-0 rounded-full bg-primary px-2.5 py-1 text-[12px] font-semibold text-primary-foreground">New</span> : undefined}
+   actions={<>
+     <a href={`mailto:${c.email}?subject=Re: ${encodeURIComponent(c.subject ||"Your message to Cholo Kheli")}`}
+       className="press inline-flex h-10 flex-1 items-center justify-center gap-1.5 rounded-full bg-primary px-3 text-[14px] font-medium text-primary-foreground"><Send className="h-4 w-4" /> Reply</a>
+     <ActionBtn onClick={() => toggleContactRead(c.id, c.is_read)}><CheckCircle className="h-4 w-4" /> {c.is_read ?"Mark unread" :"Mark read"}</ActionBtn>
+     <button type="button" aria-label="Delete message" onClick={() => deleteContact(c.id)}
+       className="press grid h-10 w-10 shrink-0 place-items-center rounded-full bg-destructive/10 text-destructive"><Trash2 className="h-4 w-4" /></button>
+   </>}>
+   <div className="mt-3 rounded-[16px] bg-secondary px-3.5 py-3">
+     {c.subject && <p className="text-[14px] font-semibold">{c.subject}</p>}
+     <p className="whitespace-pre-wrap text-[14px] text-muted-foreground">{c.message}</p>
+   </div>
+ </AdminCard>
+))}</div>
 )}
  </TabsContent>
 

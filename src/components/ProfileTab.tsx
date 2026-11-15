@@ -15,7 +15,7 @@ import FollowListSheet from "@/components/social/FollowListSheet";
 import { useFollowStats } from "@/components/social/FollowButton";
 import HighlightGrid, { type Highlight } from "@/components/profile/HighlightGrid";
 import { AboutSection, AchievementsSection } from "@/components/profile/ProfileSections";
-import ProfileCard from "@/components/profile/ProfileCard";
+import ProfileCard, { HeroIconButton, ProfileSurface } from "@/components/profile/ProfileCard";
 
 type Profile = { full_name: string; username: string; bio: string; avatar_url: string; sport: string; gender: string };
 type Scout = { organization: string | null; verification_status: string | null };
@@ -210,6 +210,7 @@ const ProfileTab = () => {
        { label: "Watchlist", value: follow?.following ?? 0, onClick: () => setList("following") }];
 
   return (
+    <ProfileSurface avatarUrl={profile.avatar_url}>
     <div className="pb-6">
       <ProfileCard
         name={profile.full_name}
@@ -220,22 +221,24 @@ const ProfileTab = () => {
         verified={verified}
         isPrivate={isPrivate}
         counts={counts}
-        uploading={uploading}
-        onChangePhoto={() => fileRef.current?.click()}
+        topRight={<>
+          <HeroIconButton label="Share profile" onClick={share}><Share2 className="h-5 w-5" /></HeroIconButton>
+          <Link to={`${base}/settings` as never} aria-label="Settings" className="press grid h-11 w-11 place-items-center rounded-full bg-black/25 text-white ring-1 ring-white/30 backdrop-blur-xl"><Settings className="h-5 w-5" /></Link>
+        </>}
       >
         <input ref={fileRef} type="file" accept={AVATAR_TYPES.join(",")} className="hidden"
           onChange={(e) => { pickAvatar(e.target.files?.[0]); e.target.value = ""; }} />
-        <div className="mt-3 flex gap-2">
-          <button type="button" onClick={() => setEditOpen(true)} className="press h-11 flex-1 rounded-full bg-card text-[15px] font-semibold">Edit profile</button>
-          <button type="button" onClick={share} className="press inline-flex h-11 flex-1 items-center justify-center gap-1.5 rounded-full bg-card text-[15px] font-semibold">
-            <Share2 className="h-4 w-4" /> Share
+        <div className="mt-4 flex items-center gap-3">
+          <button type="button" onClick={() => setEditOpen(true)} className="press h-12 flex-1 rounded-full bg-white text-[16px] font-semibold text-[#0B1F26]">Edit profile</button>
+          <button type="button" onClick={() => fileRef.current?.click()} aria-label={profile.avatar_url ? "Change profile photo" : "Add profile photo"}
+            className="press grid h-12 w-12 shrink-0 place-items-center rounded-full bg-white/10 text-white ring-1 ring-white/30 backdrop-blur-xl">
+            {uploading ? <Loader2 className="h-5 w-5 animate-spin" /> : <Camera className="h-5 w-5" />}
           </button>
-          <Link to={`${base}/settings` as never} aria-label="Settings" className="press glass-icon"><Settings className="h-5 w-5" /></Link>
         </div>
       </ProfileCard>
 
       {isPlayer && videos && videos.length > 0 && (
-        <section aria-label="Your reach" className="mx-4 mt-4 grid grid-cols-4 rounded-[14px] bg-card py-3 text-center">
+        <section aria-label="Your reach" className="mx-4 mt-5 grid grid-cols-4 rounded-[22px] bg-card py-3.5 text-center">
           {[["Views", formatCount(totals.views)], ["Likes", formatCount(totals.likes)], ["Shares", formatCount(totals.shares)], ["Watched", `${formatCount(totals.minutes)}m`]].map(([l, v]) => (
             <div key={l}><p className="text-[17px] font-bold">{v}</p><p className="text-[12px] text-muted-foreground">{l}</p></div>
           ))}
@@ -262,19 +265,19 @@ const ProfileTab = () => {
         </section>
       )}
 
-      <div className="mt-4 grid border-t border-border/70" style={{ gridTemplateColumns: isPlayer ? "1fr 1fr" : "1fr" }} role="tablist" aria-label="Profile content">
+      <div className="mx-4 mt-6 mb-3 grid rounded-full bg-card p-1" style={{ gridTemplateColumns: isPlayer ? "1fr 1fr" : "1fr" }} role="tablist" aria-label="Profile content">
         {isPlayer && (
           <button type="button" role="tab" aria-selected={tab === "highlights"} aria-label="Highlights" onClick={() => setTab("highlights")}
-            className={`grid h-11 place-items-center border-t-2 ${tab === "highlights" ? "border-foreground" : "border-transparent text-muted-foreground"}`}><Grid3x3 className="h-5 w-5" /></button>
+            className={`grid h-10 place-items-center rounded-full transition-colors ${tab === "highlights" ? "bg-white text-[#0B1F26]" : "text-muted-foreground"}`}><Grid3x3 className="h-5 w-5" /></button>
         )}
         <button type="button" role="tab" aria-selected={tab === "saved" || !isPlayer} aria-label="Saved" onClick={() => setTab("saved")}
-          className={`grid h-11 place-items-center border-t-2 ${tab === "saved" || !isPlayer ? "border-foreground" : "border-transparent text-muted-foreground"}`}><Bookmark className="h-5 w-5" /></button>
+          className={`grid h-10 place-items-center rounded-full transition-colors ${tab === "saved" || !isPlayer ? "bg-white text-[#0B1F26]" : "text-muted-foreground"}`}><Bookmark className="h-5 w-5" /></button>
       </div>
 
       {isPlayer && tab === "highlights" ? (
         <section>
           {videos === null
-            ? <div className="grid grid-cols-3 gap-[2px]">{Array.from({ length: 6 }).map((_, i) => <div key={i} className="sk-shimmer aspect-[3/4]" />)}</div>
+            ? <div className="grid grid-cols-2 gap-2.5 px-4">{Array.from({ length: 4 }).map((_, i) => <div key={i} className="sk-shimmer aspect-[4/5] rounded-[22px]" />)}</div>
             : <HighlightGrid items={videos} onDelete={deleteVideo} onEdit={(h) => setEditing(h)} emptyText="Upload your first clip so scouts can find you." />}
           {videos && videos.length === 0 && (
             <div className="px-4"><Link to="/player/upload" className="press flex h-11 items-center justify-center rounded-full bg-primary text-[15px] font-semibold text-primary-foreground">Upload a highlight</Link></div>
@@ -283,7 +286,7 @@ const ProfileTab = () => {
       ) : (
         <section>
           {savedVideos === null
-            ? <div className="grid grid-cols-3 gap-[2px]">{Array.from({ length: 3 }).map((_, i) => <div key={i} className="sk-shimmer aspect-[3/4]" />)}</div>
+            ? <div className="grid grid-cols-2 gap-2.5 px-4">{Array.from({ length: 2 }).map((_, i) => <div key={i} className="sk-shimmer aspect-[4/5] rounded-[22px]" />)}</div>
             : <HighlightGrid items={savedVideos} emptyTitle="Nothing saved yet" emptyText="Tap the three dots on a highlight and choose Save. Only you can see this list." />}
         </section>
       )}
@@ -338,6 +341,7 @@ const ProfileTab = () => {
         onSaved={(p) => setProfile({ ...profile, ...p })} />
       <AvatarCropDialog file={cropFile} open={!!cropFile} onOpenChange={(o) => !o && setCropFile(null)} onConfirm={saveAvatar} aspect={4 / 5} outputWidth={960} />
     </div>
+    </ProfileSurface>
   );
 };
 

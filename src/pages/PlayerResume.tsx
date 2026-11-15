@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
 import { Link, Navigate, useNavigate, useParams } from "@tanstack/react-router";
-import { Ban, Loader2, MoreHorizontal, Share2 } from "lucide-react";
+import { Ban, ChevronLeft, Loader2, MoreHorizontal, Share2 } from "lucide-react";
 import { toast } from "sonner";
 import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/hooks/useAuth";
@@ -12,7 +12,7 @@ import FollowListSheet from "@/components/social/FollowListSheet";
 import BottomSheet from "@/components/social/BottomSheet";
 import HighlightGrid, { type Highlight } from "@/components/profile/HighlightGrid";
 import { AboutSection, AchievementsSection } from "@/components/profile/ProfileSections";
-import ProfileCard from "@/components/profile/ProfileCard";
+import ProfileCard, { HeroIconButton, ProfileSurface } from "@/components/profile/ProfileCard";
 import { safeMediaUrl } from "@/lib/sanitize";
 import { publicUrl } from "@/lib/publicUrl";
 import { SPORT_LABEL, formatCount, isSport } from "@/lib/taxonomy";
@@ -100,33 +100,36 @@ const PlayerResume = () => {
   const totalViews = videos.reduce((n, v) => n + (v.view_count ?? 0), 0);
 
   return (
+    <ProfileSurface avatarUrl={profile.avatar_url}>
     <div className="pb-6">
       <ProfileCard
         name={name}
-        subtitle={[profile.username && `@${profile.username}`, isSport(profile.sport) && SPORT_LABEL[profile.sport], age !== null && `${age} years`,
-          totalViews > 0 && `${formatCount(totalViews)} views`].filter(Boolean).join("  ·  ")}
+        subtitle={[profile.username && `@${profile.username}`, isSport(profile.sport) && SPORT_LABEL[profile.sport], age !== null && `${age} years`].filter(Boolean).join("  ·  ")}
         avatarUrl={profile.avatar_url}
         counts={[{ label: "Highlights", value: videos.length },
           { label: "Followers", value: stats?.followers ?? 0, onClick: () => setList("followers") },
-          { label: "Following", value: stats?.following ?? 0, onClick: () => setList("following") }]}
+          { label: totalViews > 0 ? "Views" : "Following", value: totalViews > 0 ? totalViews : stats?.following ?? 0, onClick: totalViews > 0 ? undefined : () => setList("following") }]}
+        topLeft={<HeroIconButton label="Back" onClick={() => (window.history.length > 1 ? window.history.back() : navigate({ to: "/" }))}><ChevronLeft className="h-5 w-5" /></HeroIconButton>}
+        topRight={!blocked ? <>
+          <HeroIconButton label="Share profile" onClick={share}><Share2 className="h-5 w-5" /></HeroIconButton>
+          <HeroIconButton label="More" onClick={() => setMenu(true)}><MoreHorizontal className="h-5 w-5" /></HeroIconButton>
+        </> : undefined}
       >
-        {stats?.follows_me && <p className="mt-2 text-center text-[13px] text-muted-foreground">Follows you</p>}
+        {stats?.follows_me && <p className="mt-3 text-center text-[13px] text-white/60">Follows you</p>}
         {!blocked && (
-          <div className="mt-3 flex items-center gap-2">
-            <div className="flex-1 [&>button]:w-full">
-              <FollowButton userId={userId} following={!!stats?.i_follow} size="sm"
+          <div className="mt-4 flex items-center gap-3">
+            <div className="flex-1 [&>button]:h-12 [&>button]:w-full [&>button]:text-[16px]">
+              <FollowButton userId={userId} following={!!stats?.i_follow} tone="dark"
                 onChange={(on) => setStats((s) => (s ? { ...s, i_follow: on, followers: Math.max(0, s.followers + (on ? 1 : -1)) } : s))} />
             </div>
-            {role === "scout" && <div className="flex-1"><ScoutSelectPlayer playerId={userId} playerName={name} /></div>}
-            <MessageButton otherId={userId} />
-            <button type="button" onClick={share} aria-label="Share profile" className="press glass-icon"><Share2 className="h-4 w-4" /></button>
-            <button type="button" onClick={() => setMenu(true)} aria-label="More" className="press glass-icon"><MoreHorizontal className="h-4 w-4" /></button>
+            <MessageButton otherId={userId} round />
           </div>
         )}
+        {!blocked && role === "scout" && <div className="mt-3 flex justify-center"><ScoutSelectPlayer playerId={userId} playerName={name} /></div>}
       </ProfileCard>
 
       {blocked ? (
-        <div className="mx-4 mt-6 rounded-[14px] bg-card p-5 text-center">
+        <div className="mx-4 mt-6 rounded-[22px] bg-card p-5 text-center">
           <Ban className="mx-auto h-6 w-6 text-muted-foreground" />
           <p className="headline mt-2">You blocked {name}</p>
           <button type="button" onClick={toggleBlock} className="press mt-3 h-10 rounded-full bg-secondary px-5 text-[15px] font-semibold">Unblock</button>
@@ -135,7 +138,7 @@ const PlayerResume = () => {
         <>
           <AboutSection bio={profile.bio ?? ""} />
           <AchievementsSection items={achievements} />
-          <section className="mt-6 border-t border-border/70 pt-[2px]">
+          <section className="mt-6 pt-[2px]">
             <HighlightGrid items={videos} emptyText={`${name.split(" ")[0]} hasn't shared a highlight yet.`} />
           </section>
         </>
@@ -149,6 +152,7 @@ const PlayerResume = () => {
         </div>
       </BottomSheet>
     </div>
+    </ProfileSurface>
   );
 };
 

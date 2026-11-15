@@ -1,5 +1,6 @@
 import { useCallback, useEffect, useState } from "react";
-import MessageButton from "@/pages/messages/MessageButton";
+import PickCard from "@/components/scout/PickCard";
+import BottomSheet from "@/components/social/BottomSheet";
 import { motion, AnimatePresence } from "framer-motion";
 import {
   Loader2,
@@ -68,6 +69,7 @@ const SkeletonRow = () => (
 );
 
 const ScoutSelections = () => {
+  const [detailsFor, setDetailsFor] = useState<ScoutRequest | null>(null);
   const { user, loading: authLoading } = useAuth();
   const navigate = useNavigate();
   const { toast } = useToast();
@@ -257,8 +259,8 @@ const ScoutSelections = () => {
   const isLoading = authLoading || loading;
 
   return (
-    <div className="min-h-screen pt-16 pb-24">
-      <div className="container max-w-2xl">
+    <div className="pb-8">
+      <div className="mx-auto max-w-2xl px-4">
         <motion.div
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
@@ -295,247 +297,51 @@ const ScoutSelections = () => {
               </Button>
             </div>
           ) : (
-            <div className="space-y-3">
-              {requests.map((r) => {
-                const meta = statusMeta(r.status);
-                const StatusIcon = meta.Icon;
-                const open = expanded === r.id;
-                const busy = actioning === r.id;
-                return (
-                  <motion.div key={r.id} layout className="selections-panel">
-                    <button
-                      type="button"
-                      onClick={() => setExpanded(open ? null : r.id)}
-                      aria-expanded={open}
-                      className="w-full grid grid-cols-[auto_minmax(0,1fr)_auto] items-center gap-3 p-4 text-left"
-                    >
-                      <div className="w-10 h-10 rounded-full bg-secondary overflow-hidden border border-border shrink-0">
-                        {r.player_avatar ? (
-                          <img
-                            src={safeMediaUrl(r.player_avatar)}
-                            alt=""
-                            loading="lazy"
-                            decoding="async"
-                            className="w-full h-full object-cover"
-                          />
-                        ) : (
-                          <div className="w-full h-full flex items-center justify-center text-muted-foreground text-xs font-bold">
-                            {r.player_name?.charAt(0)}
-                          </div>
-                        )}
-                      </div>
-                      <div className="min-w-0">
-                        <p className="font-semibold text-foreground truncate">{r.player_name}</p>
-                        <p className="text-[11px] text-muted-foreground truncate">
-                          {new Date(r.created_at).toLocaleDateString()}
-                          {r.notes ? ` • ${r.notes}` : ""}
-                        </p>
-                      </div>
-                      <div className="flex items-center gap-2 shrink-0">
-                        <span className={meta.className}>
-                          <StatusIcon className="h-3 w-3" />
-                          {meta.label}
-                        </span>
-                        <ChevronDown
-                          className={`h-4 w-4 text-muted-foreground transition-transform ${
-                            open ? "rotate-180" : ""
-                          }`}
-                        />
-                      </div>
-                    </button>
-
-                    <AnimatePresence initial={false}>
-                      {open && (
-                        <motion.div
-                          initial={{ height: 0, opacity: 0 }}
-                          animate={{ height: "auto", opacity: 1 }}
-                          exit={{ height: 0, opacity: 0 }}
-                          transition={{ duration: 0.18, ease: "easeOut" }}
-                          className="overflow-hidden border-t border-border/60"
-                        >
-                          <div className="p-4 space-y-3 bg-muted/20">
-                            {r.status === "approved" && (
-                              <MessageButton otherId={r.player_id}
-                                className="press flex h-11 w-full items-center justify-center gap-2 rounded-full bg-primary text-[15px] font-semibold text-primary-foreground" />
-                            )}
-                            {r.status === "approved" && r.player_details ? (
-                              <>
-                                <p className="text-[10px] text-muted-foreground   font-semibold">
-                                  Player details (forwarded by admin)
-                                </p>
-                                <div className="flex items-center gap-3">
-                                  {r.player_details.avatar_url && (
-                                    <img
-                                      src={safeMediaUrl(r.player_details.avatar_url)}
-                                      alt=""
-                                      loading="lazy"
-                                      decoding="async"
-                                      className="w-12 h-12 rounded-full object-cover border border-border shrink-0"
-                                    />
-                                  )}
-                                  <div className="min-w-0">
-                                    <p className="font-semibold text-foreground text-sm truncate">
-                                      {r.player_details.player_name || r.player_name}
-                                    </p>
-                                    <p className="text-[11px] text-muted-foreground capitalize truncate">
-                                      {r.player_details.sport || r.player_sport}
-                                    </p>
-                                  </div>
-                                </div>
-                                <div className="grid grid-cols-1 sm:grid-cols-2 gap-2 text-sm">
-                                  {r.player_details.gender && (
-                                    <div className="flex items-center gap-2 text-muted-foreground min-w-0">
-                                      <User className="h-3 w-3 text-primary shrink-0" />
-                                      <span className="truncate">{r.player_details.gender}</span>
-                                    </div>
-                                  )}
-                                  {r.player_details.dob && (
-                                    <div className="flex items-center gap-2 text-muted-foreground min-w-0">
-                                      <Calendar className="h-3 w-3 text-primary shrink-0" />
-                                      <span className="truncate">
-                                        {new Date(r.player_details.dob).toLocaleDateString()}
-                                      </span>
-                                    </div>
-                                  )}
-                                  {r.player_details.phone && (
-                                    <div className="flex items-center gap-2 text-muted-foreground min-w-0">
-                                      <Phone className="h-3 w-3 text-primary shrink-0" />
-                                      <span className="truncate">{r.player_details.phone}</span>
-                                    </div>
-                                  )}
-                                  {r.player_details.guardian && (
-                                    <div className="flex items-center gap-2 text-muted-foreground min-w-0">
-                                      <Phone className="h-3 w-3 text-primary shrink-0" />
-                                      <span className="truncate">
-                                        Guardian: {r.player_details.guardian}
-                                      </span>
-                                    </div>
-                                  )}
-                                </div>
-                                {r.player_details.bio && (
-                                  <p className="text-sm text-muted-foreground italic">
-                                    "{r.player_details.bio}"
-                                  </p>
-                                )}
-                                <Button
-                                  size="sm"
-                                  variant="outline"
-                                  onClick={() =>
-                                    navigate({ to: `/resume/${r.player_id}` as any })
-                                  }
-                                  className="text-primary border-primary/30 rounded-full text-xs"
-                                >
-                                  View full profile →
-                                </Button>
-                              </>
-                            ) : r.status === "approved" ? (
-                              <div className="py-3 space-y-3">
-                                <p className="text-[10px] text-muted-foreground   font-semibold">
-                                  Player details (forwarded by admin)
-                                </p>
-                                <div className="flex items-start gap-3">
-                                  <div className="grid h-10 w-10 place-items-center rounded-2xl bg-primary/10 text-primary shrink-0">
-                                    <Sparkles className="h-5 w-5" />
-                                  </div>
-                                  <div className="min-w-0 flex-1">
-                                    <p className="text-sm font-medium text-foreground">
-                                      Approved — preparing details
-                                    </p>
-                                    <p className="text-xs text-muted-foreground mt-0.5">
-                                      The admin approved your request. The player's contact
-                                      details will land here in a moment.
-                                    </p>
-                                  </div>
-                                </div>
-                                <div className="space-y-2" aria-hidden="true">
-                                  <div className="h-3 w-1/2 sk-shimmer rounded" />
-                                  <div className="h-3 w-2/3 sk-shimmer rounded" />
-                                  <div className="h-3 w-1/3 sk-shimmer rounded" />
-                                </div>
-                                <div className="flex items-center gap-2">
-                                  <Button
-                                    size="sm"
-                                    variant="outline"
-                                    disabled={refreshingId === r.id}
-                                    onClick={() => manualRefresh(r.id)}
-                                    className="rounded-full text-xs border-border"
-                                  >
-                                    {refreshingId === r.id ? (
-                                      <Loader2 className="h-3 w-3 mr-1 animate-spin" />
-                                    ) : (
-                                      <RefreshCw className="h-3 w-3 mr-1" />
-                                    )}
-                                    Check again
-                                  </Button>
-                                  <Button
-                                    size="sm"
-                                    variant="ghost"
-                                    onClick={() =>
-                                      navigate({ to: `/resume/${r.player_id}` as any })
-                                    }
-                                    className="rounded-full text-xs text-primary hover:text-primary"
-                                  >
-                                    View public profile →
-                                  </Button>
-                                </div>
-                              </div>
-                            ) : r.status === "pending" ? (
-                              <div className="space-y-3">
-                                <p className="text-sm text-muted-foreground text-center py-1">
-                                  Awaiting admin review. Details will appear here once approved.
-                                </p>
-                                <div className="flex justify-center">
-                                  <Button
-                                    size="sm"
-                                    variant="outline"
-                                    disabled={busy}
-                                    onClick={() => setConfirmRescind(r)}
-                                    className="rounded-full text-xs border-border text-muted-foreground hover:text-destructive hover:border-destructive/40"
-                                  >
-                                    {busy ? (
-                                      <Loader2 className="h-3 w-3 mr-1 animate-spin" />
-                                    ) : (
-                                      <X className="h-3 w-3 mr-1" />
-                                    )}
-                                    Rescind request
-                                  </Button>
-                                </div>
-                              </div>
-                            ) : (
-                              <div className="space-y-3">
-                                <p className="text-sm text-muted-foreground text-center py-1">
-                                  {r.admin_response ||
-                                    "This request was not approved by the admin."}
-                                </p>
-                                <div className="flex justify-center gap-2">
-                                  <Button
-                                    size="sm"
-                                    variant="outline"
-                                    disabled={busy}
-                                    onClick={() => retry(r)}
-                                    className="rounded-full text-xs border-border hover:border-primary/40 hover:text-primary"
-                                  >
-                                    {busy ? (
-                                      <Loader2 className="h-3 w-3 mr-1 animate-spin" />
-                                    ) : (
-                                      <RotateCcw className="h-3 w-3 mr-1" />
-                                    )}
-                                    Retry
-                                  </Button>
-                                </div>
-                              </div>
-                            )}
-                          </div>
-                        </motion.div>
-                      )}
-                    </AnimatePresence>
-                  </motion.div>
-                );
-              })}
+            <div className="grid grid-cols-2 gap-3 sm:grid-cols-3">
+              {requests.map((r) => (
+                <PickCard key={r.id}
+                  name={r.player_name ?? "Player"} avatar={r.player_avatar} sport={r.player_sport}
+                  status={r.status} open={expanded === r.id} busy={actioning === r.id}
+                  onToggle={() => setExpanded(expanded === r.id ? null : r.id)}
+                  playerId={r.player_id}
+                  onView={() => navigate({ to: `/resume/${r.player_id}` as any })}
+                  onDetails={r.status === "approved" ? () => setDetailsFor(r) : undefined}
+                  onCancel={() => setConfirmRescind(r)}
+                  onRetry={() => retry(r)} />
+              ))}
             </div>
           )}
         </motion.div>
       </div>
+
+      <BottomSheet open={!!detailsFor} onClose={() => setDetailsFor(null)} title={detailsFor?.player_name ?? "Player details"} height="auto">
+        {detailsFor && (
+          <div className="space-y-3 p-4">
+            {detailsFor.player_details ? (
+              <>
+                <p className="text-[13px] text-muted-foreground">Forwarded by the Cholo Kheli team after approving your request.</p>
+                <ul className="ios-group">
+                  {detailsFor.player_details.sport && <li className="ios-row"><User className="h-5 w-5 text-primary" /><span className="flex-1 capitalize">{detailsFor.player_details.sport}</span></li>}
+                  {detailsFor.player_details.gender && <li className="ios-row"><User className="h-5 w-5 text-primary" /><span className="flex-1">{detailsFor.player_details.gender}</span></li>}
+                  {detailsFor.player_details.dob && <li className="ios-row"><Calendar className="h-5 w-5 text-primary" /><span className="flex-1">{new Date(detailsFor.player_details.dob).toLocaleDateString()}</span></li>}
+                  {detailsFor.player_details.phone && <li className="ios-row"><Phone className="h-5 w-5 text-primary" /><a href={`tel:${detailsFor.player_details.phone}`} className="flex-1 text-primary">{detailsFor.player_details.phone}</a></li>}
+                  {detailsFor.player_details.guardian && <li className="ios-row"><Phone className="h-5 w-5 text-primary" /><span className="flex-1">Guardian: {detailsFor.player_details.guardian}</span></li>}
+                </ul>
+                {detailsFor.player_details.bio && <p className="rounded-[16px] bg-secondary px-4 py-3 text-[15px] text-muted-foreground">{detailsFor.player_details.bio}</p>}
+              </>
+            ) : (
+              <div className="space-y-3 text-center">
+                <Sparkles className="mx-auto h-6 w-6 text-primary" />
+                <p className="text-[15px]">Approved. The player's details are on their way.</p>
+                <button type="button" disabled={refreshingId === detailsFor.id} onClick={() => manualRefresh(detailsFor.id)}
+                  className="press inline-flex h-11 items-center gap-2 rounded-full bg-secondary px-5 text-[15px] font-semibold">
+                  {refreshingId === detailsFor.id ? <Loader2 className="h-4 w-4 animate-spin" /> : <RefreshCw className="h-4 w-4" />} Check again
+                </button>
+              </div>
+            )}
+          </div>
+        )}
+      </BottomSheet>
 
       <AlertDialog
         open={!!confirmRescind}
@@ -543,7 +349,7 @@ const ScoutSelections = () => {
       >
         <AlertDialogContent>
           <AlertDialogHeader>
-            <AlertDialogTitle>Rescind request?</AlertDialogTitle>
+            <AlertDialogTitle>Cancel request?</AlertDialogTitle>
             <AlertDialogDescription>
               Your pending request for {confirmRescind?.player_name} will be removed. You can send
               a new one anytime.
@@ -561,7 +367,7 @@ const ScoutSelections = () => {
               ) : (
                 <X className="h-4 w-4 mr-2" />
               )}
-              Rescind
+              Cancel request
             </AlertDialogAction>
           </AlertDialogFooter>
         </AlertDialogContent>

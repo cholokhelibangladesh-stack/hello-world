@@ -5,9 +5,6 @@ import { toast } from "sonner";
 import { useAuth } from "@/hooks/useAuth";
 import { supabase } from "@/integrations/supabase/client";
 import CholoKheliMark from "@/components/CholoKheliMark";
-import football from "@/assets/intro-football.webp";
-import cricket from "@/assets/intro-cricket.webp";
-import basketball from "@/assets/intro-basketball.webp";
 import { useLanguage } from "@/i18n/LanguageProvider";
 import { publicUrl } from "@/lib/publicUrl";
 
@@ -362,31 +359,28 @@ const Auth = () => {
   const titleKey = { signin: "auth.welcomeBack", signup: "auth.joinTheGame", sent: "auth.checkEmail", mfa: "auth.mfaTitle", finish: "auth.finishTitle" }[view];
   const subKey = { signin: "auth.signInSub", signup: "auth.signUpSub", sent: "auth.confirmSent", mfa: "auth.mfaSub", finish: "auth.finishSub" }[view];
 
-  const photo = view === "signin" ? cricket : view === "signup" ? football : basketball;
-
-  return (
+    return (
     <div className="relative min-h-[100dvh]">
-      {/* Backdrop: the sports photo, and a teal and candy-blue wash the glass sheet picks up */}
-      <div aria-hidden className="fixed inset-0 z-0 overflow-hidden bg-[#0E2A33]">
-        <img src={photo} alt="" className="absolute inset-x-0 top-0 h-[62dvh] w-full object-cover object-[50%_32%]" />
-        <img src={photo} alt="" className="absolute inset-0 h-full w-full scale-125 object-cover opacity-80 blur-3xl" style={{ WebkitMaskImage: "linear-gradient(to bottom, transparent 28%, #000 58%)", maskImage: "linear-gradient(to bottom, transparent 28%, #000 58%)" }} />
-        <div className="absolute inset-0" style={{ background: "linear-gradient(180deg, rgba(14,42,51,0.35) 0%, rgba(14,42,51,0) 20%, rgba(14,42,51,0.35) 42%, rgba(14,42,51,0.82) 100%)" }} />
-        <div className="absolute -left-24 bottom-[8%] h-80 w-80 rounded-full bg-[#7EC8FF]/35 blur-3xl" />
-        <div className="absolute -right-20 bottom-[30%] h-72 w-72 rounded-full bg-[#5FD3B5]/25 blur-3xl" />
+      {/* Backdrop: soft colour blobs (no photo) that the glass card picks up */}
+      <div aria-hidden className="pointer-events-none fixed inset-0 z-0 overflow-hidden">
+        <div className="absolute -left-24 -top-16 h-80 w-80 rounded-full bg-[#7EC8FF]/55 blur-3xl" />
+        <div className="absolute -right-24 top-[22%] h-72 w-72 rounded-full bg-[#5FD3B5]/45 blur-3xl" />
+        <div className="absolute -left-16 bottom-[6%] h-80 w-80 rounded-full bg-[#F2C98A]/45 blur-3xl" />
+        <div className="absolute -right-10 -bottom-20 h-72 w-72 rounded-full bg-[#13738F]/35 blur-3xl" />
       </div>
 
       <div className="relative z-10 mx-auto w-full max-w-md px-4" style={{ paddingTop: "calc(1.25rem + env(safe-area-inset-top))", paddingBottom: "calc(1.5rem + env(safe-area-inset-bottom))" }}>
-        <Link to="/" aria-label="Cholo Kheli home" className="press inline-grid h-11 w-11 place-items-center rounded-[14px] bg-white/15 ring-1 ring-white/25 backdrop-blur-xl">
-          <CholoKheliMark className="h-6 w-7" tone="light" />
+        <Link to="/" aria-label="Cholo Kheli home" className="press glass-icon !rounded-[14px]">
+          <CholoKheliMark className="h-6 w-7" />
         </Link>
-        <div className="pb-6 pt-[18dvh] text-white">
-          <h1 className="text-[34px] font-extrabold italic leading-[1.02] tracking-[-0.03em] drop-shadow-[0_2px_12px_rgba(0,0,0,0.35)]">{t(titleKey as never)}</h1>
-          <p className="mt-2 text-[16px] text-white/85">
-            {t(subKey as never)}{view === "sent" && <> <span className="font-semibold text-white">{email}</span></>}
+        <div className="pb-6 pt-[9dvh]">
+          <h1 className="text-[34px] font-extrabold italic leading-[1.02] tracking-[-0.03em]">{t(titleKey as never)}</h1>
+          <p className="mt-2 text-[16px] text-muted-foreground">
+            {t(subKey as never)}{view === "sent" && <> <span className="font-semibold text-foreground">{email}</span></>}
           </p>
         </div>
 
-        <div className="rounded-[32px] bg-white/[0.78] p-5 shadow-[0_30px_70px_-30px_rgba(0,0,0,0.6)] ring-1 ring-white/70 backdrop-blur-2xl backdrop-saturate-150 dark:bg-[#0E2A33]/60 dark:ring-white/10">
+        <div className="rounded-[32px] bg-white/55 p-5 shadow-[0_30px_70px_-34px_rgba(14,42,51,0.45)] ring-1 ring-white/70 backdrop-blur-2xl backdrop-saturate-[1.8] dark:bg-white/[0.07] dark:ring-white/10">
         {error && <p role="alert" className="mb-4 rounded-2xl bg-destructive/10 px-4 py-3 text-[14px] text-destructive">{error}</p>}
 
         {view === "signin" && !user && (

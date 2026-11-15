@@ -820,3 +820,17 @@ html:not(.app-scope) main .grid > :is(.bg-card, .surface-card, .glass-card):nth-
 html.dark:not(.app-scope) main .grid > :is(.bg-card, .surface-card, .glass-card):nth-child(3n+1) { background-image: linear-gradient(150deg, hsl(205 70% 40% / 0.3), transparent); }
 html.dark:not(.app-scope) main .grid > :is(.bg-card, .surface-card, .glass-card):nth-child(3n+2) { background-image: linear-gradient(150deg, hsl(166 50% 34% / 0.3), transparent); }
 html.dark:not(.app-scope) main .grid > :is(.bg-card, .surface-card, .glass-card):nth-child(3n) { background-image: linear-gradient(150deg, hsl(34 60% 38% / 0.3), transparent); }
+
+/* Profile pages sit on a dark, photo-tinted surface: everything below the hero becomes dark glass. */
+.profile-dark {
+  color: hsl(0 0% 100%);
+  --foreground: 0 0% 100%;
+  --muted-foreground: 196 18% 74%;
+  --card: 0 0% 100%;  --card-alpha: 0.08;
+  --secondary: 0 0% 100%;  --muted: 0 0% 100%;  --secondary-alpha: 0.1;
+  --border: 0 0% 100%;  --border-alpha: 0.12;
+  --glass-edge: 0 0% 100% / 0.1;
+  --glass-shadow: 0 18px 40px -24px rgb(0 0 0 / 0.6);
+  --primary: 0 0% 100%;  --primary-foreground: 196 57% 13%;
+  --ring: 205 100% 75%;
+}

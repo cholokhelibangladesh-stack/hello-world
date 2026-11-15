@@ -39,13 +39,13 @@ const HighlightGrid = ({ items, onDelete, onEdit, emptyText, emptyTitle = "No hi
 
   return (
     <>
-      <ul className="grid grid-cols-3 gap-[2px]">
+      <ul className="grid grid-cols-2 gap-2.5 px-4 sm:grid-cols-3">
         {items.map((h) => {
           const b = badge(h);
           return (
             <li key={h.id}>
               <button type="button" onClick={() => h.video_url && setOpen(h)} aria-label={`Play ${h.title ?? "highlight"}`}
-                className="relative block aspect-[3/4] w-full overflow-hidden bg-secondary">
+                className="relative block aspect-[4/5] w-full overflow-hidden rounded-[22px] bg-secondary">
                 <StorageVideo src={h.video_url} fragment="#t=1" muted playsInline preload="metadata" className="absolute inset-0 h-full w-full object-cover" />
                 {b && <span className={`absolute left-1.5 top-1.5 rounded-full px-2 py-0.5 text-[11px] font-semibold ${b.cls}`}>{b.text}</span>}
                 <span className="absolute bottom-1 left-1.5 flex items-center gap-1 text-[12px] font-semibold text-white drop-shadow-[0_1px_2px_rgba(0,0,0,0.7)]">
