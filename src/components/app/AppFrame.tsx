@@ -39,6 +39,17 @@ const AppFrame = ({ children }: { children: React.ReactNode }) => {
     enablePush((path) => navigate({ to: path as never }), !asked);
   }, [user?.id, role]); // eslint-disable-line react-hooks/exhaustive-deps
 
+  // Tell the page which kind of surface is showing (see index.css, html[data-surface]).
+  const surface = !user ? "" :
+    /^\/messages\/.+/.test(pathname) ? "thread" :
+    /^\/(player|scout)\/explore$/.test(pathname) ? "reels" :
+    /^\/(player|scout)\/profile$/.test(pathname) || pathname.startsWith("/resume/") ? "profile" : "";
+  useEffect(() => {
+    const el = document.documentElement;
+    if (surface) el.dataset.surface = surface; else delete el.dataset.surface;
+    return () => { delete el.dataset.surface; };
+  }, [surface]);
+
   const inApp = user && APP_PREFIXES.some((p) => pathname === p || pathname.startsWith(p + "/"));
 
   if (!inApp) {
@@ -52,7 +63,7 @@ const AppFrame = ({ children }: { children: React.ReactNode }) => {
   const wide = pathname.startsWith("/admin");
 
   return (
-    <div className="relative mx-auto flex w-full max-w-[1320px] text-foreground lg:gap-6 lg:px-6">
+    <div id="ck-app-frame" className="relative mx-auto flex w-full max-w-[1320px] text-foreground lg:gap-6 lg:px-6">
       <WebSideNav />
       <div
         className={`relative mx-auto flex w-full min-w-0 flex-col ${wide ? "max-w-[1040px]" : "max-w-[680px]"}`}

@@ -103,6 +103,7 @@ const Thread = () => {
   const { id } = useParams({ strict: false }) as { id: string };
   const { user, role } = useAuth();
   const navigate = useNavigate();
+  useEffect(() => () => document.documentElement.classList.remove("ck-typing"), []);
   const isAdmin = role === "admin";
   const [convo, setConvo] = useState<Conversation | null | undefined>(undefined);
   const [msgs, setMsgs] = useState<Msg[] | null>(null);
@@ -312,13 +313,13 @@ const Thread = () => {
       </ul>
 
       {convo?.status === "closed" ? (
-        <p className="shrink-0 border-t border-border/70 px-4 py-3 text-center text-[14px] text-muted-foreground" style={{ paddingBottom: "calc(env(safe-area-inset-bottom) + 12px)" }}>
+        <p className="shrink-0 border-t border-border/70 px-4 py-3 text-center text-[14px] text-muted-foreground" style={{ paddingBottom: "calc(env(safe-area-inset-bottom) + 12px + var(--thread-nav, 0px))" }}>
           <Lock className="mr-1 inline h-4 w-4" />This conversation was closed by the Cholo Kheli team{convo.closed_reason ? `: ${convo.closed_reason}` : "."}
         </p>
       ) : isAdmin && !participant ? (
-        <p className="shrink-0 border-t border-border/70 px-4 py-3 text-center text-[14px] text-muted-foreground" style={{ paddingBottom: "calc(env(safe-area-inset-bottom) + 12px)" }}>You're viewing as an admin. Use the menu to close this conversation.</p>
+        <p className="shrink-0 border-t border-border/70 px-4 py-3 text-center text-[14px] text-muted-foreground" style={{ paddingBottom: "calc(env(safe-area-inset-bottom) + 12px + var(--thread-nav, 0px))" }}>You're viewing as an admin. Use the menu to close this conversation.</p>
       ) : (
-        <div className="shrink-0 border-t border-border/70 bg-background" style={{ paddingBottom: "env(safe-area-inset-bottom)" }}>
+        <div className="shrink-0 border-t border-border/70 bg-background" style={{ paddingBottom: "calc(env(safe-area-inset-bottom) + var(--thread-nav, 0px))" }}>
           {replyTo && (
             <div className="flex items-center gap-2 border-b border-border/70 px-4 py-2">
               <CornerUpLeft className="h-4 w-4 shrink-0 text-primary" />
@@ -331,12 +332,15 @@ const Thread = () => {
           )}
           <form className="flex items-end gap-2 px-3 py-2" onSubmit={(e) => { e.preventDefault(); send(); }}>
             <label htmlFor="dm-input" className="sr-only">Message</label>
-            <textarea id="dm-input" ref={inputRef} rows={1} maxLength={2000} value={text} disabled={!canAct}
+            <textarea id="dm-input" ref={inputRef}
+              onFocus={() => document.documentElement.classList.add("ck-typing")}
+              onBlur={() => window.setTimeout(() => { if (document.activeElement?.id !== "dm-input") document.documentElement.classList.remove("ck-typing"); }, 200)} rows={1} maxLength={2000} value={text} disabled={!canAct}
               onChange={(e) => { setText(e.target.value); e.target.style.height = "auto"; e.target.style.height = Math.min(e.target.scrollHeight, 120) + "px"; }}
               onKeyDown={(e) => { if (e.key === "Enter" && !e.shiftKey && !("ontouchstart" in window)) { e.preventDefault(); send(); } }}
               placeholder={canAct ? "Message…" : "Messaging isn't available right now"}
               className="max-h-[120px] min-h-[40px] flex-1 resize-none rounded-[20px] bg-secondary px-4 py-2.5 text-[16px] outline-none focus:ring-2 focus:ring-ring" />
             <button type="submit" disabled={!text.trim() || sending || !canAct} aria-label="Send"
+              onMouseDown={(e) => e.preventDefault()}
               className="press grid h-10 w-10 shrink-0 place-items-center rounded-full bg-primary text-primary-foreground disabled:opacity-40">
               {sending ? <Loader2 className="h-4 w-4 animate-spin" /> : <SendHorizontal className="h-4 w-4" />}
             </button>

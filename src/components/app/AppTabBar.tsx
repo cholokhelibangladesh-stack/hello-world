@@ -43,7 +43,7 @@ const AppTabBar = () => {
   const onReels = (pathname.endsWith("/explore") && role !== "admin") || /^\/(player|scout)\/profile$/.test(pathname) || pathname.startsWith("/resume/");
 
   return (
-    <nav aria-label="Primary" className="pointer-events-none fixed inset-x-0 bottom-0 z-40 flex justify-center"
+    <nav aria-label="Primary" className={`pointer-events-none fixed inset-x-0 bottom-0 flex justify-center ${/^\/messages\/.+/.test(pathname) ? "z-[46]" : "z-40"}`}
       style={{ paddingBottom: "calc(env(safe-area-inset-bottom) + 12px)" }}>
       <ul className={`pointer-events-auto flex items-center gap-1.5 rounded-full p-1.5 shadow-[0_14px_34px_-12px_rgba(14,42,51,0.55)] ${onReels
         ? "bg-white/12 ring-1 ring-white/20 backdrop-blur-xl"

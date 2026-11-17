@@ -3,6 +3,9 @@ import { BadgeCheck, Lock } from "lucide-react";
 import { safeMediaUrl } from "@/lib/sanitize";
 import { formatCount } from "@/lib/taxonomy";
 
+/** Solid until just past the name, then fades out completely by the bottom edge. */
+const FADE = "linear-gradient(to bottom, #000 0%, #000 62%, rgba(0,0,0,0.55) 82%, transparent 100%)";
+
 type Count = { label: string; value: number; onClick?: () => void };
 
 /** Round frosted button for the top of the profile photo. */
@@ -20,8 +23,9 @@ export const HeroIconButton = ({ label, onClick, children }: { label: string; on
 export const ProfileSurface = ({ avatarUrl, children }: { avatarUrl?: string | null; children: ReactNode }) => (
   <div className="profile-dark relative isolate min-h-[100dvh] overflow-hidden bg-[#0B1F26]">
     <div aria-hidden className="pointer-events-none absolute inset-0 -z-10 bg-[#0B1F26]">
-      {avatarUrl && <img src={safeMediaUrl(avatarUrl)} alt="" className="h-full w-full scale-125 object-cover opacity-60 blur-3xl" />}
-      <div className="absolute inset-0 bg-gradient-to-b from-[#0B1F26]/40 via-[#0B1F26]/75 to-[#0B1F26]/92" />
+      {avatarUrl && <img src={safeMediaUrl(avatarUrl)} alt="" className="absolute inset-x-0 top-0 h-[110dvh] w-full scale-125 object-cover opacity-70 blur-3xl"
+        style={{ WebkitMaskImage: "linear-gradient(#000 60%, transparent)", maskImage: "linear-gradient(#000 60%, transparent)" }} />}
+      <div className="absolute inset-x-0 top-0 h-[110dvh] bg-gradient-to-b from-[#0B1F26]/30 via-[#0B1F26]/70 to-[#0B1F26]" />
     </div>
     {children}
   </div>
@@ -44,21 +48,26 @@ const ProfileCard = ({ name, subtitle, avatarUrl, verified, isPrivate, counts, t
 
   return (
     <section className="relative text-white">
-      <div className="relative h-[60dvh] min-h-[400px] max-h-[620px] w-full overflow-hidden md:mx-auto md:mt-4 md:max-w-[620px] md:rounded-[34px]">
-        {photo ? (
-          <>
-            <img src={photo} alt="" onError={() => setBroken(true)} className="absolute inset-0 h-full w-full object-cover" />
-            {/* The lower part of the photo turns into frosted glass */}
-            <img src={photo} alt="" aria-hidden className="absolute inset-0 h-full w-full scale-110 object-cover blur-2xl"
-              style={{ WebkitMaskImage: "linear-gradient(to bottom, transparent 48%, #000 82%)", maskImage: "linear-gradient(to bottom, transparent 48%, #000 82%)" }} />
-          </>
-        ) : (
-          <div aria-hidden className="absolute inset-0 grid place-items-center"
-            style={{ background: "radial-gradient(70% 60% at 25% 20%, #7EC8FF 0%, transparent 70%), radial-gradient(70% 70% at 80% 80%, #13738F 0%, transparent 70%), #0E2A33" }}>
-            <span className="text-[120px] font-semibold leading-none text-white/85">{initial}</span>
-          </div>
-        )}
-        <div aria-hidden className="absolute inset-x-0 bottom-0 h-[55%] bg-gradient-to-b from-transparent via-[#0B1F26]/45 to-[#0B1F26]/85" />
+      <div className="relative h-[60dvh] min-h-[400px] max-h-[620px] w-full md:mx-auto md:mt-4 md:max-w-[620px]">
+        {/* Photo layers fade out at the bottom so the picture dissolves into the blurred page behind it,
+            with no edge between the hero and the rest of the profile. */}
+        <div aria-hidden className="absolute inset-0 overflow-hidden md:rounded-t-[34px]"
+          style={{ WebkitMaskImage: FADE, maskImage: FADE }}>
+          {photo ? (
+            <>
+              <img src={photo} alt="" onError={() => setBroken(true)} className="absolute inset-0 h-full w-full object-cover" />
+              {/* The lower part of the photo turns into frosted glass */}
+              <img src={photo} alt="" className="absolute inset-0 h-full w-full scale-110 object-cover blur-2xl"
+                style={{ WebkitMaskImage: "linear-gradient(to bottom, transparent 45%, #000 80%)", maskImage: "linear-gradient(to bottom, transparent 45%, #000 80%)" }} />
+            </>
+          ) : (
+            <div className="absolute inset-0 grid place-items-center"
+              style={{ background: "radial-gradient(70% 60% at 25% 20%, #7EC8FF 0%, transparent 70%), radial-gradient(70% 70% at 80% 80%, #13738F 0%, transparent 70%), #0E2A33" }}>
+              <span className="text-[120px] font-semibold leading-none text-white/85">{initial}</span>
+            </div>
+          )}
+          <div className="absolute inset-x-0 bottom-0 h-1/2 bg-gradient-to-b from-transparent to-black/30" />
+        </div>
 
         <div className="absolute inset-x-0 top-0 flex items-center justify-between px-4" style={{ paddingTop: "calc(env(safe-area-inset-top) + 12px)" }}>
           <div className="flex gap-2">{topLeft}</div>

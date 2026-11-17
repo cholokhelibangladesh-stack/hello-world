@@ -1345,6 +1345,7 @@ export type Database = {
           id: string
           user_id: string
           video_url: string
+          duration_seconds: number | null
           description: string
           position_tags: string[]
           trait_tags: string[]
@@ -1365,6 +1366,7 @@ export type Database = {
           id?: string
           user_id: string
           video_url?: string
+          duration_seconds?: number | null
           description?: string
           position_tags?: string[]
           trait_tags?: string[]
@@ -1385,6 +1387,7 @@ export type Database = {
           id?: string
           user_id?: string
           video_url?: string
+          duration_seconds?: number | null
           description?: string
           position_tags?: string[]
           trait_tags?: string[]

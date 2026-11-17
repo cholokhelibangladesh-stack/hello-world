@@ -1,6 +1,8 @@
-import { useEffect, useMemo, useRef, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { toast } from "sonner";
-import { Film, Loader2, PauseCircle, Plus, Trash2, X } from "lucide-react";
+import { Film, Loader2, PauseCircle, Pencil, Plus, Trash2, X } from "lucide-react";
+import VideoEditor, { type EditorState } from "@/components/upload/VideoEditor";
+import { MAX_SECONDS, MAX_SOURCE_MB, fmtTime } from "@/lib/video/edit";
 import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/hooks/useAuth";
 import StorageVideo from "@/components/StorageVideo";
@@ -8,7 +10,6 @@ import { removeStoredObject, storageUrl } from "@/lib/media";
 import { haptic } from "@/lib/native";
 import { POSITIONS, TRAITS, MAX_VIDEO_MB, VIDEO_TYPES, isSport, type Sport } from "@/lib/taxonomy";
 
-const MAX_MB = MAX_VIDEO_MB;
 const TYPES = VIDEO_TYPES;
 
 type Video = { id: string; title: string | null; status: string; video_url: string; created_at: string; view_count: number; flagged: boolean | null };
@@ -30,6 +31,10 @@ const PlayerUpload = () => {
   const { user } = useAuth();
   const [sport, setSport] = useState<Sport>("football");
   const [file, setFile] = useState<File | null>(null);
+  const [source, setSource] = useState<File | null>(null);
+  const [editing, setEditing] = useState(false);
+  const [editState, setEditState] = useState<EditorState | null>(null);
+  const [duration, setDuration] = useState<number | null>(null);
   const [title, setTitle] = useState("");
   const [description, setDescription] = useState("");
   const [positions, setPositions] = useState<string[]>([]);
@@ -39,8 +44,11 @@ const PlayerUpload = () => {
   const [halted, setHalted] = useState(false);
   const [videos, setVideos] = useState<Video[] | null>(null);
   const fileRef = useRef<HTMLInputElement>(null);
-  const preview = useMemo(() => (file ? URL.createObjectURL(file) : null), [file]);
-  useEffect(() => () => { if (preview) URL.revokeObjectURL(preview); }, [preview]);
+  const [preview, setPreview] = useState<string | null>(null);
+  useEffect(() => {
+    if (!file) { setPreview(null); return; }
+    const u = URL.createObjectURL(file); setPreview(u); return () => URL.revokeObjectURL(u);
+  }, [file]);
 
   const load = async () => {
     if (!user) return;
@@ -58,9 +66,10 @@ const PlayerUpload = () => {
 
   const pick = (f: File | undefined) => {
     if (!f) return;
-    if (!TYPES.includes(f.type)) { toast.error("Choose an MP4, MOV or WebM video."); return; }
-    if (f.size > MAX_MB * 1024 * 1024) { toast.error(`That video is over ${MAX_MB} MB. Trim it to your best moments and try again.`); return; }
-    setFile(f);
+    if (!f.type.startsWith("video/") && !TYPES.includes(f.type)) { toast.error("Choose a video."); return; }
+    if (f.size > MAX_SOURCE_MB * 1024 * 1024) { toast.error("That video is too large to open. Pick a shorter clip."); return; }
+    // Every clip opens in the editor first: trim to the best moments, crop, add text and sounds.
+    setSource(f); setEditState(null); setFile(null); setDuration(null); setEditing(true);
   };
 
   const changeSport = async (s: Sport) => {
@@ -76,7 +85,7 @@ const PlayerUpload = () => {
     else toast(`Choose up to ${max}.`);
   };
 
-  const reset = () => { setFile(null); setTitle(""); setDescription(""); setPositions([]); setTraits([]); setCustom(""); };
+  const reset = () => { setFile(null); setSource(null); setEditState(null); setDuration(null); setTitle(""); setDescription(""); setPositions([]); setTraits([]); setCustom(""); };
 
   const upload = async () => {
     if (!user || !file) return;
@@ -88,12 +97,13 @@ const PlayerUpload = () => {
         user_id: user.id, title: title.trim().slice(0, 120) || `${sport[0].toUpperCase()}${sport.slice(1)} highlight`,
         description: description.trim().slice(0, 1000) || undefined, video_url: "", status: "draft",
         position_tags: positions, trait_tags: traits,
+        duration_seconds: duration != null ? Math.round(duration * 10) / 10 : null,
       }).select("id").single();
       if (dbError) throw dbError;
       createdId = video.id;
       const ext = (file.name.split(".").pop() || "mp4").toLowerCase().replace(/[^a-z0-9]/g, "") || "mp4";
       path = `${user.id}/${video.id}.${ext}`;
-      const { error: upErr } = await supabase.storage.from("player-videos").upload(path, file, { contentType: file.type });
+      const { error: upErr } = await supabase.storage.from("player-videos").upload(path, file, { contentType: file.type || "video/mp4" });
       if (upErr) throw upErr;
       const { error: liveErr } = await supabase.from("videos").update({ video_url: storageUrl("player-videos", path), status: "live" }).eq("id", video.id);
       if (liveErr) throw liveErr;
@@ -121,9 +131,14 @@ const PlayerUpload = () => {
 
   return (
     <div className="pb-6">
+      {editing && source && (
+        <VideoEditor file={source} initial={editState}
+          onCancel={() => { setEditing(false); if (!file) setSource(null); }}
+          onDone={(r) => { setFile(r.file); setDuration(r.duration); setEditState(r.plan); setEditing(false); }} />
+      )}
       <header className="px-4 pt-4">
         <h1 className="large-title">Upload</h1>
-        <p className="mt-1 text-[15px] text-muted-foreground">Share a clip of your best play. Up to {MAX_MB} MB.</p>
+        <p className="mt-1 text-[15px] text-muted-foreground">Share a clip of your best play, up to {MAX_SECONDS} seconds. Trim, crop, add text and sounds before you post.</p>
       </header>
 
       {halted && (
@@ -134,21 +149,24 @@ const PlayerUpload = () => {
       )}
 
       <section className="px-4 pt-5">
-        <input ref={fileRef} type="file" accept={TYPES.join(",")} className="hidden" onChange={(e) => { pick(e.target.files?.[0]); e.target.value = ""; }} />
+        <input ref={fileRef} type="file" accept="video/*" className="hidden" onChange={(e) => { pick(e.target.files?.[0]); e.target.value = ""; }} />
         {file && preview ? (
           <div className="relative overflow-hidden rounded-[18px] bg-black">
-            <video src={preview} className="aspect-[9/16] max-h-[52dvh] w-full object-contain" controls playsInline muted />
-            <button type="button" onClick={() => setFile(null)} aria-label="Remove video" className="press absolute right-3 top-3 grid h-9 w-9 place-items-center rounded-full bg-black/60 text-white">
+            <video src={preview} className="aspect-[9/16] max-h-[52dvh] w-full object-contain" controls playsInline />
+            <button type="button" onClick={() => setEditing(true)} className="press absolute left-3 top-3 flex h-9 items-center gap-1.5 rounded-full bg-black/60 px-3.5 text-[14px] font-semibold text-white">
+              <Pencil className="h-4 w-4" /> Edit
+            </button>
+            <button type="button" onClick={reset} aria-label="Remove video" className="press absolute right-3 top-3 grid h-9 w-9 place-items-center rounded-full bg-black/60 text-white">
               <X className="h-5 w-5" />
             </button>
-            <p className="absolute bottom-3 left-3 rounded-full bg-black/60 px-2.5 py-1 text-[12px] text-white">{(file.size / 1048576).toFixed(1)} MB</p>
+            <p className="absolute bottom-3 left-3 rounded-full bg-black/60 px-2.5 py-1 text-[12px] text-white">{duration != null ? `${fmtTime(duration)} · ` : ""}{(file.size / 1048576).toFixed(1)} MB</p>
           </div>
         ) : (
           <button type="button" disabled={halted} onClick={() => fileRef.current?.click()}
             className="press flex aspect-[16/10] w-full flex-col items-center justify-center gap-2 rounded-[18px] border-2 border-dashed border-border bg-card text-primary disabled:opacity-50">
             <Film className="h-9 w-9" strokeWidth={1.6} aria-hidden="true" />
             <span className="headline">Choose a video</span>
-            <span className="footnote">MP4, MOV or WebM</span>
+            <span className="footnote">Up to {MAX_SECONDS} seconds</span>
           </button>
         )}
       </section>
