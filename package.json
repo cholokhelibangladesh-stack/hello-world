@@ -13,7 +13,8 @@
     "test:watch": "vitest",
     "typecheck": "tsc --noEmit -p tsconfig.app.json",
     "assets:vendor": "node scripts/vendor-lovable-assets.mjs",
-    "assets:check": "node scripts/vendor-lovable-assets.mjs --check"
+    "assets:check": "node scripts/vendor-lovable-assets.mjs --check",
+    "tunnel": "npx --yes cloudflared tunnel --url http://localhost:8080"
   },
   "dependencies": {
     "@capacitor/app": "^8.1.0",

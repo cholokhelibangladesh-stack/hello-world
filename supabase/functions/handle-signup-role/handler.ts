@@ -1,6 +1,7 @@
 // Request handler for handle-signup-role, split from index.ts so it can be
 // tested with a fake Supabase client (see handler_test.ts).
 import { validateSignupPayload } from "./validate.ts";
+import { isAllowedOrigin } from "../_shared/origins.ts";
 
 // deno-lint-ignore no-explicit-any
 type Client = any;
@@ -15,7 +16,7 @@ export function createHandler({ getClient, allowedOrigins }: HandlerDeps) {
   return async (req: Request): Promise<Response> => {
     const origin = req.headers.get("Origin");
     const cors: Record<string, string> = {
-      "Access-Control-Allow-Origin": origin && allowedOrigins.includes(origin) ? origin : "null",
+      "Access-Control-Allow-Origin": origin && isAllowedOrigin(origin, allowedOrigins) ? origin : "null",
       "Access-Control-Allow-Headers": "authorization, x-client-info, apikey, content-type",
       "Access-Control-Allow-Methods": "POST, OPTIONS",
       "Vary": "Origin",
@@ -24,7 +25,7 @@ export function createHandler({ getClient, allowedOrigins }: HandlerDeps) {
       new Response(JSON.stringify(body), { status, headers: { ...cors, "Content-Type": "application/json" } });
 
     // Browser requests must come from an allowed origin; server-to-server calls send no Origin.
-    if (origin && !allowedOrigins.includes(origin)) return json({ error: "Forbidden origin" }, 403);
+    if (origin && !isAllowedOrigin(origin, allowedOrigins)) return json({ error: "Forbidden origin" }, 403);
     if (req.method === "OPTIONS") return new Response("ok", { headers: cors });
     if (req.method !== "POST") return json({ error: "method_not_allowed" }, 405);
 

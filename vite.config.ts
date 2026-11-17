@@ -71,6 +71,8 @@ export default defineConfig({
     server: {
       host: "::",
       port: 8080,
+      // Allow Cloudflare quick-tunnel links (npm run tunnel) so testers elsewhere can open the dev server.
+      allowedHosts: [".trycloudflare.com"],
     },
   },
 });

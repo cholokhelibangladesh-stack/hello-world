@@ -57,3 +57,11 @@ Deno.test("the Android app origin is accepted and others are not", async () => {
   assertEquals((await call(fake(), { confirm: "DELETE" }, "https://localhost")).status, 200);
   assertEquals((await call(fake(), { confirm: "DELETE" }, "https://evil.example")).status, 403);
 });
+
+Deno.test("tunnel origins match one subdomain label only", async () => {
+  const { isAllowedOrigin } = await import("../_shared/origins.ts");
+  const list = ["https://*.trycloudflare.com"];
+  if (!isAllowedOrigin("https://quiet-river-42.trycloudflare.com", list)) throw new Error("tunnel refused");
+  for (const bad of ["https://a.b.trycloudflare.com", "https://trycloudflare.com", "http://x.trycloudflare.com", "https://x.trycloudflare.com.evil.io"])
+    if (isAllowedOrigin(bad, list)) throw new Error(`${bad} accepted`);
+});
