@@ -111,7 +111,7 @@ const CommentsSheet = ({ open, onClose, videoId, videoOwnerId, enabled, onCountC
                   <span className="font-semibold">{c.author?.username ? `@${c.author.username}` : c.author?.full_name ?? "Player"}</span>
                   <span className="ml-2 text-muted-foreground">{timeAgo(c.created_at)}</span>
                 </p>
-                <p className="whitespace-pre-line break-words text-[15px] leading-snug">{c.body}</p>
+                <p translate="no" className="whitespace-pre-line break-words text-[15px] leading-snug">{c.body}</p>
               </div>
               {canDelete(c) && (
                 <button type="button" onClick={() => remove(c)} aria-label="Delete comment"

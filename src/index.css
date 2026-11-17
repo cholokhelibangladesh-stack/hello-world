@@ -522,34 +522,34 @@ html.app-scope {
   --field-4: 34 90% 80%;
 }
 html.app-scope.dark {
-  background: hsl(198 30% 5%);
+  background: hsl(198 45% 7%);
 
-  --background: 198 30% 5%;
+  --background: 198 45% 7%;
   --foreground: 0 0% 97%;
   --card: 0 0% 100%;
-  --card-alpha: 0.07;
-  --card-solid: 198 18% 11%;
+  --card-alpha: 0.11;
+  --card-solid: 198 26% 14%;
   --card-foreground: 0 0% 97%;
-  --popover: 198 18% 12%;
+  --popover: 198 26% 15%;
   --popover-foreground: 0 0% 97%;
   --primary: 194 72% 66%;
   --primary-foreground: 196 57% 9%;
   --secondary: 0 0% 100%;
-  --secondary-alpha: 0.09;
+  --secondary-alpha: 0.13;
   --secondary-foreground: 0 0% 95%;
   --muted: 0 0% 100%;
-  --muted-foreground: 200 10% 70%;
+  --muted-foreground: 200 16% 74%;
   --accent: 205 60% 22%;
   --accent-foreground: 0 0% 97%;
   --destructive: 4 90% 64%;
   --destructive-foreground: 0 0% 100%;
   --success: 145 55% 55%;
   --border: 0 0% 100%;
-  --border-alpha: 0.12;
+  --border-alpha: 0.16;
   --input: 0 0% 25%;
   --ring: 205 100% 75%;
   --ink-solid: 0 0% 100%;
-  --glass-edge: 0 0% 100% / 0.14;
+  --glass-edge: 0 0% 100% / 0.2;
   --glass-shadow: 0 10px 30px -14px hsl(0 0% 0% / 0.6);
   --candy: 205 100% 78%;
 
@@ -575,11 +575,11 @@ html.app-scope.dark {
   --gradient-ink: linear-gradient(hsl(0 0% 0%), hsl(0 0% 0%));
   --shadow-glow: none;
   --shadow-glow-strong: none;
-  --bar-bg: hsl(198 30% 5% / 0.72);
-  --field-1: 205 70% 30%;
-  --field-2: 170 50% 22%;
-  --field-3: 194 60% 26%;
-  --field-4: 30 60% 22%;
+  --bar-bg: hsl(198 45% 7% / 0.72);
+  --field-1: 205 80% 40%;
+  --field-2: 168 55% 30%;
+  --field-3: 194 65% 32%;
+  --field-4: 32 65% 30%;
 }
 html.app-scope body { background-image: none; min-height: 100dvh; line-height: 1.375; }
 html.app-scope body::before {
@@ -629,9 +629,9 @@ html.app-scope :focus-visible { outline: 2px solid hsl(var(--ring)); outline-off
     --foreground: 0 0% 100%; --muted-foreground: 196 22% 76%; --muted: 0 0% 100%; --secondary-alpha: 0.08;
     --border: 0 0% 100%; --border-alpha: 0.12; --success: 150 60% 62%;
   }
-  .dark .glass-tint-sky  { background: linear-gradient(150deg, hsl(205 70% 42% / 0.42), hsl(205 70% 30% / 0.3)); }
-  .dark .glass-tint-mint { background: linear-gradient(150deg, hsl(166 50% 36% / 0.42), hsl(172 50% 24% / 0.3)); }
-  .dark .glass-tint-sand { background: linear-gradient(150deg, hsl(34 60% 40% / 0.42), hsl(26 55% 28% / 0.3)); }
+  .dark .glass-tint-sky  { background: linear-gradient(150deg, hsl(205 80% 52% / 0.46), hsl(205 75% 36% / 0.34)); }
+  .dark .glass-tint-mint { background: linear-gradient(150deg, hsl(166 55% 44% / 0.46), hsl(172 55% 30% / 0.34)); }
+  .dark .glass-tint-sand { background: linear-gradient(150deg, hsl(34 70% 50% / 0.46), hsl(26 60% 34% / 0.34)); }
   .dark :is(.glass-tint-sky, .glass-tint-mint, .glass-tint-sand) { box-shadow: inset 0 1px 0 hsl(0 0% 100% / 0.12), inset 0 0 0 1px hsl(0 0% 100% / 0.08), 0 14px 32px -18px hsl(0 0% 0% / 0.6); }
 
   .glass-strong {
@@ -657,8 +657,9 @@ html.app-scope :focus-visible { outline: 2px solid hsl(var(--ring)); outline-off
   .ios-bar { background: var(--bar-bg); backdrop-filter: saturate(180%) blur(20px); -webkit-backdrop-filter: saturate(180%) blur(20px); }
 
   /* Touch feedback: the only motion most surfaces have */
-  .press { transition: transform 160ms var(--ease-ios), opacity 160ms var(--ease-ios); }
-  .press:active { transform: scale(0.97); opacity: 0.85; }
+  /* iOS touch feel: the press lands instantly, the release eases back a little slower. */
+  .press { transition: transform 280ms cubic-bezier(0.2, 0.9, 0.3, 1.15), opacity 220ms var(--ease-ios); -webkit-user-select: none; user-select: none; }
+  .press:active { transform: scale(0.965); opacity: 0.82; transition-duration: 60ms, 60ms; }
 }
 
 
@@ -750,11 +751,11 @@ html:not(.app-scope) {
 html.dark:not(.app-scope) {
   --paper: 200 34% 9%;
   --paper-deep: 200 38% 6%;
-  --site-glass: 0 0% 100% / 0.06;
+  --site-glass: 0 0% 100% / 0.09;
   --site-glass-strong: 200 30% 12% / 0.78;
-  --site-glass-edge: rgba(255, 255, 255, 0.1);
+  --site-glass-edge: rgba(255, 255, 255, 0.15);
   --site-glass-shadow: 0 1px 0 rgba(255, 255, 255, 0.08) inset, 0 20px 44px -26px rgba(0, 0, 0, 0.7);
-  --site-field-1: 205 70% 26%; --site-field-2: 170 50% 18%; --site-field-3: 194 60% 22%; --site-field-4: 30 60% 18%;
+  --site-field-1: 205 80% 36%; --site-field-2: 168 55% 26%; --site-field-3: 194 65% 28%; --site-field-4: 32 65% 26%;
   background: hsl(200 38% 6%);
 }
 html:not(.app-scope) body { background: transparent; }
@@ -861,3 +862,15 @@ html[data-surface="thread"].ck-typing nav[aria-label="Primary"] { display: none;
 
 /* On desktop the thread sits in the page column with the side navigation, so no room is kept for the tab bar. */
 @media (min-width: 1024px) { html[data-surface="thread"] { --thread-nav: 0px; } }
+
+/* Native date and select controls: iOS Safari gives an empty date input a fixed native width that spills into
+   the next column, and draws its own grey capsule. Make both fill their cell like a normal text field. */
+input.ck-date, input[type="date"] { -webkit-appearance: none; appearance: none; display: block; min-width: 0; max-width: 100%; line-height: 3rem; }
+input[type="date"]::-webkit-date-and-time-value { text-align: left; margin: 0; min-height: 1.5em; }
+input[type="date"]::-webkit-calendar-picker-indicator { opacity: 0.55; }
+select.ck-select { -webkit-appearance: none; appearance: none; min-width: 0; padding-right: 2.25rem; text-overflow: ellipsis;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='16' height='16' fill='none' stroke='%2378909c' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='m4 6 4 4 4-4'/%3E%3C/svg%3E");
+  background-repeat: no-repeat; background-position: right 1rem center; }
+
+/* Bangla letters join up, so wide or tight letter-spacing (used for English eyebrows and headings) breaks them apart. */
+html[lang="bn"] body :not([translate="no"]):not([data-no-i18n]) { letter-spacing: normal !important; }

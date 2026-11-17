@@ -86,7 +86,7 @@ const MessagesPage = () => {
             return (
               <div key={m.id} className={`flex flex-col ${mine ? "items-end" : "items-start"}`}>
                 {!mine && <span className="footnote mb-0.5 px-3">Cholo Kheli Team</span>}
-                <div className={`max-w-[80%] whitespace-pre-wrap break-words px-3.5 py-2 text-[16px] leading-snug ${mine ? "chat-bubble-own bg-primary text-primary-foreground" : "chat-bubble-other bg-card"}`}>
+                <div translate="no" className={`max-w-[80%] whitespace-pre-wrap break-words px-3.5 py-2 text-[16px] leading-snug ${mine ? "chat-bubble-own bg-primary text-primary-foreground" : "chat-bubble-other bg-card"}`}>
                   {m.content}
                 </div>
                 <span className="mt-0.5 px-2 text-[11px] text-muted-foreground">{timeLabel(m.created_at)}</span>

@@ -23,7 +23,7 @@ export async function initNative(onBack?: () => boolean) {
     const sync = () => {
       const dark = document.documentElement.classList.contains("dark");
       StatusBar.setStyle({ style: dark ? Style.Dark : Style.Light }).catch(() => {});
-      StatusBar.setBackgroundColor({ color: dark ? "#000000" : "#F2F4F6" }).catch(() => {});
+      StatusBar.setBackgroundColor({ color: dark ? "#0A171C" : "#F2F4F6" }).catch(() => {});
     };
     sync();
     new MutationObserver(sync).observe(document.documentElement, { attributes: true, attributeFilter: ["class"] });

@@ -1,4 +1,5 @@
-import { Link, useRouterState } from "@tanstack/react-router";
+import { useEffect } from "react";
+import { Link, useRouter, useRouterState } from "@tanstack/react-router";
 import { Home, PlusSquare, User, ClipboardList, Search, ClipboardCheck, SlidersHorizontal, BarChart3 } from "lucide-react";
 import { useAuth } from "@/hooks/useAuth";
 import { motion } from "framer-motion";
@@ -35,6 +36,17 @@ export const TABS: Record<string, Tab[]> = {
 const AppTabBar = () => {
   const { user, role } = useAuth();
   const pathname = useRouterState({ select: (s) => s.location.pathname });
+  const router = useRouter();
+  // Once the app is idle, load every tab's code in the background so switching tabs never waits on it.
+  useEffect(() => {
+    const list = role ? TABS[role] : undefined;
+    // Dev servers serve hundreds of separate modules, so only preload in real builds.
+    if (!list || import.meta.env.DEV) return;
+    const run = () => list.forEach((t) => { router.preloadRoute({ to: t.to as never }).catch(() => {}); });
+    const w = window as Window & { requestIdleCallback?: (cb: () => void, o?: { timeout: number }) => number; cancelIdleCallback?: (id: number) => void };
+    if (w.requestIdleCallback) { const id = w.requestIdleCallback(run, { timeout: 2500 }); return () => w.cancelIdleCallback?.(id); }
+    const id = window.setTimeout(run, 1200); return () => window.clearTimeout(id);
+  }, [role, router]);
   if (!user || !role) return null;
   if (["/auth", "/reset-password"].some((p) => pathname.startsWith(p))) return null;
   const tabs = TABS[role];

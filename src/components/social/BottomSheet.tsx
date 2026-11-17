@@ -1,3 +1,4 @@
+import { IOS_SHEET_SPRING } from "@/lib/motion";
 import { useEffect, type ReactNode } from "react";
 import { createPortal } from "react-dom";
 import { AnimatePresence, motion, useDragControls } from "framer-motion";
@@ -24,9 +25,9 @@ const BottomSheet = ({ open, onClose, title, children, height = "70dvh" }: {
             className="relative flex w-full max-w-[430px] flex-col rounded-t-[28px] glass-strong text-foreground"
             style={{ height, paddingBottom: "env(safe-area-inset-bottom)" }}
             initial={{ y: "100%" }} animate={{ y: 0 }} exit={{ y: "100%" }}
-            transition={{ type: "spring", damping: 32, stiffness: 340 }}
-            drag="y" dragListener={false} dragControls={controls} dragConstraints={{ top: 0, bottom: 0 }} dragElastic={{ top: 0, bottom: 0.6 }}
-            onDragEnd={(_, info) => { if (info.offset.y > 120 || info.velocity.y > 600) onClose(); }}
+            transition={IOS_SHEET_SPRING}
+            drag="y" dragListener={false} dragControls={controls} dragConstraints={{ top: 0, bottom: 0 }} dragElastic={{ top: 0.04, bottom: 1 }}
+            onDragEnd={(_, info) => { if (info.offset.y > 110 || (info.velocity.y > 450 && info.offset.y > 12)) onClose(); }}
           >
             <div className="flex shrink-0 touch-none flex-col items-center pt-2" onPointerDown={(e) => controls.start(e)}>
               <span className="h-1.5 w-10 rounded-full bg-muted-foreground/30" aria-hidden="true" />

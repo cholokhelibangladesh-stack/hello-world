@@ -178,9 +178,9 @@ const Reel = memo(({ v, active, near, muted, onToggleMute, onLike, onShare, onCo
           <span className="text-[15px] font-semibold drop-shadow">{v.username ? `@${v.username}` : v.full_name}</span>
           <span className="rounded-full bg-white/20 px-2 py-0.5 text-[11px] backdrop-blur-sm">{isSport(v.sport) ? SPORT_LABEL[v.sport] : v.sport}</span>
         </button>
-        {v.title && <p className="mt-1 text-[15px] font-medium leading-snug drop-shadow">{v.title}</p>}
+        {v.title && <p translate="no" className="mt-1 text-[15px] font-medium leading-snug drop-shadow">{v.title}</p>}
         {v.description && (
-          <button type="button" onClick={() => setExpanded((e) => !e)} className={`mt-0.5 block text-left text-[14px] leading-snug text-white/90 ${expanded ? "" : "line-clamp-2"}`}>
+          <button type="button" onClick={() => setExpanded((e) => !e)} translate="no" className={`mt-0.5 block text-left text-[14px] leading-snug text-white/90 ${expanded ? "" : "line-clamp-2"}`}>
             {v.description}
           </button>
         )}

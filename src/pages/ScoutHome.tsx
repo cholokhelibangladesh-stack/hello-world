@@ -1,4 +1,5 @@
-import { useEffect, useState } from "react";
+import { usePageCache } from "@/lib/pageCache";
+import { useEffect } from "react";
 import { Inbox, ListFilter, MessageCircle, Search, Trophy } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/hooks/useAuth";
@@ -10,7 +11,7 @@ type Data = { name: string; newThisWeek: number; inbox: number; pending: number;
 /** Scout home: fresh talent, profiles shared by admins, and the state of their requests. */
 const ScoutHome = () => {
   const { user } = useAuth();
-  const [d, setD] = useState<Data | null>(null);
+  const [d, setD] = usePageCache<Data>(user ? `scout-home:${user?.id}` : null);
 
   useEffect(() => {
     if (!user) return;

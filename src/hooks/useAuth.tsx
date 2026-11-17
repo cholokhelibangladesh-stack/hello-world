@@ -1,3 +1,5 @@
+import { clearPageCache } from "@/lib/pageCache";
+import { syncLanguage } from "@/i18n/syncLanguage";
 import { createContext, useCallback, useContext, useEffect, useRef, useState, ReactNode } from "react";
 import { disablePushForThisDevice } from "@/lib/push";
 import type { User, Session } from "@supabase/supabase-js";
@@ -74,6 +76,7 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
           lastUserId.current = next.user.id;
           setLoading(true);
           setTimeout(() => loadAccess(next.user.id), 0);
+          setTimeout(() => { void syncLanguage(next.user.id); }, 0);
         }
       } else {
         lastUserId.current = null;
@@ -116,6 +119,7 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
   };
 
   const signOut = async () => {
+    clearPageCache();
     await disablePushForThisDevice().catch(() => {});
     await supabase.auth.signOut();
     lastUserId.current = null;

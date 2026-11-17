@@ -78,7 +78,7 @@ const Bubble = ({ m, mine, canAct, quoted, quotedName, reactions, myId, removedT
             </button>
           )}
           {deleted ? (removedText !== undefined ? <span>Unsent: <span className="not-italic text-foreground">{removedText}</span></span> : "Message unsent")
-            : <span className="whitespace-pre-wrap break-words">{m.body}</span>}
+            : <span translate="no" className="whitespace-pre-wrap break-words">{m.body}</span>}
           <span className={`ml-2 inline-flex translate-y-0.5 items-center gap-1 text-[11px] ${deleted ? "" : mine ? "text-white/70" : "text-muted-foreground"}`}>
             {m.pinned_at && <Pin className="h-3 w-3" aria-label="Pinned" />}{clock(m.created_at)}
           </span>

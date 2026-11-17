@@ -82,9 +82,11 @@ export const Route = createRootRoute({
       { name: "apple-mobile-web-app-status-bar-style", content: "black-translucent" },
       { name: "apple-mobile-web-app-title", content: "Cholo Kheli" },
       { name: "theme-color", content: "#F2F4F6", media: "(prefers-color-scheme: light)" },
-      { name: "theme-color", content: "#000000", media: "(prefers-color-scheme: dark)" },
+      { name: "theme-color", content: "#0A171C", media: "(prefers-color-scheme: dark)" },
     ],
     links: [
+      // Open the connection to the backend while the page is still loading, so the first data arrives sooner.
+      ...(import.meta.env.VITE_SUPABASE_URL ? [{ rel: "preconnect", href: import.meta.env.VITE_SUPABASE_URL as string, crossOrigin: "anonymous" as const }] : []),
       { rel: "preconnect", href: "https://fonts.googleapis.com" },
       { rel: "preconnect", href: "https://fonts.gstatic.com", crossOrigin: "anonymous" },
       { rel: "stylesheet", href: "https://fonts.googleapis.com/css2?family=Inter+Tight:wght@300;400;500;600;700&family=Manrope:wght@300;400;500;600;700;800&display=swap" },
@@ -179,7 +181,7 @@ function RootDocument({ children }: { children: React.ReactNode }) {
         <style
           dangerouslySetInnerHTML={{
             __html:
-              "html{background:#F2F4F6;color-scheme:light}html.dark{background:#000;color-scheme:dark}@media (prefers-color-scheme:dark){html:not(.light){background:#000}}html.dark #ck-boot-screen{color:#F5F7F8}body{margin:0;background:inherit;color:hsl(var(--foreground));overflow-x:hidden}#ck-boot-screen{position:fixed;inset:0;z-index:2147483647;display:grid;place-items:center;background:inherit;color:#0E2A33;font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif}#ck-boot-screen>div{display:grid;place-items:center;gap:18px;text-align:center}#ck-boot-screen img{width:76px;height:76px;object-fit:contain;filter:drop-shadow(0 10px 26px rgba(0,0,0,.42))}#ck-boot-screen strong{display:block;font-size:17px;font-weight:600}#ck-boot-screen span{display:block;font-size:13px;color:#5F6B71}@media (prefers-reduced-motion:no-preference){#ck-boot-screen img{animation:ckBootPulse 1.15s ease-in-out infinite alternate}@keyframes ckBootPulse{from{transform:scale(.96);opacity:.72}to{transform:scale(1);opacity:1}}}",
+              "html{background:#F2F4F6;color-scheme:light}html.dark{background:#0A171C;color-scheme:dark}@media (prefers-color-scheme:dark){html:not(.light){background:#0A171C}}html.dark #ck-boot-screen{color:#F5F7F8;background:radial-gradient(60% 45% at 50% 44%,rgba(126,200,255,.22),transparent 70%),radial-gradient(50% 40% at 80% 90%,rgba(95,211,181,.12),transparent 70%),#0A171C}html.dark #ck-boot-screen img{filter:brightness(1.18) drop-shadow(0 0 26px rgba(126,200,255,.5))}html.dark #ck-boot-screen span{color:#9FC3D1}body{margin:0;background:inherit;color:hsl(var(--foreground));overflow-x:hidden}#ck-boot-screen{position:fixed;inset:0;z-index:2147483647;display:grid;place-items:center;background:inherit;color:#0E2A33;font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif}#ck-boot-screen>div{display:grid;place-items:center;gap:18px;text-align:center}#ck-boot-screen img{width:76px;height:76px;object-fit:contain;filter:drop-shadow(0 10px 26px rgba(0,0,0,.42))}#ck-boot-screen strong{display:block;font-size:17px;font-weight:600}#ck-boot-screen span{display:block;font-size:13px;color:#5F6B71}@media (prefers-reduced-motion:no-preference){#ck-boot-screen img{animation:ckBootPulse 1.15s ease-in-out infinite alternate}@keyframes ckBootPulse{from{transform:scale(.96);opacity:.72}to{transform:scale(1);opacity:1}}}",
           }}
         />
         <HeadContent />

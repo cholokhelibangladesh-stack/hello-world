@@ -1,3 +1,4 @@
+import LanguageSwitch from "@/components/i18n/LanguageSwitch";
 import { useEffect, useRef, useState } from "react";
 import { Link, useNavigate, useSearch } from "@tanstack/react-router";
 import { Eye, EyeOff, Loader2, MailCheck, ShieldCheck } from "lucide-react";
@@ -71,7 +72,7 @@ const inputCls =
 
 function Field({ label, htmlFor, hint, error, children }: { label: string; htmlFor: string; hint?: string; error?: string; children: React.ReactNode }) {
   return (
-    <div>
+    <div className="min-w-0">
       <label htmlFor={htmlFor} className="mb-1.5 block text-[13px] font-medium text-muted-foreground">{label}</label>
       {children}
       {error ? <p className="mt-1.5 text-[13px] text-destructive" role="alert">{error}</p> : hint ? <p className="mt-1.5 text-[13px] text-muted-foreground">{hint}</p> : null}
@@ -153,10 +154,14 @@ export function ProfileFields({ value, onChange, usernameState }: {
       )}
       <div className="grid grid-cols-2 gap-3">
         <Field label={t("auth.dob")} htmlFor="dob">
-          <input id="dob" type="date" className={inputCls} required max={today} value={value.date_of_birth} onChange={(e) => set("date_of_birth", e.target.value)} />
+          <div className="relative">
+            <input id="dob" type="date" className={`${inputCls} ck-date ${value.date_of_birth ? "" : "text-transparent focus:text-foreground"}`} required max={today} value={value.date_of_birth} onChange={(e) => set("date_of_birth", e.target.value)} />
+            {/* iPhones show an empty date box with no hint, so draw one until a date is picked. */}
+            {!value.date_of_birth && <span aria-hidden className="pointer-events-none absolute inset-y-0 left-4 right-10 flex items-center truncate text-[16px] text-muted-foreground/80">{t("auth.dobPlaceholder")}</span>}
+          </div>
         </Field>
         <Field label={t("auth.gender")} htmlFor="gender">
-          <select id="gender" className={inputCls} required value={value.gender} onChange={(e) => set("gender", e.target.value)}>
+          <select id="gender" className={`${inputCls} ck-select`} required value={value.gender} onChange={(e) => set("gender", e.target.value)}>
             <option value="">{t("auth.selectGender")}</option>
             <option value="male">{t("auth.male")}</option>
             <option value="female">{t("auth.female")}</option>
@@ -370,9 +375,12 @@ const Auth = () => {
       </div>
 
       <div className="relative z-10 mx-auto w-full max-w-md px-4" style={{ paddingTop: "calc(1.25rem + env(safe-area-inset-top))", paddingBottom: "calc(1.5rem + env(safe-area-inset-bottom))" }}>
-        <Link to="/" aria-label="Cholo Kheli home" className="press glass-icon !rounded-[14px]">
-          <CholoKheliMark className="h-6 w-7" />
-        </Link>
+        <div className="flex items-center justify-between">
+          <Link to="/" aria-label="Cholo Kheli home" className="press glass-icon !rounded-[14px]">
+            <CholoKheliMark className="h-6 w-7" />
+          </Link>
+          <LanguageSwitch />
+        </div>
         <div className="pb-6 pt-[9dvh]">
           <h1 className="text-[34px] font-extrabold italic leading-[1.02] tracking-[-0.03em]">{t(titleKey as never)}</h1>
           <p className="mt-2 text-[16px] text-muted-foreground">

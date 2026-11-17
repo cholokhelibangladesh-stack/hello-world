@@ -1,4 +1,5 @@
-import { useEffect, useState } from "react";
+import { usePageCache } from "@/lib/pageCache";
+import { useEffect } from "react";
 import { Camera, CheckCircle2, Circle, MessageCircle, PenLine, Tag, Upload, UserSearch, Lock } from "lucide-react";
 import { Link } from "@tanstack/react-router";
 import { supabase } from "@/integrations/supabase/client";
@@ -23,7 +24,7 @@ type Data = {
 /** Player home: what to do next to get scouted, how highlights are doing, and news. */
 const PlayerHome = () => {
   const { user } = useAuth();
-  const [d, setD] = useState<Data | null>(null);
+  const [d, setD] = usePageCache<Data>(user ? `player-home:${user?.id}` : null);
 
   useEffect(() => {
     if (!user) return;

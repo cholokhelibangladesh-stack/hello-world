@@ -1,3 +1,4 @@
+import { usePageCache } from "@/lib/pageCache";
 import { useEffect, useMemo, useRef, useState } from "react";
 import { Link } from "@tanstack/react-router";
 import { BadgeCheck, Bookmark, Camera, Check, Grid3x3, Loader2, Lock, Settings, Share2 } from "lucide-react";
@@ -27,17 +28,20 @@ const ProfileTab = () => {
   const { user, role } = useAuth();
   const isPlayer = role === "player";
   const base = role === "scout" ? "/scout" : "/player";
-  const [profile, setProfile] = useState<Profile | null>(null);
-  const [scout, setScout] = useState<Scout | null>(null);
-  const [isPrivate, setIsPrivate] = useState(false);
-  const [videos, setVideos] = useState<Highlight[] | null>(null);
-  const [extra, setExtra] = useState<{ requests: number; approved: number } | null>(null);
+  // Last loaded profile for this account, so returning to the tab paints at once (see pageCache.ts).
+  type Snapshot = { profile: Profile; isPrivate: boolean; scout: Scout | null; extra: { requests: number; approved: number } | null; videos: Highlight[] | null; achievements: { id: string; title: string; description: string | null; year: number | null }[] };
+  const [snap, saveSnap] = usePageCache<Snapshot>(user ? `profile:${user.id}:${role}` : null);
+  const [profile, setProfile] = useState<Profile | null>(snap?.profile ?? null);
+  const [scout, setScout] = useState<Scout | null>(snap?.scout ?? null);
+  const [isPrivate, setIsPrivate] = useState(snap?.isPrivate ?? false);
+  const [videos, setVideos] = useState<Highlight[] | null>(snap?.videos ?? null);
+  const [extra, setExtra] = useState<{ requests: number; approved: number } | null>(snap?.extra ?? null);
   const [editOpen, setEditOpen] = useState(false);
   const [list, setList] = useState<"followers" | "following" | null>(null);
   const [tab, setTab] = useState<"highlights" | "saved">("highlights");
   const [savedVideos, setSavedVideos] = useState<Highlight[] | null>(null);
   const [editing, setEditing] = useState<Highlight | null>(null);
-  const [achievements, setAchievements] = useState<{ id: string; title: string; description: string | null; year: number | null }[]>([]);
+  const [achievements, setAchievements] = useState<{ id: string; title: string; description: string | null; year: number | null }[]>(snap?.achievements ?? []);
   const [newAch, setNewAch] = useState<{ id?: string; title: string; year: string; description: string } | null>(null);
   const [bioDraft, setBioDraft] = useState<string | null>(null);
   const [savingBio, setSavingBio] = useState(false);
@@ -105,26 +109,32 @@ const ProfileTab = () => {
 
   const load = async () => {
     if (!user) return;
-    const [{ data: p }, { data: ps }] = await Promise.all([
+    // Every query in one round trip instead of one after another.
+    const isScout = role === "scout";
+    const [{ data: p }, { data: ps }, scoutRes, reqRes, vidRes, achRes] = await Promise.all([
       supabase.from("profiles").select("full_name, username, bio, avatar_url, sport, gender").eq("user_id", user.id).maybeSingle(),
       supabase.from("privacy_settings").select("is_private").eq("user_id", user.id).maybeSingle(),
-    ]);
-    setProfile({ full_name: p?.full_name ?? "", username: (p as { username?: string } | null)?.username ?? "", bio: p?.bio ?? "",
-      avatar_url: p?.avatar_url ?? "", sport: p?.sport ?? "", gender: p?.gender ?? "" });
-    setIsPrivate(!!ps?.is_private);
-    if (role === "scout") {
-      const { data: s } = await supabase.from("scout_profiles").select("organization, verification_status").eq("user_id", user.id).maybeSingle();
-      setScout(s as Scout | null);
-      const { data: reqs } = await supabase.from("scout_requests").select("status").eq("scout_id", user.id);
-      setExtra({ requests: reqs?.length ?? 0, approved: (reqs ?? []).filter((r) => r.status === "approved").length });
-    } else {
-      const { data: v } = await supabase.from("videos")
+      isScout ? supabase.from("scout_profiles").select("organization, verification_status").eq("user_id", user.id).maybeSingle() : Promise.resolve({ data: null }),
+      isScout ? supabase.from("scout_requests").select("status").eq("scout_id", user.id) : Promise.resolve({ data: null }),
+      !isScout ? supabase.from("videos")
         .select("id, title, description, video_url, status, flagged, flag_reason, view_count, like_count, share_count, total_watch_ms, created_at")
-        .eq("user_id", user.id).neq("status", "draft").order("created_at", { ascending: false });
-      setVideos((v ?? []) as Highlight[]);
-      const { data: a } = await supabase.from("achievements").select("id, title, description, year").eq("user_id", user.id).order("year", { ascending: false });
-      setAchievements((a ?? []) as never);
-    }
+        .eq("user_id", user.id).neq("status", "draft").order("created_at", { ascending: false }) : Promise.resolve({ data: null }),
+      !isScout ? supabase.from("achievements").select("id, title, description, year").eq("user_id", user.id).order("year", { ascending: false }) : Promise.resolve({ data: null }),
+    ]);
+    const nextProfile: Profile = { full_name: p?.full_name ?? "", username: (p as { username?: string } | null)?.username ?? "", bio: p?.bio ?? "",
+      avatar_url: p?.avatar_url ?? "", sport: p?.sport ?? "", gender: p?.gender ?? "" };
+    const reqs = (reqRes.data ?? null) as { status: string }[] | null;
+    const next: Snapshot = {
+      profile: nextProfile,
+      isPrivate: !!ps?.is_private,
+      scout: isScout ? (scoutRes.data as Scout | null) : null,
+      extra: isScout ? { requests: reqs?.length ?? 0, approved: (reqs ?? []).filter((r) => r.status === "approved").length } : null,
+      videos: isScout ? null : ((vidRes.data ?? []) as Highlight[]),
+      achievements: isScout ? [] : ((achRes.data ?? []) as Snapshot["achievements"]),
+    };
+    setProfile(next.profile); setIsPrivate(next.isPrivate); setScout(next.scout); setExtra(next.extra);
+    if (!isScout) { setVideos(next.videos); setAchievements(next.achievements); }
+    saveSnap(next);
   };
   useEffect(() => { load(); }, [user?.id, role]); // eslint-disable-line react-hooks/exhaustive-deps
 

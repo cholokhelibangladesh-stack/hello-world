@@ -112,7 +112,7 @@ const NewsPostsList = ({ adminControls, refreshKey, empty }: Props) => {
                 )}
               </div>
               <h3 className="headline">{item.title}</h3>
-              <p className="mt-1 whitespace-pre-wrap text-[15px] leading-relaxed text-muted-foreground">{item.body}</p>
+              <p translate="no" className="mt-1 whitespace-pre-wrap text-[15px] leading-relaxed text-muted-foreground">{item.body}</p>
             </div>
           </article>
         );

@@ -20,7 +20,7 @@ export const AboutSection = ({ bio, onEdit, emptyHint }: { bio: string; onEdit?:
       <Header title="About" action={onEdit && bio ? "Edit" : undefined} onAction={onEdit} />
       {bio ? (
         <div className="rounded-[14px] bg-card px-4 py-3">
-          <p data-bio className={`whitespace-pre-line break-words text-[16px] leading-[1.45] text-foreground ${open || !long ? "" : "line-clamp-5"}`}>{bio}</p>
+          <p data-bio translate="no" className={`whitespace-pre-line break-words text-[16px] leading-[1.45] text-foreground ${open || !long ? "" : "line-clamp-5"}`}>{bio}</p>
           {long && <button type="button" onClick={() => setOpen((o) => !o)} className="mt-1 text-[15px] text-primary">{open ? "Show less" : "more"}</button>}
         </div>
       ) : (

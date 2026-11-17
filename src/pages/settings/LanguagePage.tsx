@@ -4,6 +4,7 @@ import { useAuth } from "@/hooks/useAuth";
 import { useToast } from "@/hooks/use-toast";
 import SettingsShell from "@/components/settings/SettingsShell";
 import { Loader2, Check } from "lucide-react";
+import { useLanguage } from "@/i18n/LanguageProvider";
 
 const LANGS = [
   { code: "en", label: "English" },
@@ -13,7 +14,8 @@ const LANGS = [
 const LanguagePage = () => {
   const { user } = useAuth();
   const { toast } = useToast();
-  const [current, setCurrent] = useState<string>("en");
+  const { lang, setLang } = useLanguage();
+  const [current, setCurrent] = useState<string>(lang);
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
@@ -24,7 +26,7 @@ const LanguagePage = () => {
         .select("language")
         .eq("user_id", user.id)
         .maybeSingle();
-      if (data?.language) setCurrent(data.language);
+      if (data?.language === "en" || data?.language === "bn") setCurrent(data.language);
       setLoading(false);
     })();
   }, [user]);
@@ -32,16 +34,15 @@ const LanguagePage = () => {
   const pick = async (code: string) => {
     if (!user) return;
     setCurrent(code);
+    // Switch straight away; the saved setting follows the account to other devices.
+    if (code === "en" || code === "bn") setLang(code);
     const { error } = await supabase
       .from("privacy_settings")
       .upsert({ user_id: user.id, language: code }, { onConflict: "user_id" });
     if (error)
       toast({ title: "Could not save", description: error.message, variant: "destructive" });
     else {
-      try {
-        localStorage.setItem("ck.lang", code);
-      } catch {}
-      toast({ title: "Language updated" });
+      toast({ title: code === "bn" ? "ভাষা বদলানো হয়েছে" : "Language updated" });
     }
   };
 

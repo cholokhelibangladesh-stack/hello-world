@@ -1,7 +1,16 @@
 import { createContext, useContext, useEffect, useMemo, useState, type ReactNode } from "react";
 import { translations, type Language, type TranslationKey } from "./translations";
+import { applyDomLanguage } from "./domTranslate";
 
-const STORAGE_KEY = "ck.lang.v1";
+export const STORAGE_KEY = "ck.lang.v1";
+/** Fired (with the language as detail) when something outside React changes the language, e.g. after sign-in. */
+export const LANG_EVENT = "ck:lang";
+
+/** Saves a language choice and tells the app to switch. Safe to call from anywhere. */
+export const storeLanguage = (lang: Language) => {
+  try { window.localStorage.setItem(STORAGE_KEY, lang); } catch { /* private mode */ }
+  try { window.dispatchEvent(new CustomEvent(LANG_EVENT, { detail: lang })); } catch { /* SSR */ }
+};
 
 type LanguageContextValue = {
   lang: Language;
@@ -31,12 +40,20 @@ export const LanguageProvider = ({ children }: { children: ReactNode }) => {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
-  // Keep <html lang> in sync.
+  // Keep <html lang> in sync, and switch every screen's text (see domTranslate.ts).
   useEffect(() => {
     if (typeof document !== "undefined") {
       document.documentElement.lang = lang;
+      applyDomLanguage(lang);
     }
   }, [lang]);
+
+  // Language picked elsewhere (sign-up, settings saved on another device and loaded at sign-in).
+  useEffect(() => {
+    const on = (e: Event) => { const l = (e as CustomEvent).detail; if (l === "en" || l === "bn") setLangState(l); };
+    window.addEventListener(LANG_EVENT, on);
+    return () => window.removeEventListener(LANG_EVENT, on);
+  }, []);
 
   const setLang = (next: Language) => {
     setLangState(next);
