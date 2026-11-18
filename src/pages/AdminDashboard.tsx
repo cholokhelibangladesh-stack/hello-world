@@ -163,6 +163,8 @@ const AdminDashboard = ({ section = "review" }: { section?: AdminSection }) => {
  const [feedbackInputs, setFeedbackInputs] = useState<Record<string, string>>({});
  const [uploadsHalted, setUploadsHalted] = useState(false);
  const [pushDays, setPushDays] = useState(30);
+ const [feeOn, setFeeOn] = useState(false);
+ const [feeAmount, setFeeAmount] = useState(100);
   const [haltLoading, setHaltLoading] = useState(false);
   // Ban dialog / share dialog state
   const [banTarget, setBanTarget] = useState<{ userId: string; name: string; scope:"profile" |"scout"; lift?: boolean } | null>(null);
@@ -219,6 +221,10 @@ const AdminDashboard = ({ section = "review" }: { section?: AdminSection }) => {
  const settingsData = (settingsRes.data || []) as any[];
  const haltSetting = settingsData.find((s: any) => s.key ==="video_uploads_halted");
  setUploadsHalted(haltSetting?.value ==="true" || haltSetting?.value === true);
+ const feeOnSetting = settingsData.find((x: any) => x.key === "upload_fee_enabled");
+ setFeeOn(feeOnSetting?.value === true || feeOnSetting?.value === "true");
+ const feeSetting = settingsData.find((x: any) => x.key === "upload_fee_bdt");
+ if (feeSetting && Number(feeSetting.value) > 0) setFeeAmount(Number(feeSetting.value));
  const pushSetting = settingsData.find((x: any) => x.key ==="reel_push_days");
  if (pushSetting && Number(pushSetting.value) > 0) setPushDays(Number(pushSetting.value));
 
@@ -354,6 +360,19 @@ const AdminDashboard = ({ section = "review" }: { section?: AdminSection }) => {
   // Lifting or applying a restriction both go through the moderation dialog, so the user always gets a notice.
   const banScout = (scoutUserId: string, banned: boolean, name: string) => setBanTarget({ userId: scoutUserId, name, scope: "scout", lift: banned });
   const banPlayer = (playerUserId: string, banned: boolean, name: string) => setBanTarget({ userId: playerUserId, name, scope: "profile", lift: banned });
+
+ const saveFee = async (patch: { on?: boolean; amount?: number }) => {
+ const prevOn = feeOn, prevAmt = feeAmount;
+ if (patch.on !== undefined) setFeeOn(patch.on);
+ if (patch.amount !== undefined) setFeeAmount(patch.amount);
+ const writes = [];
+ if (patch.on !== undefined) writes.push(supabase.from("app_settings" as any).update({ value: patch.on, updated_by: user?.id } as any).eq("key", "upload_fee_enabled"));
+ if (patch.amount !== undefined) writes.push(supabase.from("app_settings" as any).update({ value: patch.amount, updated_by: user?.id } as any).eq("key", "upload_fee_bdt"));
+ const res = await Promise.all(writes);
+ const err = res.find((r: any) => r.error)?.error;
+ if (err) { setFeeOn(prevOn); setFeeAmount(prevAmt); toast({ title: "Couldn't save", description: err.message, variant: "destructive" }); }
+ else toast({ title: patch.on === false ? "Uploads are free again" : patch.on ? "Upload fee switched on" : "Upload fee updated" });
+ };
 
  const savePushDays = async (days: number) => {
  const prev = pushDays; setPushDays(days);
@@ -752,6 +771,21 @@ const AdminDashboard = ({ section = "review" }: { section?: AdminSection }) => {
      className="h-10 shrink-0 rounded-full bg-secondary px-3 text-[14px] font-medium">
      {[7, 14, 30, 60, 90, 180, 365].map((d) => <option key={d} value={d}>{d} days</option>)}
    </select>
+ </div>
+ <div className="flex items-center gap-3 rounded-[22px] bg-card p-3.5">
+   <span className="grid h-11 w-11 shrink-0 place-items-center rounded-full bg-[#E2136E]/15 text-[13px] font-bold text-[#E2136E]">৳</span>
+   <div className="min-w-0 flex-1">
+     <p className="text-[15px] font-semibold">Upload fee (bKash)</p>
+     <p className="text-[13px] text-muted-foreground">{feeOn ? "New highlights go live after the player pays. They get an invoice and a certificate." : "Off: uploads are free and go live at once."}</p>
+   </div>
+   <select aria-label="Upload fee in taka" value={feeAmount} onChange={(e) => saveFee({ amount: Number(e.target.value) })}
+     className="h-10 shrink-0 rounded-full bg-secondary px-3 text-[14px] font-medium">
+     {[50, 100, 150, 200].map((a) => <option key={a} value={a}>৳{a}</option>)}
+   </select>
+   <button type="button" role="switch" aria-checked={feeOn} aria-label="Charge an upload fee" onClick={() => saveFee({ on: !feeOn })}
+     className={`relative h-8 w-[52px] shrink-0 rounded-full transition-colors ${feeOn ? "bg-[#1E9E6A]" : "bg-secondary"}`}>
+     <span className={`absolute top-1 h-6 w-6 rounded-full bg-white shadow transition-all ${feeOn ? "left-[24px]" : "left-1"}`} />
+   </button>
  </div>
  </TabsContent>
 

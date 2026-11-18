@@ -33,6 +33,7 @@ import { Route as AdminVideosRouteImport } from './routes/admin.videos'
 import { Route as ApiHealthRouteImport } from './routes/api/health'
 import { Route as MessagesIndexRouteImport } from './routes/messages.index'
 import { Route as MessagesIdRouteImport } from './routes/messages.$id'
+import { Route as PaymentsIdRouteImport } from './routes/payments.$id'
 import { Route as PlayerIndexRouteImport } from './routes/player/index'
 import { Route as PlayerExploreRouteImport } from './routes/player/explore'
 import { Route as PlayerProfileRouteImport } from './routes/player/profile'
@@ -186,6 +187,11 @@ const MessagesIdRoute = MessagesIdRouteImport.update({
   id: '/$id',
   path: '/$id',
   getParentRoute: () => MessagesRoute,
+} as any)
+const PaymentsIdRoute = PaymentsIdRouteImport.update({
+  id: '/payments/$id',
+  path: '/payments/$id',
+  getParentRoute: () => rootRouteImport,
 } as any)
 const PlayerIndexRoute = PlayerIndexRouteImport.update({
   id: '/player/',
@@ -384,6 +390,7 @@ export interface FileRoutesByFullPath {
   '/admin/videos': typeof AdminVideosRoute
   '/api/health': typeof ApiHealthRoute
   '/messages/$id': typeof MessagesIdRoute
+  '/payments/$id': typeof PaymentsIdRoute
   '/player/explore': typeof PlayerExploreRoute
   '/player/profile': typeof PlayerProfileRoute
   '/player/settings': typeof PlayerSettingsRouteWithChildren
@@ -441,6 +448,7 @@ export interface FileRoutesByTo {
   '/admin/videos': typeof AdminVideosRoute
   '/api/health': typeof ApiHealthRoute
   '/messages/$id': typeof MessagesIdRoute
+  '/payments/$id': typeof PaymentsIdRoute
   '/player/explore': typeof PlayerExploreRoute
   '/player/profile': typeof PlayerProfileRoute
   '/player/upload': typeof PlayerUploadRoute
@@ -499,6 +507,7 @@ export interface FileRoutesById {
   '/admin/videos': typeof AdminVideosRoute
   '/api/health': typeof ApiHealthRoute
   '/messages/$id': typeof MessagesIdRoute
+  '/payments/$id': typeof PaymentsIdRoute
   '/player/explore': typeof PlayerExploreRoute
   '/player/profile': typeof PlayerProfileRoute
   '/player/settings': typeof PlayerSettingsRouteWithChildren
@@ -560,6 +569,7 @@ export interface FileRouteTypes {
     | '/admin/videos'
     | '/api/health'
     | '/messages/$id'
+    | '/payments/$id'
     | '/player/explore'
     | '/player/profile'
     | '/player/settings'
@@ -617,6 +627,7 @@ export interface FileRouteTypes {
     | '/admin/videos'
     | '/api/health'
     | '/messages/$id'
+    | '/payments/$id'
     | '/player/explore'
     | '/player/profile'
     | '/player/upload'
@@ -674,6 +685,7 @@ export interface FileRouteTypes {
     | '/admin/videos'
     | '/api/health'
     | '/messages/$id'
+    | '/payments/$id'
     | '/player/explore'
     | '/player/profile'
     | '/player/settings'
@@ -724,6 +736,7 @@ export interface RootRouteChildren {
   ResetPasswordRoute: typeof ResetPasswordRoute
   SafeScoutingRoute: typeof SafeScoutingRoute
   ApiHealthRoute: typeof ApiHealthRoute
+  PaymentsIdRoute: typeof PaymentsIdRoute
   PlayerExploreRoute: typeof PlayerExploreRoute
   PlayerProfileRoute: typeof PlayerProfileRoute
   PlayerSettingsRoute: typeof PlayerSettingsRouteWithChildren
@@ -907,6 +920,13 @@ declare module '@tanstack/react-router' {
       fullPath: '/messages/$id'
       preLoaderRoute: typeof MessagesIdRouteImport
       parentRoute: typeof MessagesRoute
+    }
+    '/payments/$id': {
+      id: '/payments/$id'
+      path: '/payments/$id'
+      fullPath: '/payments/$id'
+      preLoaderRoute: typeof PaymentsIdRouteImport
+      parentRoute: typeof rootRouteImport
     }
     '/player/': {
       id: '/player/'
@@ -1259,6 +1279,7 @@ const rootRouteChildren: RootRouteChildren = {
   ResetPasswordRoute: ResetPasswordRoute,
   SafeScoutingRoute: SafeScoutingRoute,
   ApiHealthRoute: ApiHealthRoute,
+  PaymentsIdRoute: PaymentsIdRoute,
   PlayerExploreRoute: PlayerExploreRoute,
   PlayerProfileRoute: PlayerProfileRoute,
   PlayerSettingsRoute: PlayerSettingsRouteWithChildren,

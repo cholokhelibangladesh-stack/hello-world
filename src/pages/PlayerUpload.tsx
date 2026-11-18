@@ -1,3 +1,5 @@
+import { payUploadFee, takaFmt } from "@/lib/payments";
+import BottomSheet from "@/components/social/BottomSheet";
 import { useEffect, useRef, useState } from "react";
 import { toast } from "sonner";
 import { Film, Loader2, PauseCircle, Pencil, Plus, Trash2, X } from "lucide-react";
@@ -24,6 +26,7 @@ const Chip = ({ on, label, onClick }: { on: boolean; label: string; onClick: () 
 const statusLabel = (v: Video) =>
   v.flagged ? { text: "Under review", cls: "is-pending" }
   : v.status === "live" ? { text: "Live", cls: "is-approved" }
+  : v.status === "pending_payment" ? { text: "Awaiting payment", cls: "is-pending" }
   : v.status === "rejected" ? { text: "Removed", cls: "is-declined" }
   : { text: "Processing", cls: "is-pending" };
 
@@ -42,6 +45,10 @@ const PlayerUpload = () => {
   const [custom, setCustom] = useState("");
   const [uploading, setUploading] = useState(false);
   const [halted, setHalted] = useState(false);
+  const [feeOn, setFeeOn] = useState(false);
+  const [fee, setFee] = useState(100);
+  const [payFor, setPayFor] = useState<{ id: string; title: string } | null>(null);
+  const [paying, setPaying] = useState(false);
   const [videos, setVideos] = useState<Video[] | null>(null);
   const fileRef = useRef<HTMLInputElement>(null);
   const [preview, setPreview] = useState<string | null>(null);
@@ -52,11 +59,15 @@ const PlayerUpload = () => {
 
   const load = async () => {
     if (!user) return;
-    const [{ data: prof }, { data: vids }, { data: setting }] = await Promise.all([
+    const [{ data: prof }, { data: vids }, { data: setting }, { data: feeRows }] = await Promise.all([
       supabase.from("profiles").select("sport").eq("user_id", user.id).maybeSingle(),
       supabase.from("videos").select("id, title, status, video_url, created_at, view_count, flagged").eq("user_id", user.id).neq("status", "draft").order("created_at", { ascending: false }),
       supabase.from("app_settings").select("value").eq("key", "video_uploads_halted").maybeSingle(),
+      supabase.from("app_settings").select("key, value").in("key", ["upload_fee_enabled", "upload_fee_bdt"]),
     ]);
+    const fv = (k: string) => (feeRows ?? []).find((r: { key: string }) => r.key === k)?.value as unknown;
+    setFeeOn(fv("upload_fee_enabled") === true || fv("upload_fee_enabled") === "true");
+    if (Number(fv("upload_fee_bdt")) > 0) setFee(Number(fv("upload_fee_bdt")));
     if (isSport(prof?.sport)) setSport(prof.sport);
     setVideos((vids ?? []) as Video[]);
     const v = setting?.value as unknown;
@@ -105,11 +116,16 @@ const PlayerUpload = () => {
       path = `${user.id}/${video.id}.${ext}`;
       const { error: upErr } = await supabase.storage.from("player-videos").upload(path, file, { contentType: file.type || "video/mp4" });
       if (upErr) throw upErr;
-      const { error: liveErr } = await supabase.from("videos").update({ video_url: storageUrl("player-videos", path), status: "live" }).eq("id", video.id);
+      const { data: after, error: liveErr } = await supabase.from("videos").update({ video_url: storageUrl("player-videos", path), status: "live" }).eq("id", video.id).select("status").single();
       if (liveErr) throw liveErr;
       haptic("medium");
-      toast.success("Highlight published", { description: "It's live in Explore for verified scouts." });
       reset(); load();
+      if (after?.status === "pending_payment") {
+        // The upload fee is on: the clip is saved and goes live once the bKash payment succeeds.
+        setPayFor({ id: video.id, title: title.trim() || "Your highlight" });
+      } else {
+        toast.success("Highlight published", { description: "It's live in Explore for verified scouts." });
+      }
     } catch (e) {
       if (path) await supabase.storage.from("player-videos").remove([path]);
       if (createdId) await supabase.from("videos").delete().eq("id", createdId);
@@ -127,10 +143,45 @@ const PlayerUpload = () => {
     toast.success("Highlight deleted");
   };
 
+  const startPay = async (id: string) => {
+    setPaying(true);
+    const r = await payUploadFee(id);
+    if (!r.ok) {
+      setPaying(false);
+      if (r.reason === "not_configured") toast.error("bKash payments aren't switched on yet", { description: "The Cholo Kheli team is setting them up. Your highlight is saved." });
+      else if (r.reason === "not_due") { toast.success("This highlight is already paid for"); setPayFor(null); load(); }
+      else toast.error("Couldn't open bKash", { description: "Check your connection and try again." });
+    }
+  };
+
   const ready = !!file && !uploading && !halted;
 
   return (
     <div className="pb-6">
+      <BottomSheet open={!!payFor} onClose={() => { if (!paying) setPayFor(null); }} title="Pay to publish" height="auto">
+        {payFor && (
+          <div className="space-y-4 px-5 pb-6 pt-1">
+            <div className="flex items-center gap-3 rounded-[20px] bg-secondary p-4">
+              <span aria-hidden className="grid h-12 w-12 shrink-0 place-items-center rounded-[14px] bg-[#E2136E] text-[15px] font-bold text-white">bKash</span>
+              <div className="min-w-0 flex-1">
+                <p className="truncate text-[16px] font-semibold">{payFor.title}</p>
+                <p className="text-[14px] text-muted-foreground">Upload fee</p>
+              </div>
+              <p className="text-[22px] font-bold tabular-nums">{takaFmt(fee)}</p>
+            </div>
+            <ul className="space-y-1.5 text-[14px] text-muted-foreground">
+              <li>· Your highlight goes live the moment the payment succeeds.</li>
+              <li>· You get an invoice and a certificate of participation in your notifications.</li>
+              <li>· Players under 18: ask a parent or guardian to pay.</li>
+            </ul>
+            <button type="button" onClick={() => startPay(payFor.id)} disabled={paying}
+              className="press flex h-[52px] w-full items-center justify-center gap-2 rounded-full bg-[#E2136E] text-[17px] font-semibold text-white disabled:opacity-60">
+              {paying ? <Loader2 className="h-5 w-5 animate-spin" /> : null}{`Pay ${takaFmt(fee)} with bKash`}
+            </button>
+            <button type="button" onClick={() => setPayFor(null)} disabled={paying} className="press h-11 w-full rounded-full text-[15px] font-medium text-muted-foreground">Pay later</button>
+          </div>
+        )}
+      </BottomSheet>
       {editing && source && (
         <VideoEditor file={source} initial={editState}
           onCancel={() => { setEditing(false); if (!file) setSource(null); }}
@@ -139,6 +190,7 @@ const PlayerUpload = () => {
       <header className="px-4 pt-4">
         <h1 className="large-title">Upload</h1>
         <p className="mt-1 text-[15px] text-muted-foreground">Share a clip of your best play, up to {MAX_SECONDS} seconds. Trim, crop, add text and sounds before you post.</p>
+        {feeOn && <p className="mt-2 inline-flex items-center gap-2 rounded-full bg-[#E2136E]/12 px-3 py-1.5 text-[14px] font-medium text-[#B0105A] dark:text-[#FF8CC0]">{`Upload fee ${takaFmt(fee)} per highlight, paid with bKash`}</p>}
       </header>
 
       {halted && (
@@ -238,7 +290,10 @@ const PlayerUpload = () => {
                     <p className="truncate text-[16px]">{v.title ?? "Highlight"}</p>
                     <p className="footnote">{new Date(v.created_at).toLocaleDateString([], { day: "numeric", month: "short", year: "numeric" })} · {v.view_count} views</p>
                   </div>
-                  <span className={`status-pill ${s.cls}`}>{s.text}</span>
+                  {v.status === "pending_payment" ? (
+                    <button type="button" onClick={() => setPayFor({ id: v.id, title: v.title ?? "Highlight" })}
+                      className="press h-8 shrink-0 rounded-full bg-[#E2136E] px-3 text-[13px] font-semibold text-white">{`Pay ${takaFmt(fee)}`}</button>
+                  ) : <span className={`status-pill ${s.cls}`}>{s.text}</span>}
                   <button type="button" onClick={() => remove(v)} aria-label={`Delete ${v.title ?? "highlight"}`} className="grid h-9 w-9 place-items-center rounded-full text-destructive">
                     <Trash2 className="h-[18px] w-[18px]" />
                   </button>

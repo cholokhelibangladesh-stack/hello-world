@@ -76,6 +76,8 @@ export function pathForNotification(type: string | undefined, meta: Record<strin
     case "video_restored": return role === "player" || !role ? "/player/profile" : `${base}/profile`;
     case "new_video": return m.actor_id ? `/resume/${m.actor_id}` : `${base}/explore`;
     case "dm": return m.conversation_id ? `/messages/${m.conversation_id}` : "/messages";
+    case "payment_receipt": return m.payment_id ? `/payments/${m.payment_id}` : `${base}/upload`;
+    case "certificate": return m.payment_id ? `/payments/${m.payment_id}?doc=certificate` : `${base}/upload`;
     case "message": return role === "admin" ? "/admin/panel" : "/player/settings/messages";
     case "account_notice": return "/player/settings/account-status";
     case "scout_verification": return "/scout/settings/verification";

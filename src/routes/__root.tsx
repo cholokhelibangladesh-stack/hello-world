@@ -20,7 +20,7 @@ import { useRouterState } from "@tanstack/react-router";
 import { useAuth } from "@/hooks/useAuth";
 import BanGuard from "@/components/BanGuard";
 
-const APP_PREFIXES = ["/player", "/scout", "/admin", "/resume", "/messages"];
+const APP_PREFIXES = ["/player", "/scout", "/admin", "/resume", "/messages", "/payments"];
 function useInAppShell() {
   const pathname = useRouterState({ select: (s) => s.location.pathname });
   const { user } = useAuth();

@@ -874,3 +874,11 @@ select.ck-select { -webkit-appearance: none; appearance: none; min-width: 0; pad
 
 /* Bangla letters join up, so wide or tight letter-spacing (used for English eyebrows and headings) breaks them apart. */
 html[lang="bn"] body :not([translate="no"]):not([data-no-i18n]) { letter-spacing: normal !important; }
+
+/* Invoice and certificate: print one document at a time (Save as PDF). */
+@media print {
+  body * { visibility: hidden !important; }
+  .print-only-invoice .doc-invoice, .print-only-invoice .doc-invoice *,
+  .print-only-certificate .doc-certificate, .print-only-certificate .doc-certificate * { visibility: visible !important; }
+  .print-only-invoice .doc-invoice, .print-only-certificate .doc-certificate { position: absolute; left: 0; top: 0; width: 100%; box-shadow: none; -webkit-print-color-adjust: exact; print-color-adjust: exact; }
+}

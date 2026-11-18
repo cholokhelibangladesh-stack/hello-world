@@ -19,7 +19,7 @@ import WebSideNav from "./WebSideNav";
  */
 
 // Routes considered "in-app" (authenticated shell shown)
-const APP_PREFIXES = ["/player", "/scout", "/admin", "/resume", "/messages"];
+const APP_PREFIXES = ["/player", "/scout", "/admin", "/resume", "/messages", "/payments"];
 
 const AppFrame = ({ children }: { children: React.ReactNode }) => {
   const pathname = useRouterState({ select: (s) => s.location.pathname });
