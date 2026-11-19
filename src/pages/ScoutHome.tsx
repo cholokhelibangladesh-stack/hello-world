@@ -18,13 +18,15 @@ const ScoutHome = () => {
     (async () => {
       const weekAgo = new Date(Date.now() - 7 * 86400_000).toISOString();
       const [sp, fresh, shares, reqs, unread] = await Promise.all([
-        supabase.from("scout_profiles").select("full_name, preferred_sport, scout_tier").eq("user_id", user.id).maybeSingle(),
+        supabase.from("scout_profiles").select("full_name, preferred_sport").eq("user_id", user.id).maybeSingle(),
         supabase.from("videos").select("id", { count: "exact", head: true }).eq("status", "live").gte("created_at", weekAgo),
         supabase.from("profile_shares").select("id", { count: "exact", head: true }).eq("scout_id", user.id).eq("status", "sent"),
         supabase.from("scout_requests").select("status").eq("scout_id", user.id),
         supabase.from("messages").select("id", { count: "exact", head: true }).eq("receiver_id", user.id).eq("read", false),
       ]);
-      const tier = ((sp.data as any)?.scout_tier ?? "professional") as Data["tier"];
+      // Read separately so the rest of Home still loads if the tier column isn't there yet.
+      const tierRow = await supabase.from("scout_profiles").select("scout_tier" as any).eq("user_id", user.id).maybeSingle();
+      const tier = (((tierRow.data as any)?.scout_tier) ?? "professional") as Data["tier"];
       const work = tier === "reviewer"
         ? ((await (supabase as any).rpc("get_review_queue", { _limit: 50, _sport: null })).data ?? []).length
         : ((await (supabase as any).rpc("get_recommended_videos", { _limit: 50, _offset: 0, _sport: null })).data ?? []).length;
