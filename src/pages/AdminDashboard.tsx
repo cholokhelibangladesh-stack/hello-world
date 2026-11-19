@@ -22,7 +22,7 @@ import ShareToScoutDialog from"@/components/admin/ShareToScoutDialog";
 import ScoutDocuments from "@/components/admin/ScoutDocuments";
 
 
-interface ScoutRow { id: string; user_id: string; organization: string | null; verification_status: string; created_at: string; full_name?: string; username?: string | null; email?: string | null; is_banned?: boolean; }
+interface ScoutRow { id: string; user_id: string; organization: string | null; verification_status: string; created_at: string; scout_tier?: string; full_name?: string; username?: string | null; email?: string | null; is_banned?: boolean; }
 interface PlayerRow { user_id: string; full_name: string; username?: string | null; email?: string | null; is_banned?: boolean; sport?: string | null; }
 interface VideoRow { id: string; user_id: string; title: string | null; description: string | null; video_url: string | null; status: string; created_at: string; full_name?: string; username?: string | null; email?: string | null; }
 interface MessageRow { id: string; sender_id: string; receiver_id: string; content: string; flagged: boolean; flag_reason: string | null; created_at: string; sender_name?: string; receiver_name?: string; }
@@ -164,6 +164,8 @@ const AdminDashboard = ({ section = "review" }: { section?: AdminSection }) => {
  const [uploadsHalted, setUploadsHalted] = useState(false);
  const [pushDays, setPushDays] = useState(30);
  const [feeOn, setFeeOn] = useState(false);
+ const [reviewPay, setReviewPay] = useState(15);
+ const [reviewerStats, setReviewerStats] = useState<{ reviewer_id: string; reviewer_name: string; reviews: number; forwarded: number }[]>([]);
  const [feeAmount, setFeeAmount] = useState(100);
   const [haltLoading, setHaltLoading] = useState(false);
   // Ban dialog / share dialog state
@@ -225,6 +227,9 @@ const AdminDashboard = ({ section = "review" }: { section?: AdminSection }) => {
  setFeeOn(feeOnSetting?.value === true || feeOnSetting?.value === "true");
  const feeSetting = settingsData.find((x: any) => x.key === "upload_fee_bdt");
  if (feeSetting && Number(feeSetting.value) > 0) setFeeAmount(Number(feeSetting.value));
+ const paySetting = settingsData.find((x: any) => x.key === "review_pay_bdt");
+ if (paySetting && Number(paySetting.value) > 0) setReviewPay(Number(paySetting.value));
+ (supabase as any).rpc("get_reviewer_stats", {}).then(({ data }: any) => setReviewerStats(data ?? []));
  const pushSetting = settingsData.find((x: any) => x.key ==="reel_push_days");
  if (pushSetting && Number(pushSetting.value) > 0) setPushDays(Number(pushSetting.value));
 
@@ -357,7 +362,20 @@ const AdminDashboard = ({ section = "review" }: { section?: AdminSection }) => {
  toast({ title: `Scout ${status ==="active" ?"approved" :"rejected"}` }); fetchAll();
  };
 
-  // Lifting or applying a restriction both go through the moderation dialog, so the user always gets a notice.
+   const setScoutTier = async (scoutId: string, tier: "reviewer" | "professional", scoutUserId: string) => {
+    const { error } = await supabase.from("scout_profiles").update({ scout_tier: tier } as any).eq("id", scoutId);
+    if (error) { toast({ title: "Error", description: error.message, variant: "destructive" }); return; }
+    await supabase.from("notifications").insert({
+      user_id: scoutUserId, type: "scout_verification",
+      title: tier === "reviewer" ? "You're now an intermediate scout" : "You're now a professional scout",
+      message: tier === "reviewer"
+        ? "Open the Review queue from Home to rate new highlights and forward the best to professional scouts."
+        : "Open Recommended from Home to see highlights that intermediate scouts forwarded to you.",
+    });
+    toast({ title: tier === "reviewer" ? "Set as intermediate scout" : "Set as professional scout" }); fetchAll();
+  };
+
+ // Lifting or applying a restriction both go through the moderation dialog, so the user always gets a notice.
   const banScout = (scoutUserId: string, banned: boolean, name: string) => setBanTarget({ userId: scoutUserId, name, scope: "scout", lift: banned });
   const banPlayer = (playerUserId: string, banned: boolean, name: string) => setBanTarget({ userId: playerUserId, name, scope: "profile", lift: banned });
 
@@ -667,16 +685,34 @@ const AdminDashboard = ({ section = "review" }: { section?: AdminSection }) => {
  <SearchFilterBar testKey="scouts" search={scoutSearch} setSearch={setScoutSearch} filter={scoutFilter} setFilter={setScoutFilter} placeholder="Search scouts by name, email, or username..."
  sort={scoutSort} setSort={setScoutSort}
  filters={[{ value:"pending", label:"Pending" }, { value:"active", label:"Active" }, { value:"rejected", label:"Rejected" }]} />
+ {reviewerStats.length > 0 && (
+ <details className="ios-group px-4 py-3" data-testid="reviewer-pay">
+   <summary className="cursor-pointer text-[15px] font-semibold">Intermediate scout pay this month</summary>
+   <p className="text-[12px] text-muted-foreground mt-1">Paid per review at the rate below. Forwarded highlights go to professional scouts.</p>
+   <div className="mt-2 flex items-center justify-between text-[13px]"><span>Pay per review (Tk)</span><span className="font-semibold">{reviewPay}</span></div>
+   <div className="mt-2 divide-y divide-border">
+     {reviewerStats.map((r) => (
+       <div key={r.reviewer_id} className="flex items-center justify-between py-2 text-[14px]">
+         <span className="truncate" translate="no">{r.reviewer_name}</span>
+         <span className="flex gap-3 tabular-nums"><span>{r.reviews}</span><span className="text-muted-foreground">{r.forwarded}</span><span className="font-semibold">৳{(r.reviews * reviewPay).toLocaleString("en-US")}</span></span>
+       </div>
+     ))}
+   </div>
+ </details>
+ )}
  {filteredScouts.length === 0 ? <p className="text-muted-foreground text-center py-12">No scouts found.</p> : <div className="space-y-2">{filteredScouts.map((s) => (
  <AdminCard key={s.id} data-testid="mod-row-scouts" data-account={s.full_name ||""} data-status={s.verification_status} data-created-at={s.created_at}
    tone="mint" name={s.full_name || "Scout"} struck={s.is_banned}
-   sub={s.organization || "No organisation"} meta={`Joined ${new Date(s.created_at).toLocaleDateString()}${s.is_banned ? " · Banned" : ""}`}
+   sub={<>{s.organization || "No organisation"} · <span data-testid="scout-tier">{s.scout_tier === "reviewer" ? "Intermediate scout" : "Professional scout"}</span></>} meta={`Joined ${new Date(s.created_at).toLocaleDateString()}${s.is_banned ? " · Banned" : ""}`}
    badge={<StatusPill status={s.verification_status} />}
    actions={<>
      {s.verification_status ==="pending" && <>
        <ActionBtn kind="primary" onClick={() => updateScoutStatus(s.id,"active", s.user_id)}>Approve</ActionBtn>
        <ActionBtn onClick={() => updateScoutStatus(s.id,"rejected", s.user_id)}>Reject</ActionBtn>
      </>}
+     <ActionBtn onClick={() => setScoutTier(s.id, s.scout_tier === "reviewer" ? "professional" : "reviewer", s.user_id)} data-testid="scout-tier-toggle">
+       {s.scout_tier === "reviewer" ? "Make professional" : "Make intermediate"}
+     </ActionBtn>
      <ActionBtn kind={s.is_banned ? "plain" : "danger"} onClick={() => banScout(s.user_id, s.is_banned || false, s.full_name ||"scout")}>
        <Ban className="h-4 w-4" />{s.is_banned ?"Unban" :"Ban"}
      </ActionBtn>

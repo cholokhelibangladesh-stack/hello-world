@@ -33,6 +33,7 @@ const typeIcons: Record<string, any> = {
   scout_verification: BadgeCheck,
   info: Info,
   certificate: Award,
+  review_forwarded: Star,
   feedback: Star,
   selection: Star,
   admin_notice: FileText,
@@ -41,6 +42,7 @@ const typeIcons: Record<string, any> = {
 
 const typeColors: Record<string, string> = {
   certificate: "text-foreground",
+  review_forwarded: "text-[#C8952F]",
   selection: "text-foreground",
   feedback: "text-foreground",
   admin_notice: "text-muted-foreground",

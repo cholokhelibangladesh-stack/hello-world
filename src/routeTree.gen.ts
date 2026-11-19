@@ -44,6 +44,8 @@ import { Route as ScoutIndexRouteImport } from './routes/scout/index'
 import { Route as ScoutExploreRouteImport } from './routes/scout/explore'
 import { Route as ScoutInboxRouteImport } from './routes/scout/inbox'
 import { Route as ScoutProfileRouteImport } from './routes/scout/profile'
+import { Route as ScoutRecommendedRouteImport } from './routes/scout/recommended'
+import { Route as ScoutReviewRouteImport } from './routes/scout/review'
 import { Route as ScoutSelectionsRouteImport } from './routes/scout/selections'
 import { Route as ScoutSettingsRouteImport } from './routes/scout/settings'
 import { Route as PlayerSettingsIndexRouteImport } from './routes/player/settings.index'
@@ -243,6 +245,16 @@ const ScoutProfileRoute = ScoutProfileRouteImport.update({
   path: '/scout/profile',
   getParentRoute: () => rootRouteImport,
 } as any)
+const ScoutRecommendedRoute = ScoutRecommendedRouteImport.update({
+  id: '/scout/recommended',
+  path: '/scout/recommended',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const ScoutReviewRoute = ScoutReviewRouteImport.update({
+  id: '/scout/review',
+  path: '/scout/review',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const ScoutSelectionsRoute = ScoutSelectionsRouteImport.update({
   id: '/scout/selections',
   path: '/scout/selections',
@@ -399,6 +411,8 @@ export interface FileRoutesByFullPath {
   '/scout/explore': typeof ScoutExploreRoute
   '/scout/inbox': typeof ScoutInboxRoute
   '/scout/profile': typeof ScoutProfileRoute
+  '/scout/recommended': typeof ScoutRecommendedRoute
+  '/scout/review': typeof ScoutReviewRoute
   '/scout/selections': typeof ScoutSelectionsRoute
   '/scout/settings': typeof ScoutSettingsRouteWithChildren
   '/admin/': typeof AdminIndexRoute
@@ -456,6 +470,8 @@ export interface FileRoutesByTo {
   '/scout/explore': typeof ScoutExploreRoute
   '/scout/inbox': typeof ScoutInboxRoute
   '/scout/profile': typeof ScoutProfileRoute
+  '/scout/recommended': typeof ScoutRecommendedRoute
+  '/scout/review': typeof ScoutReviewRoute
   '/scout/selections': typeof ScoutSelectionsRoute
   '/admin': typeof AdminIndexRoute
   '/messages': typeof MessagesIndexRoute
@@ -516,6 +532,8 @@ export interface FileRoutesById {
   '/scout/explore': typeof ScoutExploreRoute
   '/scout/inbox': typeof ScoutInboxRoute
   '/scout/profile': typeof ScoutProfileRoute
+  '/scout/recommended': typeof ScoutRecommendedRoute
+  '/scout/review': typeof ScoutReviewRoute
   '/scout/selections': typeof ScoutSelectionsRoute
   '/scout/settings': typeof ScoutSettingsRouteWithChildren
   '/admin/': typeof AdminIndexRoute
@@ -578,6 +596,8 @@ export interface FileRouteTypes {
     | '/scout/explore'
     | '/scout/inbox'
     | '/scout/profile'
+    | '/scout/recommended'
+    | '/scout/review'
     | '/scout/selections'
     | '/scout/settings'
     | '/admin/'
@@ -635,6 +655,8 @@ export interface FileRouteTypes {
     | '/scout/explore'
     | '/scout/inbox'
     | '/scout/profile'
+    | '/scout/recommended'
+    | '/scout/review'
     | '/scout/selections'
     | '/admin'
     | '/messages'
@@ -694,6 +716,8 @@ export interface FileRouteTypes {
     | '/scout/explore'
     | '/scout/inbox'
     | '/scout/profile'
+    | '/scout/recommended'
+    | '/scout/review'
     | '/scout/selections'
     | '/scout/settings'
     | '/admin/'
@@ -745,6 +769,8 @@ export interface RootRouteChildren {
   ScoutExploreRoute: typeof ScoutExploreRoute
   ScoutInboxRoute: typeof ScoutInboxRoute
   ScoutProfileRoute: typeof ScoutProfileRoute
+  ScoutRecommendedRoute: typeof ScoutRecommendedRoute
+  ScoutReviewRoute: typeof ScoutReviewRoute
   ScoutSelectionsRoute: typeof ScoutSelectionsRoute
   ScoutSettingsRoute: typeof ScoutSettingsRouteWithChildren
   PlayerIndexRoute: typeof PlayerIndexRoute
@@ -996,6 +1022,20 @@ declare module '@tanstack/react-router' {
       path: '/scout/profile'
       fullPath: '/scout/profile'
       preLoaderRoute: typeof ScoutProfileRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/scout/recommended': {
+      id: '/scout/recommended'
+      path: '/scout/recommended'
+      fullPath: '/scout/recommended'
+      preLoaderRoute: typeof ScoutRecommendedRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/scout/review': {
+      id: '/scout/review'
+      path: '/scout/review'
+      fullPath: '/scout/review'
+      preLoaderRoute: typeof ScoutReviewRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/scout/selections': {
@@ -1288,6 +1328,8 @@ const rootRouteChildren: RootRouteChildren = {
   ScoutExploreRoute: ScoutExploreRoute,
   ScoutInboxRoute: ScoutInboxRoute,
   ScoutProfileRoute: ScoutProfileRoute,
+  ScoutRecommendedRoute: ScoutRecommendedRoute,
+  ScoutReviewRoute: ScoutReviewRoute,
   ScoutSelectionsRoute: ScoutSelectionsRoute,
   ScoutSettingsRoute: ScoutSettingsRouteWithChildren,
   PlayerIndexRoute: PlayerIndexRoute,

@@ -73,7 +73,8 @@ export function pathForNotification(type: string | undefined, meta: Record<strin
     case "like":
     case "comment":
     case "video_removed":
-    case "video_restored": return role === "player" || !role ? "/player/profile" : `${base}/profile`;
+    case "video_restored":
+    case "review_forwarded": return role === "player" || !role ? "/player/profile" : `${base}/profile`;
     case "new_video": return m.actor_id ? `/resume/${m.actor_id}` : `${base}/explore`;
     case "dm": return m.conversation_id ? `/messages/${m.conversation_id}` : "/messages";
     case "payment_receipt": return m.payment_id ? `/payments/${m.payment_id}` : `${base}/upload`;
