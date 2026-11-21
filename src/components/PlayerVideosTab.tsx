@@ -65,9 +65,9 @@ function useWatchTracker(videoId: string, active: boolean, userId?: string) {
 }
 
 const RailButton = ({ label, count, onClick, children, active }: { label: string; count?: string; onClick: () => void; children: React.ReactNode; active?: boolean }) => (
-  <button type="button" onClick={onClick} aria-label={label} aria-pressed={active} className="press flex flex-col items-center gap-1 text-white">
+  <button type="button" onClick={onClick} aria-label={label} aria-pressed={active} className="press flex w-14 flex-col items-center gap-1 text-white">
     <span className="grid h-11 w-11 place-items-center drop-shadow-[0_1px_3px_rgba(0,0,0,0.5)]">{children}</span>
-    {count !== undefined && <span className="text-[12px] font-semibold drop-shadow-[0_1px_2px_rgba(0,0,0,0.6)]">{count}</span>}
+    {count !== undefined && <span className="w-14 truncate text-center text-[12px] font-semibold drop-shadow-[0_1px_2px_rgba(0,0,0,0.6)]">{count}</span>}
   </button>
 );
 
@@ -144,7 +144,7 @@ const Reel = memo(({ v, active, near, muted, onToggleMute, onLike, onShare, onCo
       </button>
 
       {/* right rail */}
-      <div className="absolute bottom-6 right-2 z-[3] flex flex-col items-center gap-3">
+      <div className="absolute bottom-6 right-1 z-[3] flex w-14 flex-col items-center gap-3">
         <div className="relative mb-2">
           <button type="button" onClick={() => navigate({ to: `/resume/${v.user_id}` as never })} aria-label={`${v.full_name}'s profile`}
             className="press block h-11 w-11 overflow-hidden rounded-full border-2 border-white bg-white/20">
@@ -168,12 +168,12 @@ const Reel = memo(({ v, active, near, muted, onToggleMute, onLike, onShare, onCo
         <RailButton label="Share" count={formatCount(v.share_count)} onClick={() => onShare(v)}>
           <Send className="h-7 w-7" />
         </RailButton>
-        {isScout && <div className="text-white"><ScoutSelectPlayer playerId={v.user_id} playerName={v.full_name} /></div>}
+        {isScout && <ScoutSelectPlayer playerId={v.user_id} playerName={v.full_name} variant="rail" />}
         <RailButton label="More" onClick={() => onMore(v)}><MoreHorizontal className="h-7 w-7" /></RailButton>
       </div>
 
       {/* caption */}
-      <div className="absolute bottom-5 left-3 right-16 z-[3] text-white">
+      <div className="absolute bottom-5 left-3 right-[4.5rem] z-[3] text-white">
         <button type="button" onClick={() => navigate({ to: `/resume/${v.user_id}` as never })} className="flex items-center gap-2 text-left">
           <span className="text-[15px] font-semibold drop-shadow">{v.username ? `@${v.username}` : v.full_name}</span>
           <span className="rounded-full bg-white/20 px-2 py-0.5 text-[11px] backdrop-blur-sm">{isSport(v.sport) ? SPORT_LABEL[v.sport] : v.sport}</span>

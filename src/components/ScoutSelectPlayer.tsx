@@ -1,11 +1,11 @@
-import { useEffect, useRef, useState } from "react";
+import { forwardRef, useEffect, useReducer, useRef, useState } from "react";
 import { UserPlus, Loader2, Send, Check, RotateCcw, X, Clock } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Textarea } from "@/components/ui/textarea";
 import { useAuth } from "@/hooks/useAuth";
 import { supabase } from "@/integrations/supabase/client";
 import { useToast } from "@/hooks/use-toast";
-import { uniqueChannel } from "@/lib/realtime";
+import { getScoutRequest, scoutRequestsLoaded, setScoutRequest, subscribeScoutRequests } from "@/lib/scoutRequests";
 import {
   Dialog,
   DialogContent,
@@ -27,22 +27,43 @@ import {
 interface Props {
   playerId: string;
   playerName: string;
+  /** "rail" draws an icon button with a label underneath, sized like the other reel buttons. */
+  variant?: "pill" | "rail";
 }
+
+/** Same footprint as the reel's like, comment and share buttons, whatever the label says. */
+const RailSelectButton = forwardRef<HTMLButtonElement, React.ButtonHTMLAttributes<HTMLButtonElement> & { label: string; tone?: "primary" | "approved" | "muted" }>(
+  ({ label, tone = "primary", children, className, ...rest }, ref) => (
+    <button ref={ref} type="button" {...rest}
+      className={`press flex w-14 flex-col items-center gap-1 text-white disabled:opacity-100 ${className ?? ""}`}>
+      <span className={`grid h-11 w-11 place-items-center rounded-full drop-shadow-[0_1px_3px_rgba(0,0,0,0.5)] ${
+        tone === "approved" ? "bg-[#5FD3B5] text-[#0A2A30]" : tone === "muted" ? "bg-white/20 backdrop-blur-md" : "bg-primary text-primary-foreground"}`}>
+        {children}
+      </span>
+      <span className="whitespace-nowrap text-center text-[12px] font-semibold drop-shadow-[0_1px_2px_rgba(0,0,0,0.6)]">{label}</span>
+    </button>
+  ),
+);
+RailSelectButton.displayName = "RailSelectButton";
 
 type RequestState = {
   id: string;
   status: "pending" | "approved" | "rejected";
 } | null;
 
-const ScoutSelectPlayer = ({ playerId, playerName }: Props) => {
+const ScoutSelectPlayer = ({ playerId, playerName, variant = "pill" }: Props) => {
+  const rail = variant === "rail";
   const { user } = useAuth();
   const { toast } = useToast();
   const [notes, setNotes] = useState("");
   const [busy, setBusy] = useState(false);
   const [open, setOpen] = useState(false);
   const [confirmRescind, setConfirmRescind] = useState(false);
-  const [existing, setExisting] = useState<RequestState>(null);
-  const [loadedOnce, setLoadedOnce] = useState(false);
+  // Shared across every Select button: one query and one live subscription per scout.
+  const [, rerender] = useReducer((x: number) => x + 1, 0);
+  const existing: RequestState = getScoutRequest(playerId);
+  const loadedOnce = scoutRequestsLoaded();
+  const setExisting = (value: RequestState) => setScoutRequest(playerId, value);
   const lastActionRef = useRef(0);
 
   // Simple 800ms debounce guard against double-clicks / duplicate submits.
@@ -55,50 +76,8 @@ const ScoutSelectPlayer = ({ playerId, playerName }: Props) => {
 
   useEffect(() => {
     if (!user) return;
-    let cancelled = false;
-
-    const load = async () => {
-      const { data, error } = await supabase
-        .from("scout_requests")
-        .select("id, status")
-        .eq("scout_id", user.id)
-        .eq("player_id", playerId)
-        .maybeSingle();
-      if (cancelled) return;
-      if (error) {
-        setLoadedOnce(true);
-        return;
-      }
-      setExisting((data as RequestState) ?? null);
-      setLoadedOnce(true);
-    };
-    load();
-
-    // Realtime — instantly reflect admin approval/rejection here too.
-    const channel = supabase
-      .channel(uniqueChannel(`scout-req-${user.id}-${playerId}`))
-      .on(
-        "postgres_changes",
-        {
-          event: "*",
-          schema: "public",
-          table: "scout_requests",
-          filter: `scout_id=eq.${user.id}`,
-        },
-        (payload: any) => {
-          const row = payload.new ?? payload.old;
-          if (!row || row.player_id !== playerId) return;
-          if (payload.eventType === "DELETE") setExisting(null);
-          else setExisting({ id: row.id, status: row.status });
-        },
-      )
-      .subscribe();
-
-    return () => {
-      cancelled = true;
-      supabase.removeChannel(channel);
-    };
-  }, [user, playerId]);
+    return subscribeScoutRequests(user.id, rerender);
+  }, [user]);
 
 
 
@@ -185,6 +164,7 @@ const ScoutSelectPlayer = ({ playerId, playerName }: Props) => {
 
   // ─── UI states ─────────────────────────────────────────────
   if (!loadedOnce) {
+    if (rail) return <RailSelectButton label="Select" tone="muted" disabled aria-label="Loading"><Loader2 className="h-5 w-5 animate-spin" /></RailSelectButton>;
     return (
       <Button
         size="sm"
@@ -198,6 +178,7 @@ const ScoutSelectPlayer = ({ playerId, playerName }: Props) => {
   }
 
   if (existing?.status === "approved") {
+    if (rail) return <RailSelectButton label="Approved" tone="approved" disabled aria-label="Request approved"><Check className="h-6 w-6" strokeWidth={3} /></RailSelectButton>;
     return (
       <Button
         size="sm"
@@ -213,6 +194,11 @@ const ScoutSelectPlayer = ({ playerId, playerName }: Props) => {
   if (existing?.status === "pending") {
     return (
       <>
+        {rail ? (
+          <RailSelectButton label="Pending" tone="muted" onClick={() => setConfirmRescind(true)} disabled={busy} aria-label="Rescind request">
+            {busy ? <Loader2 className="h-5 w-5 animate-spin" /> : <Clock className="h-6 w-6" />}
+          </RailSelectButton>
+        ) : (
         <Button
           size="sm"
           variant="outline"
@@ -228,6 +214,7 @@ const ScoutSelectPlayer = ({ playerId, playerName }: Props) => {
           )}
           Pending
         </Button>
+        )}
         <AlertDialog open={confirmRescind} onOpenChange={setConfirmRescind}>
           <AlertDialogContent>
             <AlertDialogHeader>
@@ -258,6 +245,11 @@ const ScoutSelectPlayer = ({ playerId, playerName }: Props) => {
   }
 
   if (existing?.status === "rejected") {
+    if (rail) return (
+      <RailSelectButton label="Retry" tone="muted" onClick={retryRejected} disabled={busy} aria-label="Retry request">
+        {busy ? <Loader2 className="h-5 w-5 animate-spin" /> : <RotateCcw className="h-6 w-6" />}
+      </RailSelectButton>
+    );
     return (
       <Button
         size="sm"
@@ -285,12 +277,16 @@ const ScoutSelectPlayer = ({ playerId, playerName }: Props) => {
       }}
     >
       <DialogTrigger asChild>
-        <Button
-          size="sm"
-          className="bg-primary text-primary-foreground hover:bg-primary/90 rounded-full text-xs"
-        >
-          <UserPlus className="h-3 w-3 mr-1" /> Select
-        </Button>
+        {rail ? (
+          <RailSelectButton label="Select" aria-label={`Select ${playerName}`}><UserPlus className="h-6 w-6" /></RailSelectButton>
+        ) : (
+          <Button
+            size="sm"
+            className="bg-primary text-primary-foreground hover:bg-primary/90 rounded-full text-xs"
+          >
+            <UserPlus className="h-3 w-3 mr-1" /> Select
+          </Button>
+        )}
       </DialogTrigger>
       <DialogContent className="bg-card border-border">
         <DialogHeader>
