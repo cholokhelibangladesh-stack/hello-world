@@ -16,7 +16,7 @@ const faqs = [
   { q: "What sports are supported?", a: "Football, cricket and basketball." },
   { q: "Can I edit or remove a highlight?", a: "Yes. Open the highlight on your profile to change its title and description, or delete it from the Upload page at any time." },
   { q: "What if I'm under 18?", a: "Players under 18 sign up with a parent or guardian's consent and contact. A scout can only message a player after our team approves the request, and our team can read every conversation." },
-  { q: "How do I report suspicious behaviour?", a: "Use Report on the person's profile or on a message in the app, use the form below, or email legal@cholokheli.com." },
+  { q: "How do I report suspicious behaviour?", a: "Use Report on the person's profile or on a message in the app, use the form below, or email cholokhelibangladesh@gmail.com." },
 ];
 
 const contactSchema = z.object({

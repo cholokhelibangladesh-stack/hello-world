@@ -85,7 +85,7 @@ function BlockedPage() {
         )}
         {!until && (
           <p className="text-xs text-muted-foreground">
-            This ban stays until the team lifts it. Contact <a className="underline" href="mailto:support@cholokheli.com">support@cholokheli.com</a> to appeal.
+            This ban stays until the team lifts it. Contact <a className="underline" href="mailto:cholokhelibangladesh@gmail.com">cholokhelibangladesh@gmail.com</a> to appeal.
           </p>
         )}
         <Button variant="outline" onClick={signOut} className="rounded-full">

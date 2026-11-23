@@ -26,7 +26,7 @@ const players: PlayerPin[] = [
     x: 43, y: 47,
     district: "Dhaka", name: "Rafiqul Islam", sport: "Football", position: "Midfielder",
     issue: "No platform to showcase talent outside his locality. Spent 3 years unnoticed.",
-    story: "Within weeks of uploading his highlight reel on Cholo Kheli, three clubs reached out. He now plays for a Dhaka Premier Division club.",
+    story: "He uploads a 60-second highlight. Verified scouts across the country can see it the same day, without him leaving his district.",
     image: playerRafiq, defaultOpen: true,
   },
   {
@@ -34,7 +34,7 @@ const players: PlayerPin[] = [
     x: 57, y: 26,
     district: "Sylhet", name: "Tanjim Ahmed", sport: "Cricket", position: "All-rounder",
     issue: "Playing in remote Sylhet with zero scouting infrastructure. His talent was invisible.",
-    story: "Cholo Kheli connected him to a BPL franchise scout. He now holds a regional cricket contract and represents Sylhet in the National Championship.",
+    story: "An intermediate scout reviews his bowling clip and forwards it to professional cricket scouts, who can request a trial through the app.",
     image: playerTanjim, defaultOpen: true,
   },
   {
@@ -42,15 +42,15 @@ const players: PlayerPin[] = [
     x: 28, y: 58,
     district: "Khulna", name: "Nusrat Jahan", sport: "Football", position: "Forward",
     issue: "Female players in Khulna had no visibility — no scouts ever visited the district.",
-    story: "After uploading her skills video, she received an invite to the Bangladesh Women's U-20 trials. She made the squad.",
+    story: "She posts her skills video with her guardian's consent. Scouts looking for women's football talent can find her by position and district.",
     image: playerNusrat, defaultOpen: true,
   },
-  { id: "p4", x: 28, y: 38, district: "Rajshahi", name: "Arif Hossain", sport: "Football", position: "Goalkeeper", issue: "Limited access to professional coaching.", story: "Now training with Rajshahi FC youth academy after being spotted on Cholo Kheli.", image: playerRafiq },
-  { id: "p5", x: 38, y: 70, district: "Barisal", name: "Sumon Dey", sport: "Cricket", position: "Fast Bowler", issue: "No way to reach metropolitan scouts from coastal Barisal.", story: "Secured a trial with a Dhaka-based cricket academy through Cholo Kheli.", image: playerTanjim },
-  { id: "p6", x: 44, y: 30, district: "Mymensingh", name: "Karim Uddin", sport: "Football", position: "Defender", issue: "Talented but invisible due to lack of local scouting.", story: "Joined Dhaka Abahani youth team after being discovered on Cholo Kheli.", image: playerNusrat },
-  { id: "p7", x: 28, y: 18, district: "Rangpur", name: "Belal Khan", sport: "Cricket", position: "Spinner", issue: "Northern districts ignored by big club scouts.", story: "Offered contract by Rangpur Riders academy after highlight reel went viral.", image: playerRafiq },
-  { id: "p8", x: 50, y: 53, district: "Comilla", name: "Rony Mia", sport: "Football", position: "Winger", issue: "Played street football with no professional pathway.", story: "Discovered by a scout from Chittagong Abahani and offered a trial.", image: playerTanjim },
-  { id: "p9", x: 53, y: 58, district: "Chittagong", name: "Sadia Islam", sport: "Football", position: "Midfielder", issue: "Women's football completely unscouted in Chittagong.", story: "Selected for national women's development camp after Cholo Kheli profile.", image: playerNusrat },
+  { id: "p4", x: 28, y: 38, district: "Rajshahi", name: "Arif Hossain", sport: "Football", position: "Goalkeeper", issue: "Limited access to professional coaching.", story: "A scout shortlists him from his highlights and asks, through an admin, to see him at a trial.", image: playerRafiq },
+  { id: "p5", x: 38, y: 70, district: "Barisal", name: "Sumon Dey", sport: "Cricket", position: "Fast Bowler", issue: "No way to reach metropolitan scouts from coastal Barisal.", story: "His highlights reach academy scouts in Dhaka without the cost of travelling there first.", image: playerTanjim },
+  { id: "p6", x: 44, y: 30, district: "Mymensingh", name: "Karim Uddin", sport: "Football", position: "Defender", issue: "Talented but invisible due to lack of local scouting.", story: "Local scouts can now find defenders from Mymensingh by searching for his position.", image: playerNusrat },
+  { id: "p7", x: 28, y: 18, district: "Rangpur", name: "Belal Khan", sport: "Cricket", position: "Spinner", issue: "Northern districts ignored by big club scouts.", story: "His clip is ranked by real engagement, so a strong spell can rise in scouts' feeds.", image: playerRafiq },
+  { id: "p8", x: 50, y: 53, district: "Comilla", name: "Rony Mia", sport: "Football", position: "Winger", issue: "Played street football with no professional pathway.", story: "A verified scout follows him and gets his new highlights first.", image: playerTanjim },
+  { id: "p9", x: 53, y: 58, district: "Chittagong", name: "Sadia Islam", sport: "Football", position: "Midfielder", issue: "Women's football completely unscouted in Chittagong.", story: "Her profile gives women's football scouts one place to see players from Chattogram.", image: playerNusrat },
 ];
 
 const districtLabels = [
@@ -119,10 +119,10 @@ export default function BangladeshMapTestimonials() {
           className="text-center mb-10 sm:mb-14"
         >
           <h2 className="font-display text-3xl sm:text-5xl text-foreground mb-2 sm:mb-3">
-            VOICES FROM ACROSS BANGLADESH
+            HOW IT CAN WORK ACROSS BANGLADESH
           </h2>
           <p className="text-sm sm:text-base text-muted-foreground max-w-lg mx-auto">
-            Every pin is a real player whose life changed. Click any pin to hear their story.
+            Example stories that show what Cholo Kheli is built to do. They are illustrations, not real players or results.
           </p>
         </motion.div>
 
@@ -272,7 +272,7 @@ export default function BangladeshMapTestimonials() {
                   <div className="relative w-full" style={{ aspectRatio: "4/3" }}>
                     <img
                       src={activePlayer.image}
-                      alt={activePlayer.name}
+                      alt={`Illustration for the example story of ${activePlayer.name}`}
                       className="absolute inset-0 w-full h-full object-cover"
                       style={{ objectPosition: "center 15%" }}
                     />
@@ -295,7 +295,7 @@ export default function BangladeshMapTestimonials() {
                             {activePlayer.name}
                           </h3>
                           <p className="text-xs text-muted-foreground mt-0.5">
-                            {activePlayer.sport} · {activePlayer.position}
+                            {activePlayer.sport} · {activePlayer.position} · Example
                           </p>
                         </div>
                         <div className="flex items-center gap-1 bg-foreground/90 rounded-full px-2 py-0.5 flex-shrink-0">
@@ -312,7 +312,7 @@ export default function BangladeshMapTestimonials() {
                       <p className="text-sm text-muted-foreground leading-relaxed">{activePlayer.issue}</p>
                     </div>
                     <div className="rounded-xl p-3 border border-foreground/10 bg-foreground/5">
-                      <p className="text-[10px] font-semibold text-foreground/60 uppercase tracking-wider mb-1">The Breakthrough</p>
+                      <p className="text-[10px] font-semibold text-foreground/60 uppercase tracking-wider mb-1">How Cholo Kheli helps</p>
                       <div className="flex gap-2">
                         <Quote className="h-3.5 w-3.5 text-foreground/40 flex-shrink-0 mt-0.5" />
                         <p className="text-sm text-foreground leading-relaxed">{activePlayer.story}</p>
@@ -330,7 +330,7 @@ export default function BangladeshMapTestimonials() {
                 >
                   <MapPin className="h-7 w-7 text-foreground/20" />
                   <p className="text-muted-foreground text-sm leading-relaxed">
-                    Click any location pin on the map<br />to read a player's story
+                    Click any location pin on the map<br />to read an example story
                   </p>
                 </motion.div>
               )}

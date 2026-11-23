@@ -1,5 +1,5 @@
 import { deepStrictEqual as assertEquals, ok } from "node:assert/strict";
-import { createHandler, emailHtml, escapeHtml, type Mailer, type Pusher } from "./handler.ts";
+import { createHandler, emailHtml, escapeHtml, unsubscribeToken, type Mailer, type Pusher } from "./handler.ts";
 
 const N = "11111111-2222-3333-4444-555555555555";
 
@@ -99,4 +99,43 @@ Deno.test("email content is escaped", () => {
   const html = emailHtml("Hi <b>", "line1\n<img src=x onerror=1>", "https://app.test");
   ok(!html.includes("<img src=x"));
   ok(html.includes("line1<br>"));
+});
+
+// ── unsubscribe links ──
+const U = "11111111-2222-3333-4444-555555555555";
+function unsubClient() {
+  const upserts: unknown[] = [];
+  return { upserts, client: { from: () => ({ upsert: (row: unknown) => { upserts.push(row); return Promise.resolve({ error: null }); } }) } };
+}
+const unsub = (c: ReturnType<typeof unsubClient>, method: string, u: string, t: string) =>
+  createHandler({ getClient: () => c.client, secret: "s3cret", appUrl: "https://app.test", mailer: null, pusher: null, signingKey: "k3y",
+    isAllowedOrigin: (o) => o === "https://app.test" })(
+    new Request(`http://x/?unsubscribe=1&u=${u}&t=${t}`, { method, headers: { origin: "https://app.test" } }));
+
+Deno.test("a valid signed unsubscribe link turns emails off without signing in", async () => {
+  const c = unsubClient();
+  const t = await unsubscribeToken("k3y", U);
+  const r = await unsub(c, "POST", U, t);
+  assertEquals(r.status, 200);
+  assertEquals(r.headers.get("access-control-allow-origin"), "https://app.test");
+  assertEquals(c.upserts, [{ user_id: U, email_notifications: false }]);
+});
+Deno.test("a forged or someone else's unsubscribe token is refused", async () => {
+  const c = unsubClient();
+  const other = await unsubscribeToken("k3y", "99999999-2222-3333-4444-555555555555");
+  assertEquals((await unsub(c, "POST", U, other)).status, 400);
+  assertEquals((await unsub(c, "POST", U, "0".repeat(32))).status, 400);
+  assertEquals(c.upserts, []);
+});
+Deno.test("opening the unsubscribe link in a browser goes to the confirmation page, it doesn't unsubscribe by itself", async () => {
+  const c = unsubClient();
+  const r = await unsub(c, "GET", U, "abc");
+  assertEquals(r.status, 302);
+  ok(r.headers.get("location")!.startsWith("https://app.test/unsubscribe?u="));
+  assertEquals(c.upserts, []);
+});
+Deno.test("emails carry an unsubscribe link and the business address", () => {
+  const html = emailHtml("Hi", "Body", "https://app.test", "https://app.test/unsubscribe?u=x&t=y");
+  ok(html.includes("Unsubscribe") && html.includes("https://app.test/unsubscribe?u=x&amp;t=y"));
+  ok(html.includes("Dhaka, Bangladesh"));
 });

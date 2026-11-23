@@ -86,19 +86,23 @@ const ProfileCard = ({ name, subtitle, avatarUrl, verified, isPrivate, counts, t
 
       <div className="mx-auto max-w-[620px] px-5">
         {children}
-        <dl className="mt-5 grid grid-cols-3 text-center">
+        <ul className="mt-5 grid grid-cols-3 text-center">
           {counts.map((c) => {
             const inner = (
               <>
-                <dt className="order-2 mt-1.5 text-[14px] text-white/60">{c.label}</dt>
-                <dd className="order-1 text-[28px] font-bold leading-none tabular-nums">{formatCount(c.value)}</dd>
+                <span className="order-2 mt-1.5 text-[14px] text-white/75">{c.label}</span>
+                <span className="order-1 text-[28px] font-bold leading-none tabular-nums">{formatCount(c.value)}</span>
               </>
             );
-            return c.onClick
-              ? <button key={c.label} type="button" onClick={c.onClick} className="press flex flex-col items-center py-1">{inner}</button>
-              : <div key={c.label} className="flex flex-col items-center py-1">{inner}</div>;
+            return (
+              <li key={c.label}>
+                {c.onClick
+                  ? <button type="button" onClick={c.onClick} className="press flex w-full flex-col items-center py-1">{inner}</button>
+                  : <div className="flex flex-col items-center py-1">{inner}</div>}
+              </li>
+            );
           })}
-        </dl>
+        </ul>
       </div>
     </section>
   );

@@ -1,10 +1,11 @@
 import { payUploadFee, takaFmt } from "@/lib/payments";
 import BottomSheet from "@/components/social/BottomSheet";
 import { useEffect, useRef, useState } from "react";
+import { Link } from "@tanstack/react-router";
 import { toast } from "sonner";
 import { Film, Loader2, PauseCircle, Pencil, Plus, Trash2, X } from "lucide-react";
 import VideoEditor, { type EditorState } from "@/components/upload/VideoEditor";
-import { MAX_SECONDS, MAX_SOURCE_MB, fmtTime } from "@/lib/video/edit";
+import { MAX_SECONDS, MAX_SOURCE_MB, fmtTime, looksLikeVideo } from "@/lib/video/edit";
 import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/hooks/useAuth";
 import StorageVideo from "@/components/StorageVideo";
@@ -75,9 +76,10 @@ const PlayerUpload = () => {
   };
   useEffect(() => { load(); }, [user]); // eslint-disable-line react-hooks/exhaustive-deps
 
-  const pick = (f: File | undefined) => {
+  const pick = async (f: File | undefined) => {
     if (!f) return;
     if (!f.type.startsWith("video/") && !TYPES.includes(f.type)) { toast.error("Choose a video."); return; }
+    if (!(await looksLikeVideo(f))) { toast.error("That file isn't a video we can read.", { description: "Use an MP4, MOV, 3GP or WebM clip from your camera or gallery." }); return; }
     if (f.size > MAX_SOURCE_MB * 1024 * 1024) { toast.error("That video is too large to open. Pick a shorter clip."); return; }
     // Every clip opens in the editor first: trim to the best moments, crop, add text and sounds.
     setSource(f); setEditState(null); setFile(null); setDuration(null); setEditing(true);
@@ -130,7 +132,10 @@ const PlayerUpload = () => {
       if (path) await supabase.storage.from("player-videos").remove([path]);
       if (createdId) await supabase.from("videos").delete().eq("id", createdId);
       const msg = (e as { message?: string }).message ?? "";
-      toast.error("Upload failed", { description: msg.includes("paused") ? "Uploads are paused right now. Try again later." : "Check your connection and try again." });
+      toast.error("Upload failed", { description: msg.includes("paused") ? "Uploads are paused right now. Try again later."
+        : msg.includes("upload limit") ? "You've reached today's limit of new highlights. Try again tomorrow."
+        : msg.includes("exceeded the maximum") || msg.includes("too large") ? `The clip is over ${MAX_VIDEO_MB} MB. Trim it a little shorter.`
+        : "Check your connection and try again." });
     } finally { setUploading(false); }
   };
 
@@ -170,9 +175,11 @@ const PlayerUpload = () => {
               <p className="text-[22px] font-bold tabular-nums">{takaFmt(fee)}</p>
             </div>
             <ul className="space-y-1.5 text-[14px] text-muted-foreground">
+              <li>· {`${takaFmt(fee)} is the full price. Cholo Kheli adds no tax, service or processing fee.`}</li>
               <li>· Your highlight goes live the moment the payment succeeds.</li>
               <li>· You get an invoice and a certificate of participation in your notifications.</li>
               <li>· Players under 18: ask a parent or guardian to pay.</li>
+              <li>· If the payment goes through but your clip doesn't go live, you get your money back. <Link to={"/refund-policy" as never} className="text-primary underline underline-offset-2">Refund policy</Link></li>
             </ul>
             <button type="button" onClick={() => startPay(payFor.id)} disabled={paying}
               className="press flex h-[52px] w-full items-center justify-center gap-2 rounded-full bg-[#E2136E] text-[17px] font-semibold text-white disabled:opacity-60">
@@ -268,9 +275,15 @@ const PlayerUpload = () => {
         </div>
         <button type="button" disabled={!ready} onClick={upload}
           className="press flex h-[52px] w-full items-center justify-center gap-2 rounded-full bg-primary text-[17px] font-semibold text-primary-foreground disabled:opacity-40">
-          {uploading ? <><Loader2 className="h-5 w-5 animate-spin" /> Uploading…</> : "Publish highlight"}
+          {uploading ? <><Loader2 className="h-5 w-5 animate-spin" /> Uploading…</> : feeOn ? `Upload, then pay ${takaFmt(fee)}` : "Publish highlight"}
         </button>
-        <p className="footnote text-center">Highlights go live straight away. Admins review flagged clips.</p>
+        <p className="footnote text-center">
+          {feeOn
+            ? `The total is ${takaFmt(fee)} per highlight, paid with bKash. There are no other charges. Your clip goes live once the payment succeeds; see the `
+            : "Free to post. Highlights go live straight away. Admins review flagged clips."}
+          {feeOn && <Link to={"/refund-policy" as never} className="text-primary underline underline-offset-2">refund policy</Link>}
+          {feeOn && "."}
+        </p>
       </section>
 
       <section className="px-4 pt-8">

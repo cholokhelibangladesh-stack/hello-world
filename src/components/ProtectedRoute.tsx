@@ -1,6 +1,7 @@
 import { ReactNode, useEffect, useState } from "react";
 import { Navigate, Link } from "@tanstack/react-router";
-import { Check, Clock, FileUp, Loader2, MessageCircle, XCircle } from "lucide-react";
+import { Check, Clock, FileUp, Loader2, MessageCircle, ShieldCheck, XCircle } from "lucide-react";
+import TwoFactorPage from "@/pages/settings/TwoFactorPage";
 import { useAuth } from "@/hooks/useAuth";
 import { supabase } from "@/integrations/supabase/client";
 
@@ -12,7 +13,7 @@ interface ProtectedRouteProps {
 }
 
 const ProtectedRoute = ({ children, allowedRoles, allowPendingScout = false }: ProtectedRouteProps) => {
-  const { user, role, loading, scoutStatus, needsMfa } = useAuth();
+  const { user, role, loading, scoutStatus, needsMfa, aal } = useAuth();
 
   if (loading) {
     return (
@@ -26,11 +27,35 @@ const ProtectedRoute = ({ children, allowedRoles, allowPendingScout = false }: P
   if (!allowedRoles.includes(role)) {
     return <Navigate to={(role === "admin" ? "/admin" : role === "scout" ? "/scout" : "/player") as never} replace />;
   }
+  // Admin tools need a second factor. The database enforces this too, so a stolen password
+  // alone shows an empty dashboard; here the admin is walked through setting it up.
+  if (role === "admin" && aal !== "aal2") return <AdminTwoFactorGate />;
   if (role === "scout" && scoutStatus !== "active" && !allowPendingScout) {
     return <ScoutVerificationGate rejected={scoutStatus === "rejected"} />;
   }
   return <>{children}</>;
 };
+
+function AdminTwoFactorGate() {
+  const { refreshRole, signOut } = useAuth();
+  return (
+    <div className="mx-auto max-w-md pb-10">
+      <div className="px-5 pt-8">
+        <div className="grid h-14 w-14 place-items-center rounded-full bg-accent text-primary">
+          <ShieldCheck className="h-7 w-7" aria-hidden="true" />
+        </div>
+        <h1 className="large-title mt-4">Secure your admin account</h1>
+        <p className="mt-2 text-[16px] text-muted-foreground">
+          Admin tools open only after two-step verification. Set up an authenticator app once; after that you'll enter a 6-digit code when you sign in.
+        </p>
+      </div>
+      <TwoFactorPage onVerified={() => { refreshRole(); }} />
+      <div className="flex justify-center px-5">
+        <button type="button" onClick={() => signOut()} className="py-2 text-[15px] text-primary">Log out</button>
+      </div>
+    </div>
+  );
+}
 
 function ScoutVerificationGate({ rejected }: { rejected: boolean }) {
   const { user, refreshRole, signOut } = useAuth();

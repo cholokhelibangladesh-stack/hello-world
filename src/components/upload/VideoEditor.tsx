@@ -4,7 +4,7 @@ import { Crop as CropIcon, Loader2, Music2, Pause, Play, Plus, Scissors, Trash2,
 import { TEXT_FONTS, fontStack, loadEditorFonts, type TextFontId } from "@/lib/video/fonts";
 import { SFX, playSfx, type SfxId } from "@/lib/video/sfx";
 import {
-  MAX_SECONDS, MIN_SECONDS, canEditVideo, drawTexts, fmtTime, isEdited, renderEdit,
+  MAX_SECONDS, MIN_SECONDS, canEditVideo, drawTexts, fmtTime, isEdited, needsReencode, renderEdit,
   type Crop, type EditPlan, type SfxItem, type TextBounds, type TextItem,
 } from "@/lib/video/edit";
 import { MAX_VIDEO_MB } from "@/lib/taxonomy";
@@ -227,8 +227,10 @@ const VideoEditor = ({ file, initial, onCancel, onDone }: {
     const plan: EditPlan = { start: s.start, end: s.end, crop, texts: s.texts.filter((t) => t.text.trim()).map((t) => ({ ...t, to: Math.min(t.to, dur) })), sfx: s.sfx, originalVolume: s.originalVolume, srcW: meta.w, srcH: meta.h };
     const edited = isEdited(plan, meta.duration);
     const fits = meta.duration <= MAX_SECONDS + 0.5 && file.size <= MAX_VIDEO_MB * 1048576;
-    // Untouched clips inside the limits go up exactly as recorded, for the best quality.
-    if (!edited && fits) { onDone({ file, duration: meta.duration, edited: false, plan: s }); return; }
+    // Untouched clips go up as recorded only when they are already a compact H.264 MP4 every
+    // phone can play; anything else (iPhone HEVC, 4K, very high bitrate) is converted first.
+    const convert = !edited && fits && supported ? await needsReencode(file, meta.duration, meta.w, meta.h) : false;
+    if (!edited && fits && !convert) { onDone({ file, duration: meta.duration, edited: false, plan: s }); return; }
     if (!supported) {
       toast.error("This phone can't edit video here", { description: `Trim the clip in your gallery to under ${MAX_SECONDS} seconds and ${MAX_VIDEO_MB} MB, then pick it again.` });
       return;

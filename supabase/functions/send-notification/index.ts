@@ -1,5 +1,6 @@
 import { createClient } from "npm:@supabase/supabase-js@2";
 import { createHandler, fcmPusher, resendMailer } from "./handler.ts";
+import { allowedOrigins, isAllowedOrigin } from "../_shared/origins.ts";
 
 // Secrets (Supabase dashboard, Edge Functions, Secrets):
 //   NOTIFY_WEBHOOK_SECRET   optional; if unset the database verifies the caller's secret itself
@@ -16,6 +17,9 @@ Deno.serve(
     pusher: fcm ? fcmPusher(fcm) : null,
     mailer: resend && from ? resendMailer(resend, from) : null,
     appUrl: Deno.env.get("PUBLIC_APP_URL") ?? "https://cholokheli.lovable.app",
+    signingKey: Deno.env.get("SUPABASE_SERVICE_ROLE_KEY"),
+    selfUrl: `${Deno.env.get("SUPABASE_URL")}/functions/v1/send-notification`,
+    isAllowedOrigin: (o) => isAllowedOrigin(o, allowedOrigins()),
     getClient: () =>
       createClient(Deno.env.get("SUPABASE_URL")!, Deno.env.get("SUPABASE_SERVICE_ROLE_KEY")!, {
         auth: { persistSession: false },

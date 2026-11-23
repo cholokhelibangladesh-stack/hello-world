@@ -1,16 +1,15 @@
 import { createFileRoute } from "@tanstack/react-router";
-import PrivacyPolicy from "@/pages/PrivacyPolicy";
+import LegalPage from "@/pages/legal/LegalPage";
 
 export const Route = createFileRoute("/privacy-policy")({
   head: () => ({
     meta: [
-      { title: "Privacy Policy — Cholo Kheli" },
-      { name: "description", content: "Cholo Kheli Privacy Policy — how we collect, use, store, and protect your data under the laws of Bangladesh." },
-      { property: "og:title", content: "Privacy Policy — Cholo Kheli" },
-      { property: "og:description", content: "Cholo Kheli Privacy Policy — how we collect, use, store, and protect your data under the laws of Bangladesh." },
-      { property: "og:type", content: "website" },
+      { title: "Privacy Policy · Cholo Kheli" },
+      { name: "description", content: "What Cholo Kheli collects, who can see it, how long it is kept and how to delete it." },
+      { property: "og:title", content: "Privacy Policy · Cholo Kheli" },
+      { property: "og:description", content: "What Cholo Kheli collects, who can see it, how long it is kept and how to delete it." },
     ],
     links: [{ rel: "canonical", href: "/privacy-policy" }],
   }),
-  component: PrivacyPolicy,
+  component: () => <LegalPage id="privacy" />,
 });

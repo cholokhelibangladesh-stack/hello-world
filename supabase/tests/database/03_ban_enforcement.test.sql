@@ -10,7 +10,7 @@ insert into public.videos (id, user_id, video_url, status)
 values ('99999999-0000-0000-0000-000000000002', '11111111-1111-1111-1111-111111111111', 'a.mp4', 'live');
 
 set local role authenticated;
-set local request.jwt.claims to '{"sub":"55555555-5555-5555-5555-555555555555","role":"authenticated"}';
+set local request.jwt.claims to '{"sub":"55555555-5555-5555-5555-555555555555","role":"authenticated","aal":"aal2"}';
 select throws_ok(
   $$ insert into public.videos (user_id, video_url) values (auth.uid(), 'b.mp4') $$,
   '42501', null, 'banned user cannot upload videos');
@@ -25,7 +25,7 @@ select throws_ok(
 reset role;
 update public.scout_profiles set is_banned = true where user_id = '44444444-4444-4444-4444-444444444444';
 set local role authenticated;
-set local request.jwt.claims to '{"sub":"44444444-4444-4444-4444-444444444444","role":"authenticated"}';
+set local request.jwt.claims to '{"sub":"44444444-4444-4444-4444-444444444444","role":"authenticated","aal":"aal2"}';
 select throws_ok(
   $$ insert into public.scout_requests (scout_id, player_id) values (auth.uid(), '11111111-1111-1111-1111-111111111111') $$,
   '42501', null, 'banned scout cannot send scout requests');
@@ -35,12 +35,12 @@ reset role;
 update public.profiles set banned_until = now() - interval '1 hour'
  where user_id = '55555555-5555-5555-5555-555555555555';
 set local role authenticated;
-set local request.jwt.claims to '{"sub":"55555555-5555-5555-5555-555555555555","role":"authenticated"}';
+set local request.jwt.claims to '{"sub":"55555555-5555-5555-5555-555555555555","role":"authenticated","aal":"aal2"}';
 select lives_ok(
   $$ insert into public.video_likes (video_id, user_id) values ('99999999-0000-0000-0000-000000000002', auth.uid()) $$,
   'expired ban no longer blocks');
 
-set local request.jwt.claims to '{"sub":"11111111-1111-1111-1111-111111111111","role":"authenticated"}';
+set local request.jwt.claims to '{"sub":"11111111-1111-1111-1111-111111111111","role":"authenticated","aal":"aal2"}';
 select lives_ok(
   $$ insert into public.video_likes (video_id, user_id) values ('99999999-0000-0000-0000-000000000002', auth.uid()) $$,
   'normal user can like');

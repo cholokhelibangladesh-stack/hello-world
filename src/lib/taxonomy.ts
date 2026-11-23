@@ -28,7 +28,7 @@ export const ALL_TRAITS = Array.from(new Set(SPORTS.flatMap((s) => TRAITS[s])));
 
 export const isSport = (s: unknown): s is Sport => typeof s === "string" && (SPORTS as readonly string[]).includes(s);
 
-export const MAX_VIDEO_MB = 50;
+export const MAX_VIDEO_MB = 30;
 export const VIDEO_TYPES = ["video/mp4", "video/quicktime", "video/webm", "video/x-m4v", "video/3gpp"];
 export const MAX_AVATAR_MB = 5;
 export const AVATAR_TYPES = ["image/jpeg", "image/png", "image/webp"];

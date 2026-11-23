@@ -51,6 +51,10 @@ export async function initNative(onBack?: () => boolean) {
         App.exitApp();
       }
     });
+    // Google sign-in comes back through the com.cholokheli.app://auth deep link.
+    App.addListener("appUrlOpen", ({ url }) => {
+      import("@/lib/oauth").then(({ completeNativeOAuth }) => completeNativeOAuth(url)).catch(() => {});
+    });
   } catch (e) {
     console.warn("[native] App back-button init skipped", e);
   }

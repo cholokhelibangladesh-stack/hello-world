@@ -96,7 +96,7 @@ const FloatingHeader = () => {
         {/* LEFT: Logo + name = home */}
         <Link
           to="/"
-          aria-label={t("nav.home")}
+          aria-label={`Cholo Kheli ${t("nav.home")}`}
           className="pointer-events-auto flex items-center gap-2.5 group shrink-0"
         >
           <span

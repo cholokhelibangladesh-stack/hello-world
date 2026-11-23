@@ -16,7 +16,7 @@ export function qrImageSrc(qr: string): string {
   return `data:image/svg+xml;charset=utf-8,${encodeURIComponent(svg)}`;
 }
 
-const TwoFactorPage = () => {
+const TwoFactorPage = ({ onVerified }: { onVerified?: () => void } = {}) => {
   const [loading, setLoading] = useState(true);
   const [factors, setFactors] = useState<Factor[]>([]);
   const [enrolling, setEnrolling] = useState(false);
@@ -80,6 +80,7 @@ const TwoFactorPage = () => {
     setPending(null);
     setCode("");
     refresh();
+    onVerified?.();
   };
 
   const cancelEnroll = async () => {

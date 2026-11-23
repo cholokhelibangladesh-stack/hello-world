@@ -55,7 +55,7 @@ select cmp_ok(
 select is(public.reel_push_days(), 30, 'the push window defaults to 30 days');
 
 set local role authenticated;
-set local request.jwt.claims to '{"sub":"44444444-4444-4444-4444-444444444444","role":"authenticated"}';
+set local request.jwt.claims to '{"sub":"44444444-4444-4444-4444-444444444444","role":"authenticated","aal":"aal2"}';
 
 select is((select count(*)::int from public.get_ranked_feed(50, 0) where id = 'c0000000-0000-0000-0000-000000000003'), 0,
   'a reel older than the push window is no longer pushed in the main feed');
@@ -78,7 +78,7 @@ select ok(
 reset role;
 update public.app_settings set value = '60'::jsonb where key = 'reel_push_days';
 set local role authenticated;
-set local request.jwt.claims to '{"sub":"44444444-4444-4444-4444-444444444444","role":"authenticated"}';
+set local request.jwt.claims to '{"sub":"44444444-4444-4444-4444-444444444444","role":"authenticated","aal":"aal2"}';
 select is((select count(*)::int from public.get_ranked_feed(50, 0) where id = 'c0000000-0000-0000-0000-000000000003'), 1,
   'raising the push window brings the older reel back into the feed');
 

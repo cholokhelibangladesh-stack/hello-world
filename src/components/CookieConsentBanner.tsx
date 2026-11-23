@@ -57,7 +57,7 @@ const CookieConsentBanner = () => {
                 <p className="font-display text-base text-foreground mb-1">{t("cookie.title")}</p>
                 <p>
                   {t("cookie.body")}{" "}
-                  <Link to="/privacy-policy" className="underline text-foreground font-medium">
+                  <Link to={"/cookie-policy" as never} className="underline text-foreground font-medium">
                     {t("cookie.privacyPolicy")}
                   </Link>
                   .
@@ -71,8 +71,10 @@ const CookieConsentBanner = () => {
                 >
                   {t("cookie.essentialOnly")}
                 </Button>
+                {/* Same weight as "Essential only": no nudging towards the optional choice. */}
                 <Button
-                  className="flex-1 sm:w-full bg-foreground text-background hover:bg-foreground/90"
+                  variant="outline"
+                  className="flex-1 sm:w-full"
                   onClick={() => setConsent("accepted")}
                 >
                   {t("cookie.acceptAll")}

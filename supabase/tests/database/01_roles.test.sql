@@ -21,7 +21,7 @@ select lives_ok(
 
 -- Signed-in users can't touch user_roles at all.
 set local role authenticated;
-set local request.jwt.claims to '{"sub":"11111111-1111-1111-1111-111111111111","role":"authenticated"}';
+set local request.jwt.claims to '{"sub":"11111111-1111-1111-1111-111111111111","role":"authenticated","aal":"aal2"}';
 select throws_ok(
   $$ insert into public.user_roles (user_id, role) values ('11111111-1111-1111-1111-111111111111', 'admin') $$,
   '42501', null, 'a user cannot insert their own admin role');

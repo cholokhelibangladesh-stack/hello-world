@@ -7,7 +7,7 @@ select plan(15);
 
 -- --- banned player tries to unban themselves -------------------------------
 set local role authenticated;
-set local request.jwt.claims to '{"sub":"55555555-5555-5555-5555-555555555555","role":"authenticated"}';
+set local request.jwt.claims to '{"sub":"55555555-5555-5555-5555-555555555555","role":"authenticated","aal":"aal2"}';
 select throws_ok(
   $$ update public.profiles set is_banned = false where user_id = auth.uid() $$,
   '42501', null, 'banned player cannot clear is_banned');
@@ -17,13 +17,13 @@ select throws_ok(
 select is((select count(*)::int from public.get_my_ban_status()), 1, 'ban is still reported to the user');
 
 -- --- ordinary profile edits still work ---------------------------------------
-set local request.jwt.claims to '{"sub":"11111111-1111-1111-1111-111111111111","role":"authenticated"}';
+set local request.jwt.claims to '{"sub":"11111111-1111-1111-1111-111111111111","role":"authenticated","aal":"aal2"}';
 select lives_ok(
   $$ update public.profiles set full_name = 'Renamed', bio = 'hi', sport = 'cricket' where user_id = auth.uid() $$,
   'player can still edit name, bio and sport');
 
 -- --- pending scout tries to verify themselves ---------------------------------
-set local request.jwt.claims to '{"sub":"22222222-2222-2222-2222-222222222222","role":"authenticated"}';
+set local request.jwt.claims to '{"sub":"22222222-2222-2222-2222-222222222222","role":"authenticated","aal":"aal2"}';
 select throws_ok(
   $$ update public.scout_profiles set verification_status = 'active' where user_id = auth.uid() $$,
   '42501', null, 'pending scout cannot self-verify');
@@ -32,12 +32,16 @@ select lives_ok(
   'scout can still edit their preferences');
 
 -- --- videos: metrics, flags, moderation status --------------------------------
-set local request.jwt.claims to '{"sub":"11111111-1111-1111-1111-111111111111","role":"authenticated"}';
+set local request.jwt.claims to '{"sub":"11111111-1111-1111-1111-111111111111","role":"authenticated","aal":"aal2"}';
 select throws_ok(
   $$ insert into public.videos (user_id, video_url, like_count, view_count) values (auth.uid(), 'x.mp4', 9999, 9999) $$,
   '42501', null, 'player cannot insert a video with fake counts');
+reset role;
+insert into storage.objects (bucket_id, name) values ('player-videos', '11111111-1111-1111-1111-111111111111/99999999-0000-0000-0000-000000000001.mp4');
+set local role authenticated;
 select lives_ok(
-  $$ insert into public.videos (id, user_id, video_url, status) values ('99999999-0000-0000-0000-000000000001', auth.uid(), 'x.mp4', 'live') $$,
+  $$ insert into public.videos (id, user_id, video_url, status, duration_seconds) values ('99999999-0000-0000-0000-000000000001', auth.uid(),
+     'https://x.supabase.co/storage/v1/object/public/player-videos/11111111-1111-1111-1111-111111111111/99999999-0000-0000-0000-000000000001.mp4', 'live', 20) $$,
   'player can publish their own video (free uploads go straight to live)');
 select throws_ok(
   $$ update public.videos set like_count = 5000 where id = '99999999-0000-0000-0000-000000000001' $$,
@@ -60,7 +64,7 @@ select lives_ok(
   'player can still edit the caption');
 
 -- --- admins and triggers keep working -------------------------------------------
-set local request.jwt.claims to '{"sub":"aaaaaaaa-aaaa-aaaa-aaaa-aaaaaaaaaaaa","role":"authenticated"}';
+set local request.jwt.claims to '{"sub":"aaaaaaaa-aaaa-aaaa-aaaa-aaaaaaaaaaaa","role":"authenticated","aal":"aal2"}';
 select lives_ok(
   $$ update public.scout_profiles set verification_status = 'active' where user_id = '22222222-2222-2222-2222-222222222222' $$,
   'admin can verify a scout (AdminDashboard path)');

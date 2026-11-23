@@ -14,12 +14,18 @@ import { Route as SplatRouteImport } from './routes/$'
 import { Route as AdminRouteImport } from './routes/admin'
 import { Route as AuthRouteImport } from './routes/auth'
 import { Route as BlockedRouteImport } from './routes/blocked'
+import { Route as CookiePolicyRouteImport } from './routes/cookie-policy'
+import { Route as DeleteDataRouteImport } from './routes/delete-data'
 import { Route as FaqRouteImport } from './routes/faq'
+import { Route as LicencesRouteImport } from './routes/licences'
 import { Route as MessagesRouteImport } from './routes/messages'
 import { Route as MissionRouteImport } from './routes/mission'
 import { Route as PrivacyPolicyRouteImport } from './routes/privacy-policy'
+import { Route as RefundPolicyRouteImport } from './routes/refund-policy'
 import { Route as ResetPasswordRouteImport } from './routes/reset-password'
 import { Route as SafeScoutingRouteImport } from './routes/safe-scouting'
+import { Route as TermsRouteImport } from './routes/terms'
+import { Route as UnsubscribeRouteImport } from './routes/unsubscribe'
 import { Route as AdminIndexRouteImport } from './routes/admin.index'
 import { Route as AdminExploreRouteImport } from './routes/admin.explore'
 import { Route as AdminInsightsRouteImport } from './routes/admin.insights'
@@ -95,9 +101,24 @@ const BlockedRoute = BlockedRouteImport.update({
   path: '/blocked',
   getParentRoute: () => rootRouteImport,
 } as any)
+const CookiePolicyRoute = CookiePolicyRouteImport.update({
+  id: '/cookie-policy',
+  path: '/cookie-policy',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const DeleteDataRoute = DeleteDataRouteImport.update({
+  id: '/delete-data',
+  path: '/delete-data',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const FaqRoute = FaqRouteImport.update({
   id: '/faq',
   path: '/faq',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const LicencesRoute = LicencesRouteImport.update({
+  id: '/licences',
+  path: '/licences',
   getParentRoute: () => rootRouteImport,
 } as any)
 const MessagesRoute = MessagesRouteImport.update({
@@ -115,6 +136,11 @@ const PrivacyPolicyRoute = PrivacyPolicyRouteImport.update({
   path: '/privacy-policy',
   getParentRoute: () => rootRouteImport,
 } as any)
+const RefundPolicyRoute = RefundPolicyRouteImport.update({
+  id: '/refund-policy',
+  path: '/refund-policy',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const ResetPasswordRoute = ResetPasswordRouteImport.update({
   id: '/reset-password',
   path: '/reset-password',
@@ -123,6 +149,16 @@ const ResetPasswordRoute = ResetPasswordRouteImport.update({
 const SafeScoutingRoute = SafeScoutingRouteImport.update({
   id: '/safe-scouting',
   path: '/safe-scouting',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const TermsRoute = TermsRouteImport.update({
+  id: '/terms',
+  path: '/terms',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const UnsubscribeRoute = UnsubscribeRouteImport.update({
+  id: '/unsubscribe',
+  path: '/unsubscribe',
   getParentRoute: () => rootRouteImport,
 } as any)
 const AdminIndexRoute = AdminIndexRouteImport.update({
@@ -385,12 +421,18 @@ export interface FileRoutesByFullPath {
   '/admin': typeof AdminRouteWithChildren
   '/auth': typeof AuthRoute
   '/blocked': typeof BlockedRoute
+  '/cookie-policy': typeof CookiePolicyRoute
+  '/delete-data': typeof DeleteDataRoute
   '/faq': typeof FaqRoute
+  '/licences': typeof LicencesRoute
   '/messages': typeof MessagesRouteWithChildren
   '/mission': typeof MissionRoute
   '/privacy-policy': typeof PrivacyPolicyRoute
+  '/refund-policy': typeof RefundPolicyRoute
   '/reset-password': typeof ResetPasswordRoute
   '/safe-scouting': typeof SafeScoutingRoute
+  '/terms': typeof TermsRoute
+  '/unsubscribe': typeof UnsubscribeRoute
   '/admin/explore': typeof AdminExploreRoute
   '/admin/insights': typeof AdminInsightsRoute
   '/admin/manage': typeof AdminManageRoute
@@ -446,11 +488,17 @@ export interface FileRoutesByTo {
   '/$': typeof SplatRoute
   '/auth': typeof AuthRoute
   '/blocked': typeof BlockedRoute
+  '/cookie-policy': typeof CookiePolicyRoute
+  '/delete-data': typeof DeleteDataRoute
   '/faq': typeof FaqRoute
+  '/licences': typeof LicencesRoute
   '/mission': typeof MissionRoute
   '/privacy-policy': typeof PrivacyPolicyRoute
+  '/refund-policy': typeof RefundPolicyRoute
   '/reset-password': typeof ResetPasswordRoute
   '/safe-scouting': typeof SafeScoutingRoute
+  '/terms': typeof TermsRoute
+  '/unsubscribe': typeof UnsubscribeRoute
   '/admin/explore': typeof AdminExploreRoute
   '/admin/insights': typeof AdminInsightsRoute
   '/admin/manage': typeof AdminManageRoute
@@ -506,12 +554,18 @@ export interface FileRoutesById {
   '/admin': typeof AdminRouteWithChildren
   '/auth': typeof AuthRoute
   '/blocked': typeof BlockedRoute
+  '/cookie-policy': typeof CookiePolicyRoute
+  '/delete-data': typeof DeleteDataRoute
   '/faq': typeof FaqRoute
+  '/licences': typeof LicencesRoute
   '/messages': typeof MessagesRouteWithChildren
   '/mission': typeof MissionRoute
   '/privacy-policy': typeof PrivacyPolicyRoute
+  '/refund-policy': typeof RefundPolicyRoute
   '/reset-password': typeof ResetPasswordRoute
   '/safe-scouting': typeof SafeScoutingRoute
+  '/terms': typeof TermsRoute
+  '/unsubscribe': typeof UnsubscribeRoute
   '/admin/explore': typeof AdminExploreRoute
   '/admin/insights': typeof AdminInsightsRoute
   '/admin/manage': typeof AdminManageRoute
@@ -570,12 +624,18 @@ export interface FileRouteTypes {
     | '/admin'
     | '/auth'
     | '/blocked'
+    | '/cookie-policy'
+    | '/delete-data'
     | '/faq'
+    | '/licences'
     | '/messages'
     | '/mission'
     | '/privacy-policy'
+    | '/refund-policy'
     | '/reset-password'
     | '/safe-scouting'
+    | '/terms'
+    | '/unsubscribe'
     | '/admin/explore'
     | '/admin/insights'
     | '/admin/manage'
@@ -631,11 +691,17 @@ export interface FileRouteTypes {
     | '/$'
     | '/auth'
     | '/blocked'
+    | '/cookie-policy'
+    | '/delete-data'
     | '/faq'
+    | '/licences'
     | '/mission'
     | '/privacy-policy'
+    | '/refund-policy'
     | '/reset-password'
     | '/safe-scouting'
+    | '/terms'
+    | '/unsubscribe'
     | '/admin/explore'
     | '/admin/insights'
     | '/admin/manage'
@@ -690,12 +756,18 @@ export interface FileRouteTypes {
     | '/admin'
     | '/auth'
     | '/blocked'
+    | '/cookie-policy'
+    | '/delete-data'
     | '/faq'
+    | '/licences'
     | '/messages'
     | '/mission'
     | '/privacy-policy'
+    | '/refund-policy'
     | '/reset-password'
     | '/safe-scouting'
+    | '/terms'
+    | '/unsubscribe'
     | '/admin/explore'
     | '/admin/insights'
     | '/admin/manage'
@@ -753,12 +825,18 @@ export interface RootRouteChildren {
   AdminRoute: typeof AdminRouteWithChildren
   AuthRoute: typeof AuthRoute
   BlockedRoute: typeof BlockedRoute
+  CookiePolicyRoute: typeof CookiePolicyRoute
+  DeleteDataRoute: typeof DeleteDataRoute
   FaqRoute: typeof FaqRoute
+  LicencesRoute: typeof LicencesRoute
   MessagesRoute: typeof MessagesRouteWithChildren
   MissionRoute: typeof MissionRoute
   PrivacyPolicyRoute: typeof PrivacyPolicyRoute
+  RefundPolicyRoute: typeof RefundPolicyRoute
   ResetPasswordRoute: typeof ResetPasswordRoute
   SafeScoutingRoute: typeof SafeScoutingRoute
+  TermsRoute: typeof TermsRoute
+  UnsubscribeRoute: typeof UnsubscribeRoute
   ApiHealthRoute: typeof ApiHealthRoute
   PaymentsIdRoute: typeof PaymentsIdRoute
   PlayerExploreRoute: typeof PlayerExploreRoute
@@ -814,11 +892,32 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof BlockedRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/cookie-policy': {
+      id: '/cookie-policy'
+      path: '/cookie-policy'
+      fullPath: '/cookie-policy'
+      preLoaderRoute: typeof CookiePolicyRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/delete-data': {
+      id: '/delete-data'
+      path: '/delete-data'
+      fullPath: '/delete-data'
+      preLoaderRoute: typeof DeleteDataRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/faq': {
       id: '/faq'
       path: '/faq'
       fullPath: '/faq'
       preLoaderRoute: typeof FaqRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/licences': {
+      id: '/licences'
+      path: '/licences'
+      fullPath: '/licences'
+      preLoaderRoute: typeof LicencesRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/messages': {
@@ -842,6 +941,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof PrivacyPolicyRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/refund-policy': {
+      id: '/refund-policy'
+      path: '/refund-policy'
+      fullPath: '/refund-policy'
+      preLoaderRoute: typeof RefundPolicyRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/reset-password': {
       id: '/reset-password'
       path: '/reset-password'
@@ -854,6 +960,20 @@ declare module '@tanstack/react-router' {
       path: '/safe-scouting'
       fullPath: '/safe-scouting'
       preLoaderRoute: typeof SafeScoutingRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/terms': {
+      id: '/terms'
+      path: '/terms'
+      fullPath: '/terms'
+      preLoaderRoute: typeof TermsRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/unsubscribe': {
+      id: '/unsubscribe'
+      path: '/unsubscribe'
+      fullPath: '/unsubscribe'
+      preLoaderRoute: typeof UnsubscribeRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/admin/': {
@@ -1312,12 +1432,18 @@ const rootRouteChildren: RootRouteChildren = {
   AdminRoute: AdminRouteWithChildren,
   AuthRoute: AuthRoute,
   BlockedRoute: BlockedRoute,
+  CookiePolicyRoute: CookiePolicyRoute,
+  DeleteDataRoute: DeleteDataRoute,
   FaqRoute: FaqRoute,
+  LicencesRoute: LicencesRoute,
   MessagesRoute: MessagesRouteWithChildren,
   MissionRoute: MissionRoute,
   PrivacyPolicyRoute: PrivacyPolicyRoute,
+  RefundPolicyRoute: RefundPolicyRoute,
   ResetPasswordRoute: ResetPasswordRoute,
   SafeScoutingRoute: SafeScoutingRoute,
+  TermsRoute: TermsRoute,
+  UnsubscribeRoute: UnsubscribeRoute,
   ApiHealthRoute: ApiHealthRoute,
   PaymentsIdRoute: PaymentsIdRoute,
   PlayerExploreRoute: PlayerExploreRoute,

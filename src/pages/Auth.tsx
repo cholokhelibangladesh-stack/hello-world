@@ -8,6 +8,9 @@ import { supabase } from "@/integrations/supabase/client";
 import CholoKheliMark from "@/components/CholoKheliMark";
 import { useLanguage } from "@/i18n/LanguageProvider";
 import { publicUrl } from "@/lib/publicUrl";
+import { emailProblem, emailSuggestion, normaliseEmail, passwordProblem, passwordScore } from "@/lib/validate";
+import { recalledSignupRole, rememberSignupRole, signInWithGoogle } from "@/lib/oauth";
+import { LegalLinks } from "@/pages/legal/LegalPage";
 
 type Role = "player" | "scout";
 type Sport = "football" | "cricket" | "basketball";
@@ -68,7 +71,7 @@ async function runOnboarding(body?: Onboarding): Promise<{ ok: true } | { ok: fa
 }
 
 const inputCls =
-  "h-12 w-full rounded-2xl bg-white/70 px-4 text-[16px] text-foreground ring-1 ring-black/[0.06] outline-none transition placeholder:text-muted-foreground/80 focus:bg-white focus:ring-2 focus:ring-ring dark:bg-white/10 dark:ring-white/10 dark:focus:bg-white/15";
+  "h-12 w-full rounded-2xl bg-white/70 px-4 text-[16px] text-foreground ring-1 ring-black/[0.06] outline-none transition placeholder:text-muted-foreground focus:bg-white focus:ring-2 focus:ring-ring dark:bg-white/10 dark:ring-white/10 dark:focus:bg-white/15";
 
 function Field({ label, htmlFor, hint, error, children }: { label: string; htmlFor: string; hint?: string; error?: string; children: React.ReactNode }) {
   return (
@@ -95,6 +98,65 @@ function Segmented<T extends string>({ value, options, onChange, label }: { valu
           {o.label}
         </button>
       ))}
+    </div>
+  );
+}
+
+/** Google's mark, drawn inline so no third-party image is loaded. */
+const GoogleMark = () => (
+  <svg viewBox="0 0 48 48" className="h-5 w-5" aria-hidden="true">
+    <path fill="#FFC107" d="M43.6 20.5H42V20H24v8h11.3C33.7 32.7 29.2 36 24 36c-6.6 0-12-5.4-12-12s5.4-12 12-12c3.1 0 5.8 1.2 7.9 3.1l5.7-5.7C34 6.1 29.3 4 24 4 12.9 4 4 12.9 4 24s8.9 20 20 20 20-8.9 20-20c0-1.3-.1-2.4-.4-3.5z" />
+    <path fill="#FF3D00" d="m6.3 14.7 6.6 4.8C14.7 15.1 19 12 24 12c3.1 0 5.8 1.2 7.9 3.1l5.7-5.7C34 6.1 29.3 4 24 4 16.3 4 9.7 8.3 6.3 14.7z" />
+    <path fill="#4CAF50" d="M24 44c5.2 0 9.9-2 13.4-5.2l-6.2-5.2C29.2 35.1 26.7 36 24 36c-5.2 0-9.6-3.3-11.3-8l-6.5 5C9.5 39.6 16.2 44 24 44z" />
+    <path fill="#1976D2" d="M43.6 20.5H42V20H24v8h11.3c-.8 2.2-2.2 4.2-4.1 5.6l6.2 5.2C37 39.2 44 34 44 24c0-1.3-.1-2.4-.4-3.5z" />
+  </svg>
+);
+
+function GoogleButton({ label, onClick, disabled }: { label: string; onClick: () => void; disabled?: boolean }) {
+  return (
+    <button type="button" onClick={onClick} disabled={disabled}
+      className="press flex h-[52px] w-full items-center justify-center gap-3 rounded-full bg-white text-[16px] font-semibold text-[#1F1F1F] ring-1 ring-black/10 disabled:opacity-50 dark:bg-white/95">
+      <GoogleMark /> {label}
+    </button>
+  );
+}
+
+function OrDivider({ label }: { label: string }) {
+  return (
+    <div className="flex items-center gap-3 text-[13px] text-muted-foreground" aria-hidden="true">
+      <span className="h-px flex-1 bg-foreground/15" />{label}<span className="h-px flex-1 bg-foreground/15" />
+    </div>
+  );
+}
+
+/** Terms and Privacy consent. Never pre-ticked. */
+function ConsentBox({ checked, onChange }: { checked: boolean; onChange: (v: boolean) => void }) {
+  const { t } = useLanguage();
+  return (
+    <label className="flex items-start gap-3 text-[14px] leading-snug">
+      <input type="checkbox" className="mt-0.5 h-5 w-5 shrink-0 accent-[hsl(var(--primary))]" checked={checked} onChange={(e) => onChange(e.target.checked)} />
+      <span>
+        {t("auth.agreeTerms")}{" "}
+        <Link to={"/terms" as never} className="font-medium text-primary underline underline-offset-2">{t("legal.terms")}</Link>{" "}
+        {t("auth.and")}{" "}
+        <Link to="/privacy-policy" className="font-medium text-primary underline underline-offset-2">{t("auth.privacyPolicy")}</Link>.
+      </span>
+    </label>
+  );
+}
+
+function StrengthBar({ password }: { password: string }) {
+  const { t } = useLanguage();
+  const score = passwordScore(password);
+  if (!password) return null;
+  const label = [t("auth.pwWeak"), t("auth.pwWeak"), t("auth.pwOk"), t("auth.pwStrong")][score];
+  const color = ["bg-destructive", "bg-destructive", "bg-[#C98A00]", "bg-success"][score];
+  return (
+    <div className="mt-2 flex items-center gap-2" aria-live="polite">
+      <div className="flex flex-1 gap-1" aria-hidden="true">
+        {[1, 2, 3].map((i) => <span key={i} className={`h-1.5 flex-1 rounded-full ${i <= score ? color : "bg-foreground/10"}`} />)}
+      </div>
+      <span className="text-[12px] text-muted-foreground">{label}</span>
     </div>
   );
 }
@@ -157,7 +219,7 @@ export function ProfileFields({ value, onChange, usernameState }: {
           <div className="relative">
             <input id="dob" type="date" className={`${inputCls} ck-date ${value.date_of_birth ? "" : "text-transparent focus:text-foreground"}`} required max={today} value={value.date_of_birth} onChange={(e) => set("date_of_birth", e.target.value)} />
             {/* iPhones show an empty date box with no hint, so draw one until a date is picked. */}
-            {!value.date_of_birth && <span aria-hidden className="pointer-events-none absolute inset-y-0 left-4 right-10 flex items-center truncate text-[16px] text-muted-foreground/80">{t("auth.dobPlaceholder")}</span>}
+            {!value.date_of_birth && <span aria-hidden className="pointer-events-none absolute inset-y-0 left-4 right-10 flex items-center truncate text-[16px] text-muted-foreground">{t("auth.dobPlaceholder")}</span>}
           </div>
         </Field>
         <Field label={t("auth.gender")} htmlFor="gender">
@@ -248,6 +310,7 @@ const Auth = () => {
   const [error, setError] = useState<string | null>(null);
   const [profile, setProfile] = useState<Onboarding>({ ...EMPTY, role: search.role === "scout" ? "scout" : "player" });
   const [agree, setAgree] = useState(false);
+  const [emailTouched, setEmailTouched] = useState(false);
   const [code, setCode] = useState("");
   const triedAuto = useRef(false);
   const usernameState = useUsernameState(profile.username, view === "signup" || view === "finish");
@@ -275,6 +338,12 @@ const Auth = () => {
     triedAuto.current = true;
     const saved = (user.user_metadata as { onboarding?: Partial<Onboarding> } | undefined)?.onboarding;
     if (saved) setProfile((p) => ({ ...p, ...saved, sport: (saved.sport as Sport) ?? p.sport }));
+    else {
+      // Signed in with Google: start from the role picked before leaving, and the name Google shares.
+      const r = recalledSignupRole();
+      const gName = (user.user_metadata as { full_name?: string; name?: string } | undefined);
+      setProfile((p) => ({ ...p, role: r ?? p.role, full_name: p.full_name || gName?.full_name || gName?.name || "" }));
+    }
     setBusy(true);
     runOnboarding().then(async (r) => {
       setBusy(false);
@@ -287,8 +356,10 @@ const Auth = () => {
   const fail = (key: string) => { setError(t(key as never)); setBusy(false); };
 
   const signIn = async (e: React.FormEvent) => {
-    e.preventDefault(); setError(null); setBusy(true);
-    const { error: err } = await supabase.auth.signInWithPassword({ email: email.trim(), password });
+    e.preventDefault(); setError(null);
+    if (emailProblem(email) === "auth.err.email") return fail("auth.err.email");
+    setBusy(true);
+    const { error: err } = await supabase.auth.signInWithPassword({ email: normaliseEmail(email), password });
     if (err) {
       const msg = err.message.toLowerCase();
       return fail(msg.includes("confirm") ? "auth.err.unconfirmed" : msg.includes("invalid") ? "auth.err.credentials" : "auth.err.generic");
@@ -301,21 +372,26 @@ const Auth = () => {
     e.preventDefault(); setError(null);
     const problem = profileProblem(profile, usernameState);
     if (problem) return fail(problem);
-    if (password.length < 8) return fail("auth.err.password");
+    const ep = emailProblem(email);
+    if (ep) return fail(ep);
+    const pp = passwordProblem(password, email);
+    if (pp) return fail(pp);
     if (!agree) return fail("auth.err.agree");
     setBusy(true);
     const onboarding = cleanOnboarding(profile);
     const { data, error: err } = await supabase.auth.signUp({
-      email: email.trim(),
+      email: normaliseEmail(email),
       password,
       options: { emailRedirectTo: publicUrl("/auth"), data: { full_name: onboarding.full_name, onboarding } },
     });
     if (err) {
       const m = err.message.toLowerCase();
-      return fail(m.includes("already") ? "auth.err.exists" : m.includes("password") ? "auth.err.password" : "auth.err.generic");
+      return fail(m.includes("already") ? "auth.err.exists" : m.includes("password") ? "auth.err.passwordWeak"
+        : m.includes("email") || m.includes("database error") ? "auth.err.email" : m.includes("rate") ? "auth.err.rate" : "auth.err.generic");
     }
     // With email confirmation on, an existing address comes back with no identities.
-    if (data.user && (data.user.identities?.length ?? 0) === 0) return fail("auth.err.exists");
+    // Don't reveal whether an address already has an account: both cases see the same screen.
+    if (data.user && (data.user.identities?.length ?? 0) === 0) { setBusy(false); setView("sent"); return; }
     setBusy(false);
     if (!data.session) setView("sent");
     // With a session (confirmation off) the effect above finishes onboarding.
@@ -325,6 +401,7 @@ const Auth = () => {
     e.preventDefault(); setError(null);
     const problem = profileProblem(profile, usernameState);
     if (problem) return fail(problem);
+    if (!agree) return fail("auth.err.agree");
     setBusy(true);
     const r = await runOnboarding(cleanOnboarding(profile));
     if (!r.ok) return fail(SERVER_ERRORS[r.code] ?? "auth.err.generic");
@@ -345,9 +422,9 @@ const Auth = () => {
 
   const forgot = async () => {
     setError(null);
-    if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email.trim())) return fail("auth.err.emailFirst");
+    if (emailProblem(email) === "auth.err.email") return fail("auth.err.emailFirst");
     setBusy(true);
-    const { error: err } = await supabase.auth.resetPasswordForEmail(email.trim(), { redirectTo: publicUrl("/reset-password") });
+    const { error: err } = await supabase.auth.resetPasswordForEmail(normaliseEmail(email), { redirectTo: publicUrl("/reset-password") });
     setBusy(false);
     if (err) return fail("auth.err.generic");
     toast.success(t("auth.resetSent"));
@@ -355,10 +432,25 @@ const Auth = () => {
 
   const resend = async () => {
     setBusy(true);
-    const { error: err } = await supabase.auth.resend({ type: "signup", email: email.trim(), options: { emailRedirectTo: publicUrl("/auth") } });
+    const { error: err } = await supabase.auth.resend({ type: "signup", email: normaliseEmail(email), options: { emailRedirectTo: publicUrl("/auth") } });
     setBusy(false);
     if (err) toast.error(t("auth.err.generic")); else toast.success(t("auth.resent"));
   };
+
+  const google = async () => {
+    setError(null);
+    if (view === "signup") rememberSignupRole(profile.role);
+    setBusy(true);
+    const r = await signInWithGoogle();
+    if (!r.ok) fail("auth.err.google"); else setTimeout(() => setBusy(false), 4000);
+  };
+  const suggestion = emailTouched ? emailSuggestion(email) : null;
+  const emailErr = emailTouched && email ? emailProblem(email) : null;
+  const emailHint = suggestion ? (
+    <button type="button" className="mt-1.5 text-[13px] text-primary underline underline-offset-2" onClick={() => setEmail(suggestion)}>
+      {t("auth.didYouMean")} {suggestion}?
+    </button>
+  ) : null;
 
   const primaryBtn = "press flex h-[52px] w-full items-center justify-center rounded-full bg-primary text-[17px] font-semibold text-primary-foreground disabled:opacity-50";
   const titleKey = { signin: "auth.welcomeBack", signup: "auth.joinTheGame", sent: "auth.checkEmail", mfa: "auth.mfaTitle", finish: "auth.finishTitle" }[view];
@@ -393,8 +485,11 @@ const Auth = () => {
 
         {view === "signin" && !user && (
           <form onSubmit={signIn} className="space-y-4" noValidate>
-            <Field label={t("auth.email")} htmlFor="email">
-              <input id="email" type="email" autoComplete="email" inputMode="email" className={inputCls} required value={email} onChange={(e) => setEmail(e.target.value)} placeholder={t("auth.emailPh")} />
+            <GoogleButton label={t("auth.google")} onClick={google} disabled={busy} />
+            <OrDivider label={t("auth.orEmail")} />
+            <Field label={t("auth.email")} htmlFor="email" error={emailErr === "auth.err.email" ? t("auth.err.email") : undefined}>
+              <input id="email" type="email" autoComplete="email" inputMode="email" className={inputCls} required maxLength={254} value={email} onChange={(e) => setEmail(e.target.value)} onBlur={() => setEmailTouched(true)} aria-invalid={emailErr === "auth.err.email"} placeholder={t("auth.emailPh")} />
+              {emailHint}
             </Field>
             <Field label={t("auth.password")} htmlFor="password">
               <div className="relative">
@@ -417,22 +512,23 @@ const Auth = () => {
         {view === "signup" && !user && (
           <form onSubmit={signUp} className="space-y-4" noValidate>
             <ProfileFields value={profile} onChange={setProfile} usernameState={usernameState} />
-            <Field label={t("auth.email")} htmlFor="email">
-              <input id="email" type="email" autoComplete="email" inputMode="email" className={inputCls} required value={email} onChange={(e) => setEmail(e.target.value)} placeholder={t("auth.emailPh")} />
+            <GoogleButton label={t("auth.googleSignUp")} onClick={google} disabled={busy} />
+            <OrDivider label={t("auth.orEmail")} />
+            <Field label={t("auth.email")} htmlFor="email" error={emailErr ? t(emailErr) : undefined}>
+              <input id="email" type="email" autoComplete="email" inputMode="email" className={inputCls} required maxLength={254} value={email} onChange={(e) => setEmail(e.target.value)} onBlur={() => setEmailTouched(true)} aria-invalid={!!emailErr} placeholder={t("auth.emailPh")} />
+              {emailHint}
             </Field>
             <Field label={t("auth.password")} htmlFor="password" hint={t("auth.passwordHint")}>
               <div className="relative">
-                <input id="password" type={showPass ? "text" : "password"} autoComplete="new-password" minLength={8} className={inputCls + " pr-12"} required value={password} onChange={(e) => setPassword(e.target.value)} />
+                <input id="password" type={showPass ? "text" : "password"} autoComplete="new-password" minLength={8} maxLength={72} className={inputCls + " pr-12"} required value={password} onChange={(e) => setPassword(e.target.value)} />
                 <button type="button" onClick={() => setShowPass((v) => !v)} aria-label={showPass ? t("auth.hidePassword") : t("auth.showPassword")} className="absolute right-1 top-1/2 grid h-10 w-10 -translate-y-1/2 place-items-center text-muted-foreground">
                   {showPass ? <EyeOff className="h-5 w-5" /> : <Eye className="h-5 w-5" />}
                 </button>
               </div>
+              <StrengthBar password={password} />
             </Field>
             {profile.role === "scout" && <p className="footnote">{t("auth.scoutDocsLater")}</p>}
-            <label className="flex items-start gap-3 text-[14px] leading-snug">
-              <input type="checkbox" className="mt-0.5 h-5 w-5 shrink-0 accent-[hsl(var(--primary))]" checked={agree} onChange={(e) => setAgree(e.target.checked)} />
-              <span>{t("auth.agreePrivacy")} <Link to="/privacy-policy" className="font-medium text-primary underline underline-offset-2">{t("auth.privacyPolicy")}</Link>.</span>
-            </label>
+            <ConsentBox checked={agree} onChange={setAgree} />
             <button type="submit" disabled={busy} className={primaryBtn}>
               {busy ? <Loader2 className="h-5 w-5 animate-spin" aria-label={t("common.loading")} /> : t("auth.createAccount")}
             </button>
@@ -447,7 +543,7 @@ const Auth = () => {
           <div className="space-y-4">
             <div className="ios-group flex items-start gap-3 p-4">
               <MailCheck className="mt-0.5 h-6 w-6 shrink-0 text-primary" aria-hidden="true" />
-              <p className="text-[15px] leading-snug">{t("auth.activateHint")}</p>
+              <p className="text-[15px] leading-snug">{t("auth.activateHint")} {t("auth.sentExisting")}</p>
             </div>
             <button type="button" onClick={() => { setView("signin"); setError(null); }} className={primaryBtn}>{t("auth.alreadyConfirmed")}</button>
             <button type="button" onClick={resend} disabled={busy} className="w-full py-2 text-[15px] text-primary">{t("auth.resend")}</button>
@@ -470,6 +566,7 @@ const Auth = () => {
         {view === "finish" && (
           <form onSubmit={finish} className="space-y-4" noValidate>
             <ProfileFields value={profile} onChange={setProfile} usernameState={usernameState} />
+            <ConsentBox checked={agree} onChange={setAgree} />
             <button type="submit" disabled={busy} className={primaryBtn}>
               {busy ? <Loader2 className="h-5 w-5 animate-spin" /> : t("auth.finishCta")}
             </button>
@@ -483,6 +580,7 @@ const Auth = () => {
           </div>
         )}
         </div>
+        <LegalLinks className="mt-6 flex justify-center px-2 [&_ul]:justify-center" />
       </div>
     </div>
   );

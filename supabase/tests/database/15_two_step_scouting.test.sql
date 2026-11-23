@@ -21,7 +21,7 @@ select is((select scout_tier from public.scout_profiles where user_id = '4444444
 
 -- reviewer
 set local role authenticated;
-set local request.jwt.claims to '{"sub":"66666666-6666-6666-6666-666666666666","role":"authenticated"}';
+set local request.jwt.claims to '{"sub":"66666666-6666-6666-6666-666666666666","role":"authenticated","aal":"aal2"}';
 select is((select count(*)::int from public.get_review_queue(50, null) q where q.video_id in ('f0000000-0000-0000-0000-000000000001', 'f0000000-0000-0000-0000-000000000002')), 2, 'the reviewer sees unreviewed live highlights');
 select throws_ok($$ select public.get_recommended_videos(10, 0, null) $$, '42501', null, 'a reviewer cannot open the professional list');
 select throws_ok($$ update public.scout_profiles set scout_tier = 'professional' where user_id = '66666666-6666-6666-6666-666666666666' $$,
@@ -39,13 +39,13 @@ select is((select count(*)::int from public.notifications where user_id = '11111
 
 -- professional scout
 set local role authenticated;
-set local request.jwt.claims to '{"sub":"44444444-4444-4444-4444-444444444444","role":"authenticated"}';
+set local request.jwt.claims to '{"sub":"44444444-4444-4444-4444-444444444444","role":"authenticated","aal":"aal2"}';
 select results_eq($$ select video_id, avg_rating from public.get_recommended_videos(10, 0, null) $$,
   $$ values ('f0000000-0000-0000-0000-000000000001'::uuid, 5.0::numeric) $$, 'professionals see only forwarded highlights, with the rating');
 select throws_ok($$ select public.get_review_queue(10, null) $$, '42501', null, 'a professional does not get the review queue');
 
 -- player and pending scout
-set local request.jwt.claims to '{"sub":"22222222-2222-2222-2222-222222222222","role":"authenticated"}';
+set local request.jwt.claims to '{"sub":"22222222-2222-2222-2222-222222222222","role":"authenticated","aal":"aal2"}';
 select throws_ok($$ select public.get_recommended_videos(10, 0, null) $$, '42501', null, 'a pending scout sees nothing');
 
 select * from finish();

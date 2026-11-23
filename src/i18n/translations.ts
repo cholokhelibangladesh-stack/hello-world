@@ -55,12 +55,12 @@ export const translations = {
 "contact.reportSentDesc":"Admin has been alerted immediately.",
 
  // Cookie banner
-"cookie.title":"We use cookies.",
+"cookie.title":"We only use essential storage.",
 "cookie.body":
-"Essential cookies keep you signed in and the Platform running. We only enable analytics and non-essential tracking after you accept. Read our",
-"cookie.privacyPolicy":"Privacy Policy",
+"It keeps you signed in and remembers your language and theme. No advertising or tracking cookies. If we ever add optional analytics, they stay off unless you accept. Read our",
+"cookie.privacyPolicy":"Cookie Policy",
 "cookie.essentialOnly":"Essential only",
-"cookie.acceptAll":"Accept all",
+"cookie.acceptAll":"Accept optional",
 
  // Auth (form labels, buttons, headings)
 "auth.welcomeBack":"Welcome back",
@@ -177,7 +177,7 @@ export const translations = {
 "mission.problem.title":"THE PROBLEM",
 "mission.problem.body":"In Bangladesh, countless talented athletes never get discovered. The traditional scouting system is broken — plagued by middlemen, corruption, and geography. A striker in Barisal has almost no chance of being seen by a scout in Dhaka. We're here to change that.",
 "mission.approach.title":"OUR APPROACH",
-"mission.approach.body":"Cholo Kheli creates a transparent digital bridge between grassroots talent and professional scouts. Every player gets the same platform. Every scout is verified. Every interaction is tracked. No middlemen, no corruption — just pure talent.",
+"mission.approach.body":"Cholo Kheli creates a transparent digital bridge between grassroots talent and professional scouts. Every player gets the same platform. Every scout is verified. Every scout-player conversation is approved and visible to admins. It is built to cut out middlemen and let talent speak.",
 "mission.vision.title":"THE VISION",
 "mission.vision.body":"We envision a Bangladesh where talent speaks louder than connections. Where a 16-year-old cricketer from Rangpur can be discovered by a national selector. Where the next football star doesn't need to know the right people — just be the right player.",
 
@@ -216,7 +216,7 @@ export const translations = {
 "mission.history.d2":"Mar 8, 2026",
 "mission.history.b2":"The concept was validated by a tech CEO whose feedback gave us the conviction to keep building.",
 "mission.history.d3":"Mar 26, 2026",
-"mission.history.b3":"We ran a nationwide survey that proved real, measurable demand for a trusted scouting product.",
+"mission.history.b3":"We ran a nationwide survey that showed clear demand for a trusted scouting product.",
 "mission.history.d4":"Jul 10, 2026",
 "mission.history.b4":"Official start of Cholo Kheli — the team, the mission, the platform, live.",
 
@@ -234,32 +234,32 @@ export const translations = {
 "Scouts save shortlists, request additional footage, and see a live timeline of every interaction with a player, so their outreach is measured and their time protected.",
 "mission.what.t2":"Player Profiles",
 "mission.what.b2":
-"Athletes build a single, credible profile: verified stats, curated highlight reels, a resume that follows them wherever the game takes them.",
+"Athletes build a single profile: their details, achievements, highlight clips and a resume they can share.",
 "mission.what.e2":
-"Profiles carry coach endorsements, match logs, and a portable ID that stays with the athlete across academies, clubs, and national trials — no restart every season.",
+"The profile stays with the athlete across seasons, so there is no starting over each year.",
 "mission.what.t3":"Safe Selections",
 "mission.what.b3":
-"Every scout is vetted, every contact is logged. Selections happen inside a transparent audit trail, so families and federations can trust the outcome.",
+"Every scout is verified before seeing any player, and every conversation needs admin approval first.",
 "mission.what.e3":
-"Parents receive plain-language notifications for every scout action, and federations get an exportable record — turning \"who picked whom, and why?\" into a question with an answer.",
+"Players under 18 sign up with a parent or guardian's consent, and admins can see every scout conversation.",
 
 "mission.what.principles":"Principles we build on",
 "mission.what.p1.title":"Verified by default",
 "mission.what.p1.body":
-"Every scout, coach and federation account goes through identity + role verification before touching a player profile. No anonymous outreach, ever.",
+"Every scout goes through identity and role verification before seeing a player profile. No anonymous outreach.",
 "mission.what.p2.title":"Player-owned data",
 "mission.what.p2.body":
 "Athletes control what's visible, who can contact them, and can revoke access at any time. Their profile is a portable record, not a locked-in listing.",
-"mission.what.p3.title":"Federation-grade audit trail",
+"mission.what.p3.title":"A record of every decision",
 "mission.what.p3.body":
-"Every selection, message and shortlist is timestamped and exportable — so federations can defend fairness with evidence, not vibes.",
+"Scout requests, reviews and admin decisions are timestamped, so questions about fairness can be answered with records.",
 "mission.what.p4.title":"Nationwide from day one",
 "mission.what.p4.body":
 "Built for all 64 districts, not just the capital. Rural and district players show up in the same feed as urban academies — same weight, same visibility.",
 
 "mission.what.metrics":"By the numbers",
 "mission.what.m1.value":"64",
-"mission.what.m1.label":"Districts covered at launch",
+"mission.what.m1.label":"Districts the platform is built for",
 "mission.what.m2.value":"100%",
 "mission.what.m2.label":"Verified scouts, no exceptions",
 "mission.what.m3.value":"0",
@@ -272,7 +272,7 @@ export const translations = {
 "Identity checks, role verification and audit logs are built in — not bolted on after a scandal.",
 "mission.what.s2.title":"Built with the community",
 "mission.what.s2.body":
-"Shaped alongside coaches, district officials and players so it fits the way Bangladeshi sport actually works.",
+"Shaped with feedback from coaches and players so it fits the way Bangladeshi sport actually works.",
 "mission.what.s3.title":"Designed to scale",
 "mission.what.s3.body":
 "Starts with three sports and grows with every federation that plugs in — one shared pipeline, not fifty silos.",
@@ -342,7 +342,7 @@ export const translations = {
  "auth.err.unconfirmed": "Confirm your email first. Use the link we sent you.",
  "auth.err.credentials": "That email and password don't match.",
  "auth.err.password": "Use a password with at least 8 characters.",
- "auth.err.agree": "Agree to the Privacy Policy to continue.",
+ "auth.err.agree": "Agree to the Terms of Service and Privacy Policy to continue.",
  "auth.err.exists": "An account with this email already exists. Sign in instead.",
  "auth.err.code": "That code didn't work. Enter the current 6-digit code.",
  "auth.err.emailFirst": "Enter your email above, then tap Forgot password.",
@@ -350,7 +350,7 @@ export const translations = {
  "auth.resent": "Confirmation email sent again.",
  "auth.resend": "Send the email again",
  "auth.forgot": "Forgot password?",
- "auth.passwordHint": "At least 8 characters.",
+ "auth.passwordHint": "At least 8 characters, with letters and numbers.",
  "auth.showPassword": "Show password",
  "auth.hidePassword": "Hide password",
  "auth.scoutDocsLater": "After you confirm your email, you'll upload your organisation ID and CV so an admin can verify you.",
@@ -358,6 +358,22 @@ export const translations = {
  "auth.mfaSub": "Enter the 6-digit code from your authenticator app.",
  "auth.mfaCode": "Verification code",
  "auth.verify": "Verify",
+ "auth.err.email": "Enter a valid email address, like name@gmail.com.",
+ "auth.err.emailDisposable": "Use an email you'll keep. Temporary inboxes aren't accepted.",
+ "auth.err.passwordWeak": "Use at least 8 characters with letters and numbers. Avoid common passwords like 12345678.",
+ "auth.err.rate": "Too many attempts. Wait a few minutes and try again.",
+ "auth.err.google": "Couldn't open Google sign-in. Try again or use email.",
+ "auth.google": "Continue with Google",
+ "auth.googleSignUp": "Sign up with Google",
+ "auth.orEmail": "or use email",
+ "auth.didYouMean": "Did you mean",
+ "auth.agreeTerms": "I am at least 13 and agree to the",
+ "auth.and": "and",
+ "auth.pwWeak": "Weak",
+ "auth.pwOk": "Okay",
+ "auth.pwStrong": "Strong",
+ "auth.sentExisting": "If you already have an account with this email, sign in instead.",
+ "legal.terms": "Terms of Service",
  "auth.useOtherAccount": "Use a different account",
  "auth.finishTitle": "Finish setting up",
  "auth.finishSub": "A few details and your account is ready.",
@@ -407,7 +423,7 @@ export const translations = {
  "auth.err.unconfirmed": "আগে ইমেইল নিশ্চিত করুন। আমাদের পাঠানো লিংকে চাপুন।",
  "auth.err.credentials": "ইমেইল আর পাসওয়ার্ড মিলছে না।",
  "auth.err.password": "কমপক্ষে ৮ অক্ষরের পাসওয়ার্ড দিন।",
- "auth.err.agree": "এগোতে প্রাইভেসি পলিসিতে সম্মতি দিন।",
+ "auth.err.agree": "এগোতে ব্যবহারের শর্তাবলি ও প্রাইভেসি পলিসিতে সম্মতি দিন।",
  "auth.err.exists": "এই ইমেইলে আগেই অ্যাকাউন্ট আছে। সাইন ইন করুন।",
  "auth.err.code": "কোডটি কাজ করেনি। এখনকার ৬ সংখ্যার কোডটি দিন।",
  "auth.err.emailFirst": "উপরে ইমেইল লিখে তারপর 'পাসওয়ার্ড ভুলে গেছি' চাপুন।",
@@ -415,7 +431,7 @@ export const translations = {
  "auth.resent": "নিশ্চিতকরণ ইমেইল আবার পাঠানো হয়েছে।",
  "auth.resend": "ইমেইলটি আবার পাঠান",
  "auth.forgot": "পাসওয়ার্ড ভুলে গেছেন?",
- "auth.passwordHint": "কমপক্ষে ৮ অক্ষর।",
+ "auth.passwordHint": "কমপক্ষে ৮ অক্ষর, অক্ষর ও সংখ্যা দুটোই থাকবে।",
  "auth.showPassword": "পাসওয়ার্ড দেখান",
  "auth.hidePassword": "পাসওয়ার্ড লুকান",
  "auth.scoutDocsLater": "ইমেইল নিশ্চিত করার পর আপনার প্রতিষ্ঠানের আইডি আর সিভি আপলোড করবেন, যাতে অ্যাডমিন আপনাকে যাচাই করতে পারেন।",
@@ -423,6 +439,22 @@ export const translations = {
  "auth.mfaSub": "অথেনটিকেটর অ্যাপের ৬ সংখ্যার কোডটি দিন।",
  "auth.mfaCode": "যাচাই কোড",
  "auth.verify": "যাচাই করুন",
+ "auth.err.email": "সঠিক ইমেইল ঠিকানা দিন, যেমন name@gmail.com।",
+ "auth.err.emailDisposable": "এমন ইমেইল দিন যা আপনি সবসময় ব্যবহার করেন। অস্থায়ী ইমেইল গ্রহণ করা হয় না।",
+ "auth.err.passwordWeak": "অক্ষর ও সংখ্যা মিলিয়ে কমপক্ষে ৮ অক্ষরের পাসওয়ার্ড দিন। 12345678 এর মতো সহজ পাসওয়ার্ড দেবেন না।",
+ "auth.err.rate": "অনেকবার চেষ্টা করা হয়েছে। কয়েক মিনিট পর আবার চেষ্টা করুন।",
+ "auth.err.google": "Google দিয়ে সাইন ইন খোলা যায়নি। আবার চেষ্টা করুন বা ইমেইল ব্যবহার করুন।",
+ "auth.google": "Google দিয়ে চালিয়ে যান",
+ "auth.googleSignUp": "Google দিয়ে সাইন আপ করুন",
+ "auth.orEmail": "অথবা ইমেইল দিয়ে",
+ "auth.didYouMean": "আপনি কি বোঝাতে চেয়েছেন",
+ "auth.agreeTerms": "আমার বয়স কমপক্ষে ১৩ এবং আমি সম্মত আছি",
+ "auth.and": "এবং",
+ "auth.pwWeak": "দুর্বল",
+ "auth.pwOk": "চলবে",
+ "auth.pwStrong": "শক্তিশালী",
+ "auth.sentExisting": "এই ইমেইলে আগে থেকেই অ্যাকাউন্ট থাকলে সাইন ইন করুন।",
+ "legal.terms": "ব্যবহারের শর্তাবলি",
  "auth.useOtherAccount": "অন্য অ্যাকাউন্ট ব্যবহার করুন",
  "auth.finishTitle": "সেটআপ শেষ করুন",
  "auth.finishSub": "আর কয়েকটি তথ্য দিলেই আপনার অ্যাকাউন্ট তৈরি।",
@@ -481,12 +513,12 @@ export const translations = {
 "contact.reportSentDesc":"অ্যাডমিনকে তাৎক্ষণিকভাবে জানানো হয়েছে।",
 
  // Cookie banner
-"cookie.title":"আমরা কুকি ব্যবহার করি।",
+"cookie.title":"আমরা শুধু অপরিহার্য স্টোরেজ ব্যবহার করি।",
 "cookie.body":
-"অপরিহার্য কুকি আপনাকে সাইন ইন রাখে এবং প্ল্যাটফর্ম চালু রাখে। আপনি সম্মতি দিলে কেবল তখনই অ্যানালিটিক্স ও অন্যান্য ট্র্যাকিং চালু হয়। পড়ুন আমাদের",
-"cookie.privacyPolicy":"গোপনীয়তা নীতি",
+"এটি আপনাকে সাইন-ইন রাখে এবং ভাষা ও থিম মনে রাখে। কোনো বিজ্ঞাপন বা ট্র্যাকিং কুকি নেই। কখনো ঐচ্ছিক অ্যানালিটিক্স যোগ হলে আপনি গ্রহণ না করা পর্যন্ত তা বন্ধ থাকবে। পড়ুন আমাদের",
+"cookie.privacyPolicy":"কুকি নীতি",
 "cookie.essentialOnly":"শুধু অপরিহার্য",
-"cookie.acceptAll":"সব গ্রহণ করুন",
+"cookie.acceptAll":"ঐচ্ছিক গ্রহণ করুন",
 
  // Auth
 "auth.welcomeBack":"আবার স্বাগতম",
@@ -604,7 +636,7 @@ export const translations = {
 "mission.problem.title":"সমস্যা",
 "mission.problem.body":"বাংলাদেশে অসংখ্য প্রতিভাবান অ্যাথলেট কখনো আবিষ্কৃত হন না। প্রচলিত স্কাউটিং ব্যবস্থা ভেঙে পড়েছে — দালাল, দুর্নীতি ও ভৌগোলিক দূরত্বে জর্জরিত। বরিশালের একজন স্ট্রাইকারের ঢাকার কোনো স্কাউটের নজরে পড়ার সম্ভাবনা প্রায় শূন্য। আমরা এটাই বদলাতে এসেছি।",
 "mission.approach.title":"আমাদের পদ্ধতি",
-"mission.approach.body":"চলো খেলি তৃণমূলের প্রতিভা ও পেশাদার স্কাউটদের মধ্যে একটি স্বচ্ছ ডিজিটাল সেতু তৈরি করে। প্রতিটি খেলোয়াড় একই প্ল্যাটফর্ম পান। প্রতিটি স্কাউট যাচাইকৃত। প্রতিটি ইন্টারঅ্যাকশন ট্র্যাক করা হয়। কোনো দালাল নেই, কোনো দুর্নীতি নেই — শুধু খাঁটি প্রতিভা।",
+"mission.approach.body":"চলো খেলি তৃণমূলের প্রতিভা আর পেশাদার স্কাউটদের মধ্যে একটি স্বচ্ছ ডিজিটাল সেতু তৈরি করে। সব খেলোয়াড় একই প্ল্যাটফর্ম পায়। প্রত্যেক স্কাউট যাচাই করা। স্কাউট ও খেলোয়াড়ের প্রতিটি কথোপকথন অ্যাডমিন অনুমোদন করেন এবং দেখতে পারেন। মধ্যস্বত্বভোগী বাদ দিয়ে প্রতিভাকে সামনে আনতেই এটি তৈরি।",
 "mission.vision.title":"আমাদের স্বপ্ন",
 "mission.vision.body":"আমরা এমন এক বাংলাদেশের স্বপ্ন দেখি যেখানে প্রতিভা পরিচিতির চেয়ে জোরে কথা বলে। যেখানে রংপুরের একজন ১৬ বছরের ক্রিকেটার জাতীয় নির্বাচকের নজরে আসতে পারে। যেখানে পরবর্তী ফুটবল তারকার সঠিক মানুষদের চেনার দরকার নেই — শুধু সঠিক খেলোয়াড় হওয়াই যথেষ্ট।",
 
@@ -643,7 +675,7 @@ export const translations = {
 "mission.history.d2":"৮ মার্চ, ২০২৬",
 "mission.history.b2":"একজন টেক সিইও-এর সমর্থন আমাদের ধারণাকে বাস্তবায়ন করতে অনুপ্রাণিত করেছিল।",
 "mission.history.d3":"২৬ মার্চ, ২০২৬",
-"mission.history.b3":"আমরা একটি জাতীয় জরিপ পরিচালনা করেছি যা প্রমাণ করেছে বিশ্বস্ত স্কাউটিং পণ্যের প্রকৃত চাহিদা রয়েছে।",
+"mission.history.b3":"আমরা দেশজুড়ে একটি জরিপ চালাই, যাতে বিশ্বস্ত স্কাউটিং সেবার স্পষ্ট চাহিদা দেখা যায়।",
 "mission.history.d4":"১০ জুলাই, ২০২৬",
 "mission.history.b4":"চলো খেলির আনুষ্ঠানিক যাত্রা শুরু — টিম, লক্ষ্য, প্ল্যাটফর্ম, সবই সক্রিয়।",
 
@@ -661,32 +693,32 @@ export const translations = {
 "স্কাউটরা শর্টলিস্ট সংরক্ষণ করেন, অতিরিক্ত ফুটেজের অনুরোধ জানান এবং প্রতিটি যোগাযোগের একটি লাইভ টাইমলাইন দেখেন — যাতে তাদের সময় ও প্রচেষ্টা সুরক্ষিত থাকে।",
 "mission.what.t2":"খেলোয়াড় প্রোফাইল",
 "mission.what.b2":
-"অ্যাথলেটরা একটি বিশ্বস্ত প্রোফাইল তৈরি করেন: যাচাইকৃত পরিসংখ্যান, হাইলাইট রিল, এবং একটি রেজুমে যা তাদের সাথে সর্বত্র যায়।",
+"খেলোয়াড়রা একটি প্রোফাইল তৈরি করেন: তাদের তথ্য, অর্জন, হাইলাইট ক্লিপ আর শেয়ার করার মতো একটি রিজিউম।",
 "mission.what.e2":
-"প্রোফাইলে কোচের সুপারিশ, ম্যাচ লগ এবং একটি বহনযোগ্য আইডি থাকে — যা একাডেমি, ক্লাব ও জাতীয় ট্রায়ালের মধ্যে খেলোয়াড়ের সঙ্গে থাকে, প্রতি মৌসুমে নতুন করে শুরু নয়।",
+"প্রোফাইলটি মৌসুমের পর মৌসুম খেলোয়াড়ের সঙ্গেই থাকে, তাই প্রতি বছর নতুন করে শুরু করতে হয় না।",
 "mission.what.t3":"নিরাপদ নির্বাচন",
 "mission.what.b3":
-"প্রতিটি স্কাউট যাচাইকৃত, প্রতিটি যোগাযোগ নথিভুক্ত। নির্বাচন স্বচ্ছ পদ্ধতিতে হয় যাতে পরিবার ও ফেডারেশন ফলাফলে আস্থা রাখতে পারে।",
+"কোনো খেলোয়াড় দেখার আগে প্রত্যেক স্কাউট যাচাই হন, এবং প্রতিটি কথোপকথনে আগে অ্যাডমিনের অনুমোদন লাগে।",
 "mission.what.e3":
-"অভিভাবকরা প্রতিটি স্কাউট কার্যক্রমের জন্য সহজ ভাষায় বিজ্ঞপ্তি পান, এবং ফেডারেশন একটি রপ্তানিযোগ্য রেকর্ড পায় — \"কে কাকে বাছাই করেছে, কেন?\" এই প্রশ্নের একটি স্পষ্ট উত্তর দাঁড়ায়।",
+"১৮ বছরের কম বয়সী খেলোয়াড়রা মা-বাবা বা অভিভাবকের সম্মতি নিয়ে সাইন আপ করেন, এবং অ্যাডমিনরা প্রতিটি স্কাউট কথোপকথন দেখতে পারেন।",
 
 "mission.what.principles":"আমাদের মূলনীতি",
 "mission.what.p1.title":"শুরু থেকেই যাচাইকৃত",
 "mission.what.p1.body":
-"প্রতিটি স্কাউট, কোচ ও ফেডারেশন অ্যাকাউন্ট খেলোয়াড়ের প্রোফাইল স্পর্শ করার আগেই পরিচয় ও ভূমিকা যাচাই করে। কোনো নামহীন যোগাযোগ নয়।",
+"কোনো খেলোয়াড়ের প্রোফাইল দেখার আগে প্রত্যেক স্কাউটের পরিচয় ও ভূমিকা যাচাই হয়। কোনো বেনামি যোগাযোগ নেই।",
 "mission.what.p2.title":"খেলোয়াড়ের নিজের ডেটা",
 "mission.what.p2.body":
 "অ্যাথলেট নিয়ন্ত্রণ করেন কী দেখা যাবে, কে যোগাযোগ করতে পারবে, এবং যেকোনো সময় অ্যাক্সেস প্রত্যাহার করতে পারেন — প্রোফাইল একটি বহনযোগ্য রেকর্ড।",
-"mission.what.p3.title":"ফেডারেশন-মানের অডিট ট্রেইল",
+"mission.what.p3.title":"প্রতিটি সিদ্ধান্তের রেকর্ড",
 "mission.what.p3.body":
-"প্রতিটি নির্বাচন, বার্তা ও শর্টলিস্ট টাইমস্ট্যাম্পসহ রপ্তানিযোগ্য — ফেডারেশন প্রমাণ দিয়ে ন্যায্যতা রক্ষা করতে পারে।",
+"স্কাউট অনুরোধ, রিভিউ ও অ্যাডমিনের সিদ্ধান্তে সময় লেখা থাকে, তাই ন্যায্যতার প্রশ্নের উত্তর রেকর্ড দিয়ে দেওয়া যায়।",
 "mission.what.p4.title":"প্রথম দিন থেকেই সারা দেশে",
 "mission.what.p4.body":
 "শুধু রাজধানী নয়, ৬৪টি জেলার জন্য তৈরি। গ্রাম ও জেলার খেলোয়াড়রা শহুরে একাডেমির সঙ্গে একই ফিডে থাকেন — সমান গুরুত্ব, সমান দৃশ্যমানতা।",
 
 "mission.what.metrics":"সংখ্যায় আমরা",
 "mission.what.m1.value":"৬৪",
-"mission.what.m1.label":"লঞ্চে অন্তর্ভুক্ত জেলা",
+"mission.what.m1.label":"যত জেলার জন্য প্ল্যাটফর্মটি তৈরি",
 "mission.what.m2.value":"১০০%",
 "mission.what.m2.label":"যাচাইকৃত স্কাউট, ব্যতিক্রম নেই",
 "mission.what.m3.value":"০",
@@ -699,7 +731,7 @@ export const translations = {
 "পরিচয় যাচাই, ভূমিকা যাচাই ও অডিট লগ শুরু থেকেই তৈরি — কোনো কেলেঙ্কারির পর জোড়াতালি দিয়ে বসানো নয়।",
 "mission.what.s2.title":"কমিউনিটির সঙ্গে গড়া",
 "mission.what.s2.body":
-"কোচ, জেলা কর্মকর্তা ও খেলোয়াড়দের সঙ্গে মিলে তৈরি — যেন বাংলাদেশের খেলাধুলার বাস্তবতার সঙ্গে মানানসই হয়।",
+"কোচ ও খেলোয়াড়দের মতামত নিয়ে তৈরি, যাতে বাংলাদেশের খেলাধুলার বাস্তবতার সঙ্গে মেলে।",
 "mission.what.s3.title":"স্কেল করার জন্য তৈরি",
 "mission.what.s3.body":
 "তিনটি খেলা দিয়ে শুরু, প্রতিটি ফেডারেশন যুক্ত হলেই বড় হয় — একটাই পাইপলাইন, পঞ্চাশটি সাইলো নয়।",

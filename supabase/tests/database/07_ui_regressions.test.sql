@@ -22,7 +22,7 @@ select ok(exists(select 1 from pg_constraint where conrelid = 'public.close_frie
 select has_column('public', 'profiles', 'position_tags', 'profiles.position_tags exists');
 
 set local role authenticated;
-set local request.jwt.claims to '{"sub":"11111111-1111-1111-1111-111111111111","role":"authenticated"}';
+set local request.jwt.claims to '{"sub":"11111111-1111-1111-1111-111111111111","role":"authenticated","aal":"aal2"}';
 insert into public.blocked_users (blocker_id, blocked_id) values (auth.uid(), '22222222-2222-2222-2222-222222222222');
 select is((select p.username from public.blocked_users b join public.profiles p on p.user_id = b.blocked_id
             where b.blocker_id = auth.uid()), 'pscout_t', 'blocked list resolves to the blocked user''s profile');

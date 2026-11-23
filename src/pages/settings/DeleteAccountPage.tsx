@@ -32,7 +32,7 @@ const DeleteAccountPage = () => {
     const { error } = await supabase.functions.invoke("delete-account", { body: { confirm: "DELETE" } });
     if (error) {
       setBusy(false);
-      toast({ title: "Couldn't delete your account", description: "Please try again, or email support@cholokheli.com.", variant: "destructive" });
+      toast({ title: "Couldn't delete your account", description: "Please try again, or email cholokhelibangladesh@gmail.com.", variant: "destructive" });
       return;
     }
     await signOut().catch(() => {});
@@ -58,7 +58,7 @@ const DeleteAccountPage = () => {
               </ul>
               <p className="mt-3 text-foreground/75">
                 If you only want a break, you can log out instead. Questions? Email{" "}
-                <a className="underline" href="mailto:support@cholokheli.com">support@cholokheli.com</a>.
+                <a className="underline" href="mailto:cholokhelibangladesh@gmail.com">cholokhelibangladesh@gmail.com</a>.
               </p>
             </div>
             <div className="space-y-2">

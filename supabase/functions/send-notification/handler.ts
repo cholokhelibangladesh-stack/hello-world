@@ -6,7 +6,7 @@
 type Client = any;
 
 export interface Mailer {
-  send(to: string, subject: string, html: string, text: string): Promise<boolean>;
+  send(to: string, subject: string, html: string, text: string, headers?: Record<string, string>): Promise<boolean>;
 }
 export interface Pusher {
   /** Returns the tokens that are no longer valid and should be deleted. */
@@ -19,7 +19,27 @@ export interface Deps {
   mailer: Mailer | null;
   pusher: Pusher | null;
   appUrl: string;
+  /** Key for signing unsubscribe links (the service role key in production). */
+  signingKey?: string;
+  /** Public URL of this function, for one-click unsubscribe from mail apps. */
+  selfUrl?: string;
+  /** Browser origins allowed to call the unsubscribe endpoint. */
+  isAllowedOrigin?: (origin: string) => boolean;
 }
+
+/** Signed token that lets an email recipient turn off emails without signing in. */
+export async function unsubscribeToken(key: string, userId: string): Promise<string> {
+  const k = await crypto.subtle.importKey("raw", new TextEncoder().encode(key), { name: "HMAC", hash: "SHA-256" }, false, ["sign"]);
+  const sig = new Uint8Array(await crypto.subtle.sign("HMAC", k, new TextEncoder().encode(`unsubscribe:${userId}`)));
+  return Array.from(sig.slice(0, 16), (b) => b.toString(16).padStart(2, "0")).join("");
+}
+
+const timingSafeEqual = (a: string, b: string) => {
+  if (a.length !== b.length) return false;
+  let d = 0;
+  for (let i = 0; i < a.length; i++) d |= a.charCodeAt(i) ^ b.charCodeAt(i);
+  return d === 0;
+};
 
 /** Notification types important enough to email. Likes, follows and comments are push-only. */
 export const EMAIL_TYPES = new Set([
@@ -30,7 +50,7 @@ export const EMAIL_TYPES = new Set([
 export const escapeHtml = (s: string) =>
   s.replace(/[&<>"']/g, (c) => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" }[c]!));
 
-export function emailHtml(title: string, message: string, appUrl: string) {
+export function emailHtml(title: string, message: string, appUrl: string, unsubscribeUrl?: string) {
   const body = escapeHtml(message).replace(/\n/g, "<br>");
   return `<!doctype html><html><body style="margin:0;background:#F2F4F6;font-family:-apple-system,Segoe UI,Roboto,sans-serif;color:#0E2A33">
 <table role="presentation" width="100%" cellpadding="0" cellspacing="0"><tr><td align="center" style="padding:32px 16px">
@@ -39,14 +59,39 @@ export function emailHtml(title: string, message: string, appUrl: string) {
 <tr><td style="font-size:20px;font-weight:700;line-height:1.3;padding-bottom:12px">${escapeHtml(title)}</td></tr>
 <tr><td style="font-size:16px;line-height:1.5;padding-bottom:24px">${body}</td></tr>
 <tr><td><a href="${escapeHtml(appUrl)}" style="display:inline-block;background:#13738F;color:#fff;text-decoration:none;padding:12px 20px;border-radius:999px;font-weight:600">Open Cholo Kheli</a></td></tr>
-<tr><td style="font-size:12px;color:#6b7c85;padding-top:24px">You can turn off email notifications in Settings, Notifications.</td></tr>
+<tr><td style="font-size:12px;color:#6b7c85;padding-top:24px">${unsubscribeUrl
+  ? `Don't want these emails? <a href="${escapeHtml(unsubscribeUrl)}" style="color:#13738F">Unsubscribe</a>, or change it in Settings, Notifications.`
+  : "You can turn off email notifications in Settings, Notifications."}</td></tr>
+<tr><td style="font-size:12px;color:#6b7c85;padding-top:8px">Cholo Kheli, Dhaka, Bangladesh</td></tr>
 </table></td></tr></table></body></html>`;
 }
 
-export function createHandler({ getClient, secret, mailer, pusher, appUrl }: Deps) {
+export function createHandler({ getClient, secret, mailer, pusher, appUrl, signingKey, selfUrl, isAllowedOrigin }: Deps) {
   return async (req: Request): Promise<Response> => {
-    const json = (body: unknown, status = 200) =>
-      new Response(JSON.stringify(body), { status, headers: { "Content-Type": "application/json" } });
+    const json = (body: unknown, status = 200, extra: Record<string, string> = {}) =>
+      new Response(JSON.stringify(body), { status, headers: { "Content-Type": "application/json", ...extra } });
+
+    // ── Unsubscribe from emails: a signed link, no sign-in needed (RFC 8058 one-click too) ──
+    const url = new URL(req.url);
+    if (url.searchParams.has("unsubscribe")) {
+      const origin = req.headers.get("origin") ?? "";
+      const cors: Record<string, string> = origin && isAllowedOrigin?.(origin)
+        ? { "Access-Control-Allow-Origin": origin, "Access-Control-Allow-Methods": "POST, OPTIONS", "Access-Control-Allow-Headers": "content-type, apikey, authorization, x-client-info", Vary: "Origin" }
+        : {};
+      if (req.method === "OPTIONS") return new Response(null, { status: 204, headers: cors });
+      const u = url.searchParams.get("u") ?? "", t = url.searchParams.get("t") ?? "";
+      if (req.method === "GET") {
+        return new Response(null, { status: 302, headers: { Location: `${appUrl}/unsubscribe?u=${encodeURIComponent(u)}&t=${encodeURIComponent(t)}` } });
+      }
+      if (req.method !== "POST") return json({ error: "method_not_allowed" }, 405, cors);
+      if (!signingKey || !/^[0-9a-f-]{36}$/i.test(u) || !timingSafeEqual(await unsubscribeToken(signingKey, u), t)) {
+        return json({ error: "invalid_link" }, 400, cors);
+      }
+      const { error } = await getClient().from("notification_preferences")
+        .upsert({ user_id: u, email_notifications: false }, { onConflict: "user_id" });
+      return error ? json({ error: "internal_error" }, 500, cors) : json({ ok: true }, 200, cors);
+    }
+
     if (req.method !== "POST") return json({ error: "method_not_allowed" }, 405);
     // The caller must present the database's shared secret. With NOTIFY_WEBHOOK_SECRET set it is
     // compared directly; otherwise the database itself confirms it (verify_notify_secret).
@@ -94,8 +139,15 @@ export function createHandler({ getClient, secret, mailer, pusher, appUrl }: Dep
         const { data: u } = await supabase.auth.admin.getUserById(n.user_id);
         const email = u?.user?.email;
         if (email) {
-          result.email = await mailer.send(email, n.title, emailHtml(n.title, n.message ?? "", appUrl),
-            `${n.title}\n\n${n.message ?? ""}\n\n${appUrl}`);
+          const t = signingKey ? await unsubscribeToken(signingKey, n.user_id) : null;
+          const page = t ? `${appUrl}/unsubscribe?u=${n.user_id}&t=${t}` : undefined;
+          const headers: Record<string, string> = {};
+          if (t && selfUrl) {
+            headers["List-Unsubscribe"] = `<${selfUrl}?unsubscribe=1&u=${n.user_id}&t=${t}>`;
+            headers["List-Unsubscribe-Post"] = "List-Unsubscribe=One-Click";
+          }
+          result.email = await mailer.send(email, n.title, emailHtml(n.title, n.message ?? "", appUrl, page),
+            `${n.title}\n\n${n.message ?? ""}\n\n${appUrl}${page ? `\n\nUnsubscribe: ${page}` : ""}`, headers);
         }
       }
       return json(result);
@@ -109,11 +161,11 @@ export function createHandler({ getClient, secret, mailer, pusher, appUrl }: Dep
 
 export function resendMailer(apiKey: string, from: string): Mailer {
   return {
-    async send(to, subject, html, text) {
+    async send(to, subject, html, text, headers) {
       const r = await fetch("https://api.resend.com/emails", {
         method: "POST",
         headers: { Authorization: `Bearer ${apiKey}`, "Content-Type": "application/json" },
-        body: JSON.stringify({ from, to: [to], subject, html, text }),
+        body: JSON.stringify({ from, to: [to], subject, html, text, ...(headers && Object.keys(headers).length ? { headers } : {}) }),
       });
       return r.ok;
     },

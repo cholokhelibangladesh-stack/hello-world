@@ -8,7 +8,7 @@ export const DEFAULT_ALLOWED_ORIGINS = [
   "capacitor://localhost", // iOS app (Capacitor WebView)
   "http://localhost:8080", // local dev: app
   "http://localhost:8081", // local dev: website (run alongside the app)
-  "https://*.trycloudflare.com", // testing: Cloudflare quick tunnel to a local dev server
+  // Never add a wildcard for a public tunnel service: anyone can create a subdomain there.
 ];
 
 export function allowedOrigins(): string[] {

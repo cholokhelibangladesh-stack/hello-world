@@ -25,13 +25,13 @@ const Footer = () => {
               <Link to="/safe-scouting" className="text-sm text-muted-foreground hover:text-primary transition-colors">{t("nav.safeScouting")}</Link>
               <Link to="/mission" className="text-sm text-muted-foreground hover:text-primary transition-colors">{t("footer.ourMission")}</Link>
               <Link to="/faq" className="text-sm text-muted-foreground hover:text-primary transition-colors">{t("footer.faqHelpline")}</Link>
-              <Link to="/privacy-policy" className="text-sm text-muted-foreground hover:text-primary transition-colors">{t("cookie.privacyPolicy")}</Link>
+              <Link to="/privacy-policy" className="text-sm text-muted-foreground hover:text-primary transition-colors">{t("auth.privacyPolicy")}</Link>
             </div>
           </div>
           <div>
             <h4 className="font-display text-lg text-foreground mb-3">{t("footer.contact")}</h4>
-            <p className="text-sm text-muted-foreground">hello@cholokheli.com</p>
-            <p className="text-sm text-muted-foreground">Legal: legal@cholokheli.com</p>
+            <p className="text-sm text-muted-foreground">cholokhelibangladesh@gmail.com</p>
+            <p className="text-sm text-muted-foreground">Legal: cholokhelibangladesh@gmail.com</p>
             <p className="text-sm text-muted-foreground mt-2">{t("footer.dhaka")}</p>
           </div>
         </div>

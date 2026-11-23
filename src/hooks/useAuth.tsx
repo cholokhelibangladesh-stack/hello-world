@@ -17,6 +17,8 @@ interface AuthContextType {
   scoutStatus: ScoutStatus;
   /** Signed in with a password but a verified authenticator code is still required. */
   needsMfa: boolean;
+  /** Session assurance: "aal2" once this session passed two-factor. Admin tools need it. */
+  aal: string | null;
   signUp: (email: string, password: string, meta: Record<string, unknown>) => Promise<{ error: Error | null }>;
   signIn: (email: string, password: string) => Promise<{ error: Error | null }>;
   signOut: () => Promise<void>;
@@ -33,6 +35,7 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
   const [role, setRole] = useState<AppRole | null>(null);
   const [scoutStatus, setScoutStatus] = useState<ScoutStatus>(null);
   const [needsMfa, setNeedsMfa] = useState(false);
+  const [aal, setAal] = useState<string | null>(null);
   const lastUserId = useRef<string | null>(null);
 
   const loadAccess = useCallback(async (userId: string) => {
@@ -53,6 +56,7 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
       }
       const a = aal?.data as { currentLevel?: string | null; nextLevel?: string | null } | null;
       setNeedsMfa(!!a && a.nextLevel === "aal2" && a.currentLevel !== "aal2");
+      setAal(a?.currentLevel ?? null);
       setRole(nextRole);
       setScoutStatus(status);
     } catch (error) {
@@ -129,7 +133,7 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
   };
 
   return (
-    <AuthContext.Provider value={{ user, session, loading, role, scoutStatus, needsMfa, signUp, signIn, signOut, refreshRole }}>
+    <AuthContext.Provider value={{ user, session, loading, role, scoutStatus, needsMfa, aal, signUp, signIn, signOut, refreshRole }}>
       {children}
     </AuthContext.Provider>
   );

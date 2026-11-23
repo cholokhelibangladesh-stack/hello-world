@@ -17,7 +17,7 @@ values ('33333333-3333-3333-3333-333333333333', '01811111111', current_date - in
 on conflict (user_id) do update set phone = excluded.phone, date_of_birth = excluded.date_of_birth;
 
 set local role authenticated;
-set local request.jwt.claims to '{"sub":"22222222-2222-2222-2222-222222222222","role":"authenticated"}';
+set local request.jwt.claims to '{"sub":"22222222-2222-2222-2222-222222222222","role":"authenticated","aal":"aal2"}';
 select is((select count(*)::int from public.profile_private where user_id = '33333333-3333-3333-3333-333333333333'), 0,
   'a (pending) scout cannot read a minor''s private data');
 select is((select count(*)::int from public.profiles where user_id = '33333333-3333-3333-3333-333333333333'), 0,
@@ -25,7 +25,7 @@ select is((select count(*)::int from public.profiles where user_id = '33333333-3
 select is(public.get_player_age('33333333-3333-3333-3333-333333333333'), null,
   'a pending scout cannot see a player''s age');
 
-set local request.jwt.claims to '{"sub":"44444444-4444-4444-4444-444444444444","role":"authenticated"}';
+set local request.jwt.claims to '{"sub":"44444444-4444-4444-4444-444444444444","role":"authenticated","aal":"aal2"}';
 select is((select full_name from public.profiles where user_id = '33333333-3333-3333-3333-333333333333'), 'Minor Player',
   'a verified scout can read public profile fields');
 select is(public.get_player_age('33333333-3333-3333-3333-333333333333'), 14,
@@ -33,16 +33,16 @@ select is(public.get_player_age('33333333-3333-3333-3333-333333333333'), 14,
 select is((select count(*)::int from public.profile_private where user_id = '33333333-3333-3333-3333-333333333333'), 0,
   'a verified scout still cannot read a minor''s private data');
 
-set local request.jwt.claims to '{"sub":"11111111-1111-1111-1111-111111111111","role":"authenticated"}';
+set local request.jwt.claims to '{"sub":"11111111-1111-1111-1111-111111111111","role":"authenticated","aal":"aal2"}';
 select is((select count(*)::int from public.profile_private where user_id = '33333333-3333-3333-3333-333333333333'), 0,
   'another player cannot read it either');
 
-set local request.jwt.claims to '{"sub":"33333333-3333-3333-3333-333333333333","role":"authenticated"}';
+set local request.jwt.claims to '{"sub":"33333333-3333-3333-3333-333333333333","role":"authenticated","aal":"aal2"}';
 select is((select phone from public.profile_private where user_id = auth.uid()), '01811111111', 'owner can read own private data');
 select lives_ok(
   $$ update public.profile_private set phone = '01700000000' where user_id = auth.uid() $$, 'owner can update own private data');
 
-set local request.jwt.claims to '{"sub":"aaaaaaaa-aaaa-aaaa-aaaa-aaaaaaaaaaaa","role":"authenticated"}';
+set local request.jwt.claims to '{"sub":"aaaaaaaa-aaaa-aaaa-aaaa-aaaaaaaaaaaa","role":"authenticated","aal":"aal2"}';
 select is((select phone from public.profile_private where user_id = '33333333-3333-3333-3333-333333333333'), '01700000000',
   'admin can read private data (needed to share contact on approved requests)');
 

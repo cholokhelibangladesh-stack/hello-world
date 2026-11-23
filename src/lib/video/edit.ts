@@ -2,17 +2,18 @@ import { fontStack, type TextFontId } from "./fonts";
 import { sfxBuffer, type SfxId } from "./sfx";
 
 /**
- * Highlight limits. Sized so 100,000 players with one highlight each stay inside a USD 20,000 to 30,000
- * monthly budget on Supabase Storage (see docs in the upload screen):
+ * Highlight limits. Storage and download traffic are the biggest part of the hosting bill, and every
+ * view downloads the whole clip, so every highlight is kept compact:
  *  - at most 60 seconds, at most 1080p (the long edge at most 1920 px)
- *  - video at most 5 Mbps (scaled down for smaller frames) and audio at 128 kbps
- *  => at most about 39 MB per highlight, under the 50 MB storage limit.
+ *  - H.264 video at most 3 Mbps (scaled down for smaller frames) and AAC audio at 128 kbps
+ *  => at most about 24 MB per highlight, under the 30 MB storage limit, and about 40% less
+ *     storage and traffic than the earlier 5 Mbps setting at the same 1080p sharpness on a phone.
  */
 export const MAX_SECONDS = 60;
 export const MIN_SECONDS = 1;
 export const MAX_LONG_EDGE = 1920;
 export const MAX_SHORT_EDGE = 1080;
-export const MAX_VIDEO_BITRATE = 5_000_000;
+export const MAX_VIDEO_BITRATE = 3_000_000;
 export const AUDIO_BITRATE = 128_000;
 /** Largest file a phone may pick for editing (it is re-encoded before upload). */
 export const MAX_SOURCE_MB = 2048;
@@ -42,9 +43,40 @@ export const outputSize = (w: number, h: number) => {
   return { width: even(w * s), height: even(h * s) };
 };
 
-/** 5 Mbps for a full 1080p frame, less for smaller frames. */
+/** 3 Mbps for a full 1080p frame, less for smaller frames. */
 export const videoBitrate = (width: number, height: number) =>
-  Math.round(Math.min(MAX_VIDEO_BITRATE, Math.max(1_500_000, (width * height) / (1920 * 1080) * MAX_VIDEO_BITRATE)));
+  Math.round(Math.min(MAX_VIDEO_BITRATE, Math.max(1_000_000, (width * height) / (1920 * 1080) * MAX_VIDEO_BITRATE)));
+
+/** Average bitrate above which an untouched clip is re-encoded before upload (video plus audio, with headroom). */
+const MAX_UPLOAD_BITRATE = MAX_VIDEO_BITRATE + AUDIO_BITRATE + 400_000;
+
+/**
+ * Whether a clip must be re-encoded even when the player didn't edit it: anything that isn't an
+ * H.264 MP4 every phone can play (iPhone HEVC .mov files don't play on most Android phones), is
+ * larger than 1080p, or uses more data per second than our limit.
+ */
+export const needsReencode = async (file: File, duration: number, w: number, h: number): Promise<boolean> => {
+  if (duration > 0 && (file.size * 8) / duration > MAX_UPLOAD_BITRATE) return true;
+  if (Math.max(w, h) > MAX_LONG_EDGE || Math.min(w, h) > MAX_SHORT_EDGE) return true;
+  if (!/^video\/mp4$/i.test(file.type) && !/\.mp4$/i.test(file.name)) return true;
+  try {
+    const mb = await import("mediabunny");
+    const input = new mb.Input({ source: new mb.BlobSource(file), formats: mb.ALL_FORMATS });
+    try {
+      const v = await input.getPrimaryVideoTrack();
+      const a = await input.getPrimaryAudioTrack();
+      return !v || v.codec !== "avc" || (!!a && a.codec !== "aac");
+    } finally { input.dispose?.(); }
+  } catch { return true; }
+};
+
+/** First bytes of a real video file: MP4/MOV/3GP carry "ftyp" at byte 4, WebM/MKV start with EBML. */
+export const looksLikeVideo = async (file: File): Promise<boolean> => {
+  const b = new Uint8Array(await file.slice(0, 12).arrayBuffer());
+  const ftyp = b[4] === 0x66 && b[5] === 0x74 && b[6] === 0x79 && b[7] === 0x70;
+  const ebml = b[0] === 0x1a && b[1] === 0x45 && b[2] === 0xdf && b[3] === 0xa3;
+  return ftyp || ebml;
+};
 
 export const isEdited = (p: EditPlan, duration: number) =>
   p.start > 0.05 || p.end < duration - 0.05 || !!p.crop || p.texts.some((t) => t.text.trim()) || p.sfx.length > 0 || p.originalVolume < 0.999;

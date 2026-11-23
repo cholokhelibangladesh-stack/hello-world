@@ -55,11 +55,11 @@ const COPY = {
     step2Pill: "Upload Highlights",
     step2Title: "LET YOUR GAME\nSPEAK",
     step2Body: "Record a short highlight clip. Tag your position and what it shows. It goes live straight away to verified scouts across the country.",
-    only100: "Free to upload",
-    only100Sub: "No fees for players or scouts. Live in seconds.",
+    only100: "Free to upload today",
+    only100Sub: "Signing up is free. If an upload fee is ever added, you see the exact price before you post. No hidden charges.",
     step3Pill: "Get Discovered",
     step3Title: "SCOUTS\nFIND YOU",
-    step3Body: "Verified scouts browse your profile, shortlist you, and reach out through our safe admin-mediated channel. No direct contact. No corruption. Pure merit.",
+    step3Body: "Verified scouts browse your profile, shortlist you, and reach out through our safe admin-mediated channel. Every conversation is approved by an admin first, so players are never contacted directly.",
     scoutDashboard: "Scout Dashboard",
     midfielder: "Midfielder", forward: "Forward", allRounder: "All-rounder",
     shortlisted: "★ Shortlisted",
@@ -68,7 +68,7 @@ const COPY = {
     skillSpeed: "Speed", skillDribbling: "Dribbling", skillVision: "Vision", skillPositioning: "Positioning",
     ourNetwork: "Our Network",
     verified: "VERIFIED", scouts: "SCOUTS",
-    scoutsSub: "Hear directly from the professionals discovering talent across Bangladesh",
+    scoutsSub: "The kinds of scouts Cholo Kheli is built for. Every scout is verified by an admin before they see a single player.",
     of: "OF",
     previous: "Previous", next: "Next",
     joinFree: "Join Cholo Kheli Free",
@@ -108,11 +108,11 @@ const COPY = {
     step2Pill: "হাইলাইট আপলোড করুন",
     step2Title: "আপনার খেলা\nকথা বলুক",
     step2Body: "একটি ছোট হাইলাইট ক্লিপ রেকর্ড করুন। আপনার পজিশন আর ক্লিপে কী দেখা যাচ্ছে, তা ট্যাগ করুন। আপলোডের সাথে সাথেই এটি সারা দেশের যাচাইকৃত স্কাউটদের কাছে লাইভ হয়ে যাবে।",
-    only100: "আপলোড বিনামূল্যে",
-    only100Sub: "খেলোয়াড় বা স্কাউট, কারও কোনো ফি নেই। কয়েক সেকেন্ডেই লাইভ।",
+    only100: "এখন আপলোড বিনামূল্যে",
+    only100Sub: "সাইন আপ বিনামূল্যে। কখনো আপলোড ফি যোগ হলে পোস্টের আগেই ঠিক দাম দেখবেন। কোনো লুকানো চার্জ নেই।",
     step3Pill: "আবিষ্কৃত হন",
     step3Title: "স্কাউট\nআপনাকে খুঁজে পাবে",
-    step3Body: "যাচাইকৃত স্কাউটরা আপনার প্রোফাইল দেখে, আপনাকে শর্টলিস্ট করে এবং আমাদের নিরাপদ অ্যাডমিন-মধ্যস্থ চ্যানেলে যোগাযোগ করে। কোনো সরাসরি যোগাযোগ নেই। কোনো দুর্নীতি নেই। শুধুই মেধা।",
+    step3Body: "যাচাইকৃত স্কাউটরা আপনার প্রোফাইল দেখে, আপনাকে শর্টলিস্ট করে এবং আমাদের নিরাপদ অ্যাডমিন-মধ্যস্থ চ্যানেলে যোগাযোগ করে। প্রতিটি কথোপকথন আগে অ্যাডমিন অনুমোদন করেন, তাই কেউ খেলোয়াড়কে সরাসরি যোগাযোগ করতে পারে না।",
     scoutDashboard: "স্কাউট ড্যাশবোর্ড",
     midfielder: "মিডফিল্ডার", forward: "ফরোয়ার্ড", allRounder: "অলরাউন্ডার",
     shortlisted: "★ শর্টলিস্টেড",
@@ -121,7 +121,7 @@ const COPY = {
     skillSpeed: "গতি", skillDribbling: "ড্রিবলিং", skillVision: "দৃষ্টি", skillPositioning: "পজিশনিং",
     ourNetwork: "আমাদের নেটওয়ার্ক",
     verified: "যাচাইকৃত", scouts: "স্কাউট",
-    scoutsSub: "বাংলাদেশজুড়ে প্রতিভা আবিষ্কারকারী পেশাদারদের কাছ থেকে সরাসরি শুনুন",
+    scoutsSub: "চলো খেলি যে ধরনের স্কাউটদের জন্য তৈরি। প্রত্যেক স্কাউট কোনো খেলোয়াড় দেখার আগে অ্যাডমিন যাচাই করেন।",
     of: "এর",
     previous: "পূর্ববর্তী", next: "পরবর্তী",
     joinFree: "চলো খেলিতে বিনামূল্যে যোগ দিন",
@@ -149,42 +149,19 @@ type ScoutProfile = {
   bio: string | null;
 };
 
+/**
+ * Shown until real, verified scouts agree to appear here. These describe the roles the platform is
+ * built for; they are not people, quotes or endorsements, and they name no real club or federation.
+ */
 const FALLBACK_SCOUTS: ScoutProfile[] = [
-  {
-    user_id: "fb-1",
-    full_name: "Tanvir Hasan",
-    organization: "Bashundhara Kings Academy",
-    avatar_url: null,
-    bio: "Fifteen years scouting football across Dhaka and Chattogram divisions. I look for players who read the game two passes ahead — technique can be coached, vision is rarer. My job is to give district-level talent a fair shot at the national pipeline.",
-  },
-  {
-    user_id: "fb-2",
-    full_name: "Nusrat Jahan",
-    organization: "Bangladesh Cricket Board",
-    avatar_url: null,
-    bio: "Former domestic all-rounder, now scouting for the women's and U-19 pathways. Cholo Kheli lets me watch tape from villages I'd never reach in person. Every week I find someone worth a closer look — that didn't happen before.",
-  },
-  {
-    user_id: "fb-3",
-    full_name: "Imran Chowdhury",
-    organization: "Sheikh Russel KC",
-    avatar_url: null,
-    bio: "I scout midfielders and defenders for the Premier League side. The verified, admin-mediated channel here means I'm talking to real players and real guardians — no agents, no noise. That trust is what made me sign up.",
-  },
-  {
-    user_id: "fb-4",
-    full_name: "Farhana Ahmed",
-    organization: "Abahani Limited Dhaka",
-    avatar_url: null,
-    bio: "Twelve years in talent identification. The grassroots in Bangladesh is deeper than people think — what's been missing is a clean way to see it. Cholo Kheli is the first platform where I trust every profile in front of me.",
-  },
-  {
-    user_id: "fb-5",
-    full_name: "Rashed Mahmud",
-    organization: "BFF Elite Academy",
-    avatar_url: null,
-    bio: "I focus on under-17 prospects. Three minutes of honest footage tells me more than a written CV ever could. The players I've shortlisted from this platform are now training with us in Sylhet — that's the proof I needed.",
-  },
+  { user_id: "role-1", full_name: "Club academy scout", organization: "Example role", avatar_url: null,
+    bio: "Watches highlights from districts they can't visit every week, filters by position and age, and asks an admin to arrange a trial." },
+  { user_id: "role-2", full_name: "Federation talent officer", organization: "Example role", avatar_url: null,
+    bio: "Sees only the clips intermediate scouts have already reviewed and forwarded, ranked by rating, to build shortlists for development camps." },
+  { user_id: "role-3", full_name: "Intermediate reviewer", organization: "Example role", avatar_url: null,
+    bio: "A licensed grassroots coach who watches every new highlight once, rates it and forwards the best to professional scouts." },
+  { user_id: "role-4", full_name: "Women's football scout", organization: "Example role", avatar_url: null,
+    bio: "Finds girls' and women's talent by district and position, with guardians kept in the loop for players under 18." },
 ];
 
 
@@ -581,9 +558,9 @@ const Index = () => {
                     <span className="text-xs font-bold tracking-widest uppercase" style={{ color: "hsl(var(--green))" }}>{T.scoutDashboard}</span>
                   </div>
                   {[
-                    { name: "Rafiqul Islam", pos: T.midfielder,  score: 91 },
-                    { name: "Nusrat Jahan",  pos: T.forward,     score: 87 },
-                    { name: "Tanjim Ahmed",  pos: T.allRounder,  score: 84 },
+                    { name: "Example player A", pos: T.midfielder,  score: 91 },
+                    { name: "Example player B", pos: T.forward,     score: 87 },
+                    { name: "Example player C", pos: T.allRounder,  score: 84 },
                   ].map((p, j) => (
                     <motion.div key={p.name}
                       initial={{ opacity: 0, x: -20 }} whileInView={{ opacity: 1, x: 0 }}

@@ -6,7 +6,7 @@ select plan(6);
 
 insert into public.videos (user_id, video_url, status) values ('11111111-1111-1111-1111-111111111111', 'x.mp4', 'live');
 set local role authenticated;
-set local request.jwt.claims to '{"sub":"11111111-1111-1111-1111-111111111111","role":"authenticated"}';
+set local request.jwt.claims to '{"sub":"11111111-1111-1111-1111-111111111111","role":"authenticated","aal":"aal2"}';
 select throws_ok($$ select public.prepare_account_deletion(auth.uid()) $$, '42501', null,
   'signed-in users cannot call the cleanup directly');
 
