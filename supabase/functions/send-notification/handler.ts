@@ -125,7 +125,7 @@ export function createHandler({ getClient, secret, mailer, pusher, appUrl, signi
         const tokens = (rows ?? []).map((r: { token: string }) => r.token);
         if (tokens.length) {
           const data: Record<string, string> = { notification_id: n.id, type: n.type ?? "" };
-          for (const k of ["video_id", "actor_id"]) if (n.metadata?.[k]) data[k] = String(n.metadata[k]);
+          for (const k of ["video_id", "actor_id", "conversation_id"]) if (n.metadata?.[k]) data[k] = String(n.metadata[k]);
           const dead = await pusher.send(tokens, n.title, n.message ?? "", data);
           result.push = tokens.length - dead.length;
           if (dead.length) {
